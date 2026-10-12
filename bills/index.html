@@ -1,0 +1,868 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bills</title>
+<meta name="description" content="Recurring bill reminders: see what is due, mark it paid, and it rolls to the next due date.">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#f5f4ef" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1311" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Bills">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<style>
+:root{
+  --bg:#f5f4ef; --card:#ffffff; --ink:#1b2420; --muted:#66736d; --line:#e2e0d6; --soft:#efede5;
+  --accent:#0f766e; --accent-ink:#ffffff; --accent-soft:#d9f0ec;
+  --bad:#b42318; --bad-soft:#fde8e6; --warn:#9a5b00; --warn-soft:#fdf0d5; --ok:#166534; --ok-soft:#dcf5e3;
+  --radius:14px; --shadow:0 1px 2px rgba(16,24,20,.06),0 6px 18px rgba(16,24,20,.06);
+  color-scheme:light dark;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0e1311; --card:#171f1c; --ink:#e7eeeb; --muted:#97a69f; --line:#27332e; --soft:#1e2824;
+    --accent:#2dd4bf; --accent-ink:#06211d; --accent-soft:#12332e;
+    --bad:#ff8a80; --bad-soft:#3a1a18; --warn:#f6c26b; --warn-soft:#3a2c12; --ok:#7ee2a0; --ok-soft:#14301f;
+    --shadow:none;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation;
+  padding-bottom:calc(92px + env(safe-area-inset-bottom));
+}
+a{color:var(--accent)}
+h1,h2,h3{margin:0;line-height:1.2}
+h3{font-size:16px}
+p{margin:0 0 8px}
+.wrap{max-width:720px;margin:0 auto;padding:0 16px}
+.muted{color:var(--muted)} .bad{color:var(--bad)} .warn{color:var(--warn)} .ok{color:var(--ok)}
+.num{font-variant-numeric:tabular-nums}
+.hide{display:none!important}
+.pad{padding:14px 16px}
+.hint{font-size:13px;color:var(--muted);margin-top:4px}
+
+/* header */
+header.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top)}
+header.top .wrap{display:flex;align-items:center;gap:12px;min-height:58px}
+header.top .grow{flex:1;min-width:0}
+header.top h1{font-size:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+header.top .sub{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.back{display:inline-flex;align-items:center;min-height:44px;padding-right:6px;text-decoration:none;font-weight:600}
+
+/* cards, tiles, lists */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+.tile{padding:12px}
+.tile .lbl{font-size:12px;color:var(--muted);font-weight:600}
+.tile .val{font-size:20px;font-weight:700;margin-top:2px}
+.sec-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin:22px 4px 8px;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700}
+.sec-h .btn{text-transform:none;letter-spacing:0}
+.list{list-style:none;margin:0;padding:0}
+.row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-top:1px solid var(--line);cursor:pointer}
+.row:first-child{border-top:0}
+.row.static{cursor:default}
+.row-main{flex:1;min-width:0}
+.row-title{font-weight:600;overflow-wrap:anywhere}
+.row-sub{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.row-amt{font-weight:700;white-space:nowrap}
+.row.faded{opacity:.6}
+.badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 7px;border-radius:999px;background:var(--soft);color:var(--muted);vertical-align:middle;margin-left:6px}
+.badge.ok{background:var(--ok-soft);color:var(--ok)} .badge.warn{background:var(--warn-soft);color:var(--warn)} .badge.bad{background:var(--bad-soft);color:var(--bad)} .badge.acc{background:var(--accent-soft);color:var(--accent)}
+.empty{text-align:center;padding:40px 20px;color:var(--muted)}
+.empty .big{font-size:40px;line-height:1;margin-bottom:10px}
+.empty h2{color:var(--ink);font-size:18px;margin-bottom:6px}
+.empty .btn{margin-top:14px}
+.banner{padding:12px 14px;border-radius:12px;background:var(--warn-soft);color:var(--warn);font-size:14px;margin:14px 0;display:flex;gap:10px;justify-content:space-between;align-items:center}
+.banner.bad{background:var(--bad-soft);color:var(--bad)}
+.bar{height:8px;border-radius:99px;background:var(--soft);overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--accent);border-radius:99px}
+.bar.over>i{background:var(--bad)}
+
+/* buttons */
+.btn{white-space:nowrap;appearance:none;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-weight:600;min-height:44px;padding:0 16px;border-radius:12px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.danger{color:var(--bad)}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--accent)}
+.btn.small{min-height:36px;padding:0 12px;font-size:14px;border-radius:10px}
+.btn.block{width:100%}
+.btn:active{transform:translateY(1px)}
+.btn:disabled{opacity:.5;cursor:default}
+.btn:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible,.chip:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 14px;min-height:36px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+
+/* bottom nav + fab */
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+nav.tabs .wrap{display:flex;padding:0}
+nav.tabs a,nav.tabs button{flex:1;min-height:58px;border:0;background:none;color:var(--muted);font:inherit;font-size:11px;font-weight:600;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;text-decoration:none}
+nav.tabs .ico{font-size:20px;line-height:1}
+nav.tabs [aria-current="page"]{color:var(--accent)}
+.fab{position:fixed;right:max(16px,calc(50vw - 344px));bottom:calc(74px + env(safe-area-inset-bottom));z-index:7;width:56px;height:56px;border-radius:50%;border:0;background:var(--accent);color:var(--accent-ink);font-size:30px;line-height:1;box-shadow:0 6px 18px rgba(0,0,0,.28);cursor:pointer}
+.fab:active{transform:scale(.96)}
+
+/* forms + dialogs */
+input,select,textarea{width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-height:44px}
+textarea{min-height:92px;resize:vertical}
+input[type=checkbox]{width:22px;height:22px;min-height:0;padding:0;accent-color:var(--accent);flex:none}
+.field label{display:block;font-size:13px;font-weight:600;color:var(--muted);margin-bottom:4px}
+.field.check{display:flex;align-items:center;gap:10px}
+.field.check label{margin:0;color:var(--ink);font-size:16px;font-weight:500}
+.fields2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+dialog{border:0;border-radius:18px;padding:0;width:calc(100vw - 24px);max-width:520px;background:var(--card);color:var(--ink);box-shadow:0 20px 60px rgba(0,0,0,.35)}
+dialog::backdrop{background:rgba(10,15,12,.55)}
+.dlg-form{padding:20px;display:flex;flex-direction:column;gap:12px;max-height:85vh;max-height:85dvh;overflow:auto}
+.dlg-form h2{font-size:19px}
+.dlg-actions{display:flex;gap:8px;align-items:center;margin-top:6px;flex-wrap:wrap}
+.dlg-actions .spacer{flex:1}
+.ask-actions{justify-content:flex-end}
+.dlg-err{color:var(--bad);font-size:14px}
+.dlg-err:empty{display:none}
+.ask-body{font-size:15px;color:var(--ink)}
+.ask-body p{margin:0 0 8px}
+.checkgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px}
+.checkgrid .field.check label{font-size:15px}
+
+/* toast */
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom));background:#1b2420;color:#fff;padding:12px 16px;border-radius:12px;display:flex;gap:14px;align-items:center;z-index:60;max-width:calc(100vw - 24px);box-shadow:0 8px 24px rgba(0,0,0,.35);font-size:15px}
+.toast button{background:none;border:0;color:#7dd3c8;font:inherit;font-weight:700;cursor:pointer;min-height:36px}
+
+@media (prefers-reduced-motion:no-preference){.btn,.fab{transition:transform .08s}}
+
+.stack{display:flex;flex-direction:column;gap:14px;margin-top:14px}
+.row .btn{flex:none}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap"><div class="grow"><h1 id="title">Bills due</h1><div class="sub" id="sub"></div></div><button type="button" class="btn small primary hide" id="addBtn">+ Add bill</button></div></header>
+<main class="wrap" id="view"></main>
+<nav class="tabs" aria-label="Sections"><div class="wrap">
+  <button type="button" data-tab="due"><span class="ico">📅</span>Due</button>
+  <button type="button" data-tab="all"><span class="ico">🧾</span>All bills</button>
+  <button type="button" data-tab="history"><span class="ico">✅</span>History</button>
+  <button type="button" data-tab="backup"><span class="ico">💾</span>Backup</button>
+</div></nav>
+<script>
+'use strict';
+/* ===================== shared helpers (identical in every Goobs app) ===================== */
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => Array.from(el.querySelectorAll(s));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const isNum = v => typeof v === 'number' && Number.isFinite(v);
+const str = v => (typeof v === 'string' ? v : v == null ? '' : String(v));
+
+/* ---- dates: always local calendar dates stored as 'YYYY-MM-DD' ---- */
+const pad = n => String(n).padStart(2, '0');
+const fmtISO = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const parseISO = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+const isISO = s => typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s) && fmtISO(parseISO(s)) === s;
+const todayISO = () => fmtISO(new Date());
+const daysBetween = (a, b) => Math.round((parseISO(b) - parseISO(a)) / 86400000);
+const addDays = (s, n) => { const d = parseISO(s); d.setDate(d.getDate() + n); return fmtISO(d); };
+function addMonths(s, n, anchorDay) {
+  const d = parseISO(s);
+  const day = anchorDay || d.getDate();
+  const first = new Date(d.getFullYear(), d.getMonth() + n, 1);
+  const last = new Date(first.getFullYear(), first.getMonth() + 1, 0).getDate();
+  first.setDate(Math.min(day, last));
+  return fmtISO(first);
+}
+const monthEndISO = s => { const d = parseISO(s); return fmtISO(new Date(d.getFullYear(), d.getMonth() + 1, 0)); };
+
+function fmtDate(s, withWeekday = true) {
+  const d = parseISO(s);
+  const o = { month: 'short', day: 'numeric' };
+  if (withWeekday) o.weekday = 'short';
+  if (d.getFullYear() !== new Date().getFullYear()) o.year = 'numeric';
+  return d.toLocaleDateString(undefined, o);
+}
+function fmtDateTime(iso) {
+  const d = new Date(iso);
+  return isNaN(d) ? 'unknown date' : d.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+}
+const _mf = {};
+function money(n, cur = 'USD') {
+  if (!_mf[cur]) {
+    try { _mf[cur] = new Intl.NumberFormat(undefined, { style: 'currency', currency: cur }); }
+    catch { _mf[cur] = new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }); }
+  }
+  return _mf[cur].format(n);
+}
+const csvCell = v => {
+  let s = String(v ?? '');
+  if (/^[=+\-@\t\r]/.test(s)) s = "'" + s; // neutralise spreadsheet formula injection
+  return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+};
+function safeUrl(u) {
+  let s = String(u ?? '').trim();
+  if (!s) return '';
+  if (!/^[a-z][a-z0-9+.-]*:/i.test(s)) s = 'https://' + s;
+  try { const x = new URL(s); return /^https?:$/.test(x.protocol) ? x.href : ''; } catch { return ''; }
+}
+
+/* ---- storage: one JSON string under one key in IndexedDB ---- */
+function openDB(name) {
+  return new Promise((res, rej) => {
+    if (!window.indexedDB) return rej(new Error('IndexedDB unavailable'));
+    const r = indexedDB.open(name, 1);
+    r.onupgradeneeded = () => { r.result.createObjectStore('kv'); };
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+    r.onblocked = () => rej(new Error('Database blocked'));
+  });
+}
+function idbGet(db, key) {
+  return new Promise((res, rej) => {
+    const q = db.transaction('kv').objectStore('kv').get(key);
+    q.onsuccess = () => res(q.result);
+    q.onerror = () => rej(q.error);
+  });
+}
+function idbPut(db, key, val) {
+  return new Promise((res, rej) => {
+    const tx = db.transaction('kv', 'readwrite');
+    tx.objectStore('kv').put(val, key);
+    tx.oncomplete = () => res();
+    tx.onerror = () => rej(tx.error);
+    tx.onabort = () => rej(tx.error || new Error('Write aborted'));
+  });
+}
+
+/* ---- toast ---- */
+function toast(msg, action) {
+  const old = $('.toast'); if (old) old.remove();
+  const t = document.createElement('div');
+  t.className = 'toast'; t.setAttribute('role', 'status');
+  t.innerHTML = `<span>${esc(msg)}</span>` + (action ? `<button type="button">${esc(action.label)}</button>` : '');
+  if (action) t.querySelector('button').onclick = () => { t.remove(); action.fn(); };
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), action ? 8000 : 3200);
+}
+
+/* ---- dialogs ---- */
+if (!$('#dlg')) document.body.insertAdjacentHTML('beforeend', '<dialog id="dlg"></dialog><dialog id="ask"></dialog>');
+{
+  const dlg = $('#dlg'); let down = false;
+  dlg.addEventListener('pointerdown', e => { down = e.target === dlg; });
+  dlg.addEventListener('click', e => { if (e.target === dlg && down) dlg.close(); });
+}
+
+function fieldHTML(f) {
+  const id = 'f_' + f.name, v = f.value ?? '';
+  if (f.type === 'checkbox')
+    return `<div class="field check"><input type="checkbox" id="${id}" name="${f.name}"${f.value ? ' checked' : ''}><label for="${id}">${esc(f.label)}</label></div>`;
+  let ctl;
+  if (f.type === 'select') {
+    ctl = `<select id="${id}" name="${f.name}">${f.options.map(o => {
+      const [val, label] = Array.isArray(o) ? o : [o, o];
+      return `<option value="${esc(val)}"${String(val) === String(v) ? ' selected' : ''}>${esc(label)}</option>`;
+    }).join('')}</select>`;
+  } else if (f.type === 'textarea') {
+    ctl = `<textarea id="${id}" name="${f.name}" placeholder="${esc(f.placeholder || '')}">${esc(v)}</textarea>`;
+  } else {
+    const t = f.type || 'text';
+    const extra = t === 'number' ? ` inputmode="decimal" step="${f.step || 'any'}"` : '';
+    ctl = `<input id="${id}" name="${f.name}" type="${t}" value="${esc(v)}" placeholder="${esc(f.placeholder || '')}"${extra}${f.min != null ? ` min="${f.min}"` : ''}${f.max != null ? ` max="${f.max}"` : ''} autocomplete="off" autocapitalize="${f.capitalize || 'sentences'}">`;
+  }
+  return `<div class="field"><label for="${id}">${esc(f.label)}${f.required ? ' *' : ''}</label>${ctl}${f.hint ? `<div class="hint">${esc(f.hint)}</div>` : ''}</div>`;
+}
+
+/* formDialog: fields -> values. onSubmit(values) may return an error string (keeps dialog open).
+   onDelete() may return true to close. extra: [{label, kind, onClick}] extra buttons. */
+function formDialog({ title, intro = '', fields, submitLabel = 'Save', onSubmit, onDelete, deleteLabel = 'Delete', extra = [], onClose, grid = '' }) {
+  const dlg = $('#dlg');
+  const body = grid ? `<div class="${grid}">${fields.map(fieldHTML).join('')}</div>` : fields.map(fieldHTML).join('');
+  dlg.innerHTML = `<form class="dlg-form" novalidate>
+    <h2>${esc(title)}</h2>${intro ? `<p class="muted">${esc(intro)}</p>` : ''}${body}
+    <div class="dlg-err" role="alert"></div>
+    <div class="dlg-actions">
+      ${onDelete ? `<button type="button" class="btn danger" data-k="del">${esc(deleteLabel)}</button>` : ''}
+      ${extra.map((x, i) => `<button type="button" class="btn ${x.kind || ''}" data-x="${i}">${esc(x.label)}</button>`).join('')}
+      <span class="spacer"></span>
+      <button type="button" class="btn ghost" data-k="cancel">Cancel</button>
+      <button type="submit" class="btn primary">${esc(submitLabel)}</button>
+    </div></form>`;
+  const form = $('form', dlg), err = $('.dlg-err', dlg);
+  const collect = () => {
+    const vals = {};
+    for (const f of fields) { const el = form.elements[f.name]; vals[f.name] = f.type === 'checkbox' ? el.checked : el.value; }
+    return vals;
+  };
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const vals = collect();
+    for (const f of fields) if (f.required && !String(vals[f.name]).trim()) { err.textContent = `${f.label} is required.`; return; }
+    err.textContent = '';
+    let msg;
+    try { msg = await onSubmit(vals); } catch (ex) { msg = ex.message || 'Something went wrong.'; }
+    if (msg) err.textContent = msg; else dlg.close();
+  });
+  $('[data-k="cancel"]', dlg).onclick = () => dlg.close();
+  if (onDelete) $('[data-k="del"]', dlg).onclick = async () => { if (await onDelete()) dlg.close(); };
+  $$('[data-x]', dlg).forEach(b => { b.onclick = () => extra[+b.dataset.x].onClick(collect()); });
+  dlg.onclose = () => { dlg.onclose = null; if (onClose) onClose(); };
+  dlg.showModal();
+  const first = form.querySelector('input:not([type=checkbox]),textarea');
+  if (first && !first.value) first.focus(); // new-item forms open ready to type; edit forms don't pop the keyboard
+}
+
+function askDialog({ title, body = '', buttons }) {
+  return new Promise(resolve => {
+    const d = $('#ask'); let done = false;
+    d.innerHTML = `<div class="dlg-form"><h2>${esc(title)}</h2>${body ? `<div class="ask-body">${body}</div>` : ''}
+      <div class="dlg-actions ask-actions">${buttons.map((b, i) => `<button type="button" class="btn ${b.kind || ''}" data-i="${i}">${esc(b.label)}</button>`).join('')}</div></div>`;
+    const finish = v => { if (done) return; done = true; d.close(); resolve(v); };
+    $$('button', d).forEach(btn => { btn.onclick = () => finish(buttons[+btn.dataset.i].value); });
+    d.oncancel = () => { done = true; resolve(undefined); };
+    d.showModal();
+  });
+}
+const confirmBox = async (title, bodyText, okLabel = 'Delete', danger = true) =>
+  (await askDialog({ title, body: bodyText ? `<p>${esc(bodyText)}</p>` : '', buttons: [{ label: 'Cancel', value: false }, { label: okLabel, value: true, kind: danger ? 'danger' : 'primary' }] })) === true;
+const msgBox = (title, bodyText) =>
+  askDialog({ title, body: `<p>${esc(bodyText)}</p>`, buttons: [{ label: 'OK', value: true, kind: 'primary' }] });
+
+/* ---- backup: optional AES-GCM passphrase encryption (Web Crypto, PBKDF2-SHA256) ---- */
+const b64 = buf => { let s = ''; const b = new Uint8Array(buf); for (let i = 0; i < b.length; i += 0x8000) s += String.fromCharCode.apply(null, b.subarray(i, i + 0x8000)); return btoa(s); };
+const unb64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+async function deriveKey(pass, salt, iterations) {
+  const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(pass), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey({ name: 'PBKDF2', salt, iterations, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+}
+async function encryptPayload(obj, pass) {
+  const salt = crypto.getRandomValues(new Uint8Array(16)), iv = crypto.getRandomValues(new Uint8Array(12));
+  const iterations = 250000;
+  const key = await deriveKey(pass, salt, iterations);
+  const ct = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, new TextEncoder().encode(JSON.stringify(obj)));
+  return { encrypted: true, kdf: 'PBKDF2-SHA256', iterations, salt: b64(salt), iv: b64(iv), data: b64(ct) };
+}
+async function decryptPayload(env, pass) {
+  const key = await deriveKey(pass, unb64(env.salt), env.iterations);
+  try {
+    const pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: unb64(env.iv) }, key, unb64(env.data));
+    return JSON.parse(new TextDecoder().decode(pt));
+  } catch { throw new Error('Wrong passphrase, or the file is damaged.'); }
+}
+function promptDecrypt(env) {
+  return new Promise(resolve => {
+    let result = null;
+    formDialog({
+      title: 'Encrypted backup', intro: 'Enter the passphrase you chose when you made this backup.',
+      fields: [{ name: 'pass', label: 'Passphrase', type: 'password', required: true }], submitLabel: 'Unlock',
+      onSubmit: async v => { try { result = await decryptPayload(env, v.pass); } catch (e) { return e.message; } },
+      onClose: () => resolve(result)
+    });
+  });
+}
+const Backup = {
+  async build({ appId, schema, data, passphrase }) {
+    const head = { app: appId, schemaVersion: schema, exportedAt: new Date().toISOString() };
+    if (passphrase) return JSON.stringify({ ...head, ...(await encryptPayload(data, passphrase)) });
+    return JSON.stringify({ ...head, encrypted: false, data }, null, 2);
+  },
+  /* returns {data, exportedAt, schemaVersion}, or null if the user cancelled the passphrase prompt; throws Error with a friendly message */
+  async parse(text, { appId, schema }) {
+    let env;
+    try { env = JSON.parse(text); } catch { throw new Error('That file isn’t a valid backup (it isn’t JSON).'); }
+    if (!env || typeof env !== 'object' || env.app !== appId)
+      throw new Error(env && typeof env === 'object' && env.app ? `That backup belongs to a different app (${String(env.app).slice(0, 40)}).` : 'That file isn’t a backup from this app.');
+    if (!Number.isInteger(env.schemaVersion) || env.schemaVersion < 1) throw new Error('The backup is missing its version number.');
+    if (env.schemaVersion > schema) throw new Error('That backup was made by a newer version of the app. Close and reopen this app to update it, then try again.');
+    let data;
+    if (env.encrypted) {
+      if (!(window.crypto && crypto.subtle)) throw new Error('Encrypted backups need a secure (https) connection.');
+      if (!(env.iterations >= 1000 && env.iterations <= 2000000) || typeof env.salt !== 'string' || typeof env.iv !== 'string' || typeof env.data !== 'string')
+        throw new Error('The encrypted backup is damaged.');
+      data = await promptDecrypt(env);
+      if (data === null) return null;
+    } else data = env.data;
+    if (!data || typeof data !== 'object') throw new Error('The backup contains no data.');
+    return { data, exportedAt: typeof env.exportedAt === 'string' ? env.exportedAt : null, schemaVersion: env.schemaVersion };
+  }
+};
+
+/* share sheet when the platform supports sharing files (iPhone), otherwise a normal download */
+async function deliverFile(filename, text, mime = 'application/json') {
+  const file = new File([text], filename, { type: mime });
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try { await navigator.share({ files: [file], title: filename }); return 'shared'; }
+    catch (e) { if (e && e.name === 'AbortError') return 'cancelled'; /* otherwise fall back to a download */ }
+  }
+  const url = URL.createObjectURL(file);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.style.display = 'none';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 15000);
+  return 'downloaded';
+}
+function pickFile(accept = '.json,application/json') {
+  return new Promise(resolve => {
+    const i = document.createElement('input');
+    i.type = 'file'; i.accept = accept; i.style.display = 'none';
+    document.body.appendChild(i);
+    let done = false;
+    const fin = f => { if (done) return; done = true; i.remove(); resolve(f); };
+    i.addEventListener('change', () => fin((i.files && i.files[0]) || null));
+    i.addEventListener('cancel', () => fin(null));
+    i.click();
+  });
+}
+const readFileText = f => (f.text ? f.text() : new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = () => rej(r.error); r.readAsText(f); }));
+
+/* nag banner: only when there is data and no recent backup */
+function backupNag(meta, hasData) {
+  if (!hasData) return null;
+  if (!meta.lastBackup) return 'You have data but no backup yet. Make one so you can restore it if this device loses it.';
+  const age = (Date.now() - Date.parse(meta.lastBackup)) / 86400000;
+  const changed = meta.lastChange && Date.parse(meta.lastChange) > Date.parse(meta.lastBackup) + 1000;
+  if (changed && age >= 7) return `Your last backup was ${Math.floor(age)} days ago and you’ve made changes since.`;
+  return null;
+}
+
+/* ---- install helper ---- */
+let deferredInstall = null;
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferredInstall = e; if (typeof render === 'function') render(); });
+const isStandalone = () => (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+function installCardHTML() {
+  if (isStandalone()) return '';
+  const ios = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const msg = deferredInstall
+    ? '<p>Install it for its own window and full offline use.</p><button class="btn primary" data-action="install">Install app</button>'
+    : ios
+      ? '<p>In Safari tap <b>Share</b> → <b>Add to Home Screen</b>. <b>Do this before entering data</b> — the home-screen app keeps its own separate storage from the Safari tab. Then open it from the new icon.</p>'
+      : '<p>Use your browser’s menu → <b>Install app</b> (or <b>Add to Home Screen</b>).</p>';
+  return `<section class="card pad"><h3>Install on this device</h3>${msg}</section>`;
+}
+async function runInstall() { if (!deferredInstall) return; deferredInstall.prompt(); try { await deferredInstall.userChoice; } catch {} deferredInstall = null; if (typeof render === 'function') render(); }
+
+if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol))
+  window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
+
+
+/* ===================== Bills app ===================== */
+const APP_ID = 'goobs-bills', DB_NAME = 'goobs-bills-db', SCHEMA = 1;
+const FREQS = [['monthly', 'Monthly'], ['weekly', 'Weekly'], ['biweekly', 'Every 2 weeks'], ['bimonthly', 'Every 2 months'],
+  ['quarterly', 'Every 3 months'], ['semiannual', 'Every 6 months'], ['annual', 'Yearly'], ['once', 'One time only']];
+const FREQ_LABEL = Object.fromEntries(FREQS);
+const PER_YEAR = { weekly: 52, biweekly: 26, monthly: 12, bimonthly: 6, quarterly: 4, semiannual: 2, annual: 1, once: 0 };
+const MONTH_STEP = { monthly: 1, bimonthly: 2, quarterly: 3, semiannual: 6, annual: 12 };
+const CATEGORIES = ['Housing', 'Utilities', 'Insurance', 'Subscriptions', 'Loans & credit', 'Phone & internet', 'Auto', 'Health', 'Taxes', 'Other'];
+
+/* ---- model ---- */
+function stepDate(b, dateISO) {
+  if (b.frequency === 'weekly') return addDays(dateISO, 7);
+  if (b.frequency === 'biweekly') return addDays(dateISO, 14);
+  if (MONTH_STEP[b.frequency]) return addMonths(dateISO, MONTH_STEP[b.frequency], b.anchorDay);
+  return null; // one-time
+}
+function occurrencesUntil(b, endISO, cap = 60) {
+  const out = []; let d = b.dueDate;
+  for (let i = 0; i < cap && d && d <= endISO; i++) { out.push(d); d = stepDate(b, d); }
+  return out;
+}
+function normBill(b) {
+  if (!b || typeof b !== 'object') return null;
+  const name = str(b.name).trim();
+  if (!name || !isISO(b.dueDate)) return null;
+  const amount = Number(b.amount);
+  return {
+    id: str(b.id) || uid(), name: name.slice(0, 120),
+    amount: isNum(amount) && amount >= 0 ? Math.round(amount * 100) / 100 : 0,
+    dueDate: b.dueDate, frequency: FREQ_LABEL[b.frequency] ? b.frequency : 'monthly',
+    anchorDay: Number.isInteger(b.anchorDay) && b.anchorDay >= 1 && b.anchorDay <= 31 ? b.anchorDay : parseISO(b.dueDate).getDate(),
+    category: CATEGORIES.includes(b.category) ? b.category : '', autopay: !!b.autopay,
+    notes: str(b.notes).slice(0, 2000), active: b.active !== false, createdAt: isNum(b.createdAt) ? b.createdAt : Date.now()
+  };
+}
+function normEntry(h) {
+  if (!h || typeof h !== 'object' || !isISO(h.paidOn) || !isISO(h.dueDate)) return null;
+  const amount = Number(h.amount);
+  return {
+    id: str(h.id) || uid(), billId: str(h.billId), name: str(h.name).slice(0, 120) || '(unnamed)',
+    amount: isNum(amount) && amount >= 0 ? amount : 0, dueDate: h.dueDate, paidOn: h.paidOn,
+    status: h.status === 'skipped' ? 'skipped' : 'paid', prevAmount: isNum(h.prevAmount) ? h.prevAmount : null,
+    createdAt: isNum(h.createdAt) ? h.createdAt : Date.parse(h.paidOn)
+  };
+}
+function normalizeData(raw) {
+  let dropped = 0, bills = [], history = [];
+  for (const b of Array.isArray(raw && raw.bills) ? raw.bills : []) { const n = normBill(b); if (n) bills.push(n); else dropped++; }
+  for (const h of Array.isArray(raw && raw.history) ? raw.history : []) { const n = normEntry(h); if (n) history.push(n); else dropped++; }
+  const a = new Set(), c = new Set();
+  const nb = bills.length, nh = history.length;
+  bills = bills.filter(b => !a.has(b.id) && a.add(b.id));
+  history = history.filter(h => !c.has(h.id) && c.add(h.id));
+  dropped += (nb - bills.length) + (nh - history.length);
+  return { data: { bills, history }, dropped };
+}
+const defaultState = () => ({ schemaVersion: SCHEMA, meta: { lastBackup: null, lastChange: null }, settings: {}, bills: [], history: [] });
+function loadState(parsed) {
+  const { data } = normalizeData(parsed);
+  return { schemaVersion: SCHEMA, meta: { lastBackup: str(parsed && parsed.meta && parsed.meta.lastBackup) || null, lastChange: str(parsed && parsed.meta && parsed.meta.lastChange) || null }, settings: {}, bills: data.bills, history: data.history };
+}
+const exportData = () => ({ bills: state.bills, history: state.history });
+
+/* ---- persistence ---- */
+let state = defaultState(), db = null, saveFailed = false, persistAsked = false, saveChain = Promise.resolve();
+function persist({ touch = true } = {}) {
+  if (touch) state.meta.lastChange = new Date().toISOString();
+  if (!db) return Promise.resolve();
+  const snap = JSON.stringify(state);
+  saveChain = saveChain.then(() => idbPut(db, 'state', snap)).then(() => { saveFailed = false; }).catch(err => { console.error(err); saveFailed = true; });
+  if (!persistAsked && navigator.storage && navigator.storage.persist) { persistAsked = true; navigator.storage.persist().catch(() => {}); }
+  return saveChain;
+}
+const commit = () => { persist(); render(); };
+
+/* ---- actions ---- */
+const byId = id => state.bills.find(b => b.id === id);
+const byDue = (a, b) => a.dueDate.localeCompare(b.dueDate) || a.name.localeCompare(b.name);
+const sumAmt = arr => arr.reduce((s, b) => s + b.amount, 0);
+const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
+function latestEntry(billId) {
+  let cur = null;
+  for (const h of state.history) if (h.billId === billId && (!cur || h.createdAt >= cur.createdAt)) cur = h;
+  return cur;
+}
+function advance(b) { const n = stepDate(b, b.dueDate); if (n) b.dueDate = n; else b.active = false; }
+function markPaid(b, { paidOn, amount, keep }) {
+  const entry = { id: uid(), billId: b.id, name: b.name, amount, dueDate: b.dueDate, paidOn, status: 'paid', prevAmount: null, createdAt: Date.now() };
+  if (keep && amount !== b.amount) { entry.prevAmount = b.amount; b.amount = amount; }
+  state.history.push(entry);
+  advance(b);
+  commit();
+  toast(b.active ? `Paid · next due ${fmtDate(b.dueDate)}` : 'Paid · one-time bill completed', { label: 'Undo', fn: () => undoEntry(entry.id) });
+}
+function skipOnce(b) {
+  const entry = { id: uid(), billId: b.id, name: b.name, amount: b.amount, dueDate: b.dueDate, paidOn: todayISO(), status: 'skipped', prevAmount: null, createdAt: Date.now() };
+  state.history.push(entry);
+  advance(b);
+  commit();
+  toast(`Skipped · next due ${b.active ? fmtDate(b.dueDate) : 'never'}`, { label: 'Undo', fn: () => undoEntry(entry.id) });
+}
+function undoEntry(id) {
+  const e = state.history.find(h => h.id === id);
+  if (!e) return;
+  const b = byId(e.billId);
+  if (b) {
+    const latest = latestEntry(b.id);
+    if (!latest || latest.id !== e.id) { toast('Only the most recent payment of a bill can be undone.'); return; }
+    b.dueDate = e.dueDate; b.active = true;
+    if (e.prevAmount != null) b.amount = e.prevAmount;
+  }
+  state.history = state.history.filter(h => h.id !== id);
+  commit();
+  toast('Undone');
+}
+
+/* ---- dialogs ---- */
+function payDialog(id) {
+  const b = byId(id); if (!b) return;
+  formDialog({
+    title: `Mark “${b.name}” paid`, intro: `Due ${fmtDate(b.dueDate)}.`,
+    fields: [
+      { name: 'paidOn', label: 'Date paid', type: 'date', value: todayISO(), required: true },
+      { name: 'amount', label: 'Amount paid', type: 'number', value: b.amount, required: true, min: 0 },
+      { name: 'keep', label: 'Use this amount for future bills too', type: 'checkbox', value: false }
+    ],
+    submitLabel: 'Mark paid',
+    onSubmit: v => {
+      const amt = parseFloat(v.amount);
+      if (!(amt >= 0)) return 'Enter a valid amount.';
+      if (!isISO(v.paidOn)) return 'Pick a valid date.';
+      markPaid(b, { paidOn: v.paidOn, amount: Math.round(amt * 100) / 100, keep: v.keep });
+    }
+  });
+}
+function billDialog(id) {
+  const b = id ? byId(id) : null;
+  if (id && !b) return;
+  const canSkip = b && b.active && b.frequency !== 'once';
+  formDialog({
+    title: b ? 'Edit bill' : 'Add bill',
+    fields: [
+      { name: 'name', label: 'Name', required: true, value: b && b.name, placeholder: 'e.g. Electric' },
+      { name: 'amount', label: 'Amount', type: 'number', required: true, value: b ? b.amount : '', min: 0, placeholder: '0.00' },
+      { name: 'dueDate', label: b ? 'Next due date' : 'First due date', type: 'date', required: true, value: b ? b.dueDate : todayISO() },
+      { name: 'frequency', label: 'Repeats', type: 'select', options: FREQS, value: b ? b.frequency : 'monthly' },
+      { name: 'category', label: 'Category', type: 'select', options: [['', '—'], ...CATEGORIES], value: b ? b.category : '' },
+      { name: 'autopay', label: 'Paid automatically (autopay)', type: 'checkbox', value: b && b.autopay },
+      { name: 'notes', label: 'Notes', type: 'textarea', value: b && b.notes, placeholder: 'Anything useful. Avoid full account numbers and passwords.' }
+    ],
+    submitLabel: b ? 'Save' : 'Add bill',
+    extra: canSkip ? [{ label: 'Skip this one', onClick: () => { $('#dlg').close(); skipOnce(b); } }] : [],
+    onSubmit: v => {
+      const amount = parseFloat(v.amount);
+      if (!(amount >= 0)) return 'Enter a valid amount.';
+      if (!isISO(v.dueDate)) return 'Pick a valid due date.';
+      const rec = { name: v.name.trim(), amount: Math.round(amount * 100) / 100, dueDate: v.dueDate, frequency: v.frequency, category: v.category, autopay: v.autopay, notes: v.notes.trim() };
+      if (b) {
+        const dateChanged = b.dueDate !== rec.dueDate;
+        Object.assign(b, rec);
+        if (dateChanged) { b.anchorDay = parseISO(rec.dueDate).getDate(); b.active = true; }
+      } else {
+        state.bills.push({ id: uid(), ...rec, anchorDay: parseISO(rec.dueDate).getDate(), active: true, createdAt: Date.now() });
+      }
+      commit();
+    },
+    onDelete: b ? async () => {
+      if (!(await confirmBox(`Delete “${b.name}”?`, 'Its payment history is kept.', 'Delete bill'))) return false;
+      state.bills = state.bills.filter(x => x.id !== b.id);
+      commit(); toast('Bill deleted'); return true;
+    } : null,
+    deleteLabel: 'Delete'
+  });
+}
+
+/* ---- views ---- */
+const view = $('#view');
+let tab = 'due';
+const emptyHTML = () => `<div class="empty"><div class="big">🧾</div><h2>No bills yet</h2>
+  <p>Add each recurring bill once. When you mark one paid, it rolls to its next due date.</p>
+  <button class="btn primary" data-action="add">Add your first bill</button><br>
+  <button class="btn ghost" data-action="restore">Restore from a backup file</button></div>`;
+function storageBannerHTML() {
+  if (saveFailed) return '<div class="banner bad">Couldn’t save to this device’s storage. Back up now so nothing is lost.</div>';
+  if (!db) return '<div class="banner bad">This browser isn’t allowing storage (private mode?). Changes won’t survive closing the app — use Backup often.</div>';
+  return '';
+}
+function nagHTML() {
+  const m = backupNag(state.meta, state.bills.length > 0);
+  return m ? `<div class="banner"><span>${esc(m)}</span><button class="btn small" data-action="tab-backup">Back up</button></div>` : '';
+}
+function dueLabel(b, today) {
+  const diff = daysBetween(today, b.dueDate), when = fmtDate(b.dueDate);
+  if (diff < 0) return { text: `${plural(-diff, 'day')} overdue · was ${when}`, cls: 'bad' };
+  if (diff === 0) return { text: 'Due today', cls: 'warn' };
+  if (diff === 1) return { text: `Due tomorrow · ${when}`, cls: 'warn' };
+  if (diff <= 7) return { text: `Due ${when} · in ${diff} days`, cls: 'warn' };
+  return { text: `Due ${when}`, cls: '' };
+}
+function billRow(b, today) {
+  const L = dueLabel(b, today), id = esc(b.id);
+  return `<li class="row" data-action="edit" data-id="${id}">
+    <div class="row-main"><div class="row-title">${esc(b.name)}${b.autopay ? '<span class="badge acc">Autopay</span>' : ''}</div>
+    <div class="row-sub ${L.cls}">${esc(L.text)}</div></div>
+    <div class="row-amt num">${money(b.amount)}</div>
+    <button type="button" class="btn small primary" data-action="pay" data-id="${id}" aria-label="Mark ${esc(b.name)} paid">Paid</button></li>`;
+}
+function renderDue() {
+  if (!state.bills.length) return storageBannerHTML() + emptyHTML();
+  const today = todayISO(), curYM = today.slice(0, 7), monthEnd = monthEndISO(today);
+  const nextYM = addMonths(curYM + '-01', 1).slice(0, 7);
+  const active = state.bills.filter(b => b.active).sort(byDue);
+  const g = { overdue: [], soon: [], month: [], next: [] };
+  for (const b of active) {
+    const diff = daysBetween(today, b.dueDate), ym = b.dueDate.slice(0, 7);
+    const k = diff < 0 ? 'overdue' : diff <= 7 ? 'soon' : ym === curYM ? 'month' : ym === nextYM ? 'next' : null;
+    if (k) g[k].push(b);
+  }
+  let left = 0;
+  for (const b of active) for (const d of occurrencesUntil(b, monthEnd)) { void d; left += b.amount; }
+  const paidNow = state.history.filter(h => h.status === 'paid' && h.paidOn.slice(0, 7) === curYM).sort((a, b) => b.paidOn.localeCompare(a.paidOn) || b.createdAt - a.createdAt);
+  const paidSum = paidNow.reduce((s, h) => s + h.amount, 0);
+  const monthName = new Date().toLocaleDateString(undefined, { month: 'long' });
+  const sec = (title, arr) => arr.length ? `<div class="sec-h"><span>${title}</span><span class="num">${money(sumAmt(arr))}</span></div><ul class="card list">${arr.map(b => billRow(b, today)).join('')}</ul>` : '';
+  const latest = new Map();
+  for (const h of state.history) { const c = latest.get(h.billId); if (!c || h.createdAt >= c.createdAt) latest.set(h.billId, h); }
+  const paidRow = h => `<li class="row static"><div class="row-main"><div class="row-title">${esc(h.name)}</div><div class="row-sub ok">Paid ${esc(fmtDate(h.paidOn))}</div></div>
+    <div class="row-amt num">${money(h.amount)}</div>${byId(h.billId) && latest.get(h.billId).id === h.id ? `<button type="button" class="btn small" data-action="undo" data-id="${esc(h.id)}">Undo</button>` : ''}</li>`;
+  const anyDue = g.overdue.length + g.soon.length + g.month.length + g.next.length;
+  return storageBannerHTML() + nagHTML() + `
+    <div class="tiles">
+      <div class="card tile"><div class="lbl">Left to pay in ${esc(monthName)}</div><div class="val num">${money(left)}</div></div>
+      <div class="card tile"><div class="lbl">Paid so far</div><div class="val num ok">${money(paidSum)}</div></div>
+      <div class="card tile"><div class="lbl">Overdue</div><div class="val num ${g.overdue.length ? 'bad' : ''}">${g.overdue.length}</div></div>
+    </div>
+    ${sec('Overdue', g.overdue)}${sec('Next 7 days', g.soon)}${sec('Later this month', g.month)}${sec('Next month', g.next)}
+    ${anyDue ? '' : '<div class="card empty"><div class="big">🎉</div><h2>Nothing due soon</h2><p>No bills are due before the end of next month.</p></div>'}
+    ${paidNow.length ? `<div class="sec-h"><span>Paid in ${esc(monthName)}</span><span class="num">${money(paidSum)}</span></div><ul class="card list">${paidNow.map(paidRow).join('')}</ul>` : ''}`;
+}
+function renderAll() {
+  if (!state.bills.length) return storageBannerHTML() + emptyHTML();
+  const act = state.bills.filter(b => b.active).sort(byDue), done = state.bills.filter(b => !b.active).sort(byDue);
+  let perYear = 0;
+  for (const b of act) perYear += b.amount * PER_YEAR[b.frequency];
+  const row = b => `<li class="row ${b.active ? '' : 'faded'}" data-action="edit" data-id="${esc(b.id)}">
+    <div class="row-main"><div class="row-title">${esc(b.name)}${b.autopay ? '<span class="badge acc">Autopay</span>' : ''}</div>
+    <div class="row-sub">${esc(FREQ_LABEL[b.frequency])}${b.category ? ' · ' + esc(b.category) : ''} · ${b.active ? 'next ' + esc(fmtDate(b.dueDate)) : 'completed'}</div></div>
+    <div class="row-amt num">${money(b.amount)}</div></li>`;
+  return storageBannerHTML() + nagHTML() + `
+    <div class="tiles" style="grid-template-columns:1fr 1fr">
+      <div class="card tile"><div class="lbl">Average per month</div><div class="val num">${money(perYear / 12)}</div></div>
+      <div class="card tile"><div class="lbl">Per year</div><div class="val num">${money(perYear)}</div></div>
+    </div>
+    <p class="hint" style="margin:-4px 4px 10px">Totals cover repeating bills only; one-time bills are left out.</p>
+    ${act.length ? `<ul class="card list">${act.map(row).join('')}</ul>` : ''}
+    ${done.length ? `<div class="sec-h"><span>Completed one-time bills</span></div><ul class="card list">${done.map(row).join('')}</ul>` : ''}`;
+}
+function renderHistory() {
+  if (!state.history.length) return storageBannerHTML() + '<div class="empty"><div class="big">✅</div><h2>No payments recorded yet</h2><p>When you mark a bill paid it shows up here.</p></div>';
+  const rows = [...state.history].sort((a, b) => b.paidOn.localeCompare(a.paidOn) || b.createdAt - a.createdAt);
+  const latest = new Map();
+  for (const h of state.history) { const c = latest.get(h.billId); if (!c || h.createdAt >= c.createdAt) latest.set(h.billId, h); }
+  const groups = new Map();
+  for (const h of rows) { const k = h.paidOn.slice(0, 7); if (!groups.has(k)) groups.set(k, []); groups.get(k).push(h); }
+  let html = storageBannerHTML();
+  for (const [ym, arr] of groups) {
+    const label = parseISO(ym + '-01').toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+    const total = arr.filter(h => h.status === 'paid').reduce((s, h) => s + h.amount, 0);
+    html += `<div class="sec-h"><span>${esc(label)}</span><span class="num">${money(total)}</span></div><ul class="card list">` + arr.map(h => `
+      <li class="row static ${h.status === 'skipped' ? 'faded' : ''}"><div class="row-main"><div class="row-title">${esc(h.name)}${h.status === 'skipped' ? '<span class="badge">Skipped</span>' : ''}</div>
+      <div class="row-sub">${h.status === 'skipped' ? 'Skipped' : 'Paid'} ${esc(fmtDate(h.paidOn))} · was due ${esc(fmtDate(h.dueDate))}</div></div>
+      <div class="row-amt num">${h.status === 'skipped' ? '—' : money(h.amount)}</div>
+      ${byId(h.billId) && latest.get(h.billId).id === h.id ? `<button type="button" class="btn small" data-action="undo" data-id="${esc(h.id)}">Undo</button>` : ''}</li>`).join('') + '</ul>';
+  }
+  return html;
+}
+function renderBackup() {
+  const last = state.meta.lastBackup ? `Last backup: ${esc(fmtDateTime(state.meta.lastBackup))}.` : 'No backup made yet.';
+  const canEncrypt = !!(window.crypto && crypto.subtle);
+  return storageBannerHTML() + installCardHTML() + `<div class="stack">
+    <section class="card pad"><h3>Back up</h3>
+      <p class="muted">${last}</p>
+      <p>Saves one file with all your bills and payment history. On iPhone it opens the share sheet — save it to Files or OneDrive. <b>Never put this file in your GitHub repo.</b></p>
+      ${canEncrypt ? `<div class="field"><label for="bkPass">Passphrase (optional — encrypts the file)</label><input id="bkPass" type="password" autocomplete="new-password"></div>
+      <div class="field" style="margin-top:8px"><label for="bkPass2">Repeat passphrase</label><input id="bkPass2" type="password" autocomplete="new-password"></div>
+      <p class="hint">If you set one, the file can’t be opened without it — not even by me.</p>` : ''}
+      <button type="button" class="btn primary block" style="margin-top:12px" data-action="export">Back up now</button></section>
+    <section class="card pad"><h3>Restore</h3><p>Pick a backup file made by this app. You’ll choose whether to replace what’s here or merge it in.</p>
+      <button type="button" class="btn block" data-action="restore">Choose backup file…</button></section>
+    <section class="card pad"><h3>Use in Excel</h3><p>Payment history as a CSV file.</p>
+      <button type="button" class="btn block" data-action="csv">Export history (CSV)</button></section>
+    <section class="card pad"><h3>Danger zone</h3><p>Erases all bills and history on this device.</p>
+      <button type="button" class="btn danger block" data-action="wipe">Erase everything on this device</button></section>
+    <p class="hint" style="text-align:center">Your data lives only on this device. Nothing is sent anywhere.</p></div>`;
+}
+function render() {
+  const y = window.scrollY;
+  view.innerHTML = { due: renderDue, all: renderAll, history: renderHistory, backup: renderBackup }[tab]();
+  $$('nav.tabs button').forEach(b => b.setAttribute('aria-current', b.dataset.tab === tab ? 'page' : 'false'));
+  $('#addBtn').classList.toggle('hide', !(tab === 'due' || tab === 'all'));
+  $('#title').textContent = { due: 'Bills due', all: 'All bills', history: 'Payment history', backup: 'Backup & restore' }[tab];
+  $('#sub').textContent = new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+  window.scrollTo(0, y);
+}
+function go(t) { tab = t; render(); window.scrollTo(0, 0); }
+
+/* ---- backup / restore ---- */
+async function doExport() {
+  const pass = ($('#bkPass') || {}).value || '', pass2 = ($('#bkPass2') || {}).value || '';
+  if (pass) {
+    if (pass.length < 8) return toast('Use at least 8 characters for the passphrase.');
+    if (pass !== pass2) return toast('The two passphrases don’t match.');
+  }
+  const btn = $('[data-action="export"]'); if (btn) btn.disabled = true;
+  try {
+    const text = await Backup.build({ appId: APP_ID, schema: SCHEMA, data: exportData(), passphrase: pass || null });
+    const r = await deliverFile(`goobs-bills-backup-${todayISO()}${pass ? '-encrypted' : ''}.json`, text, 'application/json');
+    if (r !== 'cancelled') {
+      state.meta.lastBackup = new Date().toISOString();
+      await persist({ touch: false });
+      render();
+      toast(r === 'shared' ? 'Backup shared' : 'Backup saved to your downloads');
+    }
+  } catch (e) { toast('Backup failed: ' + e.message); }
+  finally { const b2 = $('[data-action="export"]'); if (b2) b2.disabled = false; }
+}
+async function restoreFromText(text) {
+  let parsed;
+  try { parsed = await Backup.parse(text, { appId: APP_ID, schema: SCHEMA }); }
+  catch (e) { await msgBox('Can’t restore that file', e.message); return false; }
+  if (!parsed) return false;
+  const { data, dropped } = normalizeData(parsed.data);
+  if (!data.bills.length && !data.history.length) { await msgBox('Nothing to restore', 'That backup has no bills or history in it.'); return false; }
+  const hasLocal = state.bills.length > 0 || state.history.length > 0;
+  const sum = `${plural(data.bills.length, 'bill')} and ${plural(data.history.length, 'payment record')}`;
+  const when = parsed.exportedAt ? ` Backup made ${fmtDateTime(parsed.exportedAt)}.` : '';
+  const skipped = dropped ? ` ${plural(dropped, 'unreadable item')} will be skipped.` : '';
+  const body = `<p>${esc(sum + '.' + when + skipped)}</p>` + (hasLocal ? '<p class="muted"><b>Replace all</b> swaps everything here for the backup. <b>Merge</b> adds what isn’t here yet and keeps the rest.</p>' : '');
+  const choice = await askDialog({
+    title: 'Restore this backup?', body,
+    buttons: hasLocal
+      ? [{ label: 'Cancel', value: 'cancel' }, { label: 'Merge', value: 'merge' }, { label: 'Replace all', value: 'replace', kind: 'danger' }]
+      : [{ label: 'Cancel', value: 'cancel' }, { label: 'Restore', value: 'replace', kind: 'primary' }]
+  });
+  if (choice === 'replace') {
+    const ts = parsed.exportedAt && !isNaN(Date.parse(parsed.exportedAt)) ? parsed.exportedAt : new Date().toISOString();
+    state.bills = data.bills; state.history = data.history;
+    state.meta.lastBackup = ts; state.meta.lastChange = ts;
+    await persist({ touch: false });
+    render(); toast(`Restored ${sum}`); return true;
+  }
+  if (choice === 'merge') {
+    const ids = new Set(state.bills.map(b => b.id)), hids = new Set(state.history.map(h => h.id));
+    let nb = 0, nh = 0;
+    for (const b of data.bills) if (!ids.has(b.id)) { state.bills.push(b); nb++; }
+    for (const h of data.history) if (!hids.has(h.id)) { state.history.push(h); nh++; }
+    await persist(); render(); toast(`Merged in ${plural(nb, 'bill')} and ${plural(nh, 'payment record')}`); return true;
+  }
+  return false;
+}
+async function doRestore() {
+  const f = await pickFile(); if (!f) return;
+  let text;
+  try { text = await readFileText(f); } catch { await msgBox('Couldn’t read that file', 'Try choosing it again.'); return; }
+  await restoreFromText(text);
+}
+async function doCsv() {
+  if (!state.history.length) return toast('No payment history to export yet.');
+  const rows = [['Paid on', 'Bill', 'Due date', 'Amount', 'Status'], ...[...state.history].sort((a, b) => a.paidOn.localeCompare(b.paidOn)).map(h => [h.paidOn, h.name, h.dueDate, h.status === 'paid' ? h.amount.toFixed(2) : '', h.status])];
+  const csv = '﻿' + rows.map(r => r.map(csvCell).join(',')).join('\r\n');
+  const r = await deliverFile(`bills-history-${todayISO()}.csv`, csv, 'text/csv');
+  if (r !== 'cancelled') toast(r === 'shared' ? 'CSV shared' : 'CSV saved to your downloads');
+}
+async function doWipe() {
+  if (!(await confirmBox('Erase everything?', 'This permanently deletes all bills and payment history on this device. Make a backup first if you might want them.', 'Erase everything'))) return;
+  state = defaultState();
+  await persist({ touch: false });
+  render(); toast('Everything erased');
+}
+
+/* ---- wiring ---- */
+view.addEventListener('click', e => {
+  const el = e.target.closest('[data-action]');
+  if (!el) return;
+  const id = el.dataset.id;
+  switch (el.dataset.action) {
+    case 'add': billDialog(); break;
+    case 'edit': billDialog(id); break;
+    case 'pay': payDialog(id); break;
+    case 'undo': undoEntry(id); break;
+    case 'tab-backup': go('backup'); break;
+    case 'export': doExport(); break;
+    case 'restore': doRestore(); break;
+    case 'csv': doCsv(); break;
+    case 'wipe': doWipe(); break;
+    case 'install': runInstall(); break;
+  }
+});
+$('#addBtn').onclick = () => billDialog();
+$$('nav.tabs button').forEach(b => { b.onclick = () => go(b.dataset.tab); });
+document.addEventListener('visibilitychange', () => { if (!document.hidden && !$('dialog[open]')) render(); });
+
+(async function init() {
+  try { db = await openDB(DB_NAME); } catch (e) { console.error(e); db = null; }
+  if (db) {
+    try {
+      const raw = await idbGet(db, 'state');
+      if (raw) {
+        try { state = loadState(JSON.parse(raw)); }
+        catch (e) { console.error(e); await idbPut(db, 'state-damaged-' + Date.now(), raw); toast('Saved data looked damaged — a copy was kept aside.'); }
+      }
+    } catch (e) { console.error(e); db = null; }
+  }
+  render();
+})();
+</script>
+</body>
+</html>

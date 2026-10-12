@@ -1,0 +1,1247 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Trips</title>
+<meta name="description" content="Plan trips: packing lists, itinerary, budget, ideas and weather.">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#f4f6f8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0d1215" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Trips">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<style>
+:root{
+  --bg:#f5f4ef; --card:#ffffff; --ink:#1b2420; --muted:#66736d; --line:#e2e0d6; --soft:#efede5;
+  --accent:#0f766e; --accent-ink:#ffffff; --accent-soft:#d9f0ec;
+  --bad:#b42318; --bad-soft:#fde8e6; --warn:#9a5b00; --warn-soft:#fdf0d5; --ok:#166534; --ok-soft:#dcf5e3;
+  --radius:14px; --shadow:0 1px 2px rgba(16,24,20,.06),0 6px 18px rgba(16,24,20,.06);
+  color-scheme:light dark;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0e1311; --card:#171f1c; --ink:#e7eeeb; --muted:#97a69f; --line:#27332e; --soft:#1e2824;
+    --accent:#2dd4bf; --accent-ink:#06211d; --accent-soft:#12332e;
+    --bad:#ff8a80; --bad-soft:#3a1a18; --warn:#f6c26b; --warn-soft:#3a2c12; --ok:#7ee2a0; --ok-soft:#14301f;
+    --shadow:none;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation;
+  padding-bottom:calc(92px + env(safe-area-inset-bottom));
+}
+a{color:var(--accent)}
+h1,h2,h3{margin:0;line-height:1.2}
+h3{font-size:16px}
+p{margin:0 0 8px}
+.wrap{max-width:720px;margin:0 auto;padding:0 16px}
+.muted{color:var(--muted)} .bad{color:var(--bad)} .warn{color:var(--warn)} .ok{color:var(--ok)}
+.num{font-variant-numeric:tabular-nums}
+.hide{display:none!important}
+.pad{padding:14px 16px}
+.hint{font-size:13px;color:var(--muted);margin-top:4px}
+
+/* header */
+header.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top)}
+header.top .wrap{display:flex;align-items:center;gap:12px;min-height:58px}
+header.top .grow{flex:1;min-width:0}
+header.top h1{font-size:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+header.top .sub{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.back{display:inline-flex;align-items:center;min-height:44px;padding-right:6px;text-decoration:none;font-weight:600}
+
+/* cards, tiles, lists */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+.tile{padding:12px}
+.tile .lbl{font-size:12px;color:var(--muted);font-weight:600}
+.tile .val{font-size:20px;font-weight:700;margin-top:2px}
+.sec-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin:22px 4px 8px;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700}
+.sec-h .btn{text-transform:none;letter-spacing:0}
+.list{list-style:none;margin:0;padding:0}
+.row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-top:1px solid var(--line);cursor:pointer}
+.row:first-child{border-top:0}
+.row.static{cursor:default}
+.row-main{flex:1;min-width:0}
+.row-title{font-weight:600;overflow-wrap:anywhere}
+.row-sub{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.row-amt{font-weight:700;white-space:nowrap}
+.row.faded{opacity:.6}
+.badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 7px;border-radius:999px;background:var(--soft);color:var(--muted);vertical-align:middle;margin-left:6px}
+.badge.ok{background:var(--ok-soft);color:var(--ok)} .badge.warn{background:var(--warn-soft);color:var(--warn)} .badge.bad{background:var(--bad-soft);color:var(--bad)} .badge.acc{background:var(--accent-soft);color:var(--accent)}
+.empty{text-align:center;padding:40px 20px;color:var(--muted)}
+.empty .big{font-size:40px;line-height:1;margin-bottom:10px}
+.empty h2{color:var(--ink);font-size:18px;margin-bottom:6px}
+.empty .btn{margin-top:14px}
+.banner{padding:12px 14px;border-radius:12px;background:var(--warn-soft);color:var(--warn);font-size:14px;margin:14px 0;display:flex;gap:10px;justify-content:space-between;align-items:center}
+.banner.bad{background:var(--bad-soft);color:var(--bad)}
+.bar{height:8px;border-radius:99px;background:var(--soft);overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--accent);border-radius:99px}
+.bar.over>i{background:var(--bad)}
+
+/* buttons */
+.btn{white-space:nowrap;appearance:none;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-weight:600;min-height:44px;padding:0 16px;border-radius:12px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.danger{color:var(--bad)}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--accent)}
+.btn.small{min-height:36px;padding:0 12px;font-size:14px;border-radius:10px}
+.btn.block{width:100%}
+.btn:active{transform:translateY(1px)}
+.btn:disabled{opacity:.5;cursor:default}
+.btn:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible,.chip:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 14px;min-height:36px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+
+/* bottom nav + fab */
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+nav.tabs .wrap{display:flex;padding:0}
+nav.tabs a,nav.tabs button{flex:1;min-height:58px;border:0;background:none;color:var(--muted);font:inherit;font-size:11px;font-weight:600;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;text-decoration:none}
+nav.tabs .ico{font-size:20px;line-height:1}
+nav.tabs [aria-current="page"]{color:var(--accent)}
+.fab{position:fixed;right:max(16px,calc(50vw - 344px));bottom:calc(74px + env(safe-area-inset-bottom));z-index:7;width:56px;height:56px;border-radius:50%;border:0;background:var(--accent);color:var(--accent-ink);font-size:30px;line-height:1;box-shadow:0 6px 18px rgba(0,0,0,.28);cursor:pointer}
+.fab:active{transform:scale(.96)}
+
+/* forms + dialogs */
+input,select,textarea{width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-height:44px}
+textarea{min-height:92px;resize:vertical}
+input[type=checkbox]{width:22px;height:22px;min-height:0;padding:0;accent-color:var(--accent);flex:none}
+.field label{display:block;font-size:13px;font-weight:600;color:var(--muted);margin-bottom:4px}
+.field.check{display:flex;align-items:center;gap:10px}
+.field.check label{margin:0;color:var(--ink);font-size:16px;font-weight:500}
+.fields2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+dialog{border:0;border-radius:18px;padding:0;width:calc(100vw - 24px);max-width:520px;background:var(--card);color:var(--ink);box-shadow:0 20px 60px rgba(0,0,0,.35)}
+dialog::backdrop{background:rgba(10,15,12,.55)}
+.dlg-form{padding:20px;display:flex;flex-direction:column;gap:12px;max-height:85vh;max-height:85dvh;overflow:auto}
+.dlg-form h2{font-size:19px}
+.dlg-actions{display:flex;gap:8px;align-items:center;margin-top:6px;flex-wrap:wrap}
+.dlg-actions .spacer{flex:1}
+.ask-actions{justify-content:flex-end}
+.dlg-err{color:var(--bad);font-size:14px}
+.dlg-err:empty{display:none}
+.ask-body{font-size:15px;color:var(--ink)}
+.ask-body p{margin:0 0 8px}
+.checkgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px}
+.checkgrid .field.check label{font-size:15px}
+
+/* toast */
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom));background:#1b2420;color:#fff;padding:12px 16px;border-radius:12px;display:flex;gap:14px;align-items:center;z-index:60;max-width:calc(100vw - 24px);box-shadow:0 8px 24px rgba(0,0,0,.35);font-size:15px}
+.toast button{background:none;border:0;color:#7dd3c8;font:inherit;font-weight:700;cursor:pointer;min-height:36px}
+
+@media (prefers-reduced-motion:no-preference){.btn,.fab{transition:transform .08s}}
+
+:root{--bg:#f4f6f8;--accent:#0369a1;--accent-soft:#dbeefa;--line:#dde3e8;--soft:#e9eef2}
+@media (prefers-color-scheme:dark){:root{--bg:#0d1215;--card:#161e23;--line:#25323a;--soft:#1d272d;--accent:#38bdf8;--accent-ink:#04202f;--accent-soft:#0f2f42}}
+.addrow{display:flex;gap:8px;align-items:center}
+.addrow input{flex:1;min-width:0}
+.addrow select{width:auto;max-width:44%}
+.tripcard{display:block;padding:14px 16px;text-decoration:none;color:inherit;margin-bottom:12px}
+.tc-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+a.tile{display:block;text-decoration:none;color:inherit}
+.check-row{display:flex;align-items:center;gap:12px;flex:1;min-width:0;cursor:pointer;min-height:44px;overflow-wrap:anywhere}
+.done{text-decoration:line-through;color:var(--muted)}
+.hero{text-align:center;margin-top:14px;padding:22px 16px}
+.hero .big{font-size:46px;font-weight:800;line-height:1;color:var(--accent)}
+.hero .lbl{color:var(--muted);font-weight:600;margin-top:4px}
+.time{width:48px;flex:none;font-size:13px;font-weight:700;color:var(--muted)}
+.wx{font-size:13px;font-weight:600;color:var(--muted);text-transform:none;letter-spacing:0}
+.wxrow .emoji{font-size:26px;width:40px;text-align:center;flex:none}
+.checkgrid .field:first-child{grid-column:1/-1}
+.catline{margin:12px 0}
+.catline .top{display:flex;justify-content:space-between;font-size:14px;margin-bottom:4px}
+.linkrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.pad-b{padding-bottom:6px}
+.stack{display:flex;flex-direction:column;gap:14px;margin-top:14px}
+.row .btn{flex:none}
+textarea.notes{min-height:120px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+'use strict';
+/* ===================== shared helpers (identical in every Goobs app) ===================== */
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => Array.from(el.querySelectorAll(s));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const isNum = v => typeof v === 'number' && Number.isFinite(v);
+const str = v => (typeof v === 'string' ? v : v == null ? '' : String(v));
+
+/* ---- dates: always local calendar dates stored as 'YYYY-MM-DD' ---- */
+const pad = n => String(n).padStart(2, '0');
+const fmtISO = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const parseISO = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+const isISO = s => typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s) && fmtISO(parseISO(s)) === s;
+const todayISO = () => fmtISO(new Date());
+const daysBetween = (a, b) => Math.round((parseISO(b) - parseISO(a)) / 86400000);
+const addDays = (s, n) => { const d = parseISO(s); d.setDate(d.getDate() + n); return fmtISO(d); };
+function addMonths(s, n, anchorDay) {
+  const d = parseISO(s);
+  const day = anchorDay || d.getDate();
+  const first = new Date(d.getFullYear(), d.getMonth() + n, 1);
+  const last = new Date(first.getFullYear(), first.getMonth() + 1, 0).getDate();
+  first.setDate(Math.min(day, last));
+  return fmtISO(first);
+}
+const monthEndISO = s => { const d = parseISO(s); return fmtISO(new Date(d.getFullYear(), d.getMonth() + 1, 0)); };
+
+function fmtDate(s, withWeekday = true) {
+  const d = parseISO(s);
+  const o = { month: 'short', day: 'numeric' };
+  if (withWeekday) o.weekday = 'short';
+  if (d.getFullYear() !== new Date().getFullYear()) o.year = 'numeric';
+  return d.toLocaleDateString(undefined, o);
+}
+function fmtDateTime(iso) {
+  const d = new Date(iso);
+  return isNaN(d) ? 'unknown date' : d.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+}
+const _mf = {};
+function money(n, cur = 'USD') {
+  if (!_mf[cur]) {
+    try { _mf[cur] = new Intl.NumberFormat(undefined, { style: 'currency', currency: cur }); }
+    catch { _mf[cur] = new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }); }
+  }
+  return _mf[cur].format(n);
+}
+const csvCell = v => {
+  let s = String(v ?? '');
+  if (/^[=+\-@\t\r]/.test(s)) s = "'" + s; // neutralise spreadsheet formula injection
+  return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+};
+function safeUrl(u) {
+  let s = String(u ?? '').trim();
+  if (!s) return '';
+  if (!/^[a-z][a-z0-9+.-]*:/i.test(s)) s = 'https://' + s;
+  try { const x = new URL(s); return /^https?:$/.test(x.protocol) ? x.href : ''; } catch { return ''; }
+}
+
+/* ---- storage: one JSON string under one key in IndexedDB ---- */
+function openDB(name) {
+  return new Promise((res, rej) => {
+    if (!window.indexedDB) return rej(new Error('IndexedDB unavailable'));
+    const r = indexedDB.open(name, 1);
+    r.onupgradeneeded = () => { r.result.createObjectStore('kv'); };
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+    r.onblocked = () => rej(new Error('Database blocked'));
+  });
+}
+function idbGet(db, key) {
+  return new Promise((res, rej) => {
+    const q = db.transaction('kv').objectStore('kv').get(key);
+    q.onsuccess = () => res(q.result);
+    q.onerror = () => rej(q.error);
+  });
+}
+function idbPut(db, key, val) {
+  return new Promise((res, rej) => {
+    const tx = db.transaction('kv', 'readwrite');
+    tx.objectStore('kv').put(val, key);
+    tx.oncomplete = () => res();
+    tx.onerror = () => rej(tx.error);
+    tx.onabort = () => rej(tx.error || new Error('Write aborted'));
+  });
+}
+
+/* ---- toast ---- */
+function toast(msg, action) {
+  const old = $('.toast'); if (old) old.remove();
+  const t = document.createElement('div');
+  t.className = 'toast'; t.setAttribute('role', 'status');
+  t.innerHTML = `<span>${esc(msg)}</span>` + (action ? `<button type="button">${esc(action.label)}</button>` : '');
+  if (action) t.querySelector('button').onclick = () => { t.remove(); action.fn(); };
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), action ? 8000 : 3200);
+}
+
+/* ---- dialogs ---- */
+if (!$('#dlg')) document.body.insertAdjacentHTML('beforeend', '<dialog id="dlg"></dialog><dialog id="ask"></dialog>');
+{
+  const dlg = $('#dlg'); let down = false;
+  dlg.addEventListener('pointerdown', e => { down = e.target === dlg; });
+  dlg.addEventListener('click', e => { if (e.target === dlg && down) dlg.close(); });
+}
+
+function fieldHTML(f) {
+  const id = 'f_' + f.name, v = f.value ?? '';
+  if (f.type === 'checkbox')
+    return `<div class="field check"><input type="checkbox" id="${id}" name="${f.name}"${f.value ? ' checked' : ''}><label for="${id}">${esc(f.label)}</label></div>`;
+  let ctl;
+  if (f.type === 'select') {
+    ctl = `<select id="${id}" name="${f.name}">${f.options.map(o => {
+      const [val, label] = Array.isArray(o) ? o : [o, o];
+      return `<option value="${esc(val)}"${String(val) === String(v) ? ' selected' : ''}>${esc(label)}</option>`;
+    }).join('')}</select>`;
+  } else if (f.type === 'textarea') {
+    ctl = `<textarea id="${id}" name="${f.name}" placeholder="${esc(f.placeholder || '')}">${esc(v)}</textarea>`;
+  } else {
+    const t = f.type || 'text';
+    const extra = t === 'number' ? ` inputmode="decimal" step="${f.step || 'any'}"` : '';
+    ctl = `<input id="${id}" name="${f.name}" type="${t}" value="${esc(v)}" placeholder="${esc(f.placeholder || '')}"${extra}${f.min != null ? ` min="${f.min}"` : ''}${f.max != null ? ` max="${f.max}"` : ''} autocomplete="off" autocapitalize="${f.capitalize || 'sentences'}">`;
+  }
+  return `<div class="field"><label for="${id}">${esc(f.label)}${f.required ? ' *' : ''}</label>${ctl}${f.hint ? `<div class="hint">${esc(f.hint)}</div>` : ''}</div>`;
+}
+
+/* formDialog: fields -> values. onSubmit(values) may return an error string (keeps dialog open).
+   onDelete() may return true to close. extra: [{label, kind, onClick}] extra buttons. */
+function formDialog({ title, intro = '', fields, submitLabel = 'Save', onSubmit, onDelete, deleteLabel = 'Delete', extra = [], onClose, grid = '' }) {
+  const dlg = $('#dlg');
+  const body = grid ? `<div class="${grid}">${fields.map(fieldHTML).join('')}</div>` : fields.map(fieldHTML).join('');
+  dlg.innerHTML = `<form class="dlg-form" novalidate>
+    <h2>${esc(title)}</h2>${intro ? `<p class="muted">${esc(intro)}</p>` : ''}${body}
+    <div class="dlg-err" role="alert"></div>
+    <div class="dlg-actions">
+      ${onDelete ? `<button type="button" class="btn danger" data-k="del">${esc(deleteLabel)}</button>` : ''}
+      ${extra.map((x, i) => `<button type="button" class="btn ${x.kind || ''}" data-x="${i}">${esc(x.label)}</button>`).join('')}
+      <span class="spacer"></span>
+      <button type="button" class="btn ghost" data-k="cancel">Cancel</button>
+      <button type="submit" class="btn primary">${esc(submitLabel)}</button>
+    </div></form>`;
+  const form = $('form', dlg), err = $('.dlg-err', dlg);
+  const collect = () => {
+    const vals = {};
+    for (const f of fields) { const el = form.elements[f.name]; vals[f.name] = f.type === 'checkbox' ? el.checked : el.value; }
+    return vals;
+  };
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const vals = collect();
+    for (const f of fields) if (f.required && !String(vals[f.name]).trim()) { err.textContent = `${f.label} is required.`; return; }
+    err.textContent = '';
+    let msg;
+    try { msg = await onSubmit(vals); } catch (ex) { msg = ex.message || 'Something went wrong.'; }
+    if (msg) err.textContent = msg; else dlg.close();
+  });
+  $('[data-k="cancel"]', dlg).onclick = () => dlg.close();
+  if (onDelete) $('[data-k="del"]', dlg).onclick = async () => { if (await onDelete()) dlg.close(); };
+  $$('[data-x]', dlg).forEach(b => { b.onclick = () => extra[+b.dataset.x].onClick(collect()); });
+  dlg.onclose = () => { dlg.onclose = null; if (onClose) onClose(); };
+  dlg.showModal();
+  const first = form.querySelector('input:not([type=checkbox]),textarea');
+  if (first && !first.value) first.focus(); // new-item forms open ready to type; edit forms don't pop the keyboard
+}
+
+function askDialog({ title, body = '', buttons }) {
+  return new Promise(resolve => {
+    const d = $('#ask'); let done = false;
+    d.innerHTML = `<div class="dlg-form"><h2>${esc(title)}</h2>${body ? `<div class="ask-body">${body}</div>` : ''}
+      <div class="dlg-actions ask-actions">${buttons.map((b, i) => `<button type="button" class="btn ${b.kind || ''}" data-i="${i}">${esc(b.label)}</button>`).join('')}</div></div>`;
+    const finish = v => { if (done) return; done = true; d.close(); resolve(v); };
+    $$('button', d).forEach(btn => { btn.onclick = () => finish(buttons[+btn.dataset.i].value); });
+    d.oncancel = () => { done = true; resolve(undefined); };
+    d.showModal();
+  });
+}
+const confirmBox = async (title, bodyText, okLabel = 'Delete', danger = true) =>
+  (await askDialog({ title, body: bodyText ? `<p>${esc(bodyText)}</p>` : '', buttons: [{ label: 'Cancel', value: false }, { label: okLabel, value: true, kind: danger ? 'danger' : 'primary' }] })) === true;
+const msgBox = (title, bodyText) =>
+  askDialog({ title, body: `<p>${esc(bodyText)}</p>`, buttons: [{ label: 'OK', value: true, kind: 'primary' }] });
+
+/* ---- backup: optional AES-GCM passphrase encryption (Web Crypto, PBKDF2-SHA256) ---- */
+const b64 = buf => { let s = ''; const b = new Uint8Array(buf); for (let i = 0; i < b.length; i += 0x8000) s += String.fromCharCode.apply(null, b.subarray(i, i + 0x8000)); return btoa(s); };
+const unb64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+async function deriveKey(pass, salt, iterations) {
+  const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(pass), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey({ name: 'PBKDF2', salt, iterations, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+}
+async function encryptPayload(obj, pass) {
+  const salt = crypto.getRandomValues(new Uint8Array(16)), iv = crypto.getRandomValues(new Uint8Array(12));
+  const iterations = 250000;
+  const key = await deriveKey(pass, salt, iterations);
+  const ct = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, new TextEncoder().encode(JSON.stringify(obj)));
+  return { encrypted: true, kdf: 'PBKDF2-SHA256', iterations, salt: b64(salt), iv: b64(iv), data: b64(ct) };
+}
+async function decryptPayload(env, pass) {
+  const key = await deriveKey(pass, unb64(env.salt), env.iterations);
+  try {
+    const pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: unb64(env.iv) }, key, unb64(env.data));
+    return JSON.parse(new TextDecoder().decode(pt));
+  } catch { throw new Error('Wrong passphrase, or the file is damaged.'); }
+}
+function promptDecrypt(env) {
+  return new Promise(resolve => {
+    let result = null;
+    formDialog({
+      title: 'Encrypted backup', intro: 'Enter the passphrase you chose when you made this backup.',
+      fields: [{ name: 'pass', label: 'Passphrase', type: 'password', required: true }], submitLabel: 'Unlock',
+      onSubmit: async v => { try { result = await decryptPayload(env, v.pass); } catch (e) { return e.message; } },
+      onClose: () => resolve(result)
+    });
+  });
+}
+const Backup = {
+  async build({ appId, schema, data, passphrase }) {
+    const head = { app: appId, schemaVersion: schema, exportedAt: new Date().toISOString() };
+    if (passphrase) return JSON.stringify({ ...head, ...(await encryptPayload(data, passphrase)) });
+    return JSON.stringify({ ...head, encrypted: false, data }, null, 2);
+  },
+  /* returns {data, exportedAt, schemaVersion}, or null if the user cancelled the passphrase prompt; throws Error with a friendly message */
+  async parse(text, { appId, schema }) {
+    let env;
+    try { env = JSON.parse(text); } catch { throw new Error('That file isn’t a valid backup (it isn’t JSON).'); }
+    if (!env || typeof env !== 'object' || env.app !== appId)
+      throw new Error(env && typeof env === 'object' && env.app ? `That backup belongs to a different app (${String(env.app).slice(0, 40)}).` : 'That file isn’t a backup from this app.');
+    if (!Number.isInteger(env.schemaVersion) || env.schemaVersion < 1) throw new Error('The backup is missing its version number.');
+    if (env.schemaVersion > schema) throw new Error('That backup was made by a newer version of the app. Close and reopen this app to update it, then try again.');
+    let data;
+    if (env.encrypted) {
+      if (!(window.crypto && crypto.subtle)) throw new Error('Encrypted backups need a secure (https) connection.');
+      if (!(env.iterations >= 1000 && env.iterations <= 2000000) || typeof env.salt !== 'string' || typeof env.iv !== 'string' || typeof env.data !== 'string')
+        throw new Error('The encrypted backup is damaged.');
+      data = await promptDecrypt(env);
+      if (data === null) return null;
+    } else data = env.data;
+    if (!data || typeof data !== 'object') throw new Error('The backup contains no data.');
+    return { data, exportedAt: typeof env.exportedAt === 'string' ? env.exportedAt : null, schemaVersion: env.schemaVersion };
+  }
+};
+
+/* share sheet when the platform supports sharing files (iPhone), otherwise a normal download */
+async function deliverFile(filename, text, mime = 'application/json') {
+  const file = new File([text], filename, { type: mime });
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try { await navigator.share({ files: [file], title: filename }); return 'shared'; }
+    catch (e) { if (e && e.name === 'AbortError') return 'cancelled'; /* otherwise fall back to a download */ }
+  }
+  const url = URL.createObjectURL(file);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.style.display = 'none';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 15000);
+  return 'downloaded';
+}
+function pickFile(accept = '.json,application/json') {
+  return new Promise(resolve => {
+    const i = document.createElement('input');
+    i.type = 'file'; i.accept = accept; i.style.display = 'none';
+    document.body.appendChild(i);
+    let done = false;
+    const fin = f => { if (done) return; done = true; i.remove(); resolve(f); };
+    i.addEventListener('change', () => fin((i.files && i.files[0]) || null));
+    i.addEventListener('cancel', () => fin(null));
+    i.click();
+  });
+}
+const readFileText = f => (f.text ? f.text() : new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = () => rej(r.error); r.readAsText(f); }));
+
+/* nag banner: only when there is data and no recent backup */
+function backupNag(meta, hasData) {
+  if (!hasData) return null;
+  if (!meta.lastBackup) return 'You have data but no backup yet. Make one so you can restore it if this device loses it.';
+  const age = (Date.now() - Date.parse(meta.lastBackup)) / 86400000;
+  const changed = meta.lastChange && Date.parse(meta.lastChange) > Date.parse(meta.lastBackup) + 1000;
+  if (changed && age >= 7) return `Your last backup was ${Math.floor(age)} days ago and you’ve made changes since.`;
+  return null;
+}
+
+/* ---- install helper ---- */
+let deferredInstall = null;
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferredInstall = e; if (typeof render === 'function') render(); });
+const isStandalone = () => (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+function installCardHTML() {
+  if (isStandalone()) return '';
+  const ios = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const msg = deferredInstall
+    ? '<p>Install it for its own window and full offline use.</p><button class="btn primary" data-action="install">Install app</button>'
+    : ios
+      ? '<p>In Safari tap <b>Share</b> → <b>Add to Home Screen</b>. <b>Do this before entering data</b> — the home-screen app keeps its own separate storage from the Safari tab. Then open it from the new icon.</p>'
+      : '<p>Use your browser’s menu → <b>Install app</b> (or <b>Add to Home Screen</b>).</p>';
+  return `<section class="card pad"><h3>Install on this device</h3>${msg}</section>`;
+}
+async function runInstall() { if (!deferredInstall) return; deferredInstall.prompt(); try { await deferredInstall.userChoice; } catch {} deferredInstall = null; if (typeof render === 'function') render(); }
+
+if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol))
+  window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
+
+
+/* ===================== Trips app ===================== */
+const APP_ID = 'goobs-travel', DB_NAME = 'goobs-travel-db', SCHEMA = 1;
+const PACK_CATS = ['Clothing', 'Toiletries', 'Electronics', 'Documents', 'Health', 'Gear', 'Other'];
+const BUDGET_CATS = ['Flights', 'Lodging', 'Food & drink', 'Transport', 'Activities', 'Shopping', 'Insurance', 'Other'];
+const IDEA_TYPES = [['do', 'Do'], ['eat', 'Eat'], ['see', 'See'], ['stay', 'Stay'], ['other', 'Other']];
+const IDEA_ICON = { do: '🎟️', eat: '🍽️', see: '📸', stay: '🛏️', other: '📌' };
+const CURRENCIES = ['USD', 'EUR', 'GBP', 'CAD', 'AUD', 'MXN', 'JPY', 'CHF', 'CNY', 'INR', 'BRL', 'NZD'];
+const TABS = [['overview', 'Trip', '🏠'], ['pack', 'Pack', '🧳'], ['plan', 'Plan', '🗓️'], ['budget', 'Budget', '💵'], ['ideas', 'Ideas', '💡'], ['weather', 'Weather', '⛅']];
+const FAB_FOR = { plan: 'plan-add', budget: 'bud-add', ideas: 'idea-add' };
+const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
+
+/* ---- normalisation (used on load and on every import) ---- */
+const arr = v => (Array.isArray(v) ? v : []);
+const clampInt = (v, lo, hi, d) => { const n = parseInt(v, 10); return Number.isFinite(n) ? Math.min(hi, Math.max(lo, n)) : d; };
+const numOrNull = v => { if (v === '' || v == null) return null; const n = Number(v); return isNum(n) && n >= 0 ? Math.round(n * 100) / 100 : null; };
+const oneOf = (v, list, d) => (list.includes(v) ? v : d);
+function normLoc(l) {
+  if (!l || typeof l !== 'object' || typeof l.latitude !== 'number' || typeof l.longitude !== 'number') return null;
+  if (!isNum(l.latitude) || !isNum(l.longitude) || Math.abs(l.latitude) > 90 || Math.abs(l.longitude) > 180) return null;
+  return { name: str(l.name).slice(0, 120), admin1: str(l.admin1).slice(0, 120), country: str(l.country).slice(0, 120), latitude: l.latitude, longitude: l.longitude };
+}
+function normWeather(w) {
+  if (!w || typeof w !== 'object' || !w.days || typeof w.days !== 'object') return null;
+  const days = {}, n = x => (isNum(x) ? x : null);
+  for (const [k, d] of Object.entries(w.days)) {
+    if (!isISO(k) || !d || typeof d !== 'object') continue;
+    days[k] = { tmax: n(d.tmax), tmin: n(d.tmin), pop: n(d.pop), precip: n(d.precip), code: n(d.code), kind: d.kind === 'typical' ? 'typical' : 'forecast', years: n(d.years), rainy: n(d.rainy) };
+  }
+  return { fetchedAt: isNum(w.fetchedAt) ? w.fetchedAt : 0, locKey: str(w.locKey), span: str(w.span), days };
+}
+const normPack = i => { if (!i || typeof i !== 'object' || !str(i.text).trim()) return null; return { id: str(i.id) || uid(), text: str(i.text).trim().slice(0, 120), cat: oneOf(i.cat, PACK_CATS, 'Other'), qty: clampInt(i.qty, 1, 99, 1), packed: !!i.packed }; };
+const normPlan = i => {
+  if (!i || typeof i !== 'object' || !str(i.title).trim()) return null;
+  return { id: str(i.id) || uid(), date: isISO(i.date) ? i.date : '', time: /^([01]\d|2[0-3]):[0-5]\d$/.test(str(i.time)) ? i.time : '', title: str(i.title).trim().slice(0, 140), place: str(i.place).trim().slice(0, 140), notes: str(i.notes).slice(0, 1000) };
+};
+const normBudget = l => {
+  if (!l || typeof l !== 'object') return null;
+  const planned = numOrNull(l.planned), spent = numOrNull(l.spent);
+  if (planned == null && spent == null) return null;
+  return { id: str(l.id) || uid(), cat: oneOf(l.cat, BUDGET_CATS, 'Other'), desc: str(l.desc).trim().slice(0, 140), planned, spent };
+};
+const normIdea = i => {
+  if (!i || typeof i !== 'object' || !str(i.title).trim()) return null;
+  return { id: str(i.id) || uid(), type: oneOf(i.type, IDEA_TYPES.map(x => x[0]), 'other'), title: str(i.title).trim().slice(0, 140), url: safeUrl(i.url), notes: str(i.notes).slice(0, 1000), planned: !!i.planned };
+};
+const normTodo = i => { if (!i || typeof i !== 'object' || !str(i.text).trim()) return null; return { id: str(i.id) || uid(), text: str(i.text).trim().slice(0, 140), done: !!i.done }; };
+function normTrip(t, keepWeather) {
+  if (!t || typeof t !== 'object' || !str(t.name).trim()) return null;
+  const trip = {
+    id: str(t.id) || uid(), name: str(t.name).trim().slice(0, 100), destination: str(t.destination).trim().slice(0, 120),
+    startDate: isISO(t.startDate) ? t.startDate : '', endDate: isISO(t.endDate) ? t.endDate : '',
+    travelers: clampInt(t.travelers, 1, 99, 1), currency: /^[A-Z]{3}$/.test(str(t.currency)) ? t.currency : 'USD',
+    budgetTotal: numOrNull(t.budgetTotal), notes: str(t.notes).slice(0, 10000), location: normLoc(t.location),
+    packing: arr(t.packing).map(normPack).filter(Boolean), plan: arr(t.plan).map(normPlan).filter(Boolean),
+    budget: arr(t.budget).map(normBudget).filter(Boolean), ideas: arr(t.ideas).map(normIdea).filter(Boolean),
+    todos: arr(t.todos).map(normTodo).filter(Boolean), weather: keepWeather ? normWeather(t.weather) : null,
+    createdAt: isNum(t.createdAt) ? t.createdAt : Date.now()
+  };
+  if (!trip.startDate || !trip.endDate) { if (trip.startDate || trip.endDate) trip.startDate = trip.endDate = trip.startDate || trip.endDate; }
+  else if (trip.endDate < trip.startDate) trip.endDate = trip.startDate;
+  for (const key of ['packing', 'plan', 'budget', 'ideas', 'todos']) { const s = new Set(); trip[key] = trip[key].filter(x => !s.has(x.id) && s.add(x.id)); }
+  return trip;
+}
+function normalizeData(raw, { keepWeather = false } = {}) {
+  let dropped = 0, trips = [];
+  for (const t of arr(raw && raw.trips)) { const n = normTrip(t, keepWeather); if (n) trips.push(n); else dropped++; }
+  const s = new Set(), before = trips.length;
+  trips = trips.filter(t => !s.has(t.id) && s.add(t.id));
+  dropped += before - trips.length;
+  return { data: { trips, settings: { units: raw && raw.settings && raw.settings.units === 'metric' ? 'metric' : 'imperial' } }, dropped };
+}
+const defaultState = () => ({ schemaVersion: SCHEMA, meta: { lastBackup: null, lastChange: null }, settings: { units: 'imperial' }, trips: [] });
+function loadState(parsed) {
+  const { data } = normalizeData(parsed, { keepWeather: true });
+  return { schemaVersion: SCHEMA, meta: { lastBackup: str(parsed && parsed.meta && parsed.meta.lastBackup) || null, lastChange: str(parsed && parsed.meta && parsed.meta.lastChange) || null }, settings: data.settings, trips: data.trips };
+}
+const exportData = () => ({ settings: state.settings, trips: state.trips.map(t => ({ ...t, weather: null })) });
+
+/* ---- persistence ---- */
+let state = defaultState(), db = null, saveFailed = false, persistAsked = false, saveChain = Promise.resolve();
+function persist({ touch = true } = {}) {
+  if (touch) state.meta.lastChange = new Date().toISOString();
+  if (!db) return Promise.resolve();
+  const snap = JSON.stringify(state);
+  saveChain = saveChain.then(() => idbPut(db, 'state', snap)).then(() => { saveFailed = false; }).catch(err => { console.error(err); saveFailed = true; });
+  if (!persistAsked && navigator.storage && navigator.storage.persist) { persistAsked = true; navigator.storage.persist().catch(() => {}); }
+  return saveChain;
+}
+const commit = () => { persist(); render(); };
+let noteTimer = null;
+
+/* ---- trip helpers ---- */
+const ui = { hidePacked: false, ideaFilter: 'all', geo: null, wxBusy: false, wxError: '', wxTried: {}, focus: null, lastCat: 'Clothing' };
+const tripById = id => state.trips.find(t => t.id === id);
+function tripDays(t) {
+  if (!t.startDate || !t.endDate) return [];
+  const n = Math.min(daysBetween(t.startDate, t.endDate) + 1, 120);
+  return Array.from({ length: n }, (_, i) => addDays(t.startDate, i));
+}
+function tripStatus(t) {
+  const today = todayISO(), n = tripDays(t).length;
+  if (!t.startDate) return { text: 'Dates not set', short: 'No dates', cls: '', big: '—', label: 'Set your dates' };
+  const toStart = daysBetween(today, t.startDate);
+  if (toStart > 0) return { text: `${plural(toStart, 'day')} to go`, short: `${toStart}d to go`, cls: 'acc', big: String(toStart), label: toStart === 1 ? 'day to go' : 'days to go' };
+  if (today <= t.endDate) { const d = -toStart + 1; return { text: `Day ${d} of ${n}`, short: 'Now', cls: 'ok', big: `Day ${d}`, label: `of ${n}` }; }
+  return { text: 'Trip complete', short: 'Done', cls: '', big: '✓', label: 'Trip complete' };
+}
+function rangeText(t) {
+  if (!t.startDate) return 'No dates yet';
+  const n = tripDays(t).length;
+  return (t.startDate === t.endDate ? fmtDate(t.startDate) : `${fmtDate(t.startDate, false)} – ${fmtDate(t.endDate)}`) + ` · ${plural(n, 'day')}`;
+}
+const packStats = t => { const total = t.packing.length, done = t.packing.filter(i => i.packed).length; return { total, done, pct: total ? Math.round(done / total * 100) : 0 }; };
+function budgetStats(t) {
+  let planned = 0, spent = 0, projected = 0; const byCat = {};
+  for (const l of t.budget) {
+    const p = l.planned || 0, s = l.spent || 0, pr = l.spent != null ? l.spent : p;
+    planned += p; spent += s; projected += pr;
+    const c = byCat[l.cat] || (byCat[l.cat] = { planned: 0, spent: 0, projected: 0 });
+    c.planned += p; c.spent += s; c.projected += pr;
+  }
+  return { planned, spent, projected, byCat };
+}
+const mapUrl = (t, place) => {
+  const dest = t.destination.split(',')[0].trim();
+  const q = dest && !place.toLowerCase().includes(dest.toLowerCase()) ? `${place}, ${t.destination}` : place;
+  return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(q);
+};
+
+/* ---- weather (Open-Meteo: free, no key) ---- */
+const num = (a, i) => (Array.isArray(a) && isNum(a[i]) ? a[i] : null);
+const modeOf = a => { if (!a.length) return null; const c = {}; let best = a[0]; for (const x of a) { c[x] = (c[x] || 0) + 1; if (c[x] > c[best]) best = x; } return best; };
+const shiftYear = (iso, n) => { const [y, m, d] = iso.split('-').map(Number); const ny = y + n; return `${ny}-${pad(m)}-${pad(Math.min(d, new Date(ny, m, 0).getDate()))}`; };
+const locKey = t => (t.location ? `${t.location.latitude},${t.location.longitude}` : '');
+function wxDays(t) { const d = tripDays(t); if (d.length) return d; const today = todayISO(); return Array.from({ length: 7 }, (_, i) => addDays(today, i)); }
+const wxSpan = t => { const d = wxDays(t); return `${d[0]}..${d[d.length - 1]}`; };
+function wmo(c) {
+  if (c == null) return ['·', ''];
+  if (c === 0) return ['☀️', 'Clear'];
+  if (c === 1) return ['🌤️', 'Mostly clear'];
+  if (c === 2) return ['⛅', 'Partly cloudy'];
+  if (c === 3) return ['☁️', 'Overcast'];
+  if (c === 45 || c === 48) return ['🌫️', 'Fog'];
+  if (c >= 51 && c <= 57) return ['🌦️', 'Drizzle'];
+  if (c >= 61 && c <= 67) return ['🌧️', 'Rain'];
+  if (c >= 71 && c <= 77) return ['🌨️', 'Snow'];
+  if (c >= 80 && c <= 82) return ['🌦️', 'Showers'];
+  if (c === 85 || c === 86) return ['🌨️', 'Snow showers'];
+  if (c >= 95) return ['⛈️', 'Thunderstorms'];
+  return ['🌡️', ''];
+}
+const T = c => (c == null ? '—' : Math.round(state.settings.units === 'imperial' ? c * 9 / 5 + 32 : c) + '°');
+const ago = ms => { const m = Math.round((Date.now() - ms) / 60000); return m < 1 ? 'just now' : m < 60 ? `${m} min ago` : m < 1440 ? `${Math.round(m / 60)} h ago` : `${Math.round(m / 1440)} days ago`; };
+const netMsg = e => (e && (e.name === 'AbortError' || e.name === 'TypeError') ?'Can’t reach the weather service (are you offline?).' : (e && e.message) || 'Weather lookup failed.');
+async function fetchJSON(url, ms = 12000) {
+  const ac = new AbortController(), timer = setTimeout(() => ac.abort(), ms);
+  try {
+    const r = await fetch(url, { signal: ac.signal });
+    if (!r.ok) throw new Error(`The weather service answered with an error (${r.status}).`);
+    return await r.json();
+  } finally { clearTimeout(timer); }
+}
+async function geocode(q) {
+  const parts = q.split(',').map(s => s.trim()).filter(Boolean);
+  const name = parts[0] || q.trim(), hint = parts.slice(1).join(' ').toLowerCase();
+  const j = await fetchJSON(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(name)}&count=8&language=en&format=json`);
+  let res = arr(j && j.results);
+  if (hint) {
+    const toks = hint.split(/[\s,]+/).filter(Boolean);
+    const score = r => { const hay = [r.admin1, r.admin2, r.country, r.country_code].filter(Boolean).join(' ').toLowerCase(); return toks.filter(x => hay.includes(x)).length; };
+    res = res.map((r, i) => ({ r, i, s: score(r) })).sort((a, b) => b.s - a.s || a.i - b.i).map(x => x.r);
+  }
+  return res.slice(0, 5).map(normLoc).filter(Boolean);
+}
+async function fetchTypical(loc, days) {
+  const first = days[0], last = days[days.length - 1];
+  const results = await Promise.allSettled([1, 2, 3].map(n => fetchJSON(
+    `https://archive-api.open-meteo.com/v1/archive?latitude=${loc.latitude}&longitude=${loc.longitude}&start_date=${shiftYear(first, -n)}&end_date=${shiftYear(last, -n)}&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum&timezone=auto`)));
+  const byMD = {}; let ok = 0;
+  for (const r of results) {
+    if (r.status !== 'fulfilled') continue;
+    const dd = r.value && r.value.daily;
+    if (!dd || !Array.isArray(dd.time)) continue;
+    ok++;
+    dd.time.forEach((date, i) => { (byMD[date.slice(5)] = byMD[date.slice(5)] || []).push({ tmax: num(dd.temperature_2m_max, i), tmin: num(dd.temperature_2m_min, i), precip: num(dd.precipitation_sum, i), code: num(dd.weather_code, i) }); });
+  }
+  if (!ok) { const bad = results.find(r => r.status === 'rejected'); throw (bad && bad.reason) || new Error('No historical weather came back.'); }
+  const out = {};
+  for (const d of days) {
+    const rows = byMD[d.slice(5)];
+    if (!rows || !rows.length) continue;
+    const avg = k => { const v = rows.map(r => r[k]).filter(isNum); return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null; };
+    out[d] = { tmax: avg('tmax'), tmin: avg('tmin'), pop: null, precip: avg('precip'), code: modeOf(rows.map(r => r.code).filter(isNum)), kind: 'typical', years: rows.length, rainy: rows.filter(r => isNum(r.precip) && r.precip >= 1).length };
+  }
+  return out;
+}
+async function fetchWeather(t) {
+  const loc = t.location, days = wxDays(t), today = todayISO(), lastFc = addDays(today, 15);
+  const fcDays = days.filter(d => d >= today && d <= lastFc), typDays = days.filter(d => d > lastFc), out = {};
+  if (fcDays.length) {
+    const j = await fetchJSON(`https://api.open-meteo.com/v1/forecast?latitude=${loc.latitude}&longitude=${loc.longitude}&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,precipitation_sum&timezone=auto&forecast_days=16`);
+    const dd = j && j.daily;
+    if (!dd || !Array.isArray(dd.time)) throw new Error('The weather service sent something unexpected.');
+    dd.time.forEach((date, i) => {
+      if (fcDays.includes(date)) out[date] = { tmax: num(dd.temperature_2m_max, i), tmin: num(dd.temperature_2m_min, i), pop: num(dd.precipitation_probability_max, i), precip: num(dd.precipitation_sum, i), code: num(dd.weather_code, i), kind: 'forecast', years: null, rainy: null };
+    });
+  }
+  if (typDays.length) Object.assign(out, await fetchTypical(loc, typDays));
+  return { fetchedAt: Date.now(), locKey: locKey(t), span: wxSpan(t), days: out };
+}
+async function refreshWeather(t) {
+  if (!t.location || ui.wxBusy) return;
+  ui.wxBusy = true; ui.wxError = ''; render();
+  try { t.weather = await fetchWeather(t); persist(); }
+  catch (e) { ui.wxError = netMsg(e); }
+  finally { ui.wxBusy = false; render(); }
+}
+async function searchGeo(t, q) {
+  ui.geo = { tripId: t.id, query: q, status: 'loading', results: [], error: '' }; render();
+  try { const r = await geocode(q); ui.geo = { ...ui.geo, status: 'done', results: r }; }
+  catch (e) { ui.geo = { ...ui.geo, status: 'error', error: netMsg(e) }; }
+  render();
+}
+function weatherOnShow(t) {
+  if (ui.wxBusy) return;
+  if (!t.location) { if (t.destination && (!ui.geo || ui.geo.tripId !== t.id)) searchGeo(t, t.destination); return; }
+  const stale = !t.weather || t.weather.locKey !== locKey(t) || t.weather.span !== wxSpan(t) || Date.now() - t.weather.fetchedAt > 6 * 3600e3;
+  const sig = `${locKey(t)}|${wxSpan(t)}|${Math.floor(Date.now() / (6 * 3600e3))}`;
+  if (stale && ui.wxTried[t.id] !== sig) { ui.wxTried[t.id] = sig; refreshWeather(t); }
+}
+function weatherSummary(t) {
+  const w = t.weather; if (!w) return null;
+  const ds = wxDays(t).map(d => w.days[d]).filter(Boolean);
+  if (!ds.length) return null;
+  const mins = ds.map(d => d.tmin).filter(isNum), maxs = ds.map(d => d.tmax).filter(isNum);
+  if (!mins.length || !maxs.length) return null;
+  const lo = Math.min(...mins), hi = Math.max(...maxs);
+  const rainy = ds.filter(d => d.kind === 'forecast' ? (d.pop || 0) >= 50 || (d.precip || 0) >= 3 : d.years ? d.rainy / d.years >= 0.5 : false).length;
+  return { lo, hi, rainy, n: ds.length, cold: lo <= 10, hot: hi >= 29, rain: rainy >= Math.max(1, Math.round(ds.length * 0.25)) };
+}
+
+/* ---- packing starter lists ---- */
+const BASE_ITEMS = [['Documents', 'Photo ID / passport'], ['Documents', 'Wallet & cards'], ['Documents', 'Travel confirmations (flights, lodging)'],
+  ['Electronics', 'Phone'], ['Electronics', 'Phone charger'], ['Electronics', 'Power bank'],
+  ['Toiletries', 'Toothbrush & toothpaste'], ['Toiletries', 'Deodorant'], ['Toiletries', 'Shampoo & body wash'], ['Toiletries', 'Hairbrush / comb'],
+  ['Health', 'Prescription medications'], ['Health', 'Pain reliever & basic first aid'], ['Gear', 'Reusable water bottle'], ['Other', 'House keys']];
+const ACT = {
+  beach: ['Beach / pool', [['Clothing', 'Swimsuit', 2], ['Gear', 'Beach towel'], ['Toiletries', 'Sunscreen'], ['Gear', 'Sunglasses'], ['Clothing', 'Sun hat'], ['Clothing', 'Flip-flops / sandals'], ['Toiletries', 'After-sun lotion']]],
+  hiking: ['Hiking / outdoors', [['Clothing', 'Hiking shoes or boots'], ['Gear', 'Daypack'], ['Gear', 'Rain jacket'], ['Toiletries', 'Bug spray'], ['Gear', 'Water bottle / hydration pack'], ['Health', 'Blister kit'], ['Clothing', 'Quick-dry shirts', 2], ['Gear', 'Headlamp or flashlight']]],
+  city: ['City sightseeing', [['Clothing', 'Comfortable walking shoes'], ['Gear', 'Small day bag'], ['Electronics', 'Portable charger'], ['Gear', 'Compact umbrella'], ['Clothing', 'Nicer outfit for dinner']]],
+  cruise: ['Cruise', [['Clothing', 'Formal-night outfit'], ['Health', 'Motion-sickness remedy'], ['Documents', 'Cruise documents & boarding pass'], ['Gear', 'Lanyard / card holder'], ['Gear', 'Power strip without surge protector'], ['Gear', 'Magnetic hooks'], ['Clothing', 'Swimsuit', 2], ['Toiletries', 'Reef-safe sunscreen']]],
+  international: ['International', [['Documents', 'Passport (valid 6+ months)'], ['Documents', 'Copies of passport & insurance'], ['Electronics', 'Plug adapter'], ['Gear', 'Foreign currency / travel card'], ['Documents', 'Travel insurance details'], ['Electronics', 'eSIM or roaming plan set up']]],
+  business: ['Business', [['Electronics', 'Laptop & charger'], ['Clothing', 'Business attire', 2], ['Documents', 'Work ID / badge'], ['Gear', 'Notebook & pen'], ['Electronics', 'Presentation adapter / clicker']]],
+  kids: ['Traveling with kids', [['Gear', 'Snacks'], ['Health', 'Kids’ medicine'], ['Electronics', 'Tablet & kid headphones'], ['Clothing', 'Extra change of clothes', 2], ['Gear', 'Wipes'], ['Gear', 'Comfort toy / blanket']]],
+  roadtrip: ['Road trip', [['Electronics', 'Car charger & phone mount'], ['Gear', 'Snacks & drinks'], ['Gear', 'Cooler'], ['Gear', 'Emergency kit'], ['Documents', 'Registration & insurance card']]],
+  cold: ['Cold weather', [['Clothing', 'Warm coat'], ['Clothing', 'Gloves'], ['Clothing', 'Beanie'], ['Clothing', 'Thermal base layers', 2], ['Clothing', 'Warm socks', 3], ['Clothing', 'Scarf'], ['Toiletries', 'Lip balm & moisturizer']]],
+  hot: ['Hot weather', [['Toiletries', 'Sunscreen'], ['Clothing', 'Sun hat'], ['Gear', 'Sunglasses'], ['Clothing', 'Light, breathable clothes', 3], ['Health', 'Electrolyte packets']]],
+  rain: ['Rain likely', [['Gear', 'Rain jacket'], ['Gear', 'Compact umbrella'], ['Clothing', 'Water-resistant shoes'], ['Gear', 'Dry bag / waterproof pouch']]]
+};
+const TODO_STARTERS = ['Book flights / transportation', 'Book lodging', 'Check passport & ID expiration dates', 'Arrange care for pets, plants and mail', 'Tell your bank and card issuers you’re traveling',
+  'Check travel insurance', 'Download offline maps & confirmations', 'Check in online (24 hours before)', 'Pay bills that come due while you’re away', 'Set an email auto-reply', 'Plan the ride to and from the airport'];
+const normText = s => s.trim().toLowerCase().replace(/\s+/g, ' ');
+function buildStarter(t, opts) {
+  const n = tripDays(t).length || 3, items = [], seen = new Set();
+  const add = (cat, text, qty = 1) => { const k = normText(text); if (seen.has(k)) return; seen.add(k); items.push({ cat, text, qty }); };
+  if (opts.base) {
+    BASE_ITEMS.forEach(([c, x]) => add(c, x));
+    const u = Math.min(n + 1, 10);
+    add('Clothing', 'Underwear', u); add('Clothing', 'Socks (pairs)', u); add('Clothing', 'Tops', Math.min(n, 8));
+    add('Clothing', 'Pants / shorts / skirts', Math.min(Math.max(2, Math.ceil(n / 3)), 5)); add('Clothing', 'Sleepwear', n > 6 ? 2 : 1);
+    add('Clothing', 'Comfortable shoes'); add('Clothing', 'Light jacket or sweater');
+  }
+  for (const k of Object.keys(ACT)) if (opts[k]) ACT[k][1].forEach(([c, x, q]) => add(c, x, q || 1));
+  return items;
+}
+function addPackItems(t, items) {
+  const have = new Set(t.packing.map(i => normText(i.text)));
+  let added = 0;
+  for (const it of items) { if (have.has(normText(it.text))) continue; have.add(normText(it.text)); t.packing.push({ id: uid(), text: it.text, cat: it.cat, qty: it.qty || 1, packed: false }); added++; }
+  return added;
+}
+
+/* ---- dialogs ---- */
+function tripDialog(t) {
+  const cur = t ? t.currency : state.trips.length ? state.trips[state.trips.length - 1].currency : 'USD';
+  const currencies = CURRENCIES.includes(cur) ? CURRENCIES : [cur, ...CURRENCIES];
+  formDialog({
+    title: t ? 'Edit trip' : 'New trip',
+    fields: [
+      { name: 'name', label: 'Trip name', required: true, value: t && t.name, placeholder: 'e.g. Alabama beach week' },
+      { name: 'destination', label: 'Destination', value: t && t.destination, placeholder: 'e.g. Gulf Shores, Alabama', hint: 'Used for weather and lookup links.' },
+      { name: 'startDate', label: 'Start date', type: 'date', value: t && t.startDate },
+      { name: 'endDate', label: 'End date', type: 'date', value: t && t.endDate },
+      { name: 'travelers', label: 'Travelers', type: 'number', value: t ? t.travelers : 2, min: 1, step: '1' },
+      { name: 'currency', label: 'Currency', type: 'select', options: currencies, value: cur },
+      { name: 'budgetTotal', label: 'Budget target (optional)', type: 'number', value: t && t.budgetTotal != null ? t.budgetTotal : '', min: 0 }
+    ],
+    submitLabel: t ? 'Save' : 'Create trip',
+    extra: t ? [{ label: 'Duplicate', onClick: () => { $('#dlg').close(); duplicateTrip(t); } }] : [],
+    onSubmit: v => {
+      let s = v.startDate, e = v.endDate;
+      if (s && !isISO(s)) return 'Pick a valid start date.';
+      if (e && !isISO(e)) return 'Pick a valid end date.';
+      if (e && !s) return 'Add a start date too, or clear the end date.';
+      if (s && !e) e = s;
+      if (s && e < s) return 'The end date is before the start date.';
+      if (s && daysBetween(s, e) > 119) return 'Trips can be up to 120 days.';
+      const bt = v.budgetTotal === '' ? null : numOrNull(v.budgetTotal);
+      if (v.budgetTotal !== '' && bt == null) return 'Enter a valid budget, or leave it blank.';
+      const rec = { name: v.name.trim(), destination: v.destination.trim(), startDate: s || '', endDate: e || '', travelers: clampInt(v.travelers, 1, 99, 1), currency: v.currency, budgetTotal: bt };
+      if (t) {
+        if (rec.destination !== t.destination) { t.location = null; t.weather = null; ui.geo = null; }
+        Object.assign(t, rec);
+        commit();
+      } else {
+        const nt = normTrip({ ...rec, id: uid() }, false);
+        state.trips.push(nt); persist();
+        location.hash = '#/trip/' + nt.id;
+        render();
+      }
+    },
+    onDelete: t ? async () => {
+      if (!(await confirmBox(`Delete “${t.name}”?`, 'Its packing list, plan, budget and notes will be removed. Back up first if you might want them.', 'Delete trip'))) return false;
+      state.trips = state.trips.filter(x => x.id !== t.id); persist();
+      location.hash = '#/'; render(); toast('Trip deleted'); return true;
+    } : null
+  });
+}
+function duplicateTrip(t) {
+  const c = JSON.parse(JSON.stringify(t));
+  Object.assign(c, { id: uid(), name: t.name + ' (copy)', startDate: '', endDate: '', weather: null, createdAt: Date.now() });
+  c.packing.forEach(i => { i.id = uid(); i.packed = false; });
+  c.todos.forEach(i => { i.id = uid(); i.done = false; });
+  c.budget.forEach(i => { i.id = uid(); i.spent = null; if (i.planned == null) i.planned = 0; });
+  c.plan.forEach(i => { i.id = uid(); i.date = ''; i.time = ''; });
+  c.ideas.forEach(i => { i.id = uid(); i.planned = false; });
+  const nt = normTrip(c, false);
+  state.trips.push(nt); persist();
+  location.hash = '#/trip/' + nt.id; render();
+  toast('Duplicated — set the new dates in Edit');
+}
+function packDialog(t, id) {
+  const it = id ? t.packing.find(x => x.id === id) : null; if (id && !it) return;
+  formDialog({
+    title: 'Edit item',
+    fields: [{ name: 'text', label: 'Item', required: true, value: it.text }, { name: 'qty', label: 'Quantity', type: 'number', value: it.qty, min: 1, step: '1' }, { name: 'cat', label: 'Category', type: 'select', options: PACK_CATS, value: it.cat }],
+    onSubmit: v => { it.text = v.text.trim().slice(0, 120); it.qty = clampInt(v.qty, 1, 99, 1); it.cat = v.cat; commit(); },
+    onDelete: async () => { t.packing = t.packing.filter(x => x.id !== it.id); commit(); return true; }
+  });
+}
+function starterDialog(t) {
+  const ws = weatherSummary(t);
+  const fields = [{ name: 'base', label: 'Essentials & clothing, sized to your trip length', type: 'checkbox', value: true }];
+  for (const k of Object.keys(ACT)) fields.push({ name: k, label: ACT[k][0], type: 'checkbox', value: !!(ws && ws[k]) });
+  const hint = [!t.startDate ? 'No dates set, so quantities assume a 3-day trip.' : '', ws ? `Weather for your dates: ${T(ws.lo)} to ${T(ws.hi)}. Matching weather boxes are pre-checked.` : 'Tip: check the Weather tab first and it will pre-check the right boxes.'].filter(Boolean).join(' ');
+  formDialog({
+    title: 'Starter packing list', intro: hint, fields, grid: 'checkgrid', submitLabel: 'Add items',
+    onSubmit: v => { const n = addPackItems(t, buildStarter(t, v)); commit(); toast(n ? `Added ${plural(n, 'item')}` : 'Nothing new to add — you already have those'); }
+  });
+}
+function copyPackDialog(t) {
+  const others = state.trips.filter(x => x.id !== t.id && x.packing.length);
+  if (!others.length) return toast('No other trip has a packing list to copy yet.');
+  formDialog({
+    title: 'Copy packing list', intro: 'Items are added unchecked; anything you already have is skipped.',
+    fields: [{ name: 'from', label: 'Copy from', type: 'select', options: others.map(o => [o.id, `${o.name} (${o.packing.length} items)`]), value: others[0].id }],
+    submitLabel: 'Copy',
+    onSubmit: v => { const src = tripById(v.from); if (!src) return 'Pick a trip.'; const n = addPackItems(t, src.packing.map(i => ({ text: i.text, cat: i.cat, qty: i.qty }))); commit(); toast(n ? `Copied ${plural(n, 'item')}` : 'Nothing new to copy'); }
+  });
+}
+function planDialog(t, id, pre = {}) {
+  const it = id ? t.plan.find(x => x.id === id) : null; if (id && !it) return;
+  const days = tripDays(t);
+  const opts = [['', 'No date yet'], ...days.map((d, i) => [d, `Day ${i + 1} · ${fmtDate(d)}`])];
+  const cur = it ? it.date : pre.date || '';
+  if (cur && !days.includes(cur)) opts.push([cur, fmtDate(cur) + ' (outside trip dates)']);
+  formDialog({
+    title: it ? 'Edit plan item' : 'Add to plan',
+    fields: [
+      { name: 'title', label: 'What', required: true, value: it ? it.title : pre.title, placeholder: 'e.g. Dinner at the pier' },
+      { name: 'date', label: 'Day', type: 'select', options: opts, value: cur },
+      { name: 'time', label: 'Time (optional)', type: 'time', value: it ? it.time : '' },
+      { name: 'place', label: 'Place (optional)', value: it ? it.place : pre.place, placeholder: 'Name or address — becomes a map link' },
+      { name: 'notes', label: 'Notes', type: 'textarea', value: it ? it.notes : pre.notes }
+    ],
+    onSubmit: v => {
+      const rec = { title: v.title.trim().slice(0, 140), date: v.date, time: v.time, place: v.place.trim().slice(0, 140), notes: v.notes.slice(0, 1000) };
+      if (it) Object.assign(it, rec); else t.plan.push({ id: uid(), ...rec });
+      if (pre.ideaId) { const idea = t.ideas.find(x => x.id === pre.ideaId); if (idea) idea.planned = true; }
+      commit();
+    },
+    onDelete: it ? async () => { t.plan = t.plan.filter(x => x.id !== it.id); commit(); return true; } : null
+  });
+}
+function budgetDialog(t, id) {
+  const l = id ? t.budget.find(x => x.id === id) : null; if (id && !l) return;
+  formDialog({
+    title: l ? 'Edit budget line' : 'Add budget line',
+    fields: [
+      { name: 'cat', label: 'Category', type: 'select', options: BUDGET_CATS, value: l ? l.cat : 'Lodging' },
+      { name: 'desc', label: 'Description', value: l && l.desc, placeholder: 'e.g. Condo, 6 nights' },
+      { name: 'planned', label: `Planned (${t.currency})`, type: 'number', value: l && l.planned != null ? l.planned : '', min: 0 },
+      { name: 'spent', label: `Actually spent (${t.currency})`, type: 'number', value: l && l.spent != null ? l.spent : '', min: 0, hint: 'Leave blank until you pay. Once filled in, it replaces the planned amount in the projected total.' }
+    ],
+    onSubmit: v => {
+      const planned = numOrNull(v.planned), spent = numOrNull(v.spent);
+      if (v.planned !== '' && planned == null) return 'Planned amount isn’t valid.';
+      if (v.spent !== '' && spent == null) return 'Spent amount isn’t valid.';
+      if (planned == null && spent == null) return 'Enter a planned or spent amount.';
+      const rec = { cat: v.cat, desc: v.desc.trim().slice(0, 140), planned, spent };
+      if (l) Object.assign(l, rec); else t.budget.push({ id: uid(), ...rec });
+      commit();
+    },
+    onDelete: l ? async () => { t.budget = t.budget.filter(x => x.id !== l.id); commit(); return true; } : null
+  });
+}
+function ideaDialog(t, id) {
+  const i = id ? t.ideas.find(x => x.id === id) : null; if (id && !i) return;
+  formDialog({
+    title: i ? 'Edit idea' : 'Add idea',
+    fields: [
+      { name: 'title', label: 'Idea', required: true, value: i && i.title, placeholder: 'e.g. Sunset dolphin cruise' },
+      { name: 'type', label: 'Type', type: 'select', options: IDEA_TYPES, value: i ? i.type : ui.ideaFilter !== 'all' ? ui.ideaFilter : 'do' },
+      { name: 'url', label: 'Link (optional)', type: 'text', value: i && i.url, placeholder: 'https://…', capitalize: 'none' },
+      { name: 'notes', label: 'Notes', type: 'textarea', value: i && i.notes }
+    ],
+    onSubmit: v => {
+      if (v.url.trim() && !safeUrl(v.url)) return 'That link doesn’t look right.';
+      const rec = { title: v.title.trim().slice(0, 140), type: v.type, url: safeUrl(v.url), notes: v.notes.slice(0, 1000) };
+      if (i) Object.assign(i, rec); else t.ideas.push({ id: uid(), ...rec, planned: false });
+      commit();
+    },
+    onDelete: i ? async () => { t.ideas = t.ideas.filter(x => x.id !== i.id); commit(); return true; } : null
+  });
+}
+
+/* ---- views ---- */
+const app = $('#app');
+const headerHTML = ({ back, title, sub, right = '' }) => `<header class="top"><div class="wrap">${back ? `<a class="back" href="${back}">‹ Trips</a>` : ''}<div class="grow"><h1>${esc(title)}</h1>${sub ? `<div class="sub">${esc(sub)}</div>` : ''}</div>${right}</div></header>`;
+function storageBannerHTML() {
+  if (saveFailed) return '<div class="banner bad">Couldn’t save to this device’s storage. Back up now so nothing is lost.</div>';
+  if (!db) return '<div class="banner bad">This browser isn’t allowing storage (private mode?). Changes won’t survive closing the app — use Backup often.</div>';
+  return '';
+}
+function nagHTML() {
+  const m = backupNag(state.meta, state.trips.length > 0);
+  return m ? `<div class="banner"><span>${esc(m)}</span><a class="btn small" href="#/backup">Back up</a></div>` : '';
+}
+function homeScreen() {
+  const today = todayISO();
+  const upcoming = state.trips.filter(t => !t.endDate || t.endDate >= today).sort((a, b) => (a.startDate || '9999').localeCompare(b.startDate || '9999') || a.name.localeCompare(b.name));
+  const past = state.trips.filter(t => t.endDate && t.endDate < today).sort((a, b) => b.endDate.localeCompare(a.endDate));
+  const card = t => {
+    const st = tripStatus(t), pk = packStats(t);
+    return `<a class="card tripcard" href="#/trip/${esc(t.id)}"><div class="tc-top"><div class="row-title">${esc(t.name)}</div><span class="badge ${st.cls}">${esc(st.short)}</span></div>
+      <div class="row-sub">${t.destination ? '📍 ' + esc(t.destination) + ' · ' : ''}${esc(rangeText(t))}</div>
+      ${pk.total ? `<div class="bar" style="margin-top:10px"><i style="width:${pk.pct}%"></i></div><div class="row-sub" style="margin-top:4px">Packed ${pk.done} of ${pk.total}</div>` : ''}</a>`;
+  };
+  const body = !state.trips.length
+    ? `<div class="empty"><div class="big">🧳</div><h2>No trips yet</h2><p>Create a trip to build a packing list, day-by-day plan, budget and weather outlook.</p>
+        <button class="btn primary" data-action="new-trip">Plan your first trip</button><br><button class="btn ghost" data-action="restore">Restore from a backup file</button></div>`
+    : (upcoming.length ? `<div class="sec-h"><span>Upcoming &amp; current</span></div>${upcoming.map(card).join('')}` : '') + (past.length ? `<div class="sec-h"><span>Past trips</span></div>${past.map(card).join('')}` : '');
+  return headerHTML({ title: 'Trips', sub: 'Open a trip or start a new one', right: (state.trips.length ? '<button class="btn small primary" data-action="new-trip">+ New trip</button>' : '') + '<a class="btn small" href="#/backup">Backup</a>' })
+    + `<main class="wrap">${storageBannerHTML()}${nagHTML()}${body}</main>`
+    ;
+}
+function overviewTab(t) {
+  const st = tripStatus(t), pk = packStats(t), b = budgetStats(t), id = esc(t.id);
+  const todosDone = t.todos.filter(x => x.done).length;
+  const w = t.weather, first = w ? wxDays(t).filter(d => w.days[d]).slice(0, 4) : [];
+  const wx = first.length ? `<div class="sec-h"><span>Weather outlook</span><a href="#/trip/${id}/weather">See all</a></div><section class="card pad"><div class="chips">${first.map(d => { const x = w.days[d]; return `<span class="chip" style="cursor:default">${wmo(x.code)[0]} ${esc(fmtDate(d, false))} · ${T(x.tmax)}/${T(x.tmin)}</span>`; }).join('')}</div></section>` : '';
+  const todoRow = x => `<li class="row static"><label class="check-row"><input type="checkbox" data-action="todo-toggle" data-id="${esc(x.id)}" ${x.done ? 'checked' : ''}><span class="${x.done ? 'done' : ''}">${esc(x.text)}</span></label><button type="button" class="btn small ghost" data-action="todo-del" data-id="${esc(x.id)}" aria-label="Remove task">✕</button></li>`;
+  return `<section class="card hero"><div class="big">${esc(st.big)}</div><div class="lbl">${esc(st.label)}</div>${t.startDate ? '' : '<button class="btn small" style="margin-top:12px" data-action="edit-trip">Set dates</button>'}</section>
+    <div class="tiles">
+      <a class="card tile" href="#/trip/${id}/pack"><div class="lbl">Packed</div><div class="val num">${pk.done}/${pk.total}</div></a>
+      <a class="card tile" href="#/trip/${id}/budget"><div class="lbl">Projected cost</div><div class="val num">${money(b.projected, t.currency)}</div></a>
+      <a class="card tile" href="#/trip/${id}/plan"><div class="lbl">Plan items</div><div class="val num">${t.plan.length}</div></a>
+    </div>${wx}
+    <div class="sec-h"><span>Before you go</span><span class="num">${todosDone}/${t.todos.length}</span></div>
+    <div class="card">${t.todos.length ? `<ul class="list">${t.todos.map(todoRow).join('')}</ul>` : ''}
+      <form data-form="todo-add" class="addrow pad"><input name="text" placeholder="Add a task (e.g. Book flights)" autocomplete="off" required><button class="btn primary">Add</button></form></div>
+    <div style="margin-top:10px"><button class="btn small" data-action="todo-starter">Add common tasks</button></div>
+    <div class="sec-h"><span>Notes</span></div>
+    <textarea class="notes" id="tripNotes" placeholder="Confirmation numbers, addresses, reminders… (saved on this device)">${esc(t.notes)}</textarea>`;
+}
+function packTab(t) {
+  const pk = packStats(t);
+  const groups = PACK_CATS.map(c => [c, t.packing.filter(i => i.cat === c)]).filter(([, a]) => a.length);
+  const row = i => `<li class="row static"><label class="check-row"><input type="checkbox" data-action="pack-toggle" data-id="${esc(i.id)}" ${i.packed ? 'checked' : ''}><span class="${i.packed ? 'done' : ''}">${i.qty > 1 ? `<b>${i.qty}×</b> ` : ''}${esc(i.text)}</span></label><button type="button" class="btn small ghost" data-action="pack-edit" data-id="${esc(i.id)}">Edit</button></li>`;
+  let lists = '';
+  for (const [c, items] of groups) {
+    const shown = ui.hidePacked ? items.filter(i => !i.packed) : items;
+    if (!shown.length) continue;
+    lists += `<div class="sec-h"><span>${esc(c)}</span><span class="num">${items.filter(i => i.packed).length}/${items.length}</span></div><ul class="card list">${shown.map(row).join('')}</ul>`;
+  }
+  if (t.packing.length && !lists) lists = '<div class="card empty"><div class="big">🎉</div><h2>Everything is packed</h2></div>';
+  return `<section class="card pad"><div style="display:flex;justify-content:space-between;align-items:baseline"><h3>Packing</h3><span class="num muted">${pk.done} of ${pk.total} packed</span></div>
+      <div class="bar" style="margin:10px 0"><i style="width:${pk.pct}%"></i></div>
+      <form data-form="pack-add" class="addrow"><input name="text" placeholder="Add an item (e.g. 3 shirts)" autocomplete="off" required>
+        <select name="cat" aria-label="Category">${PACK_CATS.map(c => `<option${c === ui.lastCat ? ' selected' : ''}>${esc(c)}</option>`).join('')}</select><button class="btn primary">Add</button></form></section>
+    <div class="chips" style="margin-top:12px"><button class="chip" data-action="pack-starter">✨ Starter list</button><button class="chip" data-action="pack-copy">Copy from a trip</button>
+      <button class="chip" data-action="pack-hide" aria-pressed="${ui.hidePacked}">Hide packed</button><button class="chip" data-action="pack-reset">Uncheck all</button></div>
+    ${t.packing.length ? lists : '<div class="empty"><div class="big">🧳</div><h2>Nothing on the list yet</h2><p>Add items above, or tap <b>Starter list</b> to get a list sized to your trip and the weather.</p></div>'}`;
+}
+function planTab(t) {
+  const days = tripDays(t), byDate = {}, other = [];
+  for (const it of t.plan) { if (it.date && days.includes(it.date)) (byDate[it.date] = byDate[it.date] || []).push(it); else other.push(it); }
+  const sortT = (a, b) => (a.time || '99:99').localeCompare(b.time || '99:99');
+  const item = it => `<li class="row" data-action="plan-edit" data-id="${esc(it.id)}"><div class="time num">${esc(it.time)}</div>
+    <div class="row-main"><div class="row-title">${esc(it.title)}</div>${it.place ? `<div class="row-sub">📍 <a href="${esc(mapUrl(t, it.place))}" target="_blank" rel="noopener">${esc(it.place)}</a></div>` : ''}${it.notes ? `<div class="row-sub">${esc(it.notes)}</div>` : ''}</div></li>`;
+  let html = '';
+  if (!days.length) html += `<div class="banner" style="background:var(--accent-soft);color:var(--accent)"><span>Set your trip dates to get a day-by-day plan.</span><button class="btn small" data-action="edit-trip">Set dates</button></div>`;
+  days.forEach((d, i) => {
+    const w = t.weather && t.weather.days[d], list = (byDate[d] || []).slice().sort(sortT);
+    html += `<div class="sec-h"><span>Day ${i + 1} · ${esc(fmtDate(d))}</span><span>${w ? `<span class="wx">${wmo(w.code)[0]} ${T(w.tmax)}/${T(w.tmin)}</span> ` : ''}<button class="btn small ghost" data-action="plan-add" data-date="${d}">+ Add</button></span></div>`
+      + (list.length ? `<ul class="card list">${list.map(item).join('')}</ul>` : '<div class="card pad muted">Nothing planned yet.</div>');
+  });
+  if (other.length || !days.length) {
+    html += `<div class="sec-h"><span>${days.length ? 'Unscheduled' : 'Plan'}</span></div>` + (other.length ? `<ul class="card list">${other.map(it => item(it)).join('')}</ul>` : '<div class="card empty"><div class="big">🗓️</div><h2>Nothing planned yet</h2><p>Tap + to add things you want to do.</p></div>');
+  }
+  return html;
+}
+function budgetTab(t) {
+  const b = budgetStats(t), n = Math.max(1, tripDays(t).length), m = x => money(x, t.currency);
+  const target = t.budgetTotal, over = target != null && b.projected > target;
+  const cats = BUDGET_CATS.filter(c => b.byCat[c]), maxP = Math.max(1, ...cats.map(c => b.byCat[c].projected));
+  const row = l => `<li class="row" data-action="bud-edit" data-id="${esc(l.id)}"><div class="row-main"><div class="row-title">${esc(l.desc || l.cat)}</div>
+    <div class="row-sub">${esc(l.cat)}${l.planned != null ? ' · planned ' + m(l.planned) : ''}${l.spent != null ? ' · spent ' + m(l.spent) : ' · not paid yet'}</div></div>
+    <div class="row-amt num">${m(l.spent != null ? l.spent : l.planned)}</div></li>`;
+  return `<div class="tiles">
+      <div class="card tile"><div class="lbl">Planned</div><div class="val num">${m(b.planned)}</div></div>
+      <div class="card tile"><div class="lbl">Spent</div><div class="val num">${m(b.spent)}</div></div>
+      <div class="card tile"><div class="lbl">Projected</div><div class="val num ${over ? 'bad' : ''}">${m(b.projected)}</div></div></div>
+    <p class="hint" style="margin:-4px 4px 10px">Projected uses what you actually spent where you’ve entered it, and the planned amount everywhere else.</p>
+    ${target != null ? `<section class="card pad"><div style="display:flex;justify-content:space-between"><h3>Budget target ${m(target)}</h3><span class="num ${over ? 'bad' : 'ok'}">${over ? m(b.projected - target) + ' over' : m(target - b.projected) + ' left'}</span></div>
+      <div class="bar ${over ? 'over' : ''}" style="margin-top:10px"><i style="width:${Math.min(100, Math.round(b.projected / (target || 1) * 100))}%"></i></div></section>` : ''}
+    ${b.projected ? `<section class="card pad" style="margin-top:12px"><h3>Per person &amp; per day</h3><p class="muted" style="margin:6px 0 0">${m(b.projected / t.travelers)} per traveler (${plural(t.travelers, 'traveler')}) · ${m(b.projected / n)} per day over ${plural(n, 'day')}</p></section>` : ''}
+    ${cats.length ? `<div class="sec-h"><span>By category</span></div><section class="card pad">${cats.map(c => `<div class="catline"><div class="top"><span>${esc(c)}</span><span class="num">${m(b.byCat[c].projected)}</span></div><div class="bar"><i style="width:${Math.round(b.byCat[c].projected / maxP * 100)}%"></i></div></div>`).join('')}</section>` : ''}
+    <div class="sec-h"><span>Lines</span></div>
+    ${t.budget.length ? `<ul class="card list">${t.budget.map(row).join('')}</ul>` : '<div class="card empty"><div class="big">💵</div><h2>No budget lines yet</h2><p>Tap + to add flights, lodging, food and more.</p></div>'}`;
+}
+function ideasTab(t) {
+  const f = ui.ideaFilter, list = t.ideas.filter(i => f === 'all' || i.type === f);
+  const dest = t.destination || t.name, q = encodeURIComponent(dest);
+  const links = [['Things to do', 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent('things to do in ' + dest)], ['Restaurants', 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent('restaurants in ' + dest)],
+    ['Tripadvisor', 'https://www.tripadvisor.com/Search?q=' + q], ['Wikivoyage guide', 'https://en.wikivoyage.org/w/index.php?search=' + q], ['Reddit tips', 'https://www.reddit.com/search/?q=' + encodeURIComponent(dest + ' travel tips')]];
+  const row = i => `<li class="row" data-action="idea-edit" data-id="${esc(i.id)}"><div style="font-size:22px;width:30px;text-align:center;flex:none">${IDEA_ICON[i.type]}</div>
+    <div class="row-main"><div class="row-title">${esc(i.title)}${i.planned ? '<span class="badge ok">In plan</span>' : ''}</div>${i.notes ? `<div class="row-sub">${esc(i.notes)}</div>` : ''}${i.url ? `<div class="row-sub"><a href="${esc(i.url)}" target="_blank" rel="noopener">${esc(i.url.replace(/^https?:\/\//, '').slice(0, 48))}</a></div>` : ''}</div>
+    ${i.planned ? '' : `<button type="button" class="btn small" data-action="idea-plan" data-id="${esc(i.id)}">Plan</button>`}</li>`;
+  return `<section class="card pad"><h3>Look up ${esc(dest)}</h3><p class="muted" style="margin:4px 0 0">Open a search, find things you like, then save them below.</p>
+      <div class="linkrow">${links.map(([l, u]) => `<a class="btn small" href="${esc(u)}" target="_blank" rel="noopener">${esc(l)} ↗</a>`).join('')}</div></section>
+    <div class="chips" style="margin-top:14px">${[['all', 'All'], ...IDEA_TYPES].map(([k, l]) => `<button class="chip" data-action="idea-filter" data-type="${k}" aria-pressed="${f === k}">${l}</button>`).join('')}</div>
+    <div style="margin-top:12px">${list.length ? `<ul class="card list">${list.map(row).join('')}</ul>` : `<div class="card empty"><div class="big">💡</div><h2>${t.ideas.length ? 'Nothing in this filter' : 'No ideas saved yet'}</h2><p>Tap + to save places to eat, things to see, and activities. Tap <b>Plan</b> to drop one onto a day.</p></div>`}</div>`;
+}
+function weatherTab(t) {
+  const units = state.settings.units, today = todayISO();
+  const unitBtn = `<button class="btn small" data-action="wx-units" aria-label="Switch units">Show °${units === 'imperial' ? 'C' : 'F'}</button>`;
+  if (!t.location) {
+    const g = ui.geo && ui.geo.tripId === t.id ? ui.geo : null;
+    let res = '';
+    if (g) {
+      if (g.status === 'idle') res = '';
+      else if (g.status === 'loading') res = '<p class="muted" style="margin-top:12px">Looking up places…</p>';
+      else if (g.status === 'error') res = `<p class="bad" style="margin-top:12px">${esc(g.error)}</p>`;
+      else if (!g.results.length) res = '<p class="muted" style="margin-top:12px">No matches. Try just the city name.</p>';
+      else res = `<p class="muted" style="margin-top:12px">Tap the right place:</p><ul class="card list" style="margin-top:6px">${g.results.map((r, i) => `<li class="row" data-action="wx-pick" data-i="${i}"><div class="row-main"><div class="row-title">${esc(r.name)}</div><div class="row-sub">${esc([r.admin1, r.country].filter(Boolean).join(', '))}</div></div></li>`).join('')}</ul>`;
+    }
+    return `<section class="card pad"><h3>Where should I check the weather?</h3><p class="muted">Pick the place so the outlook matches your destination.</p>
+      <form data-form="geo" class="addrow"><input name="q" value="${esc(g ? g.query : t.destination)}" placeholder="City, region (e.g. Gulf Shores, Alabama)" autocomplete="off" required><button class="btn primary">Search</button></form>${res}</section>`;
+  }
+  const L = t.location, w = t.weather, days = wxDays(t), ws = weatherSummary(t);
+  const noDates = !t.startDate;
+  const status = ui.wxBusy ? 'Updating…' : ui.wxError ? `<span class="bad">${esc(ui.wxError)}</span>${w ? ' Showing saved data from ' + esc(ago(w.fetchedAt)) + '.' : ''}` : w ? `Updated ${esc(ago(w.fetchedAt))}` : '';
+  const rows = days.map(d => {
+    const x = w && w.days[d];
+    if (d < today) return `<li class="row static wxrow faded"><div class="emoji">·</div><div class="row-main"><div class="row-title">${esc(fmtDate(d))}</div><div class="row-sub">Past</div></div></li>`;
+    if (!x) return `<li class="row static wxrow"><div class="emoji">·</div><div class="row-main"><div class="row-title">${esc(fmtDate(d))}</div><div class="row-sub">${ui.wxBusy ? 'Loading…' : 'No data'}</div></div></li>`;
+    const [em, label] = wmo(x.code);
+    const sub = x.kind === 'forecast' ? [label, x.pop != null ? `${Math.round(x.pop)}% chance of rain` : ''].filter(Boolean).join(' · ') : `Typical${x.years ? ` · rain on this date in ${x.rainy} of ${x.years} past years` : ''}`;
+    return `<li class="row static wxrow"><div class="emoji">${em}</div><div class="row-main"><div class="row-title">${esc(fmtDate(d))}${x.kind === 'typical' ? '<span class="badge">Typical</span>' : '<span class="badge acc">Forecast</span>'}</div><div class="row-sub">${esc(sub)}</div></div><div class="row-amt num">${T(x.tmax)} / ${T(x.tmin)}</div></li>`;
+  }).join('');
+  const anyTypical = w && days.some(d => w.days[d] && w.days[d].kind === 'typical');
+  const hints = ws ? [ws.cold ? 'Cold mornings or nights ahead: pack warm layers.' : '', ws.hot ? 'Hot days ahead: sun protection and light clothing.' : '', ws.rain ? 'Rain looks likely on several days: rain jacket or umbrella.' : ''].filter(Boolean) : [];
+  return `<div class="sec-h"><span>Weather</span>${unitBtn}</div>
+    <section class="card pad"><div class="row-title">📍 ${esc(L.name)}${L.admin1 ? ', ' + esc(L.admin1) : ''}${L.country ? ' · ' + esc(L.country) : ''}</div><div class="row-sub" style="margin-top:2px">${status}</div>
+      <div class="chips" style="margin-top:10px"><button class="btn small" data-action="wx-refresh" ${ui.wxBusy ? 'disabled' : ''}>Refresh</button><button class="btn small" data-action="wx-setloc">Change place</button></div></section>
+    ${noDates ? '<p class="hint" style="margin:10px 4px 0">No trip dates yet, so this shows the next 7 days. Set dates in Edit to see your trip.</p>' : ''}
+    ${ws ? `<section class="card pad" style="margin-top:12px"><h3>${esc(T(ws.lo))} to ${esc(T(ws.hi))} across your dates</h3>${hints.map(h => `<p style="margin:6px 0 0">${esc(h)}</p>`).join('')}<button class="btn small" style="margin-top:10px" data-action="pack-starter">Add matching items to packing</button></section>` : ''}
+    <div class="sec-h"><span>Day by day</span></div><ul class="card list">${rows}</ul>
+    ${anyTypical ? '<p class="hint" style="margin:10px 4px">“Typical” means averaged from the same dates in the last three years. It isn’t a forecast — real forecasts only reach 16 days ahead and replace these automatically as your trip gets closer.</p>' : ''}`;
+}
+function tripScreen(t, tab) {
+  const body = { overview: overviewTab, pack: packTab, plan: planTab, budget: budgetTab, ideas: ideasTab, weather: weatherTab }[tab](t);
+  const nav = `<nav class="tabs" aria-label="Trip sections"><div class="wrap">${TABS.map(([k, l, ic]) => `<a href="#/trip/${esc(t.id)}/${k}"${k === tab ? ' aria-current="page"' : ''}><span class="ico">${ic}</span>${l}</a>`).join('')}</div></nav>`;
+  return headerHTML({ back: '#/', title: t.name, sub: [t.destination, rangeText(t)].filter(Boolean).join(' · '), right: (FAB_FOR[tab] ? `<button class="btn small primary" data-action="${FAB_FOR[tab]}">+ Add</button>` : '') + '<button class="btn small" data-action="edit-trip">Edit</button>' })
+    + `<main class="wrap">${storageBannerHTML()}${tab === 'overview' ? nagHTML() : ''}${body}</main>${nav}`;
+}
+function backupScreen() {
+  const last = state.meta.lastBackup ? `Last backup: ${esc(fmtDateTime(state.meta.lastBackup))}.` : 'No backup made yet.';
+  const canEncrypt = !!(window.crypto && crypto.subtle);
+  return headerHTML({ back: '#/', title: 'Backup & restore', sub: 'Your data lives only on this device' }) + `<main class="wrap">${storageBannerHTML()}${installCardHTML()}<div class="stack">
+    <section class="card pad"><h3>Back up</h3><p class="muted">${last}</p>
+      <p>Saves one file with all your trips. On iPhone it opens the share sheet — save it to Files or OneDrive. <b>Never put this file in your GitHub repo.</b></p>
+      ${canEncrypt ? `<div class="field"><label for="bkPass">Passphrase (optional — encrypts the file)</label><input id="bkPass" type="password" autocomplete="new-password"></div>
+      <div class="field" style="margin-top:8px"><label for="bkPass2">Repeat passphrase</label><input id="bkPass2" type="password" autocomplete="new-password"></div>
+      <p class="hint">If you set one, the file can’t be opened without it — not even by me.</p>` : ''}
+      <button type="button" class="btn primary block" style="margin-top:12px" data-action="export">Back up now</button></section>
+    <section class="card pad"><h3>Restore</h3><p>Pick a backup file made by this app. You’ll choose whether to replace what’s here or merge it in.</p><button type="button" class="btn block" data-action="restore">Choose backup file…</button></section>
+    <section class="card pad"><h3>Danger zone</h3><p>Erases all trips on this device.</p><button type="button" class="btn danger block" data-action="wipe">Erase everything on this device</button></section></div></main>`;
+}
+function route() {
+  const [a, b, c] = location.hash.replace(/^#\/?/, '').split('/');
+  if (a === 'trip' && b) { const t = tripById(b); if (t) return { name: 'trip', trip: t, tab: TABS.some(x => x[0] === c) ? c : 'overview' }; }
+  if (a === 'backup') return { name: 'backup' };
+  return { name: 'home' };
+}
+let lastKey = '';
+function render() {
+  const r = route(), key = r.name + (r.trip ? r.trip.id + r.tab : ''), y = window.scrollY;
+  app.innerHTML = r.name === 'trip' ? tripScreen(r.trip, r.tab) : r.name === 'backup' ? backupScreen() : homeScreen();
+  document.title = r.name === 'trip' ? r.trip.name : r.name === 'backup' ? 'Backup' : 'Trips';
+  window.scrollTo(0, key === lastKey ? y : 0); lastKey = key;
+  if (ui.focus) { const el = $(ui.focus, app); if (el) el.focus(); ui.focus = null; }
+  if (r.name === 'trip' && r.tab === 'weather') weatherOnShow(r.trip);
+}
+
+/* ---- backup / restore ---- */
+async function doExport() {
+  const pass = ($('#bkPass') || {}).value || '', pass2 = ($('#bkPass2') || {}).value || '';
+  if (pass) {
+    if (pass.length < 8) return toast('Use at least 8 characters for the passphrase.');
+    if (pass !== pass2) return toast('The two passphrases don’t match.');
+  }
+  const btn = $('[data-action="export"]'); if (btn) btn.disabled = true;
+  try {
+    const text = await Backup.build({ appId: APP_ID, schema: SCHEMA, data: exportData(), passphrase: pass || null });
+    const r = await deliverFile(`goobs-trips-backup-${todayISO()}${pass ? '-encrypted' : ''}.json`, text, 'application/json');
+    if (r !== 'cancelled') {
+      state.meta.lastBackup = new Date().toISOString();
+      await persist({ touch: false });
+      render();
+      toast(r === 'shared' ? 'Backup shared' : 'Backup saved to your downloads');
+    }
+  } catch (e) { toast('Backup failed: ' + e.message); }
+  finally { const b2 = $('[data-action="export"]'); if (b2) b2.disabled = false; }
+}
+async function restoreFromText(text) {
+  let parsed;
+  try { parsed = await Backup.parse(text, { appId: APP_ID, schema: SCHEMA }); }
+  catch (e) { await msgBox('Can’t restore that file', e.message); return false; }
+  if (!parsed) return false;
+  const { data, dropped } = normalizeData(parsed.data);
+  if (!data.trips.length) { await msgBox('Nothing to restore', 'That backup has no trips in it.'); return false; }
+  const hasLocal = state.trips.length > 0;
+  const sum = plural(data.trips.length, 'trip');
+  const when = parsed.exportedAt ? ` Backup made ${fmtDateTime(parsed.exportedAt)}.` : '';
+  const skipped = dropped ? ` ${plural(dropped, 'unreadable item')} will be skipped.` : '';
+  const body = `<p>${esc(sum + '.' + when + skipped)}</p>` + (hasLocal ? '<p class="muted"><b>Replace all</b> swaps everything here for the backup. <b>Merge</b> adds trips that aren’t here yet and keeps the rest.</p>' : '');
+  const choice = await askDialog({
+    title: 'Restore this backup?', body,
+    buttons: hasLocal
+      ? [{ label: 'Cancel', value: 'cancel' }, { label: 'Merge', value: 'merge' }, { label: 'Replace all', value: 'replace', kind: 'danger' }]
+      : [{ label: 'Cancel', value: 'cancel' }, { label: 'Restore', value: 'replace', kind: 'primary' }]
+  });
+  if (choice === 'replace') {
+    const ts = parsed.exportedAt && !isNaN(Date.parse(parsed.exportedAt)) ? parsed.exportedAt : new Date().toISOString();
+    state.trips = data.trips; state.settings = data.settings;
+    state.meta.lastBackup = ts; state.meta.lastChange = ts;
+    await persist({ touch: false });
+    render(); toast(`Restored ${sum}`); return true;
+  }
+  if (choice === 'merge') {
+    const ids = new Set(state.trips.map(x => x.id)); let n = 0;
+    for (const t of data.trips) if (!ids.has(t.id)) { state.trips.push(t); n++; }
+    await persist(); render(); toast(`Merged in ${plural(n, 'trip')}`); return true;
+  }
+  return false;
+}
+async function doRestore() {
+  const f = await pickFile(); if (!f) return;
+  let text;
+  try { text = await readFileText(f); } catch { await msgBox('Couldn’t read that file', 'Try choosing it again.'); return; }
+  await restoreFromText(text);
+}
+async function doWipe() {
+  if (!(await confirmBox('Erase everything?', 'This permanently deletes all trips on this device. Make a backup first if you might want them.', 'Erase everything'))) return;
+  state = defaultState(); ui.geo = null;
+  await persist({ touch: false });
+  location.hash = '#/'; render(); toast('Everything erased');
+}
+
+/* ---- events ---- */
+function curTrip() { return route().trip || null; }
+function handleAction(a, el) {
+  const t = curTrip(), id = el.dataset.id;
+  switch (a) {
+    case 'new-trip': return tripDialog(null);
+    case 'edit-trip': return t && tripDialog(t);
+    case 'export': return doExport();
+    case 'restore': return doRestore();
+    case 'wipe': return doWipe();
+    case 'install': return runInstall();
+  }
+  if (!t) return;
+  switch (a) {
+    case 'todo-toggle': { const x = t.todos.find(v => v.id === id); if (x) { x.done = el.checked; commit(); } return; }
+    case 'todo-del': t.todos = t.todos.filter(v => v.id !== id); return commit();
+    case 'todo-starter': {
+      const have = new Set(t.todos.map(v => normText(v.text))); let n = 0;
+      for (const s of TODO_STARTERS) if (!have.has(normText(s))) { t.todos.push({ id: uid(), text: s, done: false }); n++; }
+      commit(); return toast(n ? `Added ${plural(n, 'task')}` : 'You already have all of those');
+    }
+    case 'pack-toggle': { const x = t.packing.find(v => v.id === id); if (x) { x.packed = el.checked; commit(); } return; }
+    case 'pack-edit': return packDialog(t, id);
+    case 'pack-starter': return starterDialog(t);
+    case 'pack-copy': return copyPackDialog(t);
+    case 'pack-hide': ui.hidePacked = !ui.hidePacked; return render();
+    case 'pack-reset': t.packing.forEach(i => { i.packed = false; }); commit(); return toast('All items unchecked');
+    case 'plan-add': return planDialog(t, null, { date: el.dataset.date || '' });
+    case 'plan-edit': return planDialog(t, id);
+    case 'bud-add': return budgetDialog(t, null);
+    case 'bud-edit': return budgetDialog(t, id);
+    case 'idea-add': return ideaDialog(t, null);
+    case 'idea-edit': return ideaDialog(t, id);
+    case 'idea-filter': ui.ideaFilter = el.dataset.type; return render();
+    case 'idea-plan': { const i = t.ideas.find(v => v.id === id); if (i) planDialog(t, null, { title: i.title, notes: [i.notes, i.url].filter(Boolean).join('\n'), ideaId: i.id }); return; }
+    case 'wx-refresh': ui.wxTried[t.id] = ''; return refreshWeather(t);
+    case 'wx-units': state.settings.units = state.settings.units === 'imperial' ? 'metric' : 'imperial'; return commit();
+    case 'wx-setloc': t.location = null; t.weather = null; ui.geo = { tripId: t.id, query: t.destination, status: 'idle', results: [], error: '' }; persist(); return render();
+    case 'wx-pick': {
+      const r = ui.geo && ui.geo.results[+el.dataset.i]; if (!r) return;
+      t.location = r; t.weather = null; ui.geo = null; ui.wxTried[t.id] = ''; persist(); return render();
+    }
+  }
+}
+app.addEventListener('click', e => {
+  if (e.target.closest('a')) return; // real links (maps, tabs, back) just work
+  const el = e.target.closest('[data-action]');
+  if (!el || el.matches('input[type=checkbox]')) return;
+  handleAction(el.dataset.action, el);
+});
+app.addEventListener('change', e => { if (e.target.matches('input[type=checkbox][data-action]')) handleAction(e.target.dataset.action, e.target); });
+app.addEventListener('input', e => {
+  if (e.target.id !== 'tripNotes') return;
+  const t = curTrip(); if (!t) return;
+  t.notes = e.target.value; clearTimeout(noteTimer); noteTimer = setTimeout(() => persist(), 400);
+});
+app.addEventListener('submit', e => {
+  const f = e.target.closest('form[data-form]'); if (!f) return;
+  e.preventDefault();
+  const t = curTrip(); if (!t) return;
+  const fd = k => (f.elements[k] ? f.elements[k].value.trim() : '');
+  switch (f.dataset.form) {
+    case 'todo-add': { const x = fd('text'); if (x) { t.todos.push({ id: uid(), text: x.slice(0, 140), done: false }); ui.focus = 'form[data-form="todo-add"] input'; commit(); } break; }
+    case 'pack-add': {
+      let text = fd('text'), qty = 1; const m = text.match(/^(\d{1,2})\s*[x×]?\s+(.+)$/i);
+      if (m) { qty = +m[1]; text = m[2]; }
+      if (text) { ui.lastCat = fd('cat'); t.packing.push({ id: uid(), text: text.slice(0, 120), cat: oneOf(ui.lastCat, PACK_CATS, 'Other'), qty: clampInt(qty, 1, 99, 1), packed: false }); ui.focus = 'form[data-form="pack-add"] input[name="text"]'; commit(); }
+      break;
+    }
+    case 'geo': { const q = fd('q'); if (q) searchGeo(t, q); break; }
+  }
+});
+window.addEventListener('hashchange', render);
+document.addEventListener('visibilitychange', () => { if (!document.hidden && !$('dialog[open]')) render(); });
+
+(async function init() {
+  try { db = await openDB(DB_NAME); } catch (e) { console.error(e); db = null; }
+  if (db) {
+    try {
+      const raw = await idbGet(db, 'state');
+      if (raw) {
+        try { state = loadState(JSON.parse(raw)); }
+        catch (e) { console.error(e); await idbPut(db, 'state-damaged-' + Date.now(), raw); toast('Saved data looked damaged — a copy was kept aside.'); }
+      }
+    } catch (e) { console.error(e); db = null; }
+  }
+  render();
+})();
+</script>
+</body>
+</html>

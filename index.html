@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Goobs Apps</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="bills/icon-192.png">
+<style>
+:root{--bg:#f5f4ef;--card:#fff;--ink:#1b2420;--muted:#66736d;--line:#e2e0d6;color-scheme:light dark}
+@media (prefers-color-scheme:dark){:root{--bg:#0e1311;--card:#171f1c;--ink:#e7eeeb;--muted:#97a69f;--line:#27332e}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:max(24px,env(safe-area-inset-top)) 16px 40px}
+main{max-width:520px;margin:0 auto}
+h1{font-size:26px;margin:24px 0 4px}
+p{color:var(--muted);margin:0 0 20px}
+a.app{display:flex;gap:16px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px;text-decoration:none;color:inherit}
+a.app img{width:64px;height:64px;border-radius:14px;flex:none}
+a.app b{display:block;font-size:18px}
+a.app span{color:var(--muted);font-size:14px}
+.tip{font-size:14px;margin-top:22px}
+</style>
+</head>
+<body>
+<main>
+  <h1>Goobs Apps</h1>
+  <p>Pick an app. Each one installs separately to your home screen and works offline.</p>
+  <a class="app" href="bills/"><img src="bills/icon-192.png" alt=""><div><b>Bills</b><span>What's due, mark it paid, it rolls to the next date</span></div></a>
+  <a class="app" href="travel/"><img src="travel/icon-192.png" alt=""><div><b>Trips</b><span>Packing, itinerary, budget, ideas and weather</span></div></a>
+  <p class="tip">Your data stays on the device you enter it on. Use each app's Backup screen to move it between devices.</p>
+</main>
+</body>
+</html>
