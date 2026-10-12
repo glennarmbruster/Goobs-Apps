@@ -1,0 +1,43 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "creamy-tuscan-chicken",
+  "title": "Creamy Tuscan Chicken",
+  "description": "Seared chicken in a smoked paprika, garlic and parmesan cream sauce with crisp-tender fresh broccoli over Impastable pasta.",
+  "category": "Main dish",
+  "tags": ["weeknight", "leftovers"],
+  "servings": 4,
+  "servingsLabel": "servings",
+  "prepMin": 15,
+  "cookMin": 30,
+  "equipment": ["12 inch cast iron skillet", "Thermapen"],
+  "ingredients": [
+    { "id": "thighs", "qty": 1, "unit": "lb", "name": "boneless skinless chicken thighs", "note": "Glenn", "group": "Chicken" },
+    { "id": "breasts", "qty": 12, "unit": "oz", "name": "boneless skinless chicken breasts", "note": "Cindy, tenderized thin", "group": "Chicken" },
+    { "id": "salt", "qty": 1, "unit": "tsp", "name": "kosher salt", "group": "Chicken" },
+    { "id": "pepper", "qty": 0.5, "unit": "tsp", "name": "black pepper", "group": "Chicken" },
+    { "id": "oil", "qty": 1, "unit": "tbsp", "name": "olive oil", "group": "Chicken" },
+    { "id": "paprika", "qty": 1, "unit": "tbsp", "name": "smoked paprika", "group": "Sauce" },
+    { "id": "italian", "qty": 1, "unit": "tbsp", "name": "Italian seasoning", "group": "Sauce" },
+    { "id": "garlic", "qty": 2, "unit": "tbsp", "name": "jarred minced garlic", "group": "Sauce" },
+    { "id": "grangarlic", "qty": 1, "unit": "tsp", "name": "granulated garlic", "group": "Sauce" },
+    { "id": "broth", "qty": 1, "unit": "cup", "name": "low-sodium chicken broth", "group": "Sauce" },
+    { "id": "cream", "qty": 1.5, "unit": "cup", "name": "heavy cream", "group": "Sauce" },
+    { "id": "parmesan", "qty": 1, "unit": "cup", "name": "freshly grated parmesan", "group": "Sauce" },
+    { "id": "broccoli", "qty": 12, "unit": "oz", "name": "fresh broccoli florets", "note": "bite-size", "group": "Finish" },
+    { "id": "pasta", "qty": 8, "unit": "oz", "name": "Impastable pasta", "group": "Finish" }
+  ],
+  "steps": [
+    { "title": "Season", "text": "Season {thighs} and {breasts} with {salt} and {pepper}. Pound the breasts thin and even with the KitchenAid tenderizer if you have not already." },
+    { "title": "Sear chicken", "text": "Heat {oil} in a 12 inch cast iron skillet over medium-high heat. Sear the chicken 4 minutes per side until deeply golden. It does not need to be cooked through. Move to a plate." },
+    { "title": "Bloom spices", "text": "Reduce heat to medium. Add {garlic}, {grangarlic}, {paprika} and {italian} to the pan and stir 30 seconds until fragrant." },
+    { "title": "Deglaze", "text": "Pour in {broth} and scrape up the browned bits. Simmer 2 minutes." },
+    { "title": "Cream sauce", "text": "Stir in {cream} and simmer 5 minutes until the sauce coats a spoon." },
+    { "title": "Add cheese", "text": "Reduce heat to low and stir in {parmesan} until smooth." },
+    { "title": "Cook pasta", "text": "Cook {pasta} in salted water according to the package. Drain." },
+    { "title": "Finish in sauce", "text": "Return the chicken to the sauce and add {broccoli}. Cover and simmer 6 to 8 minutes until the broccoli is crisp-tender (al dente) and the chicken reaches 175°F for thighs and 165°F for breasts on the Thermapen." },
+    { "title": "Serve", "text": "Slice the chicken and serve over the pasta with plenty of sauce." }
+  ],
+  "notes": "Result: Glenn 9.2, Cindy 9.5. Quantities are starting points (the saved version had no amounts); the next cook should go heavier on smoked paprika, jarred minced garlic and Italian seasoning. Thighs would push it to 10/10. Fresh broccoli reheats better than frozen; add it earlier in the sequence than the final minutes if you like it softer. Reheat gently with a splash of broth.",
+  "source": "Glenn"
+}

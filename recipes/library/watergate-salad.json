@@ -1,0 +1,32 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "watergate-salad",
+  "title": "Watergate Salad",
+  "description": "Pistachio pudding fluff with pineapple, marshmallows, pecans and maraschino cherries, chilled overnight.",
+  "category": "Sides",
+  "tags": ["make-ahead", "holiday", "no-cook"],
+  "servings": 10,
+  "servingsLabel": "servings",
+  "prepMin": 15,
+  "cookMin": 0,
+  "equipment": [],
+  "ingredients": [
+    { "id": "pudding", "qty": 1, "unit": "package", "name": "dry pistachio instant pudding mix", "note": "3.4 oz box" },
+    { "id": "pineapple", "qty": 1, "unit": "can", "name": "crushed pineapple", "note": "20 oz, UNDRAINED" },
+    { "id": "coolwhip", "qty": 8, "unit": "oz", "name": "Cool Whip", "note": "thawed" },
+    { "id": "marshmallows", "qty": 2, "unit": "cup", "name": "mini marshmallows" },
+    { "id": "pecans", "qty": 0.5, "unit": "cup", "name": "chopped pecans" },
+    { "id": "cherries", "qty": 0.5, "unit": "cup", "name": "maraschino cherries", "note": "halved, patted dry" },
+    { "id": "cherrytop", "qty": 6, "name": "maraschino cherries", "note": "for the top, patted very dry" }
+  ],
+  "steps": [
+    { "title": "Mix base", "text": "In a large bowl, stir {pudding} into {pineapple} with its juice. Do not drain the pineapple; the juice is what activates the pudding. Stir 2 minutes." },
+    { "title": "Fold in Cool Whip", "text": "Gently fold in {coolwhip} until no streaks remain." },
+    { "title": "Add mix-ins", "text": "Fold in {marshmallows}, {pecans} and {cherries}." },
+    { "title": "Chill overnight", "text": "Cover and refrigerate overnight. The marshmallows soften and the flavors meld." },
+    { "title": "Garnish", "text": "Before serving, top with {cherrytop} patted dry so the red does not bleed into the green." }
+  ],
+  "notes": "Quantities are starting points (the saved version had no amounts). Green and red together is essential for presentation. Make the night before; chilling overnight is required, not optional.",
+  "source": "Glenn"
+}
