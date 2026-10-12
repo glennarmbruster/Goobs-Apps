@@ -770,6 +770,7 @@ const CRUISE_PORTS = [
   { id: 'belize', name: 'Belize City', place: 'Belize City, Belize', lat: 17.4995, lon: -88.1976, src: 'Goldson Intl airport, 1991-2020',
     hi: [27.9, 28.8, 29.8, 31.2, 31.9, 31.7, 31.5, 31.8, 31.8, 30.6, 29.2, 28.3], lo: [20.6, 21.5, 22.4, 24.2, 25.2, 25.7, 25.3, 25.3, 24.9, 23.9, 22.0, 21.2],
     rain: [141, 65, 41, 58, 132, 236, 180, 195, 230, 306, 236, 151] },
+  { id: 'harvest', name: 'Harvest Caye (Belize)', place: 'Harvest Caye, Belize', lat: 16.49, lon: -88.39, src: '', hi: null, lo: null, rain: null },
   { id: 'roatan', name: 'Roatan (Mahogany Bay)', place: 'Roatan, Honduras', lat: 16.3167, lon: -86.5333, src: '', hi: null, lo: null, rain: null },
   { id: 'grandcayman', name: 'Grand Cayman (George Town)', place: 'George Town, Grand Cayman', lat: 19.2869, lon: -81.3674, src: 'Owen Roberts airport, 1991-2020',
     hi: [28.4, 28.7, 29.2, 30.1, 31.0, 31.7, 32.3, 32.3, 31.9, 31.2, 29.6, 28.9], lo: [23.1, 22.9, 23.1, 24.3, 25.1, 25.8, 25.9, 26.0, 25.7, 25.2, 24.5, 23.6],
@@ -819,7 +820,8 @@ function normWeather(w) {
     }
   };
   take(w.days); take(w.avg, 'typical');          // days = forecasts; avg = same-date averages (older saves mixed both in days)
-  return { fetchedAt: isNum(w.fetchedAt) ? w.fetchedAt : 0, locKey: str(w.locKey), span: str(w.span), days, avg };
+  const labels = o => { const r = {}; for (const [k, v] of Object.entries(o && typeof o === 'object' ? o : {})) if (isISO(k) && typeof v === 'string') r[k] = v.slice(0, 120); return r; };
+  return { fetchedAt: isNum(w.fetchedAt) ? w.fetchedAt : 0, locKey: str(w.locKey), span: str(w.span), days, avg, places: labels(w.places), unres: labels(w.unres) };
 }
 const wxBest = (w, d) => (w ? w.days[d] || w.avg[d] || null : null);
 const DEFAULT_LIST = 'Main';
@@ -1090,9 +1092,9 @@ async function fetchWeather(t, force) {
   return { warn, weather: { fetchedAt: Date.now(), locKey: key, span, days: fc.status === 'fulfilled' ? fc.value : (prev ? prev.days : {}), avg: av.status === 'fulfilled' ? av.value : (prev ? prev.avg : {}) } };
 }
 async function refreshWeather(t, force) {
-  if (!t.location || ui.wxBusy) return;
+  if (!weatherSource(t) || ui.wxBusy) return;
   ui.wxBusy = true; ui.wxError = ''; render();
-  try { const r = await fetchWeather(t, force); t.weather = r.weather; ui.wxError = r.warn; persist(); }
+  try { const r = await loadWeather(t, force); t.weather = r.weather; ui.wxError = r.warn; persist(); }
   catch (e) { ui.wxError = netMsg(e); }
   finally { ui.wxBusy = false; render(); }
 }
@@ -1104,6 +1106,11 @@ async function searchGeo(t, q) {
 }
 function weatherOnShow(t) {
   if (ui.wxBusy) return;
+  if (hasDayPlaces(t)) {
+    const sig = placesSig(t, dayPlaces(t)), tried = `${sig}|${Math.floor(Date.now() / (6 * 3600e3))}`;
+    if ((!t.weather || t.weather.locKey !== sig || Date.now() - t.weather.fetchedAt > 6 * 3600e3) && ui.wxTried[t.id] !== tried) { ui.wxTried[t.id] = tried; refreshWeather(t); }
+    return;
+  }
   if (!t.location) { if (t.destination && (!ui.geo || ui.geo.tripId !== t.id)) searchGeo(t, t.destination); return; }
   const stale = !t.weather || t.weather.locKey !== locKey(t) || t.weather.span !== wxSpan(t) || Date.now() - t.weather.fetchedAt > 6 * 3600e3 || wxDays(t).some(d => !t.weather.avg[d]);
   const sig = `${locKey(t)}|${wxSpan(t)}|${Math.floor(Date.now() / (6 * 3600e3))}`;
@@ -1119,6 +1126,106 @@ function weatherSummary(t) {
   const rainy = ds.filter(d => d.kind === 'forecast' ? (d.pop || 0) >= 50 || (d.precip || 0) >= 3 : d.years ? d.rainy / d.years >= 0.5 : false).length;
   return { lo, hi, rainy, n: ds.length, cold: lo <= 10, hot: hi >= 29, rain: rainy >= Math.max(1, Math.round(ds.length * 0.25)) };
 }
+
+/* ---- weather for each day's Place (the Place field on the Plan tab) ----
+   A day's place is the first Place on that day's plan items that can be found on the map. A day at sea uses the point halfway
+   between the ports on either side. Days with no usable place fall back to the trip's own location, if it has one. */
+const planSort = (a, b) => (a.time || '99:99').localeCompare(b.time || '99:99');
+const noAccents = x => str(x).normalize('NFKD').replace(/[\u0300-\u036f]/g, '');
+const SEA_PLACE = /\b(at sea|sea day|cruising)\b/i, SEA_TITLE = /\b(day at sea|sea day|at sea)\b/i;
+const PORT_MATCH = [['galveston', /\bgalveston\b/], ['cozumel', /\bcozumel\b/], ['costamaya', /\b(costa maya|mahahual)\b/], ['progreso', /\bprogreso\b/],
+  ['harvest', /\bharvest caye\b/], ['belize', /\bbelize city\b/], ['roatan', /\b(roatan|mahogany bay)\b/], ['grandcayman', /\b(grand cayman|george town)\b/],
+  ['jamaica', /\b(jamaica|montego bay|falmouth|ocho rios)\b/], ['nassau', /\bnassau\b/], ['freeport', /\bfreeport\b.*\bbahamas\b|\bbahamas\b.*\bfreeport\b/], ['amber', /\b(amber cove|puerto plata)\b/]];
+function knownPort(text) { const k = noAccents(text).toLowerCase(); const m = PORT_MATCH.find(([, re]) => re.test(k)); return m ? portById(m[0]) : null; }
+const portLoc = p => ({ name: p.name.replace(/\s*\(.*\)/, '').trim(), admin1: '', country: p.place.split(',').slice(1).join(',').trim(), latitude: p.lat, longitude: p.lon });
+const locLabel = l => [l.name, l.admin1, l.country].filter(Boolean).join(', ');
+const distKm = (a, b) => { const rad = x => x * Math.PI / 180, dl = rad(b.latitude - a.latitude), dn = rad(b.longitude - a.longitude); const h = Math.sin(dl / 2) ** 2 + Math.cos(rad(a.latitude)) * Math.cos(rad(b.latitude)) * Math.sin(dn / 2) ** 2; return 12742 * Math.asin(Math.sqrt(h)); };
+const hash36 = x => { let h = 5381; for (let i = 0; i < x.length; i++) h = ((h << 5) + h + x.charCodeAt(i)) | 0; return (h >>> 0).toString(36); };
+let geoCache = {};
+const saveGeo = () => { if (db) idbPut(db, 'geocache', JSON.stringify(geoCache)).catch(() => {}); };
+function loadGeo(raw) {
+  try { const o = JSON.parse(raw), out = {}; for (const [k, v] of Object.entries(o || {})) { if (v && v.none && isNum(v.at)) out[k] = { none: true, at: v.at }; else { const l = normLoc(v); if (l) out[k] = l; } } geoCache = out; } catch { geoCache = {}; }
+}
+/* one place name -> {name, admin1, country, latitude, longitude} or null. Throws only when the network is the problem. */
+async function lookupPlace(text) {
+  const key = normText(text), hit = geoCache[key];
+  if (hit && (!hit.none || Date.now() - hit.at < 3600e3)) return hit.none ? null : hit;
+  const port = knownPort(text); let loc = null;
+  if (port) loc = portLoc(port);
+  else {
+    const bare = text.replace(/\([^)]*\)/g, ' ').replace(/\s+/g, ' ').trim(), parts = bare.split(',').map(x => x.trim()).filter(Boolean);
+    const tries = [...new Set([text.trim(), bare, parts.length > 1 ? parts[0] + ', ' + parts[parts.length - 1] : ''].filter(Boolean))];
+    for (const q of tries) { const r = await geocode(q); if (r.length) { loc = r[0]; break; } }
+  }
+  geoCache[key] = loc || { none: true, at: Date.now() };
+  saveGeo();
+  return loc;
+}
+/* per trip day: the candidate places from the plan, and whether it is a day at sea */
+function dayPlaces(t) {
+  return wxDays(t).map(d => {
+    const cands = []; let sea = false;
+    for (const it of t.plan.filter(i => i.date === d).sort(planSort)) {
+      const pl = it.place.trim();
+      if (pl && SEA_PLACE.test(pl)) sea = true;
+      else if (pl) { if (!cands.includes(pl)) cands.push(pl); }
+      else if (SEA_TITLE.test(it.title)) sea = true;
+    }
+    return { date: d, sea, cands: sea ? [] : cands };
+  });
+}
+/* day-by-day places apply to cruises (ordinary trips keep their one location, so restaurant names are never looked up) */
+const hasDayPlaces = t => !!t.cruise && dayPlaces(t).some(x => x.sea || x.cands.length);
+const placesSig = (t, dp) => 'p:' + hash36(dp.map(x => x.date + (x.sea ? '~sea' : x.cands.join('/'))).join('|') + '|' + locKey(t) + '|' + (t.cruise ? 'c' : ''));
+const weatherSource = t => !!t.location || hasDayPlaces(t);
+async function resolveDays(t, dp) {
+  const accept = loc => t.cruise || !t.location || distKm(loc, t.location) <= 250;   // keeps "Pier 21" from landing in another country on a normal trip
+  const texts = [...new Set(dp.flatMap(x => x.cands))], found = {}; let netErr = null;
+  await Promise.all(texts.map(async tx => { try { found[tx] = await lookupPlace(tx); } catch (e) { netErr = netErr || e; } }));
+  if (netErr) throw netErr;
+  const out = dp.map(x => {
+    if (x.sea) return { sea: true, label: 'At sea' };
+    for (const tx of x.cands) { const loc = found[tx]; if (loc && accept(loc)) return { loc, label: locLabel(loc) }; }
+    if (t.location) return { loc: t.location, label: locLabel(t.location) + ' (trip location)', bad: x.cands[0] || '' };
+    return { bad: x.cands[0] || '' };
+  });
+  const short = o => o.label.split(',')[0].replace(/ \(trip location\)$/, '');
+  out.forEach((r, i) => {
+    if (!r.sea) return;
+    let a = null, b = null;
+    for (let j = i - 1; j >= 0 && !a; j--) if (out[j].loc && !out[j].sea) a = out[j];
+    for (let j = i + 1; j < out.length && !b; j++) if (out[j].loc && !out[j].sea) b = out[j];
+    if (a && b) { r.loc = { name: 'At sea', admin1: '', country: '', latitude: (a.loc.latitude + b.loc.latitude) / 2, longitude: (a.loc.longitude + b.loc.longitude) / 2 }; r.label = `At sea · between ${short(a)} and ${short(b)}`; }
+    else if (a || b) { const o = a || b; r.loc = { ...o.loc }; r.label = `At sea · near ${short(o)}`; }
+  });
+  return out;
+}
+async function fetchDayWeather(t, force) {
+  const days = wxDays(t), dp = dayPlaces(t), today = todayISO(), lastFc = addDays(today, 15), sig = placesSig(t, dp);
+  const res = await resolveDays(t, dp);
+  const prev = t.weather && t.weather.locKey === sig ? t.weather : null;
+  const wx = { fetchedAt: Date.now(), locKey: sig, span: wxSpan(t), days: {}, avg: {}, places: {}, unres: {} };
+  const groups = new Map();
+  res.forEach((r, i) => {
+    if (r.label && (r.loc || r.sea)) wx.places[days[i]] = r.label;
+    if (r.bad) wx.unres[days[i]] = r.bad;
+    if (!r.loc || days[i] < today) return;
+    const k = locKey({ location: r.loc }); if (!groups.has(k)) groups.set(k, { loc: r.loc, days: [] });
+    groups.get(k).days.push(days[i]);
+  });
+  let okN = 0, failN = 0, lastErr = null;
+  await Promise.all([...groups.values()].map(async g => {
+    const fcDays = g.days.filter(d => d <= lastFc), haveAvg = !force && prev && g.days.every(d => prev.avg[d]);
+    const [fc, av] = await Promise.allSettled([
+      fcDays.length ? fetchForecast(g.loc, fcDays) : Promise.resolve({}),
+      haveAvg ? Promise.resolve(Object.fromEntries(g.days.map(d => [d, prev.avg[d]]))) : fetchTypical(g.loc, g.days)]);
+    if (fc.status === 'fulfilled') { Object.assign(wx.days, fc.value); okN++; } else { failN++; lastErr = fc.reason; for (const d of fcDays) if (prev && prev.days[d]) wx.days[d] = prev.days[d]; }
+    if (av.status === 'fulfilled') { Object.assign(wx.avg, av.value); okN++; } else { failN++; lastErr = av.reason; for (const d of g.days) if (prev && prev.avg[d]) wx.avg[d] = prev.avg[d]; }
+  }));
+  if (groups.size && !okN) throw lastErr;
+  return { warn: failN ? 'Some weather couldn’t be updated: ' + netMsg(lastErr) : '', weather: wx };
+}
+const loadWeather = (t, force) => (hasDayPlaces(t) ? fetchDayWeather(t, force) : fetchWeather(t, force));
 
 /* ---- packing starter lists ---- */
 const BASE_ITEMS = [['Documents', 'Photo ID / passport'], ['Documents', 'Wallet & cards'], ['Documents', 'Travel confirmations (flights, lodging)'],
@@ -1552,7 +1659,42 @@ function cruiseBlock(t) {
     <ul class="card list" style="margin-top:10px">${list.map(row).join('')}</ul>${season}
     <p class="hint" style="margin:10px 4px 0">These are monthly averages from published climate tables, not forecasts. Some ports use older records (Cozumel and Progreso 1951 to 1980, Freeport 1971 to 2000). Jamaica uses the Montego Bay airport station.</p>`;
 }
-function weatherTab(t) { return (t.cruise ? cruiseBlock(t) : '') + weatherTabBase(t); }
+function placesWeatherTab(t) {
+  const units = state.settings.units, today = todayISO(), w = t.weather, days = wxDays(t), dp = dayPlaces(t), ws = weatherSummary(t);
+  const cur = w && w.locKey === placesSig(t, dp) ? w : null;
+  const unitBtn = `<button class="btn small" data-action="wx-units" aria-label="Switch units">Show °${units === 'imperial' ? 'C' : 'F'}</button>`;
+  const fcWin = d => d >= today && d <= addDays(today, 15);
+  const tab = ui.wxTab[t.id] || (days.some(fcWin) ? 'current' : 'avg');
+  const status = ui.wxBusy ? 'Updating…' : ui.wxError ? `<span class="bad">${esc(ui.wxError)}</span>${w ? ' Showing saved data from ' + esc(ago(w.fetchedAt)) + '.' : ''}` : w ? `Updated ${esc(ago(w.fetchedAt))}` : '';
+  const rows = days.map((d, i) => {
+    const place = cur ? cur.places[d] : '', bad = cur ? cur.unres[d] : '', x = w && (tab === 'avg' ? w.avg[d] : w.days[d]), x2 = x && cur ? x : null;
+    const where = place ? (dp[i].sea ? '🌊 ' : '📍 ') + esc(place) : dp[i].sea ? '🌊 At sea' : dp[i].cands.length ? (ui.wxBusy ? 'Looking up…' : '') : 'No place on the Plan tab for this day';
+    const note = bad ? `<div class="row-sub bad">Couldn’t find “${esc(bad)}” on the map${t.location ? ', so the trip location is used' : ''}. Try “City, Country” in Place on the Plan tab.</div>` : '';
+    const head = `Day ${i + 1} · ${esc(fmtDate(d))}`;
+    let em = '·', line = '', temps = '';
+    if (d < today) line = 'Past';
+    else if (!place || !(cur)) line = ui.wxBusy ? 'Loading…' : '';
+    else if (!x2) line = tab === 'avg' ? (ui.wxBusy ? 'Loading…' : 'No data') : fcWin(d) ? (ui.wxBusy ? 'Loading…' : 'No forecast data') : `Forecast not available yet — it appears on ${esc(fmtDate(addDays(d, -15), false))}`;
+    else {
+      const [e, label] = wmo(x2.code); em = e; temps = `${T(x2.tmax)} / ${T(x2.tmin)}`;
+      line = esc([label, tab === 'avg' ? (x2.years ? `rain on this date in ${x2.rainy} of ${x2.years} past years` : '') : (x2.pop != null ? `${Math.round(x2.pop)}% chance of rain` : '')].filter(Boolean).join(' · '));
+    }
+    return `<li class="row static wxrow${d < today ? ' faded' : ''}"><div class="emoji">${em}</div><div class="row-main"><div class="row-title">${head}</div>${where ? `<div class="row-sub">${where}</div>` : ''}${line ? `<div class="row-sub">${line}</div>` : ''}${note}</div><div class="row-amt num">${temps}</div></li>`;
+  }).join('');
+  const anyFc = days.some(fcWin), firstFc = days.find(d => d >= today && !fcWin(d));
+  const seg = `<div class="seg" role="group" aria-label="Weather view"><button type="button" class="chip" data-action="wx-tab" data-tab="avg" aria-pressed="${tab === 'avg'}">Avg</button><button type="button" class="chip" data-action="wx-tab" data-tab="current" aria-pressed="${tab === 'current'}">Forecast</button></div>`;
+  const tabHint = tab === 'avg'
+    ? '<p class="hint" style="margin:10px 4px">Averages come from the same dates in the last three years at each day’s place. They show what’s typical, not a forecast.</p>'
+    : anyFc ? `<p class="hint" style="margin:10px 4px">Forecasts reach 16 days ahead and the later days are less certain.${firstFc ? ` Days after ${esc(fmtDate(addDays(today, 15), false))} will fill in as your trip gets closer.` : ''}</p>`
+      : `<p class="hint" style="margin:10px 4px">Forecasts only reach 16 days ahead. ${t.startDate && t.startDate > today ? `Yours start showing on <b>${esc(fmtDate(addDays(t.startDate, -15)))}</b>. ` : ''}Until then the Avg tab shows what’s typical for your dates.</p>`;
+  const hints = ws ? [ws.cold ? 'Cold mornings or nights ahead: pack warm layers.' : '', ws.hot ? 'Hot days ahead: sun protection and light clothing.' : '', ws.rain ? 'Rain looks likely on several days: rain jacket or umbrella.' : ''].filter(Boolean) : [];
+  return `<div class="sec-h"><span>Weather</span>${unitBtn}</div>
+    <section class="card pad"><div class="row-title">📍 Follows the Place on each day of your Plan</div><div class="row-sub" style="margin-top:2px">${status}</div>
+      <div class="chips" style="margin-top:10px"><button class="btn small" data-action="wx-refresh" ${ui.wxBusy ? 'disabled' : ''}>Refresh</button></div></section>
+    ${ws ? `<section class="card pad" style="margin-top:12px"><h3>${esc(T(ws.lo))} to ${esc(T(ws.hi))} across your dates</h3>${hints.map(h => `<p style="margin:6px 0 0">${esc(h)}</p>`).join('')}<button class="btn small" style="margin-top:10px" data-action="pack-starter">Add matching items to packing</button></section>` : ''}
+    <div class="sec-h"><span>Day by day</span><button class="btn small" data-action="print" data-preset="plan">🖨 Print</button></div>${seg}${tabHint}<ul class="card list" style="margin-top:8px">${rows}</ul>`;
+}
+function weatherTab(t) { return hasDayPlaces(t) ? placesWeatherTab(t) + (t.cruise ? cruiseBlock(t) : '') : (t.cruise ? cruiseBlock(t) : '') + weatherTabBase(t); }
 function weatherTabBase(t) {
   const units = state.settings.units, today = todayISO();
   const unitBtn = `<button class="btn small" data-action="wx-units" aria-label="Switch units">Show °${units === 'imperial' ? 'C' : 'F'}</button>`;
@@ -1668,8 +1810,8 @@ function printDialog(t, preset) {
     const lists = t.packLists.filter((n, i) => v['pl' + i]);
     if (!(v.itin || v.pack || v.todos || v.budget)) return 'Pick at least one thing to print.';
     if (v.pack && !lists.length) return 'Pick at least one packing list.';
-    if (v.weather && v.itin && t.location && (!t.weather || Date.now() - t.weather.fetchedAt > 3 * 3600e3 || wxDays(t).some(d => !t.weather.avg[d]))) {
-      try { const r = await fetchWeather(t, false); t.weather = r.weather; persist(); } catch { /* print with whatever is saved */ }
+    if (v.weather && v.itin && weatherSource(t) && (!t.weather || (hasDayPlaces(t) && t.weather.locKey !== placesSig(t, dayPlaces(t))) || Date.now() - t.weather.fetchedAt > 3 * 3600e3 || (!hasDayPlaces(t) && wxDays(t).some(d => !t.weather.avg[d])))) {
+      try { const r = await loadWeather(t, false); t.weather = r.weather; persist(); } catch { /* print with whatever is saved */ }
     }
     const parts = [paHead(t, v.itin ? '' : v.pack ? 'Packing' : '')];
     if (v.itin) parts.push(printItinerary(t, { weather: v.weather }));
@@ -1879,6 +2021,7 @@ document.addEventListener('visibilitychange', () => { if (!document.hidden && !$
   try { db = await openDB(DB_NAME); } catch (e) { console.error(e); db = null; }
   if (db) {
     try {
+      const gc = await idbGet(db, 'geocache'); if (gc) loadGeo(gc);
       const raw = await idbGet(db, 'state');
       if (raw) {
         try { state = loadState(JSON.parse(raw)); }

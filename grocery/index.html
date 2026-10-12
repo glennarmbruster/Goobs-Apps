@@ -936,7 +936,7 @@ function listScreen(l) {
   if (done.length) body += `<div class="sec-h"><button type="button" class="linkbtn" data-action="toggle-done" aria-expanded="${ui.doneOpen}">${ui.doneOpen ? '▾' : '▸'} ${GROC ? 'In the cart' : 'Done'} (${done.length})</button><button type="button" class="btn small danger" data-action="clear-done">${GROC ? 'Clear checked' : 'Clear done'}</button></div>${ui.doneOpen ? `<ul class="card list">${done.map(rowHTML).join('')}</ul>` : ''}`;
   const form = `<form class="card pad addform" data-form="add" autocomplete="off"><div class="addrow"><input name="text" aria-label="${GROC ? 'Add an item' : 'Add a task'}" placeholder="${GROC ? 'Add an item, e.g. 2 apples' : 'Add a task'}" maxlength="140" enterkeyhint="done" autocapitalize="sentences"><button type="submit" class="btn primary">Add</button></div></form>`;
   if (GROC) return headerHTML({ title: `${CFG.emoji} ${CFG.title}`, sub: openWord(open.length), right: syncBadgeHTML() + '<a class="btn small" href="#/backup">Backup</a>' })
-    + `<main class="wrap">${storageBannerHTML()}${nagHTML()}${form}${body}</main>`;
+    + `<main class="wrap">${storageBannerHTML()}${nagHTML()}${form}<div class="chips" style="margin:-4px 0 12px"><button type="button" class="chip" data-action="paste-items">📋 Paste items</button></div>${body}</main>`;
   return headerHTML({ back: '#/', title: l.name, sub: openWord(open.length), right: '<button type="button" class="btn small" data-action="edit-list">Edit</button>' })
     + `<main class="wrap">${storageBannerHTML()}${form}${body}</main>`;
 }
@@ -1051,6 +1051,41 @@ function addItem(l, raw) {
   return true;
 }
 
+/* "flour (2 ¼ cups)", "2 apples", "- milk": one line per item. Used by Paste items (e.g. from the Recipes app). */
+function parseGroceryLine(line) {
+  const s = sv(line).replace(/^\s*(?:[-*•▢☐□]|\[ \]|\d+[.)])\s+/, '').trim(); if (!s) return null;
+  const m = /^(.*?)\s*\(([^()]{1,24})\)\s*$/.exec(s);
+  const p = m && m[1].trim() ? { text: m[1], qty: m[2] } : parseQty(s), text = flat(p.text, 140);
+  return text ? { text, qty: flat(p.qty, 20) } : null;
+}
+function addMany(l, raw) {
+  const have = new Set(l.items.filter(i => !i.done).map(i => i.text.toLowerCase())), lines = sv(raw).replace(/\r\n?/g, '\n').split('\n').map(parseGroceryLine).filter(Boolean);
+  let added = 0, dup = 0, full = false;
+  for (const x of lines) {
+    if (have.has(x.text.toLowerCase())) { dup++; continue; }
+    if (l.items.length >= MAX_ITEMS) { full = true; break; }
+    l.items.push({ id: uid(), text: x.text, done: false, notes: '', createdAt: Date.now(), qty: x.qty, cat: guessCat(x.text) }); have.add(x.text.toLowerCase()); added++;
+  }
+  return { added, dup, full, total: lines.length };
+}
+function pasteItemsDialog(l) {
+  formDialog({
+    title: 'Paste items', intro: 'One item per line. Works with “Add to Grocery” from the Recipes app.', submitLabel: 'Add to list',
+    fields: [{ name: 'text', label: 'Items', type: 'textarea', value: '' }],
+    extra: [{ label: 'Paste from clipboard', onClick: async () => {
+      try { const t = await navigator.clipboard.readText(); const ta = $('#dlg textarea'); if (ta && t) ta.value = t; else toast('The clipboard is empty.'); } catch { toast('Your browser blocked that. Long-press in the box and tap Paste.'); }
+    } }],
+    onSubmit: v => {
+      const cur = listById(l.id); if (!cur) return 'That list no longer exists.';
+      const r = addMany(cur, v.text);
+      if (!r.total) return 'Paste at least one item.';
+      if (!r.added && !r.full) return 'Everything pasted is already on the list.';
+      commit(); toast(`Added ${plural(r.added, 'item')}${r.dup ? `, skipped ${r.dup} already on the list` : ''}${r.full ? `. The list is full (${MAX_ITEMS} items).` : ''}`);
+    }
+  });
+  const ta = $('#dlg textarea'); if (ta) { ta.style.minHeight = '160px'; ta.focus(); }
+}
+
 /* ---- backup / restore ---- */
 async function doExport() {
   const pass = ($('#bkPass') || {}).value || '', pass2 = ($('#bkPass2') || {}).value || '';
@@ -1143,6 +1178,7 @@ function handleAction(a, el) {
   switch (a) {
     case 'toggle': { const x = l.items.find(v => v.id === id); if (x) { x.done = el.checked; commit(); } return; }
     case 'edit': return itemDialog(id);
+    case 'paste-items': return GROC && pasteItemsDialog(l);
     case 'toggle-done': ui.doneOpen = !ui.doneOpen; return render();
     case 'clear-done': {
       const n = l.items.filter(i => i.done).length; if (!n) return;

@@ -144,6 +144,12 @@ dialog::backdrop{background:rgba(10,15,12,.55)}
 :root{--bg:#fbf6f1;--accent:#c2410c;--accent-soft:#fde4d3;--line:#eadfd4;--soft:#f3e9df}
 @media (prefers-color-scheme:dark){:root{--bg:#161009;--card:#211810;--line:#3a2c1f;--soft:#2b2017;--accent:#fb923c;--accent-ink:#2b1200;--accent-soft:#3d2512}}
 .search{margin:14px 0 10px}
+.rwrap{position:relative}
+.mealbtn{position:absolute;right:12px;bottom:12px;z-index:1;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:4px 12px;min-height:32px;font:inherit;font-size:13px;font-weight:700;cursor:pointer}
+.mealbtn[aria-pressed=true]{background:var(--accent);color:var(--accent-ink,#fff);border-color:var(--accent)}
+.rwrap .rcard{padding-bottom:50px}
+.mealbar{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:7;display:flex;gap:10px;align-items:center;background:var(--accent);color:var(--accent-ink,#fff);border-radius:16px;padding:14px 16px;text-decoration:none;box-shadow:0 6px 20px rgba(0,0,0,.25)}
+.mealbar .go{margin-left:auto;font-weight:700}
 .rcard{display:block;padding:14px 16px;text-decoration:none;color:inherit;margin-bottom:10px}
 .rcard .tc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
 .rcard h2{font-size:17px;overflow-wrap:anywhere}
@@ -526,7 +532,9 @@ if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol))
 /* ===================== Recipes ===================== */
 const APP_ID = 'goobs-recipes', DB_NAME = 'goobs-recipes-db', SCHEMA = 1, FORMAT = 'goobs-recipe';
 const MAX_RECIPES = 1500, MAX_ING = 120, MAX_STEPS = 80;
-const CATS = ['Breakfast', 'Main dish', 'Side', 'Soup & stew', 'Salad', 'Appetizer', 'Sauce & condiment', 'Bread', 'Baking', 'Dessert', 'Drink', 'Other'];
+const CATS = ['Breakfast', 'Main dish', 'Sides', 'Soup & stew', 'Salad', 'Appetizer', 'Sauce & condiment', 'Bread', 'Baking', 'Dessert', 'Drink', 'Other'];
+const CAT_ALIAS = { side: 'Sides', 'side dish': 'Sides', 'side dishes': 'Sides', main: 'Main dish', 'main course': 'Main dish', mains: 'Main dish', entree: 'Main dish', 'entrée': 'Main dish', bake: 'Baking', baked: 'Baking', 'baked goods': 'Baking' };
+const FIXED_TABS = ['Main dish', 'Sides', 'Baking'];
 const plural = (n, w, pl) => `${n} ${n === 1 ? w : pl || w + 's'}`;
 
 /* ---------- small normalisers ---------- */
@@ -720,7 +728,7 @@ function normRecipe(raw, { id } = {}) {
   const equipment = arr(typeof raw.equipment === 'string' ? raw.equipment.split('\n') : raw.equipment).map(t => flat(t, 80)).filter(Boolean).slice(0, 20);
   const category = flat(raw.category, 30) || 'Other';
   const rid = id || cleanId(raw.id) || slug(title, 48) || uid();
-  return { id: rid, title, description: block(raw.description, 600), category: CATS.find(c => c.toLowerCase() === category.toLowerCase()) || category, tags,
+  return { id: rid, title, description: block(raw.description, 600), category: CAT_ALIAS[category.toLowerCase()] || CATS.find(c => c.toLowerCase() === category.toLowerCase()) || category, tags,
     servings: sv0.n || 4, servingsLabel: label, prepMin: prep, cookMin: cook, totalMin: total, source: flat(raw.source, 200), sourceUrl: safeUrl(raw.sourceUrl !== undefined ? raw.sourceUrl : raw.url).slice(0, 500),
     ingredients: ings, steps, equipment, notes: block(raw.notes, 4000), updated: isNum(raw.updated) ? raw.updated : Date.now() };
 }
@@ -843,11 +851,11 @@ function normalizeData(raw) {
   if (raw.marks && typeof raw.marks === 'object') for (const [k, v] of Object.entries(raw.marks)) { const id = cleanId(k); if (!id) continue; const m = normMark(v); if (!markEmpty(m)) marks[id] = m; }
   return { data: { recipes, marks }, dropped };
 }
-const defaultState = () => ({ schemaVersion: SCHEMA, meta: { lastBackup: null, lastChange: null }, recipes: [], marks: {} });
+const defaultState = () => ({ schemaVersion: SCHEMA, meta: { lastBackup: null, lastChange: null }, recipes: [], marks: {}, meal: [] });
 const strOrNull = v => (typeof v === 'string' && v ? v : null);
 function loadState(parsed) {
   const { data } = normalizeData(parsed), m = parsed && parsed.meta;
-  return { schemaVersion: SCHEMA, meta: { lastBackup: strOrNull(m && m.lastBackup), lastChange: strOrNull(m && m.lastChange) }, recipes: data.recipes, marks: data.marks };
+  return { schemaVersion: SCHEMA, meta: { lastBackup: strOrNull(m && m.lastBackup), lastChange: strOrNull(m && m.lastChange) }, recipes: data.recipes, marks: data.marks, meal: [...new Set(arr(parsed && parsed.meal).map(cleanId).filter(Boolean))].slice(0, 12) };
 }
 const exportData = () => ({ recipes: state.recipes, marks: state.marks });
 let state = defaultState(), db = null, saveFailed = false, persistAsked = false, saveChain = Promise.resolve();
@@ -902,6 +910,37 @@ function allRecipes({ withHidden = false } = {}) {
 }
 const findRecipe = id => { const m = state.recipes.find(r => r.id === id); if (m) return { r: m, src: 'mine', shadows: LIB.recipes.some(x => x.id === id) }; const l = LIB.recipes.find(r => r.id === id); return l ? { r: l, src: 'lib', shadows: false } : null; };
 const freeId = base => { const used = new Set([...state.recipes.map(r => r.id), ...LIB.recipes.map(r => r.id)]); let id = base || uid(), n = 2; while (used.has(id)) id = (base || 'recipe') + '-' + n++; return id; };
+
+/* ---------- the meal: a few recipes picked together (a main, some sides) ---------- */
+const mealRecipes = () => state.meal.map(id => findRecipe(id)).filter(Boolean).map(x => x.r);
+const inMeal = id => state.meal.includes(id);
+function toggleMeal(id) {
+  if (inMeal(id)) state.meal = state.meal.filter(x => x !== id);
+  else if (state.meal.length >= 12) return toast('A meal can have up to 12 recipes.');
+  else state.meal.push(id);
+  persist(); render();
+}
+/* ingredients of several recipes as one list; same name + same unit are added together */
+function combineIngredients(rs) {
+  const out = [], idx = new Map();
+  for (const r of rs) {
+    const f = factorOf(r);
+    for (const g of r.ingredients) {
+      const key = g.name.toLowerCase() + '|' + g.unit + '|' + (g.qty == null ? 'n' : 'q'), q = g.qty == null ? null : g.qty * f, qm = g.qtyMax == null ? null : g.qtyMax * f;
+      if (idx.has(key)) { const o = idx.get(key); if (q != null) { const hi = (o.qtyMax != null ? o.qtyMax : o.qty) + (qm != null ? qm : q); o.qty += q; o.qtyMax = hi > o.qty + 1e-9 ? hi : null; } continue; }
+      const o = { name: g.name, unit: g.unit, qty: q, qtyMax: qm }; idx.set(key, o); out.push(o);
+    }
+  }
+  return out;
+}
+/* "name (amount)" lines: what Grocery's Paste items reads. Amounts are already scaled. */
+const groceryLine = g => { const a = amountText(g, 1); return g.name + (a ? ` (${a})` : ''); };
+const groceryText = rs => combineIngredients(rs).map(groceryLine).join('\n');
+async function toGrocery(rs, what) {
+  const text = groceryText(rs);
+  if (!text) return toast('No ingredients to add.');
+  return copyText(text, `Copied ${what}. Open Grocery and tap Paste items.`);
+}
 
 /* ===================== getting recipes in ===================== */
 /* Claude (or anyone) hands over JSON, usually inside a ``` fence or with a sentence around it */
@@ -1052,16 +1091,20 @@ function matches(x, q, cat) {
 }
 function cardsHTML() {
   const list = allRecipes().filter(x => matches(x, ui.q.trim(), ui.cat)).sort((a, b) => a.r.title.localeCompare(b.r.title, undefined, { sensitivity: 'base' }));
-  if (!list.length) return allRecipes().length ? '<div class="empty"><div class="big">🔍</div><h2>No matches</h2><p>Try a different word, or tap All.</p></div>' : '';
-  return list.map(({ r, src }) => `<a class="card rcard" href="#/r/${esc(r.id)}"><div class="tc-top"><h2>${esc(r.title)}</h2><span>${mark(r.id).fav ? '<span class="star" aria-label="Favourite">★</span>' : ''}${src === 'mine' ? `<span class="badge">${findRecipe(r.id).shadows ? 'Edited' : 'Phone only'}</span>` : ''}</span></div>
-    <div class="meta">${esc(metaLine(r))}</div>${r.tags.length ? `<div class="tags">${r.tags.slice(0, 4).map(t => `<span class="tag">${esc(t)}</span>`).join('')}</div>` : ''}</a>`).join('');
+  if (!list.length) {
+    if (!allRecipes().length) return '';
+    if (!ui.q.trim() && FIXED_TABS.includes(ui.cat)) return `<div class="empty"><div class="big">🍽️</div><h2>Nothing in ${esc(ui.cat)} yet</h2><p>Add a recipe and set its category to ${esc(ui.cat)}.</p></div>`;
+    return '<div class="empty"><div class="big">🔍</div><h2>No matches</h2><p>Try a different word, or tap All.</p></div>';
+  }
+  return list.map(({ r, src }) => `<div class="rwrap"><button type="button" class="mealbtn" data-action="meal-toggle" data-id="${esc(r.id)}" aria-pressed="${inMeal(r.id)}" aria-label="${inMeal(r.id) ? 'Remove ' + esc(r.title) + ' from the meal' : 'Add ' + esc(r.title) + ' to the meal'}">${inMeal(r.id) ? '✓ In meal' : '+ Meal'}</button><a class="card rcard" href="#/r/${esc(r.id)}"><div class="tc-top"><h2>${esc(r.title)}</h2><span>${mark(r.id).fav ? '<span class="star" aria-label="Favourite">★</span>' : ''}${src === 'mine' ? `<span class="badge">${findRecipe(r.id).shadows ? 'Edited' : 'Phone only'}</span>` : ''}</span></div>
+    <div class="meta">${esc(metaLine(r))}</div>${r.tags.length ? `<div class="tags">${r.tags.slice(0, 4).map(t => `<span class="tag">${esc(t)}</span>`).join('')}</div>` : ''}</a></div>`).join('');
 }
 function homeScreen() {
-  const all = allRecipes(), cats = [...new Set(all.map(x => x.r.category))].sort((a, b) => (CATS.indexOf(a) + 1 || 99) - (CATS.indexOf(b) + 1 || 99) || a.localeCompare(b));
+  const all = allRecipes(), cats = [...new Set([...FIXED_TABS, ...all.map(x => x.r.category)])].sort((a, b) => (FIXED_TABS.indexOf(a) + 1 || 99) - (FIXED_TABS.indexOf(b) + 1 || 99) || (CATS.indexOf(a) + 1 || 99) - (CATS.indexOf(b) + 1 || 99) || a.localeCompare(b));
   const hasFav = all.some(x => mark(x.r.id).fav);
   if (ui.cat === '★' && !hasFav) ui.cat = 'All';
   if (ui.cat !== 'All' && ui.cat !== '★' && !cats.includes(ui.cat)) ui.cat = 'All';
-  const chips = all.length > 3 ? `<div class="chips" style="margin-bottom:12px"><button class="chip" data-action="cat" data-cat="All" aria-pressed="${ui.cat === 'All'}">All</button>${hasFav ? `<button class="chip" data-action="cat" data-cat="★" aria-pressed="${ui.cat === '★'}">★ Favourites</button>` : ''}${cats.map(c => `<button class="chip" data-action="cat" data-cat="${esc(c)}" aria-pressed="${ui.cat === c}">${esc(c)}</button>`).join('')}</div>` : '';
+  const chips = all.length ? `<div class="chips" style="margin-bottom:12px"><button class="chip" data-action="cat" data-cat="All" aria-pressed="${ui.cat === 'All'}">All</button>${hasFav ? `<button class="chip" data-action="cat" data-cat="★" aria-pressed="${ui.cat === '★'}">★ Favourites</button>` : ''}${cats.map(c => `<button class="chip" data-action="cat" data-cat="${esc(c)}" aria-pressed="${ui.cat === c}">${esc(c)}</button>`).join('')}</div>` : '';
   const empty = !all.length && !LIB.loading ? `<div class="empty"><div class="big">🍳</div><h2>No recipes yet</h2><p>Tap <b>+ Add</b>. Copy a recipe from Claude, then tap <b>Paste a recipe</b>. It saves in one tap.</p><button type="button" class="btn primary" data-action="add">+ Add a recipe</button></div>` : '';
   return headerHTML({ title: '🍳 Recipes', sub: LIB.loading && !all.length ? 'Loading…' : plural(all.length, 'recipe'), right: '<button type="button" class="btn small primary" data-action="add">+ Add</button><a class="btn small" href="#/backup">Backup</a>' })
     + `<main class="wrap">${storageBannerHTML()}${LIB.error && !LIB.loading ? `<div class="banner">${esc(LIB.error)}</div>` : ''}
@@ -1085,7 +1128,7 @@ function ingredientsTab(r) {
     ${r.steps.length ? '<button type="button" class="btn primary block" style="margin-top:14px" data-action="cook">Start cooking</button>' : ''}</section>
     ${r.ingredients.length ? list : '<div class="card empty"><div class="big">🧂</div><h2>No ingredients listed</h2></div>'}
     ${r.equipment.length ? `<div class="grp">Equipment</div><section class="card pad"><div class="eqchips">${r.equipment.map(e => `<span class="pill">${esc(e)}</span>`).join('')}</div></section>` : ''}
-    <div class="chips" style="margin-top:14px"><button type="button" class="chip" data-action="copy-list">Copy shopping list</button><button type="button" class="chip" data-action="ing-reset">Uncheck all</button></div>`;
+    <div class="chips" style="margin-top:14px"><button type="button" class="chip" data-action="meal-add" aria-pressed="${inMeal(r.id)}">${inMeal(r.id) ? '✓ In meal' : '+ Add to meal'}</button><button type="button" class="chip" data-action="grocery-add">Add to Grocery</button><button type="button" class="chip" data-action="copy-list">Copy list</button><button type="button" class="chip" data-action="ing-reset">Uncheck all</button></div>`;
 }
 function timerButtons(s, label) {
   const ts = s.timer ? [{ secs: s.timer, label: fmtClock(s.timer).replace(/^0?(\d+):00$/, '$1 min') }] : detectTimers(s.text);
@@ -1171,12 +1214,26 @@ function backupScreen() {
     <section class="card pad"><h3>Restore</h3><p>Pick a backup file made by this app. You’ll choose whether to replace what’s here or merge it in.</p><button type="button" class="btn block" data-action="restore">Choose backup file…</button></section>
     <section class="card pad"><h3>Danger zone</h3><p>Erases the recipes, favourites and notes on this phone. The shared library stays.</p><button type="button" class="btn danger block" data-action="wipe">Erase my recipes on this phone</button></section></div></main>`;
 }
+const mealBarHTML = () => (state.meal.length ? `<div style="height:84px"></div><a class="mealbar" href="#/meal"><b>🍽️ Meal</b><span>${esc(plural(mealRecipes().length, 'recipe'))}</span><span class="go">View ›</span></a>` : '');
+function mealScreen() {
+  const rs = mealRecipes(), comb = combineIngredients(rs);
+  const rows = rs.map(r => `<li class="row static"><a class="row-main" href="#/r/${esc(r.id)}" style="text-decoration:none;color:inherit"><div class="row-title">${esc(r.title)}</div><div class="row-sub">${esc(r.category)} · ${esc(fmtNum(servingsOf(r)))} ${esc(r.servingsLabel || 'servings')}</div></a><button type="button" class="btn small" data-action="meal-toggle" data-id="${esc(r.id)}">Remove</button></li>`).join('');
+  const adders = FIXED_TABS.map(c => `<button type="button" class="btn small" data-action="meal-pick" data-cat="${esc(c)}">+ ${esc(c)}</button>`).join('');
+  return headerHTML({ back: '#/', title: '🍽️ Meal', sub: rs.length ? plural(rs.length, 'recipe') : 'Mix and match', right: rs.length ? '<button type="button" class="btn small" data-action="meal-clear">Clear</button>' : '' })
+    + `<main class="wrap">${rs.length ? '' : '<div class="empty"><div class="big">🍽️</div><h2>No meal yet</h2><p>Tap <b>+ Meal</b> on a main dish and on any sides, then come back here for one combined shopping list.</p></div>'}
+    <div class="chips" style="margin:14px 0 10px">${adders}</div>
+    ${rs.length ? `<ul class="card list">${rows}</ul>
+    <div class="grp">Combined ingredients</div><ul class="card list">${comb.map(g => `<li class="ing"><label style="cursor:default"><span class="amt">${esc(amountText(g, 1))}</span><span class="nm">${esc(g.name)}</span></label></li>`).join('')}</ul>
+    <p class="hint" style="margin:8px 4px">Amounts follow the servings set on each recipe.</p>
+    <div class="stack"><button type="button" class="btn primary block" data-action="meal-grocery">Add to Grocery</button><button type="button" class="btn block" data-action="meal-copy">Copy as text</button></div>` : ''}</main>`;
+}
 function route() {
   const [a, b, c] = location.hash.replace(/^#\/?/, '').split('/');
   if (a === 'r' && b) { const f = findRecipe(b); if (f) return { name: 'recipe', r: f.r, src: f.src, tab: [...TABS.map(t => t[0]), 'cook'].includes(c) ? c : 'ingredients' }; }
   if (a === 'edit' && b) { const f = findRecipe(b); if (f) return { name: 'edit', r: f.r }; }
   if (a === 'new') return { name: 'edit', r: null };
   if (a === 'backup') return { name: 'backup' };
+  if (a === 'meal') return { name: 'meal' };
   return { name: 'home' };
 }
 let wakeLock = null, lastKey = '', printing = false;
@@ -1184,8 +1241,8 @@ async function wakeOn() { try { if ('wakeLock' in navigator && !wakeLock) { wake
 function wakeOff() { try { if (wakeLock) wakeLock.release(); } catch { /* ignore */ } wakeLock = null; }
 function render() {
   const r = route(), key = r.name + (r.r ? r.r.id : '') + (r.tab || ''), y = window.scrollY;
-  app.innerHTML = r.name === 'recipe' ? recipeScreen(r) : r.name === 'edit' ? editScreen(r) : r.name === 'backup' ? backupScreen() : homeScreen();
-  document.title = r.name === 'recipe' ? r.r.title : r.name === 'edit' ? (r.r ? 'Edit recipe' : 'New recipe') : r.name === 'backup' ? 'Backup & library' : 'Recipes';
+  app.innerHTML = r.name === 'recipe' ? recipeScreen(r) : r.name === 'edit' ? editScreen(r) : r.name === 'backup' ? backupScreen() : r.name === 'meal' ? mealScreen() : homeScreen() + mealBarHTML();
+  document.title = r.name === 'recipe' ? r.r.title : r.name === 'edit' ? (r.r ? 'Edit recipe' : 'New recipe') : r.name === 'backup' ? 'Backup & library' : r.name === 'meal' ? 'Meal' : 'Recipes';
   window.scrollTo(0, key === lastKey ? y : 0); lastKey = key;
   if (r.name === 'recipe' && r.tab === 'cook') wakeOn(); else wakeOff();
   if (r.name === 'edit') updateTokHint();
@@ -1385,6 +1442,11 @@ function handleAction(a, el) {
     case 'lib-refresh': return loadLibrary().then(src => { render(); toast(LIB.error || (src === 'none' ? 'There is no library file in the project yet.' : `Library has ${plural(LIB.recipes.length, 'recipe')}`)); });
     case 'lib-export': return libExport();
     case 'lib-tidy': return libTidy();
+    case 'meal-toggle': return toggleMeal(el.dataset.id);
+    case 'meal-clear': state.meal = []; persist(); location.hash = '#/'; return render();
+    case 'meal-pick': ui.cat = el.dataset.cat; ui.q = ''; location.hash = '#/'; return render();
+    case 'meal-grocery': return toGrocery(mealRecipes(), 'the meal’s ingredients');
+    case 'meal-copy': return copyText(mealRecipes().map(r => recipeText(r, factorOf(r))).join('\n\n————————\n\n'), 'Meal copied as text');
     case 'unhide': setMark(el.dataset.id, { hidden: false }); return commit();
     case 'timer-x': timers = timers.filter(t => t.id !== el.dataset.id); saveTimers(); return renderTimers();
     case 'timer-add': { const t = timers.find(x => x.id === el.dataset.id); if (t) { t.end += 60000; t.total += 60; saveTimers(); renderTimers(); } return; }
@@ -1401,6 +1463,8 @@ function handleAction(a, el) {
     case 'ing-reset': setMark(id, { prog: { i: [], s: m.prog.s } }); return commit();
     case 'step': setMark(id, { prog: { i: m.prog.i, s: togg(m.prog.s, +el.dataset.i) } }); return commit();
     case 'step-reset': setMark(id, { prog: { i: m.prog.i, s: [] } }); return commit();
+    case 'grocery-add': return toGrocery([r], 'the ingredients');
+    case 'meal-add': return toggleMeal(id);
     case 'copy-list': { const f = factorOf(r); return copyText(r.ingredients.map(g => ingLine(g, f)).join('\n'), 'Shopping list copied'); }
     case 'made': { const t = todayISO(); setMark(id, { made: [...m.made, t] }); commit(); return toast('Logged. Enjoy!'); }
     case 'made-undo': setMark(id, { made: m.made.slice(0, -1) }); return commit();
