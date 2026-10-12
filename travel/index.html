@@ -137,6 +137,9 @@ dialog::backdrop{background:rgba(10,15,12,.55)}
 
 @media (prefers-reduced-motion:no-preference){.btn,.fab{transition:transform .08s}}
 
+.syncbadge{border:1px solid var(--line,#d5dbe0);background:var(--card,#fff);color:inherit;border-radius:999px;padding:4px 10px;font:inherit;font-size:.82rem;cursor:pointer;white-space:nowrap}
+.syncbadge.ok{color:#15803d}.syncbadge.bad{color:#b91c1c}
+
 :root{--bg:#f4f6f8;--accent:#0369a1;--accent-soft:#dbeefa;--line:#dde3e8;--soft:#e9eef2}
 @media (prefers-color-scheme:dark){:root{--bg:#0d1215;--card:#161e23;--line:#25323a;--soft:#1d272d;--accent:#38bdf8;--accent-ink:#04202f;--accent-soft:#0f2f42}}
 .addrow{display:flex;gap:8px;align-items:center}
@@ -290,7 +293,7 @@ function fieldHTML(f) {
   } else {
     const t = f.type || 'text';
     const extra = t === 'number' ? ` inputmode="decimal" step="${f.step || 'any'}"` : '';
-    ctl = `<input id="${id}" name="${f.name}" type="${t}" value="${esc(v)}" placeholder="${esc(f.placeholder || '')}"${extra}${f.min != null ? ` min="${f.min}"` : ''}${f.max != null ? ` max="${f.max}"` : ''} autocomplete="off" autocapitalize="${f.capitalize || 'sentences'}">`;
+    ctl = `<input id="${id}" name="${f.name}" type="${t}" value="${esc(v)}" placeholder="${esc(f.placeholder || '')}"${extra}${f.min != null ? ` min="${f.min}"` : ''}${f.max != null ? ` max="${f.max}"` : ''} autocomplete="${f.autocomplete || 'off'}" autocapitalize="${f.capitalize || (t === 'email' || t === 'password' ? 'none' : 'sentences')}">`;
   }
   return `<div class="field"><label for="${id}">${esc(f.label)}${f.required ? ' *' : ''}</label>${ctl}${f.hint ? `<div class="hint">${esc(f.hint)}</div>` : ''}</div>`;
 }
@@ -466,6 +469,252 @@ async function runInstall() { if (!deferredInstall) return; deferredInstall.prom
 if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol))
   window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
 
+/* ---- Sync: optional shared database for two people (Firebase Auth + Firestore) ----
+   The app always works from its own on-device copy. This layer pushes local changes
+   (per item, last write wins) and merges in changes made on the other phone.
+   The Firebase calls live in firebaseBackend() only; everything else is plain logic. */
+const SYNC_CONFIG = {
+  apiKey: 'AIzaSyCztAn5kfhZ1yLjvia17D0dEsnDBvFzuKA',
+  authDomain: 'goobs-apps-aa819.firebaseapp.com',
+  projectId: 'goobs-apps-aa819',
+  storageBucket: 'goobs-apps-aa819.firebasestorage.app',
+  messagingSenderId: '1080769702714',
+  appId: '1:1080769702714:web:70a664d22a62ee9492fe03'
+};
+const SYNC_SDK = 'https://www.gstatic.com/firebasejs/12.19.0/';
+
+async function firebaseBackend() {
+  const [appM, authM, fsM] = await Promise.all([
+    import(SYNC_SDK + 'firebase-app.js'), import(SYNC_SDK + 'firebase-auth.js'), import(SYNC_SDK + 'firebase-firestore.js')
+  ]);
+  const app = appM.initializeApp(SYNC_CONFIG), auth = authM.getAuth(app), fs = fsM.getFirestore(app);
+  return {
+    onAuth: cb => authM.onAuthStateChanged(auth, u => cb(u ? { uid: u.uid, email: u.email || '' } : null)),
+    signIn: (email, pw) => authM.signInWithEmailAndPassword(auth, email, pw),
+    signOut: () => authM.signOut(auth),
+    watch: (coll, onDocs, onErr) => fsM.onSnapshot(fsM.collection(fs, coll),
+      snap => { if (!snap.metadata.fromCache) onDocs(snap.docs.map(d => ({ id: d.id, data: d.data() }))); },   // ignore cache-only snapshots: an empty one would look like "everything was deleted"
+      onErr),
+    // Last write wins: skip the write when the stored copy is newer than this change.
+    // First-time uploads (ts 0) never overwrite a copy that already exists.
+    write: op => {
+      const ref = fsM.doc(fs, op.coll, op.id);
+      return fsM.runTransaction(fs, async tx => {
+        const cur = await tx.get(ref);
+        if (cur.exists() && (op.ts === 0 || (cur.data()._u || 0) > op.ts)) return;
+        if (op.op === 'del') tx.delete(ref);
+        else tx.set(ref, { ...op.data, _u: op.ts, _n: op.n });
+      });
+    }
+  };
+}
+
+const Sync = (() => {
+  const ACK_MS = 120000;
+  let model = null, db = null, dbKey = 'sync', backend = null, user = null, state0 = 'off';
+  let st = { v: 1, enabled: false, joined: false, seen: {}, outbox: {}, order: {} };
+  let unsubs = [], remote = {}, ready = {}, flushing = false, retryTimer = null, retries = 0, lastTs = 0, lastN = 0, denied = false, errored = false;
+  const acked = new Map(), listeners = [];
+
+  const canon = v => JSON.stringify(v, (k, x) => (x && typeof x === 'object' && !Array.isArray(x)) ? Object.fromEntries(Object.keys(x).sort().map(y => [y, x[y]])) : x);
+  const nextTs = () => (lastTs = Math.max(Date.now(), lastTs + 1));
+  const nextN = () => (lastN = Math.max(Date.now() * 1000, lastN + 1));
+  const keyOf = (c, id) => c + '/' + id;
+  const pending = () => Object.keys(st.outbox).length;
+  const emit = () => { for (const f of listeners) try { f(); } catch (e) { console.error(e); } };
+  let saveChain = Promise.resolve();
+  function save() { if (!db) return; const s = JSON.stringify(st); saveChain = saveChain.then(() => idbPut(db, dbKey, s)).catch(e => console.error(e)); }
+
+  function status() {
+    if (!model) return 'off';
+    if (state0 === 'unavailable') return 'unavailable';
+    if (!user) return backend ? 'signed-out' : 'connecting';
+    if (denied) return 'denied';
+    if (errored) return 'error';
+    if (!model.colls.every(c => ready[c])) return 'connecting';
+    return pending() ? 'syncing' : 'live';
+  }
+
+  /* what changed on this device since we last synced -> queue it */
+  function localDiff() {
+    if (!st.enabled || !model) return;
+    const present = new Set(); let dirty = false;
+    for (const e of model.toEntities()) {
+      const k = keyOf(e.coll, e.id); present.add(k);
+      const j = canon(e.data);
+      if (st.seen[k] === j) continue;
+      st.seen[k] = j;
+      if (!(k in st.order)) st.order[k] = nextN();
+      st.outbox[k] = { op: 'set', coll: e.coll, id: e.id, data: JSON.parse(j), ts: st.joined ? nextTs() : 0, n: st.order[k] };
+      dirty = true;
+    }
+    for (const k of Object.keys(st.seen)) {
+      if (present.has(k)) continue;
+      delete st.seen[k];
+      const i = k.indexOf('/');
+      st.outbox[k] = { op: 'del', coll: k.slice(0, i), id: k.slice(i + 1), ts: st.joined ? nextTs() : 0 };
+      dirty = true;
+    }
+    if (dirty) save();
+  }
+
+  /* combine the other phone's data with ours and hand the result to the app */
+  function reconcile() {
+    if (!model || !user || !model.colls.every(c => ready[c])) return;
+    localDiff();
+    const now = Date.now(), out = {}, remoteKeys = new Set();
+    model.colls.forEach(c => { out[c] = []; });
+    for (const c of model.colls) for (const d of remote[c] || []) {
+      const k = keyOf(c, d.id), op = st.outbox[k], u = d.data._u || 0, a = acked.get(k);
+      remoteKeys.add(k);
+      if (op && op.ts > u) { if (op.op === 'set') out[c].push({ id: d.id, data: op.data, n: op.n }); continue; }
+      if (op) delete st.outbox[k];
+      if (a && a.op === 'del' && now - a.at < ACK_MS && u <= a.ts) continue;   // our delete just landed; the list is a moment behind
+      const { _u, _n, ...data } = d.data;
+      if (_n) st.order[k] = _n;
+      out[c].push({ id: d.id, data, n: _n || st.order[k] || 0 });
+    }
+    for (const e of model.toEntities()) {
+      const k = keyOf(e.coll, e.id);
+      if (remoteKeys.has(k)) continue;
+      const op = st.outbox[k], a = acked.get(k);
+      if ((op && op.op === 'set') || (a && a.op === 'set' && now - a.at < ACK_MS)) out[e.coll].push({ id: e.id, data: e.data, n: st.order[k] || 0 });
+      // otherwise it was deleted on the other phone: leave it out
+    }
+    for (const [k, a] of acked) if (now - a.at >= ACK_MS || (a.op === 'set') === remoteKeys.has(k)) acked.delete(k);
+    for (const c of model.colls) out[c].sort((x, y) => (x.n || 0) - (y.n || 0));
+    model.apply(out);
+    const inOut = new Set();
+    for (const c of model.colls) for (const o of out[c]) inOut.add(keyOf(c, o.id));
+    const seen = {};
+    for (const e of model.toEntities()) { const k = keyOf(e.coll, e.id); if (inOut.has(k)) seen[k] = canon(e.data); }
+    st.seen = seen; st.joined = true;
+    localDiff();            // anything the app created while merging (e.g. a starter list) gets queued
+    save(); emit(); flush();
+  }
+
+  async function flush() {
+    if (flushing || !backend || !user || !st.enabled) return;
+    if (!st.joined && !model.colls.every(c => ready[c])) return;   // first sign-in: read what is there before writing
+    flushing = true; let failed = false;
+    try {
+      for (const k of Object.keys(st.outbox)) {
+        const op = st.outbox[k];
+        await backend.write(op);
+        if (st.outbox[k] === op) delete st.outbox[k];
+        acked.set(k, { op: op.op, ts: op.ts, at: Date.now() });
+        retries = 0; errored = false;
+      }
+    } catch (e) {
+      failed = true; errored = !(typeof navigator !== 'undefined' && navigator.onLine === false);
+      console.warn('sync write failed', e && e.code || e);
+      if (e && e.code === 'permission-denied') { denied = true; errored = false; }
+      else { clearTimeout(retryTimer); retryTimer = setTimeout(flush, Math.min(60000, 3000 * 2 ** Math.min(retries++, 5))); }
+    }
+    flushing = false; save(); emit();
+    if (!failed && pending()) flush();
+  }
+
+  function watch() {
+    unwatch();
+    for (const c of model.colls) {
+      unsubs.push(backend.watch(c, docs => { remote[c] = docs; ready[c] = true; denied = false; reconcile(); },
+        e => { if (e && e.code === 'permission-denied') denied = true; else errored = true; emit(); }));
+    }
+  }
+  function unwatch() { unsubs.forEach(u => { try { u(); } catch {} }); unsubs = []; remote = {}; ready = {}; }
+
+  async function connect() {
+    try {
+      const injected = typeof window !== 'undefined' && window.__SYNC_BACKEND__;
+      backend = injected || await firebaseBackend();
+      state0 = 'ok';
+    } catch (e) { backend = null; state0 = 'unavailable'; emit(); return; }
+    backend.onAuth(u => {
+      user = u; denied = false; errored = false;
+      if (u) { if (!st.enabled) { st.enabled = true; save(); } localDiff(); watch(); flush(); }
+      else unwatch();
+      emit();
+    });
+  }
+
+  return {
+    /* the app gives us: db (IndexedDB handle), key, and a model { colls, toEntities(), apply(map) } */
+    async start({ db: d, key, model: m }) {
+      db = d; dbKey = key || 'sync'; model = m;
+      if (db) { try { const raw = await idbGet(db, dbKey); if (raw) { const p = JSON.parse(raw); if (p && p.v === 1) st = { ...st, ...p }; } } catch (e) { console.error(e); } }
+      if (typeof window !== 'undefined') window.addEventListener('online', () => { if (!backend) connect(); else { errored = false; flush(); } });
+      await connect();
+      emit();
+    },
+    touch() { if (!st.enabled) return; localDiff(); flush(); emit(); },
+    onChange(f) { listeners.push(f); },
+    status, pending, enabled: () => st.enabled, user: () => user,
+    async signIn(email, pw) { if (!backend) throw Object.assign(new Error('offline'), { code: 'auth/network-request-failed' }); await backend.signIn(email, pw); },
+    async signOut() { if (backend) await backend.signOut(); }
+  };
+})();
+
+/* ---- sign-in UI shared by every synced app ---- */
+function syncText() {
+  const s = Sync.status(), n = Sync.pending();
+  switch (s) {
+    case 'live': return { icon: '☁️', text: 'Shared and up to date', cls: 'ok' };
+    case 'syncing': return { icon: '🔄', text: `Syncing ${n} change${n === 1 ? '' : 's'}…`, cls: '' };
+    case 'connecting': return { icon: '🔄', text: 'Connecting…', cls: '' };
+    case 'signed-out': return { icon: '👤', text: 'Not signed in — only on this device', cls: '' };
+    case 'denied': return { icon: '⛔', text: 'This account isn’t allowed to use the shared data', cls: 'bad' };
+    case 'error': return { icon: '⚠️', text: 'Sync problem — will retry. Your changes are saved here.', cls: 'bad' };
+    case 'unavailable': return { icon: '📴', text: Sync.enabled() ? 'Offline — changes are saved here and will sync later' : 'Sharing isn’t available right now (no connection)', cls: '' };
+    default: return { icon: '', text: '', cls: '' };
+  }
+}
+function syncBadgeHTML() {
+  const s = Sync.status(); if (s === 'off') return '';
+  const t = syncText();
+  return `<button type="button" class="syncbadge ${t.cls}" data-action="sync-info" aria-label="Sharing status: ${esc(t.text)}">${t.icon} <span>${esc(s === 'live' ? 'Shared' : s === 'signed-out' ? 'Sign in to share' : t.text.split(' — ')[0].replace('…', ''))}</span></button>`;
+}
+function syncCardHTML(blurb = '') {
+  const s = Sync.status(); if (s === 'off') return '';
+  const t = syncText(), u = Sync.user();
+  const btn = s === 'signed-out' || s === 'unavailable' && !u
+    ? '<button type="button" class="btn primary block" data-action="sync-signin">Sign in to share</button>'
+    : u ? `<button type="button" class="btn block" data-action="sync-signout">Sign out (${esc(u.email)})</button>` : '';
+  return `<section class="card pad" id="syncCard"><h3>Sharing</h3><p>${t.icon} ${esc(t.text)}</p>${blurb ? `<p class="muted">${esc(blurb)}</p>` : ''}${btn}</section>`;
+}
+function syncSignInDialog() {
+  formDialog({
+    title: 'Sign in to share', intro: 'Use the email and password for this app’s shared account. You only have to do this once on each phone.',
+    fields: [
+      { name: 'email', label: 'Email', type: 'email', required: true, autocomplete: 'username' },
+      { name: 'password', label: 'Password', type: 'password', required: true, autocomplete: 'current-password' }
+    ], submitLabel: 'Sign in',
+    onSubmit: async v => {
+      try { await Sync.signIn(v.email.trim(), v.password); }
+      catch (e) {
+        const c = e && e.code || '';
+        if (/invalid-credential|wrong-password|user-not-found|invalid-email|missing-password/.test(c)) return 'That email or password isn’t right.';
+        if (/network/.test(c) || e.message === 'offline') return 'Can’t reach the sign-in service. Check your connection and try again.';
+        if (/too-many-requests/.test(c)) return 'Too many tries. Wait a few minutes and try again.';
+        return 'Couldn’t sign in' + (c ? ` (${c})` : '') + '.';
+      }
+    }
+  });
+}
+async function syncAction(a) {
+  if (a === 'sync-signin') { syncSignInDialog(); return true; }
+  if (a === 'sync-signout') {
+    if (await confirmBox('Sign out?', 'This phone keeps its own copy, but stops sharing until you sign in again.', 'Sign out', false)) await Sync.signOut();
+    return true;
+  }
+  if (a === 'sync-info') {
+    const t = syncText();
+    await msgBox('Sharing', t.text + (Sync.status() === 'signed-out' ? ' Open Backup & sharing to sign in.' : ''));
+    return true;
+  }
+  return false;
+}
+
 
 /* ===================== Trips app ===================== */
 const APP_ID = 'goobs-travel', DB_NAME = 'goobs-travel-db', SCHEMA = 2;
@@ -607,16 +856,71 @@ const exportData = () => ({ settings: state.settings, trips: state.trips.map(t =
 
 /* ---- persistence ---- */
 let state = defaultState(), db = null, saveFailed = false, persistAsked = false, saveChain = Promise.resolve();
-function persist({ touch = true } = {}) {
+function persist({ touch = true, sync } = {}) {
   if (touch) state.meta.lastChange = new Date().toISOString();
-  if (!db) return Promise.resolve();
+  if (!db) { if (sync !== false) Sync.touch(); return Promise.resolve(); }
   const snap = JSON.stringify(state);
   saveChain = saveChain.then(() => idbPut(db, 'state', snap)).then(() => { saveFailed = false; }).catch(err => { console.error(err); saveFailed = true; });
+  if (sync !== false) Sync.touch();
   if (!persistAsked && navigator.storage && navigator.storage.persist) { persistAsked = true; navigator.storage.persist().catch(() => {}); }
   return saveChain;
 }
 const commit = () => { persist(); render(); };
 let noteTimer = null;
+
+
+/* ---- sharing between two phones (sync.js): trips and their items are stored as separate records ---- */
+const KINDS = [['packing', normPack], ['plan', normPlan], ['budget', normBudget], ['ideas', normIdea], ['todos', normTodo]];
+const TRIP_FIELDS = ['name', 'destination', 'startDate', 'endDate', 'travelers', 'currency', 'budgetTotal', 'notes', 'location', 'cruise', 'travelerNames', 'packLists', 'createdAt'];
+function uniqueItemIds() {            // item ids must be unique across all trips, since each item is its own shared record
+  const seen = new Set(); let fixed = false;
+  for (const t of state.trips) for (const [k] of KINDS) for (const i of t[k]) { if (seen.has(i.id)) { i.id = uid(); fixed = true; } seen.add(i.id); }
+  return fixed;
+}
+const tripModel = {
+  colls: ['trips', 'tripItems'],
+  toEntities() {
+    const out = [], seen = new Set();
+    for (const t of state.trips) {
+      const d = {}; for (const k of TRIP_FIELDS) d[k] = t[k] === undefined ? null : t[k];
+      out.push({ coll: 'trips', id: t.id, data: d });
+      for (const [kind] of KINDS) for (const i of t[kind]) {
+        if (seen.has(i.id)) continue; seen.add(i.id);
+        const { id, ...rest } = i; out.push({ coll: 'tripItems', id, data: { tripId: t.id, kind, ...rest } });
+      }
+    }
+    return out;
+  },
+  apply(out) {
+    const before = JSON.stringify(state.trips), byId = new Map(state.trips.map(t => [t.id, t])), items = {}, next = [];
+    for (const o of out.tripItems) { const { tripId, kind, ...rest } = o.data || {}; if (KINDS.some(k => k[0] === kind)) ((items[tripId] ||= {})[kind] ||= []).push({ ...rest, id: o.id }); }
+    for (const o of out.trips) {
+      const raw = { ...o.data, id: o.id }; for (const [kind] of KINDS) raw[kind] = (items[o.id] && items[o.id][kind]) || [];
+      const fresh = normTrip(raw, false); if (!fresh) continue;
+      const t = byId.get(o.id);
+      if (!t) { next.push(fresh); continue; }
+      for (const k of TRIP_FIELDS) t[k] = fresh[k];       // update in place so open dialogs keep pointing at live objects
+      for (const [kind] of KINDS) { const old = new Map(t[kind].map(x => [x.id, x])); t[kind] = fresh[kind].map(x => { const e = old.get(x.id); return e ? Object.assign(e, x) : x; }); }
+      next.push(t);
+    }
+    state.trips = next;
+    if (JSON.stringify(state.trips) !== before) { persist({ touch: false, sync: false }); renderIfSafe(); }
+  }
+};
+/* sync can change the data at any moment: never redraw under an open dialog or while someone is typing */
+let pendingRender = false, renderTimer = null;
+function renderBlocked() {
+  if ($('dialog[open]')) return true;
+  const a = document.activeElement;
+  return !!(a && app.contains(a) && /^(INPUT|TEXTAREA)$/.test(a.tagName) && a.type !== 'checkbox' && a.value);
+}
+function renderIfSafe() { if (renderBlocked()) { pendingRender = true; return; } pendingRender = false; render(); }
+const flushPending = () => { if (pendingRender && !renderBlocked()) { pendingRender = false; render(); } };
+document.addEventListener('close', () => { if (pendingRender) setTimeout(flushPending, 0); }, true);
+document.addEventListener('focusout', e => {
+  if (!pendingRender || (e.relatedTarget && app.contains(e.relatedTarget))) return;
+  clearTimeout(renderTimer); renderTimer = setTimeout(flushPending, 250);
+});
 
 /* ---- trip helpers ---- */
 const ui = { packList: 'All', cruiseMonth: null, portWx: {}, hidePacked: false, ideaFilter: 'all', geo: null, wxBusy: false, wxError: '', wxTried: {}, focus: null, lastCat: 'Clothing' };
@@ -1058,6 +1362,7 @@ function nagHTML() {
   const m = backupNag(state.meta, state.trips.length > 0);
   return m ? `<div class="banner"><span>${esc(m)}</span><a class="btn small" href="#/backup">Back up</a></div>` : '';
 }
+const syncLineHTML = () => { const b = syncBadgeHTML(); return b ? `<div style="margin:0 0 10px;text-align:right">${b}</div>` : ''; };
 function homeScreen() {
   const today = todayISO();
   const upcoming = state.trips.filter(t => !t.endDate || t.endDate >= today).sort((a, b) => (a.startDate || '9999').localeCompare(b.startDate || '9999') || a.name.localeCompare(b.name));
@@ -1078,7 +1383,7 @@ function homeScreen() {
         <button class="btn primary" data-action="new-trip">Plan your first trip</button><br><button class="btn ghost" data-action="restore">Restore from a backup file</button></div>`
     : pinSection + (upcoming.length ? `<div class="sec-h"><span>Upcoming &amp; current</span></div>${upcoming.map(card).join('')}` : '') + (past.length ? `<div class="sec-h"><span>Past trips</span></div>${past.map(card).join('')}` : '');
   return headerHTML({ title: 'Trips', sub: 'Open a trip or start a new one', right: (state.trips.length ? '<button class="btn small primary" data-action="new-trip">+ New trip</button>' : '') + '<a class="btn small" href="#/backup">Backup</a>' })
-    + `<main class="wrap">${storageBannerHTML()}${nagHTML()}${body}</main>`
+    + `<main class="wrap">${syncLineHTML()}${storageBannerHTML()}${nagHTML()}${body}</main>`
     ;
 }
 function overviewTab(t) {
@@ -1248,7 +1553,8 @@ function tripScreen(t, tab) {
 function backupScreen() {
   const last = state.meta.lastBackup ? `Last backup: ${esc(fmtDateTime(state.meta.lastBackup))}.` : 'No backup made yet.';
   const canEncrypt = !!(window.crypto && crypto.subtle);
-  return headerHTML({ back: '#/', title: 'Backup & restore', sub: 'Your data lives only on this device' }) + `<main class="wrap">${storageBannerHTML()}${installCardHTML()}<div class="stack">
+  return headerHTML({ back: '#/', title: 'Backup & sharing', sub: Sync.enabled() ? 'Shared between your phones' : 'Your data lives on this device' }) + `<main class="wrap">${storageBannerHTML()}${installCardHTML()}<div class="stack">
+    ${syncCardHTML('Sign in on each phone to share your trips, packing lists and to-dos. A change on one phone shows up on the other within a few seconds when both are online. Weather is not shared; each phone looks it up itself.')}
     <section class="card pad"><h3>Back up</h3><p class="muted">${last}</p>
       <p>Saves one file with all your trips. On iPhone it opens the share sheet — save it to Files or OneDrive. <b>Never put this file in your GitHub repo.</b></p>
       ${canEncrypt ? `<div class="field"><label for="bkPass">Passphrase (optional — encrypts the file)</label><input id="bkPass" type="password" autocomplete="new-password"></div>
@@ -1256,7 +1562,7 @@ function backupScreen() {
       <p class="hint">If you set one, the file can’t be opened without it — not even by me.</p>` : ''}
       <button type="button" class="btn primary block" style="margin-top:12px" data-action="export">Back up now</button></section>
     <section class="card pad"><h3>Restore</h3><p>Pick a backup file made by this app. You’ll choose whether to replace what’s here or merge it in.</p><button type="button" class="btn block" data-action="restore">Choose backup file…</button></section>
-    <section class="card pad"><h3>Danger zone</h3><p>Erases all trips on this device.</p><button type="button" class="btn danger block" data-action="wipe">Erase everything on this device</button></section></div></main>`;
+    <section class="card pad"><h3>Danger zone</h3><p>${Sync.enabled() ? 'Erases all trips here and, because sharing is on, on the other phone too.' : 'Erases all trips on this device.'}</p><button type="button" class="btn danger block" data-action="wipe">Erase everything on this device</button></section></div></main>`;
 }
 function route() {
   const [a, b, c] = location.hash.replace(/^#\/?/, '').split('/');
@@ -1305,7 +1611,7 @@ async function restoreFromText(text) {
   const sum = plural(data.trips.length, 'trip');
   const when = parsed.exportedAt ? ` Backup made ${fmtDateTime(parsed.exportedAt)}.` : '';
   const skipped = dropped ? ` ${plural(dropped, 'unreadable item')} will be skipped.` : '';
-  const body = `<p>${esc(sum + '.' + when + skipped)}</p>` + (hasLocal ? '<p class="muted"><b>Replace all</b> swaps everything here for the backup. <b>Merge</b> adds trips that aren’t here yet and keeps the rest.</p>' : '');
+  const body = `<p>${esc(sum + '.' + when + skipped)}</p>` + (hasLocal ? '<p class="muted"><b>Replace all</b> swaps everything here for the backup. <b>Merge</b> adds trips that aren’t here yet and keeps the rest.</p>' : '') + (Sync.enabled() ? '<p class="muted"><b>Sharing is on:</b> Replace all also replaces the shared copy, so the other phone will change too.</p>' : '');
   const choice = await askDialog({
     title: 'Restore this backup?', body,
     buttons: hasLocal
@@ -1314,7 +1620,7 @@ async function restoreFromText(text) {
   });
   if (choice === 'replace') {
     const ts = parsed.exportedAt && !isNaN(Date.parse(parsed.exportedAt)) ? parsed.exportedAt : new Date().toISOString();
-    state.trips = data.trips; state.settings = data.settings;
+    state.trips = data.trips; state.settings = data.settings; uniqueItemIds();
     state.meta.lastBackup = ts; state.meta.lastChange = ts;
     await persist({ touch: false });
     render(); toast(`Restored ${sum}`); return true;
@@ -1322,6 +1628,7 @@ async function restoreFromText(text) {
   if (choice === 'merge') {
     const ids = new Set(state.trips.map(x => x.id)); let n = 0;
     for (const t of data.trips) if (!ids.has(t.id)) { state.trips.push(t); n++; }
+    uniqueItemIds();
     await persist(); render(); toast(`Merged in ${plural(n, 'trip')}`); return true;
   }
   return false;
@@ -1333,7 +1640,7 @@ async function doRestore() {
   await restoreFromText(text);
 }
 async function doWipe() {
-  if (!(await confirmBox('Erase everything?', 'This permanently deletes all trips on this device. Make a backup first if you might want them.', 'Erase everything'))) return;
+  if (!(await confirmBox('Erase everything?', Sync.enabled() ? 'Sharing is on, so this also deletes every trip from the shared copy and from the other phone. Make a backup first if you might want them.' : 'This permanently deletes all trips on this device. Make a backup first if you might want them.', 'Erase everything'))) return;
   state = defaultState(); ui.geo = null;
   await persist({ touch: false });
   location.hash = '#/'; render(); toast('Everything erased');
@@ -1342,6 +1649,7 @@ async function doWipe() {
 /* ---- events ---- */
 function curTrip() { return route().trip || null; }
 function handleAction(a, el) {
+  if (a.startsWith('sync-')) return syncAction(a);
   const t = curTrip(), id = el.dataset.id;
   switch (a) {
     case 'new-trip': return tripDialog(null);
@@ -1440,7 +1748,10 @@ document.addEventListener('visibilitychange', () => { if (!document.hidden && !$
       }
     } catch (e) { console.error(e); db = null; }
   }
+  if (uniqueItemIds()) persist({ touch: false, sync: false });
   render();
+  Sync.onChange(renderIfSafe);
+  Sync.start({ db, key: 'sync', model: tripModel });
 })();
 </script>
 </body>

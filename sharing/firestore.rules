@@ -1,0 +1,16 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Only the two household accounts (by their Firebase user IDs) may read or write anything.
+    function allowed() {
+      return request.auth != null
+        && request.auth.uid in [
+          'PASTE_GLENNS_USER_UID_HERE',
+          'PASTE_CINDYS_USER_UID_HERE'
+        ];
+    }
+    match /{document=**} {
+      allow read, write: if allowed();
+    }
+  }
+}

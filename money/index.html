@@ -137,6 +137,9 @@ dialog::backdrop{background:rgba(10,15,12,.55)}
 
 @media (prefers-reduced-motion:no-preference){.btn,.fab{transition:transform .08s}}
 
+.syncbadge{border:1px solid var(--line,#d5dbe0);background:var(--card,#fff);color:inherit;border-radius:999px;padding:4px 10px;font:inherit;font-size:.82rem;cursor:pointer;white-space:nowrap}
+.syncbadge.ok{color:#15803d}.syncbadge.bad{color:#b91c1c}
+
 .stack{display:flex;flex-direction:column;gap:14px;margin-top:14px}
 .row .btn{flex:none}
 .chart{width:100%;height:auto;display:block;touch-action:pan-y;user-select:none;-webkit-user-select:none}
@@ -290,7 +293,7 @@ function fieldHTML(f) {
   } else {
     const t = f.type || 'text';
     const extra = t === 'number' ? ` inputmode="decimal" step="${f.step || 'any'}"` : '';
-    ctl = `<input id="${id}" name="${f.name}" type="${t}" value="${esc(v)}" placeholder="${esc(f.placeholder || '')}"${extra}${f.min != null ? ` min="${f.min}"` : ''}${f.max != null ? ` max="${f.max}"` : ''} autocomplete="off" autocapitalize="${f.capitalize || 'sentences'}">`;
+    ctl = `<input id="${id}" name="${f.name}" type="${t}" value="${esc(v)}" placeholder="${esc(f.placeholder || '')}"${extra}${f.min != null ? ` min="${f.min}"` : ''}${f.max != null ? ` max="${f.max}"` : ''} autocomplete="${f.autocomplete || 'off'}" autocapitalize="${f.capitalize || (t === 'email' || t === 'password' ? 'none' : 'sentences')}">`;
   }
   return `<div class="field"><label for="${id}">${esc(f.label)}${f.required ? ' *' : ''}</label>${ctl}${f.hint ? `<div class="hint">${esc(f.hint)}</div>` : ''}</div>`;
 }
