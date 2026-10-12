@@ -137,7 +137,7 @@ dialog::backdrop{background:rgba(10,15,12,.55)}
 
 @media (prefers-reduced-motion:no-preference){.btn,.fab{transition:transform .08s}}
 
-.syncbadge{border:1px solid var(--line,#d5dbe0);background:var(--card,#fff);color:inherit;border-radius:999px;padding:4px 10px;font:inherit;font-size:.82rem;cursor:pointer;white-space:nowrap}
+.syncbadge{flex:none;white-space:nowrap;border:1px solid var(--line,#d5dbe0);background:var(--card,#fff);color:inherit;border-radius:999px;padding:4px 10px;font:inherit;font-size:.82rem;cursor:pointer;white-space:nowrap}
 .syncbadge.ok{color:#15803d}.syncbadge.bad{color:#b91c1c}
 .seg{display:flex;gap:8px;margin-top:6px}.seg .chip{flex:1;text-align:center}
 
@@ -703,7 +703,7 @@ function syncText() {
 function syncBadgeHTML() {
   const s = Sync.status(); if (s === 'off') return '';
   const t = syncText();
-  return `<button type="button" class="syncbadge ${t.cls}" data-action="sync-info" aria-label="Sharing status: ${esc(t.text)}">${t.icon} <span>${esc(s === 'live' ? 'Shared' : s === 'signed-out' ? 'Sign in to share' : t.text.split(' — ')[0].replace('…', ''))}</span></button>`;
+  return `<button type="button" class="syncbadge ${t.cls}" data-action="sync-info" aria-label="Sharing status: ${esc(t.text)}">${t.icon} <span>${esc({ live: 'Shared', 'signed-out': 'Sign in', unavailable: 'Offline', connecting: 'Connecting', syncing: 'Syncing', denied: 'Not allowed', error: 'Sync issue' }[s] || 'Sharing')}</span></button>`;
 }
 function syncCardHTML(blurb = '') {
   const s = Sync.status(); if (s === 'off') return '';
@@ -1404,10 +1404,8 @@ function storageBannerHTML() {
   if (!db) return '<div class="banner bad">This browser isn’t allowing storage (private mode?). Changes won’t survive closing the app — use Backup often.</div>';
   return '';
 }
-function nagHTML() {
-  const m = backupNag(state.meta, state.trips.length > 0);
-  return m ? `<div class="banner"><span>${esc(m)}</span><a class="btn small" href="#/backup">Back up</a></div>` : '';
-}
+/* backup reminders are off: backups are handled by the owner, not by whoever opens the app */
+const nagHTML = () => '';
 const syncLineHTML = () => { const b = syncBadgeHTML(); return b ? `<div style="margin:0 0 10px;text-align:right">${b}</div>` : ''; };
 function homeScreen() {
   const today = todayISO();
@@ -1428,8 +1426,8 @@ function homeScreen() {
     ? `<div class="empty"><div class="big">🧳</div><h2>No trips yet</h2><p>Create a trip to build a packing list, day-by-day plan, budget and weather outlook.</p>
         <button class="btn primary" data-action="new-trip">Plan your first trip</button><br><button class="btn ghost" data-action="restore">Restore from a backup file</button></div>`
     : pinSection + (upcoming.length ? `<div class="sec-h"><span>Upcoming &amp; current</span></div>${upcoming.map(card).join('')}` : '') + (past.length ? `<div class="sec-h"><span>Past trips</span></div>${past.map(card).join('')}` : '');
-  return headerHTML({ title: 'Trips', sub: 'Open a trip or start a new one', right: (state.trips.length ? '<button class="btn small primary" data-action="new-trip">+ New trip</button>' : '') + '<a class="btn small" href="#/backup">Backup</a>' })
-    + `<main class="wrap">${syncLineHTML()}${storageBannerHTML()}${nagHTML()}${body}</main>`
+  return headerHTML({ title: 'Trips', sub: 'Open a trip or start a new one', right: syncBadgeHTML() + '<a class="btn small" href="#/backup">Backup</a>' + '<a class="btn small" href="../" data-exit>Exit</a>' })
+    + `<main class="wrap">${storageBannerHTML()}${state.trips.length ? '<button type="button" class="btn primary block" style="margin-bottom:12px" data-action="new-trip">+ New trip</button>' : ''}${body}</main>`
     ;
 }
 function overviewTab(t) {

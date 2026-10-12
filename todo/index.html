@@ -145,7 +145,7 @@ dialog::backdrop{background:rgba(10,15,12,.55)}
 
 @media (prefers-reduced-motion:no-preference){.btn,.fab{transition:transform .08s}}
 
-.syncbadge{border:1px solid var(--line,#d5dbe0);background:var(--card,#fff);color:inherit;border-radius:999px;padding:4px 10px;font:inherit;font-size:.82rem;cursor:pointer;white-space:nowrap}
+.syncbadge{flex:none;white-space:nowrap;border:1px solid var(--line,#d5dbe0);background:var(--card,#fff);color:inherit;border-radius:999px;padding:4px 10px;font:inherit;font-size:.82rem;cursor:pointer;white-space:nowrap}
 .syncbadge.ok{color:#15803d}.syncbadge.bad{color:#b91c1c}
 .seg{display:flex;gap:8px;margin-top:6px}.seg .chip{flex:1;text-align:center}
 
@@ -679,7 +679,7 @@ function syncText() {
 function syncBadgeHTML() {
   const s = Sync.status(); if (s === 'off') return '';
   const t = syncText();
-  return `<button type="button" class="syncbadge ${t.cls}" data-action="sync-info" aria-label="Sharing status: ${esc(t.text)}">${t.icon} <span>${esc(s === 'live' ? 'Shared' : s === 'signed-out' ? 'Sign in to share' : t.text.split(' — ')[0].replace('…', ''))}</span></button>`;
+  return `<button type="button" class="syncbadge ${t.cls}" data-action="sync-info" aria-label="Sharing status: ${esc(t.text)}">${t.icon} <span>${esc({ live: 'Shared', 'signed-out': 'Sign in', unavailable: 'Offline', connecting: 'Connecting', syncing: 'Syncing', denied: 'Not allowed', error: 'Sync issue' }[s] || 'Sharing')}</span></button>`;
 }
 function syncCardHTML(blurb = '') {
   const s = Sync.status(); if (s === 'off') return '';
@@ -895,10 +895,9 @@ function storageBannerHTML() {
   if (!db) return '<div class="banner bad">This browser isn’t allowing storage (private mode?). Changes won’t survive closing the app — use Backup often.</div>';
   return '';
 }
-function nagHTML() {
-  const m = backupNag(state.meta, state.lists.length > 1 || state.lists.some(l => l.items.length > 0));
-  return m ? `<div class="banner"><span>${esc(m)}</span><a class="btn small" href="#/backup">Back up</a></div>` : '';
-}
+/* backup reminders are off: backups are handled by the owner, not by whoever opens the app */
+const nagHTML = () => '';
+const EXIT_BTN = '<a class="btn small" href="../" data-exit>Exit</a>';
 const openCount = l => l.items.filter(i => !i.done).length;
 const openWord = n => (GROC ? `${n} to get` : `${n} open`);
 function homeScreen() {
@@ -907,7 +906,7 @@ function homeScreen() {
     return `<a class="card listcard" href="#/list/${esc(l.id)}"><div class="tc-top"><div class="row-title">${esc(l.name)}</div><span class="badge ${open ? 'acc' : 'ok'}">${esc(open ? openWord(open) : total ? 'All done' : 'Empty')}</span></div>
       ${total ? `<div class="bar" style="margin-top:10px"><i style="width:${pct}%"></i></div><div class="row-sub" style="margin-top:4px">${done} of ${total} ${GROC ? 'in the cart' : 'done'}</div>` : '<div class="row-sub">Nothing here yet</div>'}</a>`;
   };
-  return headerHTML({ title: `${CFG.emoji} ${CFG.title}`, sub: plural(state.lists.length, 'list'), right: syncBadgeHTML() + '<a class="btn small" href="#/backup">Backup</a>' })
+  return headerHTML({ title: `${CFG.emoji} ${CFG.title}`, sub: plural(state.lists.length, 'list'), right: syncBadgeHTML() + '<a class="btn small" href="#/backup">Backup</a>' + EXIT_BTN })
     + `<main class="wrap">${storageBannerHTML()}${nagHTML()}<div class="sec-h"><span>Your lists</span></div>${state.lists.map(card).join('')}
     <button type="button" class="btn block" data-action="new-list">+ New list</button></main>`;
 }
@@ -934,7 +933,9 @@ function listScreen(l) {
   if (!l.items.length) body = `<div class="empty"><div class="big">${CFG.emoji}</div><h2>Nothing here yet</h2><p>Type ${GROC ? 'an item' : 'a task'} above and tap Add.</p></div>`;
   else if (!open.length) body = `<div class="empty"><div class="big">🎉</div><h2>${GROC ? 'Everything is in the cart' : 'All done'}</h2></div>` + body;
   if (done.length) body += `<div class="sec-h"><button type="button" class="linkbtn" data-action="toggle-done" aria-expanded="${ui.doneOpen}">${ui.doneOpen ? '▾' : '▸'} ${GROC ? 'In the cart' : 'Done'} (${done.length})</button><button type="button" class="btn small danger" data-action="clear-done">${GROC ? 'Clear checked' : 'Clear done'}</button></div>${ui.doneOpen ? `<ul class="card list">${done.map(rowHTML).join('')}</ul>` : ''}`;
-  const form = `<form class="card pad addform" data-form="add" autocomplete="off"><div class="addrow"><input name="text" aria-label="${GROC ? 'Add an item' : 'Add a task'}" placeholder="${GROC ? 'Add an item (2 apples, 1 lb ground beef)' : 'Add a task'}" maxlength="140" enterkeyhint="done" autocapitalize="sentences"><button type="submit" class="btn primary">Add</button></div></form>`;
+  const form = `<form class="card pad addform" data-form="add" autocomplete="off"><div class="addrow"><input name="text" aria-label="${GROC ? 'Add an item' : 'Add a task'}" placeholder="${GROC ? 'Add an item, e.g. 2 apples' : 'Add a task'}" maxlength="140" enterkeyhint="done" autocapitalize="sentences"><button type="submit" class="btn primary">Add</button></div></form>`;
+  if (GROC) return headerHTML({ title: `${CFG.emoji} ${CFG.title}`, sub: openWord(open.length), right: syncBadgeHTML() + '<a class="btn small" href="#/backup">Backup</a>' + EXIT_BTN })
+    + `<main class="wrap">${storageBannerHTML()}${nagHTML()}${form}${body}</main>`;
   return headerHTML({ back: '#/', title: l.name, sub: openWord(open.length), right: '<button type="button" class="btn small" data-action="edit-list">Edit</button>' })
     + `<main class="wrap">${storageBannerHTML()}${form}${body}</main>`;
 }
@@ -953,8 +954,10 @@ function backupScreen() {
 }
 function route() {
   const [a, b] = location.hash.replace(/^#\/?/, '').split('/');
-  if (a === 'list' && b) { const l = listById(b); if (l) return { name: 'list', list: l }; }
   if (a === 'backup') return { name: 'backup' };
+  /* Grocery is single-purpose: it always opens straight onto the one list (the first one, if an older copy somehow has several) */
+  if (GROC) return { name: 'list', list: listById('main') || state.lists[0] };
+  if (a === 'list' && b) { const l = listById(b); if (l) return { name: 'list', list: l }; }
   return { name: 'home' };
 }
 const ui = { focus: null, doneOpen: GROC };
