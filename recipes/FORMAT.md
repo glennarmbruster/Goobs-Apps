@@ -46,5 +46,6 @@ The Recipes app opens a recipe from plain JSON. Anything that follows this forma
 
 ## Where recipes live
 
-- `recipes/library.json` in this repo is the shared library. Everyone who opens the app sees it. It is public, like the rest of the repo.
-- Recipes added inside the app stay on that phone until you export them (Backup & library, then Export library file) and upload the result as `recipes/library.json`.
+- **`recipes/library/<id>.json`: one file per recipe (the normal way).** Upload a recipe file there and the app shows it the next time it opens (GitHub Pages takes a minute or two to publish). The app finds the files through the public GitHub API, so this works when the app is opened from `<owner>.github.io/<repo>/recipes/`. A file can hold one recipe, a library (`goobs-recipe-library`) or an array. Uploading a file with the same name replaces that recipe; a recipe file wins over the same id in `library.json`.
+- `recipes/library.json` is the older single-file library and still works. Both are public, like the rest of the repo.
+- Recipes added inside the app stay on that phone until you export them (Backup & library, then Export library file) and upload the result.

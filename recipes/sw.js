@@ -52,6 +52,6 @@ self.addEventListener('fetch', e => {
   const req = e.request;
   if (req.method !== 'GET') return;
   if (new URL(req.url).origin !== self.location.origin) return; // weather/geocoding/Firebase calls go straight to the network
-  const isPage = req.mode === 'navigate' || /\/(index\.html|library\.json)?$/.test(new URL(req.url).pathname);
+  const isPage = req.mode === 'navigate' || /\/(index\.html|library\.json)?$|\/library\/[^/]+\.json$/.test(new URL(req.url).pathname);
   e.respondWith(isPage ? page(req) : asset(req));
 });

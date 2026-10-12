@@ -881,24 +881,76 @@ function parseLibrary(j) {
   const { data } = normalizeData({ recipes: arr(j.recipes) });
   return data.recipes;
 }
+/* recipes/library/*.json: one file per recipe. GitHub Pages can't list a folder, so the file list comes from the public GitHub API
+   (no sign-in; it needs the app to be served from <owner>.github.io/<repo>/recipes/). Each file is fetched once per change (keyed by its sha) and kept for offline use. */
+function repoInfo() {
+  const m = location.hostname.match(/^([^.]+)\.github\.io$/i), seg = location.pathname.split('/').filter(Boolean);
+  return m && seg.length ? { owner: m[1], repo: seg[0] } : null;
+}
+const asLibShape = j => (Array.isArray(j) ? { recipes: j } : j && Array.isArray(j.recipes) ? j : { recipes: [j] });
+async function fetchLibFolder() {
+  const info = repoInfo(); if (!info) return null;
+  let cache = {};
+  if (db) { try { const c = await idbGet(db, 'libfiles'); if (c) cache = JSON.parse(c) || {}; } catch { cache = {}; } }
+  const res = await fetch(`https://api.github.com/repos/${info.owner}/${info.repo}/contents/recipes/library`, { cache: 'no-store' });
+  if (res.status === 404) { if (db) idbPut(db, 'libfiles', '{}').catch(() => {}); return {}; }
+  if (!res.ok) throw new Error('HTTP ' + res.status);
+  const list = (await res.json());
+  if (!Array.isArray(list)) throw new Error('bad listing');
+  const files = list.filter(f => f && f.type === 'file' && /\.json$/i.test(f.name || '')).slice(0, 500), next = {};
+  const one = async f => {
+    const old = cache[f.name];
+    if (old && old.sha === f.sha) { next[f.name] = old; return; }
+    try {
+      let r = await fetch('library/' + encodeURIComponent(f.name), { cache: 'no-store' });
+      if (!r.ok && f.download_url) r = await fetch(f.download_url, { cache: 'no-store' });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const txt = await r.text();
+      let j = null; try { j = JSON.parse(txt); } catch { j = null; }   // a file that isn't valid JSON is remembered (by sha) so it isn't refetched every time
+      next[f.name] = { sha: f.sha, j };
+    } catch { if (old) next[f.name] = old; }
+  };
+  for (let i = 0; i < files.length; i += 8) await Promise.all(files.slice(i, i + 8).map(one));
+  if (db) idbPut(db, 'libfiles', JSON.stringify(next)).catch(() => {});
+  return next;
+}
+function folderRecipes(files) {
+  const out = [];
+  for (const k of Object.keys(files || {}).sort()) { if (!files[k] || files[k].j == null) continue; try { out.push(...parseLibrary(asLibShape(files[k].j))); } catch { /* skip a bad file */ } }
+  return out;
+}
 async function loadLibrary() {
   LIB.loading = true;
-  let source = '';
+  let source = '', base = null, files = null, errs = [];
   try {
     const res = await fetch('library.json', { cache: 'no-store' });
-    if (res.status === 404) { LIB.recipes = []; LIB.error = ''; LIB.at = Date.now(); source = 'none'; }
+    if (res.status === 404) { base = []; source = 'none'; }
     else {
       if (!res.ok) throw new Error('HTTP ' + res.status);
       const text = await res.text();
-      LIB.recipes = parseLibrary(JSON.parse(text)); LIB.error = ''; LIB.at = Date.now(); source = 'net';
+      base = parseLibrary(JSON.parse(text)); source = 'net';
       if (db) idbPut(db, 'library', text).catch(() => {});
     }
   } catch (e) {
-    let ok = false;
-    if (db) { try { const cached = await idbGet(db, 'library'); if (cached) { LIB.recipes = parseLibrary(JSON.parse(cached)); ok = true; LIB.error = 'Offline: showing the library as last loaded.'; } } catch { /* ignore */ } }
-    if (!ok) { LIB.recipes = []; LIB.error = 'Couldn’t load the shared library (no connection and nothing saved yet).'; }
+    errs.push('library');
+    if (db) { try { const cached = await idbGet(db, 'library'); if (cached) base = parseLibrary(JSON.parse(cached)); } catch { /* ignore */ } }
   }
-  LIB.loading = false;
+  try { files = await fetchLibFolder(); }
+  catch (e) {
+    if (repoInfo()) errs.push('folder');
+    if (db) { try { const c = await idbGet(db, 'libfiles'); if (c) files = JSON.parse(c); } catch { /* ignore */ } }
+  }
+  if (base === null && files === null) { LIB.recipes = []; LIB.error = 'Couldn’t load the shared library (no connection and nothing saved yet).'; }
+  else {
+    const merged = new Map();
+    for (const r of base || []) merged.set(r.id, r);
+    for (const r of folderRecipes(files)) merged.set(r.id, r);   // a recipe file beats the same id in library.json
+    LIB.recipes = [...merged.values()];
+    LIB.error = errs.length ? 'Offline: showing the library as last loaded.' : '';
+    if (source === '' && base !== null) source = 'cache';
+    if (files && Object.keys(files).length && source === 'none') source = 'folder';
+  }
+  LIB.at = Date.now(); LIB.loading = false;
   return source;
 }
 /* mine win over the library for the same id */
@@ -1206,7 +1258,7 @@ function backupScreen() {
     <section class="card pad"><h3>Shared library</h3><p>${plural(LIB.recipes.length, 'recipe')} in the library file${LIB.at ? `, checked ${esc(fmtDateTime(new Date(LIB.at).toISOString()))}` : ''}. ${state.recipes.length ? `${plural(state.recipes.length, 'recipe')} are only on this phone.` : ''}</p>
       <p class="muted">The library is a file in your GitHub project, so every phone sees the same recipes, with no account or sync. Recipes you add here stay on this phone until you put them in the library. It’s public, like the rest of the project.</p>
       <div class="chips"><button type="button" class="btn" data-action="lib-refresh">Check for new recipes</button><button type="button" class="btn" data-action="lib-export">Export library file</button></div>
-      <p class="hint">To share your recipes: tap Export library file, then upload it to GitHub as <b>recipes/library.json</b>, replacing the old one. After the page updates, tap “Tidy up” here.</p><button type="button" class="btn small" data-action="lib-tidy">Tidy up copies already in the library</button></section>
+      <p class="hint">To share a recipe, upload its .json file into the <b>recipes/library</b> folder on GitHub. Or tap Export library file and upload the result as <b>recipes/library.json</b>, replacing the old one. After the page updates, tap “Tidy up” here.</p><button type="button" class="btn small" data-action="lib-tidy">Tidy up copies already in the library</button></section>
     ${hidden.length ? `<section class="card pad"><h3>Hidden recipes</h3><ul class="list">${hidden.map(x => `<li class="row static"><div class="row-main"><div class="row-title">${esc(x.r.title)}</div></div><button type="button" class="btn small" data-action="unhide" data-id="${esc(x.r.id)}">Show</button></li>`).join('')}</ul></section>` : ''}
     <section class="card pad"><h3>Back up</h3><p class="muted">${last}</p><p>Saves a file with your own recipes, favourites and notes. The shared library isn’t in it; that lives in GitHub.</p>
       ${canEncrypt ? `<div class="field"><label for="bkPass">Passphrase (optional — encrypts the file)</label><input id="bkPass" type="password" autocomplete="new-password"></div><div class="field" style="margin-top:8px"><label for="bkPass2">Repeat passphrase</label><input id="bkPass2" type="password" autocomplete="new-password"></div><p class="hint">If you set one, the file can’t be opened without it.</p>` : ''}
@@ -1439,7 +1491,7 @@ function handleAction(a, el) {
     case 'restore': return doRestore();
     case 'wipe': return doWipe();
     case 'install': return runInstall();
-    case 'lib-refresh': return loadLibrary().then(src => { render(); toast(LIB.error || (src === 'none' ? 'There is no library file in the project yet.' : `Library has ${plural(LIB.recipes.length, 'recipe')}`)); });
+    case 'lib-refresh': return loadLibrary().then(src => { render(); toast(LIB.error || (src === 'none' && !LIB.recipes.length ? 'There is no library file in the project yet.' : `Library has ${plural(LIB.recipes.length, 'recipe')}`)); });
     case 'lib-export': return libExport();
     case 'lib-tidy': return libTidy();
     case 'meal-toggle': return toggleMeal(el.dataset.id);
