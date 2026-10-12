@@ -836,9 +836,9 @@ function normMark(m) {
   m = m && typeof m === 'object' ? m : {};
   const ints = a => [...new Set(arr(a).filter(n => Number.isInteger(n) && n >= 0 && n < 500))];
   return { fav: m.fav === true, hidden: m.hidden === true, note: block(m.note, 4000), made: arr(m.made).filter(isISO).slice(-200),
-    servings: isNum(m.servings) && m.servings > 0 && m.servings <= 1000 ? m.servings : null, prog: { i: ints(m.prog && m.prog.i), s: ints(m.prog && m.prog.s) } };
+    servings: isNum(m.servings) && m.servings > 0 && m.servings <= 1000 ? m.servings : null, cat: typeof m.cat === 'string' ? flat(m.cat, 30) : '', prog: { i: ints(m.prog && m.prog.i), s: ints(m.prog && m.prog.s) } };
 }
-const markEmpty = m => !m.fav && !m.hidden && !m.note && !m.made.length && m.servings == null && !m.prog.i.length && !m.prog.s.length;
+const markEmpty = m => !m.fav && !m.hidden && !m.cat && !m.note && !m.made.length && m.servings == null && !m.prog.i.length && !m.prog.s.length;
 function normalizeData(raw) {
   raw = raw && typeof raw === 'object' ? raw : {};
   let dropped = 0; const recipes = [], ids = new Set();
@@ -955,12 +955,19 @@ async function loadLibrary() {
 }
 /* mine win over the library for the same id */
 const myIds = () => new Set(state.recipes.map(r => r.id));
+/* a library recipe's category can be changed on this phone without making a copy: the choice is kept in my marks */
+const libCat = r => { const c = (state.marks[r.id] || {}).cat; return c && c !== r.category ? { ...r, category: c } : r; };
+function setCategory(r, src, cat) {
+  cat = flat(cat, 30) || 'Other';
+  if (src === 'mine') { const i = state.recipes.findIndex(x => x.id === r.id); if (i >= 0) { state.recipes[i] = { ...state.recipes[i], category: cat, updated: Date.now() }; } setMark(r.id, { cat: '' }); }
+  else { const base = LIB.recipes.find(x => x.id === r.id); setMark(r.id, { cat: base && base.category === cat ? '' : cat }); }
+}
 function allRecipes({ withHidden = false } = {}) {
   const mine = myIds();
-  const out = state.recipes.map(r => ({ r, src: 'mine' })).concat(LIB.recipes.filter(r => !mine.has(r.id)).map(r => ({ r, src: 'lib' })));
+  const out = state.recipes.map(r => ({ r, src: 'mine' })).concat(LIB.recipes.filter(r => !mine.has(r.id)).map(r => ({ r: libCat(r), src: 'lib' })));
   return withHidden ? out : out.filter(x => !mark(x.r.id).hidden);
 }
-const findRecipe = id => { const m = state.recipes.find(r => r.id === id); if (m) return { r: m, src: 'mine', shadows: LIB.recipes.some(x => x.id === id) }; const l = LIB.recipes.find(r => r.id === id); return l ? { r: l, src: 'lib', shadows: false } : null; };
+const findRecipe = id => { const m = state.recipes.find(r => r.id === id); if (m) return { r: m, src: 'mine', shadows: LIB.recipes.some(x => x.id === id) }; const l = LIB.recipes.find(r => r.id === id); return l ? { r: libCat(l), src: 'lib', shadows: false } : null; };
 const freeId = base => { const used = new Set([...state.recipes.map(r => r.id), ...LIB.recipes.map(r => r.id)]); let id = base || uid(), n = 2; while (used.has(id)) id = (base || 'recipe') + '-' + n++; return id; };
 
 /* ---------- the meal: a few recipes picked together (a main, some sides) ---------- */
@@ -1355,6 +1362,7 @@ async function addMenu() {
 async function moreMenu(r, src) {
   const f = findRecipe(r.id), mine = src === 'mine';
   const c = await sheet(r.title, [
+    { label: 'Change category', sub: `Now: ${r.category}. Main dish, Sides, Baking and more`, value: 'cat' },
     { label: mine ? 'Edit' : 'Edit (saves my own copy)', value: 'edit' },
     { label: 'Print', value: 'print' },
     { label: 'Share as text', sub: 'For a message or email', value: 'share' },
@@ -1362,7 +1370,14 @@ async function moreMenu(r, src) {
     { label: 'Save recipe file', value: 'file' },
     { label: 'Duplicate', value: 'dup' },
     mine && !f.shadows ? { label: 'Delete', value: 'del', kind: 'danger' } : mine ? { label: 'Delete my edited copy', sub: 'The library version comes back', value: 'del', kind: 'danger' } : { label: 'Hide on this phone', value: 'hide', kind: 'danger' }]);
-  if (c === 'edit') { ui.draft = null; location.hash = '#/edit/' + r.id; }
+  if (c === 'cat') {
+    const order = [...FIXED_TABS, ...CATS.filter(x => !FIXED_TABS.includes(x))];
+    const pick = await sheet('Move “' + r.title + '” to', order.map(x => ({ label: x + (x === r.category ? ' (current)' : ''), value: x })));
+    if (!pick || pick === r.category) return;
+    const was = r.category; setCategory(r, src, pick); persist(); render();
+    toast(`Moved to ${pick}${src === 'lib' ? ' on this phone' : ''}`, { label: 'Undo', fn: () => { setCategory(r, src, was); commit(); } });
+  }
+  else if (c === 'edit') { ui.draft = null; location.hash = '#/edit/' + r.id; }
   else if (c === 'print') printRecipe(r);
   else if (c === 'share') { const text = recipeText(r, factorOf(r)); try { if (navigator.share) { await navigator.share({ title: r.title, text }); return; } } catch (e) { if (e && e.name === 'AbortError') return; } copyText(text, 'Recipe copied as text'); }
   else if (c === 'copyjson') copyText(JSON.stringify(recipeJSON(r), null, 2), 'Copied. Open Recipes on the other phone and tap Add, then Paste.');
