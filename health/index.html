@@ -1,0 +1,1486 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Health</title>
+<meta name="description" content="Private health log: labs, vitals, medications and appointments, with charts and a doctor-visit summary. Data stays on your device.">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#fbf5f6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1311" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Health">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<style>
+:root{
+  --bg:#f5f4ef; --card:#ffffff; --ink:#1b2420; --muted:#66736d; --line:#e2e0d6; --soft:#efede5;
+  --accent:#0f766e; --accent-ink:#ffffff; --accent-soft:#d9f0ec;
+  --bad:#b42318; --bad-soft:#fde8e6; --warn:#9a5b00; --warn-soft:#fdf0d5; --ok:#166534; --ok-soft:#dcf5e3;
+  --radius:14px; --shadow:0 1px 2px rgba(16,24,20,.06),0 6px 18px rgba(16,24,20,.06);
+  color-scheme:light dark;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0e1311; --card:#171f1c; --ink:#e7eeeb; --muted:#97a69f; --line:#27332e; --soft:#1e2824;
+    --accent:#2dd4bf; --accent-ink:#06211d; --accent-soft:#12332e;
+    --bad:#ff8a80; --bad-soft:#3a1a18; --warn:#f6c26b; --warn-soft:#3a2c12; --ok:#7ee2a0; --ok-soft:#14301f;
+    --shadow:none;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation;
+  padding-bottom:calc(92px + env(safe-area-inset-bottom));
+}
+a{color:var(--accent)}
+h1,h2,h3{margin:0;line-height:1.2}
+h3{font-size:16px}
+p{margin:0 0 8px}
+.wrap{max-width:720px;margin:0 auto;padding:0 16px}
+.muted{color:var(--muted)} .bad{color:var(--bad)} .warn{color:var(--warn)} .ok{color:var(--ok)}
+.num{font-variant-numeric:tabular-nums}
+.hide{display:none!important}
+.pad{padding:14px 16px}
+.hint{font-size:13px;color:var(--muted);margin-top:4px}
+
+/* header */
+header.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top)}
+header.top .wrap{display:flex;align-items:center;gap:12px;min-height:58px}
+header.top .grow{flex:1;min-width:0}
+header.top h1{font-size:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+header.top .sub{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.back{display:inline-flex;align-items:center;min-height:44px;padding-right:6px;text-decoration:none;font-weight:600}
+
+/* cards, tiles, lists */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+.tile{padding:12px}
+.tile .lbl{font-size:12px;color:var(--muted);font-weight:600}
+.tile .val{font-size:20px;font-weight:700;margin-top:2px}
+.sec-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin:22px 4px 8px;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700}
+.sec-h .btn{text-transform:none;letter-spacing:0}
+.list{list-style:none;margin:0;padding:0}
+.row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-top:1px solid var(--line);cursor:pointer}
+.row:first-child{border-top:0}
+.row.static{cursor:default}
+.row-main{flex:1;min-width:0}
+.row-title{font-weight:600;overflow-wrap:anywhere}
+.row-sub{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.row-amt{font-weight:700;white-space:nowrap}
+.row.faded{opacity:.6}
+.badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 7px;border-radius:999px;background:var(--soft);color:var(--muted);vertical-align:middle;margin-left:6px}
+.badge.ok{background:var(--ok-soft);color:var(--ok)} .badge.warn{background:var(--warn-soft);color:var(--warn)} .badge.bad{background:var(--bad-soft);color:var(--bad)} .badge.acc{background:var(--accent-soft);color:var(--accent)}
+.empty{text-align:center;padding:40px 20px;color:var(--muted)}
+.empty .big{font-size:40px;line-height:1;margin-bottom:10px}
+.empty h2{color:var(--ink);font-size:18px;margin-bottom:6px}
+.empty .btn{margin-top:14px}
+.banner{padding:12px 14px;border-radius:12px;background:var(--warn-soft);color:var(--warn);font-size:14px;margin:14px 0;display:flex;gap:10px;justify-content:space-between;align-items:center}
+.banner.bad{background:var(--bad-soft);color:var(--bad)}
+.bar{height:8px;border-radius:99px;background:var(--soft);overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--accent);border-radius:99px}
+.bar.over>i{background:var(--bad)}
+
+/* buttons */
+.btn{white-space:nowrap;appearance:none;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-weight:600;min-height:44px;padding:0 16px;border-radius:12px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.danger{color:var(--bad)}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--accent)}
+.btn.small{min-height:36px;padding:0 12px;font-size:14px;border-radius:10px}
+.btn.block{width:100%}
+.btn:active{transform:translateY(1px)}
+.btn:disabled{opacity:.5;cursor:default}
+.btn:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible,.chip:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 14px;min-height:36px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+
+/* bottom nav + fab */
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+nav.tabs .wrap{display:flex;padding:0}
+nav.tabs a,nav.tabs button{flex:1;min-height:58px;border:0;background:none;color:var(--muted);font:inherit;font-size:11px;font-weight:600;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;text-decoration:none}
+nav.tabs .ico{font-size:20px;line-height:1}
+nav.tabs [aria-current="page"]{color:var(--accent)}
+.fab{position:fixed;right:max(16px,calc(50vw - 344px));bottom:calc(74px + env(safe-area-inset-bottom));z-index:7;width:56px;height:56px;border-radius:50%;border:0;background:var(--accent);color:var(--accent-ink);font-size:30px;line-height:1;box-shadow:0 6px 18px rgba(0,0,0,.28);cursor:pointer}
+.fab:active{transform:scale(.96)}
+
+/* forms + dialogs */
+input,select,textarea{width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-height:44px}
+textarea{min-height:92px;resize:vertical}
+input[type=checkbox]{width:22px;height:22px;min-height:0;padding:0;accent-color:var(--accent);flex:none}
+.field label{display:block;font-size:13px;font-weight:600;color:var(--muted);margin-bottom:4px}
+.field.check{display:flex;align-items:center;gap:10px}
+.field.check label{margin:0;color:var(--ink);font-size:16px;font-weight:500}
+.fields2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+dialog{border:0;border-radius:18px;padding:0;width:calc(100vw - 24px);max-width:520px;background:var(--card);color:var(--ink);box-shadow:0 20px 60px rgba(0,0,0,.35)}
+dialog::backdrop{background:rgba(10,15,12,.55)}
+.dlg-form{padding:20px;display:flex;flex-direction:column;gap:12px;max-height:85vh;max-height:85dvh;overflow:auto}
+.dlg-form h2{font-size:19px}
+.dlg-actions{display:flex;gap:8px;align-items:center;margin-top:6px;flex-wrap:wrap}
+.dlg-actions .spacer{flex:1}
+.ask-actions{justify-content:flex-end}
+.dlg-err{color:var(--bad);font-size:14px}
+.dlg-err:empty{display:none}
+.ask-body{font-size:15px;color:var(--ink)}
+.ask-body p{margin:0 0 8px}
+.checkgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px}
+.checkgrid .field.check label{font-size:15px}
+
+/* toast */
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom));background:#1b2420;color:#fff;padding:12px 16px;border-radius:12px;display:flex;gap:14px;align-items:center;z-index:60;max-width:calc(100vw - 24px);box-shadow:0 8px 24px rgba(0,0,0,.35);font-size:15px}
+.toast button{background:none;border:0;color:#7dd3c8;font:inherit;font-weight:700;cursor:pointer;min-height:36px}
+
+@media (prefers-reduced-motion:no-preference){.btn,.fab{transition:transform .08s}}
+
+.syncbadge{flex:none;white-space:nowrap;border:1px solid var(--line,#d5dbe0);background:var(--card,#fff);color:inherit;border-radius:999px;padding:4px 10px;font:inherit;font-size:.82rem;cursor:pointer;white-space:nowrap}
+.syncbadge.ok{color:#15803d}.syncbadge.bad{color:#b91c1c}
+.seg{display:flex;gap:8px;margin-top:6px}.seg .chip{flex:1;text-align:center}
+
+:root{--accent:#be123c;--accent-ink:#fff;--accent-soft:#fde4ea}
+@media (prefers-color-scheme:dark){:root{--accent:#fb7185;--accent-ink:#2a0710;--accent-soft:#3a1620}}
+.stack{display:flex;flex-direction:column;gap:14px;margin-top:14px}
+.row .btn{flex:none}
+button.back{background:none;border:0;font:inherit;color:var(--accent);cursor:pointer;padding:0 8px 0 0}
+.mval{font-weight:700;white-space:nowrap;text-align:right}
+.trend{font-size:13px;color:var(--muted);white-space:nowrap}
+.refmark{display:inline-block;font-size:11px;font-weight:700;padding:1px 6px;border-radius:999px;border:1px solid var(--line);color:var(--muted);margin-left:6px;vertical-align:middle}
+.chartbox{padding:10px 8px 8px;margin-top:12px}
+.chartbox svg{width:100%;height:auto;display:block;touch-action:manipulation}
+.chartbox .tip{min-height:40px;font-size:14px;padding:6px 8px 0;overflow-wrap:anywhere}
+.ctl{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin-top:12px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
+.stats .tile{padding:8px 6px;text-align:center}
+.stats .tile .val{font-size:15px}
+.stats .tile .lbl{font-size:11px}
+.checkgrid .field{min-width:0}.checkgrid input[type=date]{min-width:0;padding:10px 8px}
+.pre{white-space:pre-wrap;overflow-wrap:anywhere}
+.errlist{max-height:180px;overflow:auto;font-size:13px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-top:6px}
+.errlist div{margin:2px 0;overflow-wrap:anywhere}
+.fields3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+textarea.big{min-height:150px;font-family:ui-monospace,Menlo,monospace;font-size:14px}
+#printArea{display:none}
+@media print{
+  @page{margin:14mm}
+  html,body{background:#fff!important;color:#000!important}
+  body>*:not(#printArea){display:none!important}
+  #printArea{display:block!important;font:11pt/1.35 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:#000;background:#fff}
+  #printArea h1{font-size:18pt;margin:0 0 2pt}
+  #printArea h2{font-size:13pt;margin:12pt 0 4pt;border-bottom:1.5pt solid #000;padding-bottom:2pt;break-after:avoid}
+  #printArea h3{font-size:11pt;margin:8pt 0 2pt;break-after:avoid}
+  #printArea .pa-sub{color:#333;margin:0 0 6pt}
+  #printArea table{border-collapse:collapse;width:100%;margin:0 0 4pt}
+  #printArea td,#printArea th{border-bottom:.5pt solid #999;padding:1.5pt 4pt;text-align:left;vertical-align:top;font-size:10pt}
+  #printArea tr{break-inside:avoid}
+  #printArea .pa-n{color:#333;font-size:10pt}
+}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap"><button type="button" class="back hide" id="backBtn" aria-label="Back">‹ Back</button><div class="grow"><h1 id="title">Summary</h1><div class="sub" id="sub"></div></div><button type="button" class="btn small primary hide" id="addBtn">+ Add</button></div></header>
+<main class="wrap" id="view"></main>
+<nav class="tabs" aria-label="Sections"><div class="wrap">
+  <button type="button" data-tab="summary"><span class="ico">📊</span>Summary</button>
+  <button type="button" data-tab="metrics"><span class="ico">🧪</span>Metrics</button>
+  <button type="button" data-tab="meds"><span class="ico">💊</span>Meds</button>
+  <button type="button" data-tab="visits"><span class="ico">🩺</span>Visits</button>
+  <button type="button" data-tab="backup"><span class="ico">💾</span>Backup</button>
+</div></nav>
+<script>
+'use strict';
+/* ===================== shared helpers (identical in every Goobs app) ===================== */
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => Array.from(el.querySelectorAll(s));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const isNum = v => typeof v === 'number' && Number.isFinite(v);
+const str = v => (typeof v === 'string' ? v : v == null ? '' : String(v));
+
+/* ---- dates: always local calendar dates stored as 'YYYY-MM-DD' ---- */
+const pad = n => String(n).padStart(2, '0');
+const fmtISO = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const parseISO = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+const isISO = s => typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s) && fmtISO(parseISO(s)) === s;
+const todayISO = () => fmtISO(new Date());
+const daysBetween = (a, b) => Math.round((parseISO(b) - parseISO(a)) / 86400000);
+const addDays = (s, n) => { const d = parseISO(s); d.setDate(d.getDate() + n); return fmtISO(d); };
+function addMonths(s, n, anchorDay) {
+  const d = parseISO(s);
+  const day = anchorDay || d.getDate();
+  const first = new Date(d.getFullYear(), d.getMonth() + n, 1);
+  const last = new Date(first.getFullYear(), first.getMonth() + 1, 0).getDate();
+  first.setDate(Math.min(day, last));
+  return fmtISO(first);
+}
+const monthEndISO = s => { const d = parseISO(s); return fmtISO(new Date(d.getFullYear(), d.getMonth() + 1, 0)); };
+
+function fmtDate(s, withWeekday = true) {
+  const d = parseISO(s);
+  const o = { month: 'short', day: 'numeric' };
+  if (withWeekday) o.weekday = 'short';
+  if (d.getFullYear() !== new Date().getFullYear()) o.year = 'numeric';
+  return d.toLocaleDateString(undefined, o);
+}
+function fmtDateTime(iso) {
+  const d = new Date(iso);
+  return isNaN(d) ? 'unknown date' : d.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+}
+const _mf = {};
+function money(n, cur = 'USD') {
+  if (!_mf[cur]) {
+    try { _mf[cur] = new Intl.NumberFormat(undefined, { style: 'currency', currency: cur }); }
+    catch { _mf[cur] = new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }); }
+  }
+  return _mf[cur].format(n);
+}
+const csvCell = v => {
+  let s = String(v ?? '');
+  if (/^[=+\-@\t\r]/.test(s)) s = "'" + s; // neutralise spreadsheet formula injection
+  return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+};
+function safeUrl(u) {
+  let s = String(u ?? '').trim();
+  if (!s) return '';
+  if (!/^[a-z][a-z0-9+.-]*:/i.test(s)) s = 'https://' + s;
+  try { const x = new URL(s); return /^https?:$/.test(x.protocol) ? x.href : ''; } catch { return ''; }
+}
+
+/* ---- storage: one JSON string under one key in IndexedDB ---- */
+function openDB(name) {
+  return new Promise((res, rej) => {
+    if (!window.indexedDB) return rej(new Error('IndexedDB unavailable'));
+    const r = indexedDB.open(name, 1);
+    r.onupgradeneeded = () => { r.result.createObjectStore('kv'); };
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+    r.onblocked = () => rej(new Error('Database blocked'));
+  });
+}
+function idbGet(db, key) {
+  return new Promise((res, rej) => {
+    const q = db.transaction('kv').objectStore('kv').get(key);
+    q.onsuccess = () => res(q.result);
+    q.onerror = () => rej(q.error);
+  });
+}
+function idbPut(db, key, val) {
+  return new Promise((res, rej) => {
+    const tx = db.transaction('kv', 'readwrite');
+    tx.objectStore('kv').put(val, key);
+    tx.oncomplete = () => res();
+    tx.onerror = () => rej(tx.error);
+    tx.onabort = () => rej(tx.error || new Error('Write aborted'));
+  });
+}
+
+/* ---- toast ---- */
+function toast(msg, action) {
+  const old = $('.toast'); if (old) old.remove();
+  const t = document.createElement('div');
+  t.className = 'toast'; t.setAttribute('role', 'status');
+  t.innerHTML = `<span>${esc(msg)}</span>` + (action ? `<button type="button">${esc(action.label)}</button>` : '');
+  if (action) t.querySelector('button').onclick = () => { t.remove(); action.fn(); };
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), action ? 8000 : 3200);
+}
+
+/* ---- dialogs ---- */
+if (!$('#dlg')) document.body.insertAdjacentHTML('beforeend', '<dialog id="dlg"></dialog><dialog id="ask"></dialog>');
+{
+  const dlg = $('#dlg'); let down = false;
+  dlg.addEventListener('pointerdown', e => { down = e.target === dlg; });
+  dlg.addEventListener('click', e => { if (e.target === dlg && down) dlg.close(); });
+}
+
+function fieldHTML(f) {
+  const id = 'f_' + f.name, v = f.value ?? '';
+  if (f.type === 'checkbox')
+    return `<div class="field check"><input type="checkbox" id="${id}" name="${f.name}"${f.value ? ' checked' : ''}><label for="${id}">${esc(f.label)}</label></div>`;
+  let ctl;
+  if (f.type === 'select') {
+    ctl = `<select id="${id}" name="${f.name}">${f.options.map(o => {
+      const [val, label] = Array.isArray(o) ? o : [o, o];
+      return `<option value="${esc(val)}"${String(val) === String(v) ? ' selected' : ''}>${esc(label)}</option>`;
+    }).join('')}</select>`;
+  } else if (f.type === 'textarea') {
+    ctl = `<textarea id="${id}" name="${f.name}" placeholder="${esc(f.placeholder || '')}">${esc(v)}</textarea>`;
+  } else {
+    const t = f.type || 'text';
+    const extra = t === 'number' ? ` inputmode="decimal" step="${f.step || 'any'}"` : '';
+    ctl = `<input id="${id}" name="${f.name}" type="${t}" value="${esc(v)}" placeholder="${esc(f.placeholder || '')}"${extra}${f.min != null ? ` min="${f.min}"` : ''}${f.max != null ? ` max="${f.max}"` : ''} autocomplete="${f.autocomplete || 'off'}" autocapitalize="${f.capitalize || (t === 'email' || t === 'password' ? 'none' : 'sentences')}">`;
+  }
+  return `<div class="field"><label for="${id}">${esc(f.label)}${f.required ? ' *' : ''}</label>${ctl}${f.hint ? `<div class="hint">${esc(f.hint)}</div>` : ''}</div>`;
+}
+
+/* formDialog: fields -> values. onSubmit(values) may return an error string (keeps dialog open).
+   onDelete() may return true to close. extra: [{label, kind, onClick}] extra buttons. */
+function formDialog({ title, intro = '', fields, submitLabel = 'Save', onSubmit, onDelete, deleteLabel = 'Delete', extra = [], onClose, grid = '' }) {
+  const dlg = $('#dlg');
+  const body = grid ? `<div class="${grid}">${fields.map(fieldHTML).join('')}</div>` : fields.map(fieldHTML).join('');
+  dlg.innerHTML = `<form class="dlg-form" novalidate>
+    <h2>${esc(title)}</h2>${intro ? `<p class="muted">${esc(intro)}</p>` : ''}${body}
+    <div class="dlg-err" role="alert"></div>
+    <div class="dlg-actions">
+      ${onDelete ? `<button type="button" class="btn danger" data-k="del">${esc(deleteLabel)}</button>` : ''}
+      ${extra.map((x, i) => `<button type="button" class="btn ${x.kind || ''}" data-x="${i}">${esc(x.label)}</button>`).join('')}
+      <span class="spacer"></span>
+      <button type="button" class="btn ghost" data-k="cancel">Cancel</button>
+      <button type="submit" class="btn primary">${esc(submitLabel)}</button>
+    </div></form>`;
+  const form = $('form', dlg), err = $('.dlg-err', dlg);
+  const collect = () => {
+    const vals = {};
+    for (const f of fields) { const el = form.elements[f.name]; vals[f.name] = f.type === 'checkbox' ? el.checked : el.value; }
+    return vals;
+  };
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const vals = collect();
+    for (const f of fields) if (f.required && !String(vals[f.name]).trim()) { err.textContent = `${f.label} is required.`; return; }
+    err.textContent = '';
+    let msg;
+    try { msg = await onSubmit(vals); } catch (ex) { msg = ex.message || 'Something went wrong.'; }
+    if (msg) err.textContent = msg; else dlg.close();
+  });
+  $('[data-k="cancel"]', dlg).onclick = () => dlg.close();
+  if (onDelete) $('[data-k="del"]', dlg).onclick = async () => { if (await onDelete()) dlg.close(); };
+  $$('[data-x]', dlg).forEach(b => { b.onclick = () => extra[+b.dataset.x].onClick(collect()); });
+  dlg.onclose = () => { dlg.onclose = null; if (onClose) onClose(); };
+  dlg.showModal();
+  const first = form.querySelector('input:not([type=checkbox]),textarea');
+  if (first && !first.value) first.focus(); // new-item forms open ready to type; edit forms don't pop the keyboard
+}
+
+function askDialog({ title, body = '', buttons }) {
+  return new Promise(resolve => {
+    const d = $('#ask'); let done = false;
+    d.innerHTML = `<div class="dlg-form"><h2>${esc(title)}</h2>${body ? `<div class="ask-body">${body}</div>` : ''}
+      <div class="dlg-actions ask-actions">${buttons.map((b, i) => `<button type="button" class="btn ${b.kind || ''}" data-i="${i}">${esc(b.label)}</button>`).join('')}</div></div>`;
+    const finish = v => { if (done) return; done = true; d.close(); resolve(v); };
+    $$('button', d).forEach(btn => { btn.onclick = () => finish(buttons[+btn.dataset.i].value); });
+    d.oncancel = () => { done = true; resolve(undefined); };
+    d.showModal();
+  });
+}
+const confirmBox = async (title, bodyText, okLabel = 'Delete', danger = true) =>
+  (await askDialog({ title, body: bodyText ? `<p>${esc(bodyText)}</p>` : '', buttons: [{ label: 'Cancel', value: false }, { label: okLabel, value: true, kind: danger ? 'danger' : 'primary' }] })) === true;
+const msgBox = (title, bodyText) =>
+  askDialog({ title, body: `<p>${esc(bodyText)}</p>`, buttons: [{ label: 'OK', value: true, kind: 'primary' }] });
+
+/* ---- backup: optional AES-GCM passphrase encryption (Web Crypto, PBKDF2-SHA256) ---- */
+const b64 = buf => { let s = ''; const b = new Uint8Array(buf); for (let i = 0; i < b.length; i += 0x8000) s += String.fromCharCode.apply(null, b.subarray(i, i + 0x8000)); return btoa(s); };
+const unb64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+async function deriveKey(pass, salt, iterations) {
+  const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(pass), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey({ name: 'PBKDF2', salt, iterations, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+}
+async function encryptPayload(obj, pass) {
+  const salt = crypto.getRandomValues(new Uint8Array(16)), iv = crypto.getRandomValues(new Uint8Array(12));
+  const iterations = 250000;
+  const key = await deriveKey(pass, salt, iterations);
+  const ct = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, new TextEncoder().encode(JSON.stringify(obj)));
+  return { encrypted: true, kdf: 'PBKDF2-SHA256', iterations, salt: b64(salt), iv: b64(iv), data: b64(ct) };
+}
+async function decryptPayload(env, pass) {
+  const key = await deriveKey(pass, unb64(env.salt), env.iterations);
+  try {
+    const pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: unb64(env.iv) }, key, unb64(env.data));
+    return JSON.parse(new TextDecoder().decode(pt));
+  } catch { throw new Error('Wrong passphrase, or the file is damaged.'); }
+}
+function promptDecrypt(env) {
+  return new Promise(resolve => {
+    let result = null;
+    formDialog({
+      title: 'Encrypted backup', intro: 'Enter the passphrase you chose when you made this backup.',
+      fields: [{ name: 'pass', label: 'Passphrase', type: 'password', required: true }], submitLabel: 'Unlock',
+      onSubmit: async v => { try { result = await decryptPayload(env, v.pass); } catch (e) { return e.message; } },
+      onClose: () => resolve(result)
+    });
+  });
+}
+const Backup = {
+  async build({ appId, schema, data, passphrase }) {
+    const head = { app: appId, schemaVersion: schema, exportedAt: new Date().toISOString() };
+    if (passphrase) return JSON.stringify({ ...head, ...(await encryptPayload(data, passphrase)) });
+    return JSON.stringify({ ...head, encrypted: false, data }, null, 2);
+  },
+  /* returns {data, exportedAt, schemaVersion}, or null if the user cancelled the passphrase prompt; throws Error with a friendly message */
+  async parse(text, { appId, schema }) {
+    let env;
+    try { env = JSON.parse(text); } catch { throw new Error('That file isn’t a valid backup (it isn’t JSON).'); }
+    if (!env || typeof env !== 'object' || env.app !== appId)
+      throw new Error(env && typeof env === 'object' && env.app ? `That backup belongs to a different app (${String(env.app).slice(0, 40)}).` : 'That file isn’t a backup from this app.');
+    if (!Number.isInteger(env.schemaVersion) || env.schemaVersion < 1) throw new Error('The backup is missing its version number.');
+    if (env.schemaVersion > schema) throw new Error('That backup was made by a newer version of the app. Close and reopen this app to update it, then try again.');
+    let data;
+    if (env.encrypted) {
+      if (!(window.crypto && crypto.subtle)) throw new Error('Encrypted backups need a secure (https) connection.');
+      if (!(env.iterations >= 1000 && env.iterations <= 2000000) || typeof env.salt !== 'string' || typeof env.iv !== 'string' || typeof env.data !== 'string')
+        throw new Error('The encrypted backup is damaged.');
+      data = await promptDecrypt(env);
+      if (data === null) return null;
+    } else data = env.data;
+    if (!data || typeof data !== 'object') throw new Error('The backup contains no data.');
+    return { data, exportedAt: typeof env.exportedAt === 'string' ? env.exportedAt : null, schemaVersion: env.schemaVersion };
+  }
+};
+
+/* share sheet when the platform supports sharing files (iPhone), otherwise a normal download */
+async function deliverFile(filename, text, mime = 'application/json') {
+  const file = new File([text], filename, { type: mime });
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try { await navigator.share({ files: [file], title: filename }); return 'shared'; }
+    catch (e) { if (e && e.name === 'AbortError') return 'cancelled'; /* otherwise fall back to a download */ }
+  }
+  const url = URL.createObjectURL(file);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.style.display = 'none';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 15000);
+  return 'downloaded';
+}
+function pickFile(accept = '.json,application/json') {
+  return new Promise(resolve => {
+    const i = document.createElement('input');
+    i.type = 'file'; i.accept = accept; i.style.display = 'none';
+    document.body.appendChild(i);
+    let done = false;
+    const fin = f => { if (done) return; done = true; i.remove(); resolve(f); };
+    i.addEventListener('change', () => fin((i.files && i.files[0]) || null));
+    i.addEventListener('cancel', () => fin(null));
+    i.click();
+  });
+}
+const readFileText = f => (f.text ? f.text() : new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = () => rej(r.error); r.readAsText(f); }));
+
+/* nag banner: only when there is data and no recent backup */
+function backupNag(meta, hasData) {
+  if (!hasData) return null;
+  if (!meta.lastBackup) return 'You have data but no backup yet. Make one so you can restore it if this device loses it.';
+  const age = (Date.now() - Date.parse(meta.lastBackup)) / 86400000;
+  const changed = meta.lastChange && Date.parse(meta.lastChange) > Date.parse(meta.lastBackup) + 1000;
+  if (changed && age >= 7) return `Your last backup was ${Math.floor(age)} days ago and you’ve made changes since.`;
+  return null;
+}
+
+/* ---- install helper ---- */
+let deferredInstall = null;
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferredInstall = e; if (typeof render === 'function') render(); });
+const isStandalone = () => (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+function installCardHTML() {
+  if (isStandalone()) return '';
+  const ios = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const msg = deferredInstall
+    ? '<p>Install it for its own window and full offline use.</p><button class="btn primary" data-action="install">Install app</button>'
+    : ios
+      ? '<p>In Safari tap <b>Share</b> → <b>Add to Home Screen</b>. <b>Do this before entering data</b> — the home-screen app keeps its own separate storage from the Safari tab. Then open it from the new icon.</p>'
+      : '<p>Use your browser’s menu → <b>Install app</b> (or <b>Add to Home Screen</b>).</p>';
+  return `<section class="card pad"><h3>Install on this device</h3>${msg}</section>`;
+}
+async function runInstall() { if (!deferredInstall) return; deferredInstall.prompt(); try { await deferredInstall.userChoice; } catch {} deferredInstall = null; if (typeof render === 'function') render(); }
+
+
+
+if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol))
+  window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
+
+
+/* ===================== Health app ===================== */
+const APP_ID = 'goobs-health', DB_NAME = 'goobs-health-db', SCHEMA = 1;
+const MAX = { metrics: 200, readings: 50000, meds: 200, doses: 5000, visits: 2000 };
+const COLLS = ['metrics', 'readings', 'meds', 'doses', 'visits'];
+const GROUPS = ['Lab', 'Vitals', 'Other'];
+const PRESETS = [
+  { name: 'PSA', unit: 'ng/mL', group: 'Lab', refLow: 0, refHigh: 4 },
+  { name: 'LDL', unit: 'mg/dL', group: 'Lab' }, { name: 'HDL', unit: 'mg/dL', group: 'Lab' },
+  { name: 'Triglycerides', unit: 'mg/dL', group: 'Lab' }, { name: 'Non-HDL', unit: 'mg/dL', group: 'Lab' },
+  { name: 'Total cholesterol', unit: 'mg/dL', group: 'Lab' }, { name: 'A1c', unit: '%', group: 'Lab' },
+  { name: 'Glucose', unit: 'mg/dL', group: 'Lab' }, { name: 'Creatinine', unit: 'mg/dL', group: 'Lab' },
+  { name: 'ALT', unit: 'U/L', group: 'Lab' }, { name: 'AST', unit: 'U/L', group: 'Lab' },
+  { name: 'Blood pressure', unit: 'mmHg', group: 'Vitals', kind: 'bp' },
+  { name: 'Weight', unit: 'lb', group: 'Vitals' }, { name: 'Resting HR', unit: 'bpm', group: 'Vitals' }
+];
+const ALIASES = { bp: 'Blood pressure', hba1c: 'A1c', 'hemoglobin a1c': 'A1c', tg: 'Triglycerides', trig: 'Triglycerides', cholesterol: 'Total cholesterol', 'total chol': 'Total cholesterol', 'non hdl': 'Non-HDL', nonhdl: 'Non-HDL', rhr: 'Resting HR', 'resting heart rate': 'Resting HR' };
+const TIME_RE = /^([01]\d|2[0-3]):[0-5]\d$/;
+
+/* ---- model ---- */
+function parseNum(s) {
+  if (typeof s === 'number') return isNum(s) && Math.abs(s) <= 1e9 ? s : null;
+  s = str(s).trim();
+  if (s.includes(',') && s.includes('.')) s = s.replace(/,/g, '');
+  else s = s.replace(',', '.');
+  if (!/^[-+]?(\d+\.?\d*|\.\d+)$/.test(s)) return null;
+  const n = Number(s);
+  return isNum(n) && Math.abs(n) <= 1e9 ? n : null;
+}
+const numOrNull = v => (v === '' || v == null ? null : parseNum(v));
+const fmtNum = n => (isNum(n) ? String(parseFloat(n.toFixed(2))) : '');
+function normMetric(m) {
+  if (!m || typeof m !== 'object') return null;
+  const name = str(m.name).trim();
+  if (!name) return null;
+  const o = {
+    id: str(m.id) || uid(), name: name.slice(0, 80), unit: str(m.unit).trim().slice(0, 24),
+    group: GROUPS.includes(m.group) ? m.group : 'Other', kind: m.kind === 'bp' ? 'bp' : 'single',
+    refLow: numOrNull(m.refLow), refHigh: numOrNull(m.refHigh), ref2Low: numOrNull(m.ref2Low), ref2High: numOrNull(m.ref2High),
+    pinned: m.pinned !== false, createdAt: isNum(m.createdAt) ? m.createdAt : Date.now()
+  };
+  if (o.refLow != null && o.refHigh != null && o.refLow > o.refHigh) [o.refLow, o.refHigh] = [o.refHigh, o.refLow];
+  if (o.ref2Low != null && o.ref2High != null && o.ref2Low > o.ref2High) [o.ref2Low, o.ref2High] = [o.ref2High, o.ref2Low];
+  if (o.kind !== 'bp') { o.ref2Low = null; o.ref2High = null; }
+  return o;
+}
+function normReading(r) {
+  if (!r || typeof r !== 'object') return null;
+  const value = parseNum(r.value);
+  if (!str(r.metricId) || !isISO(r.date) || value == null) return null;
+  return {
+    id: str(r.id) || uid(), metricId: str(r.metricId), date: r.date, time: TIME_RE.test(str(r.time)) ? r.time : '',
+    value, value2: numOrNull(r.value2), pulse: numOrNull(r.pulse),
+    context: str(r.context).trim().slice(0, 300), source: str(r.source).trim().slice(0, 120),
+    createdAt: isNum(r.createdAt) ? r.createdAt : Date.now()
+  };
+}
+function normMed(m) {
+  if (!m || typeof m !== 'object') return null;
+  const name = str(m.name).trim();
+  if (!name || !isISO(m.startDate)) return null;
+  return {
+    id: str(m.id) || uid(), name: name.slice(0, 80), unit: str(m.unit).trim().slice(0, 24), startDate: m.startDate,
+    stopDate: isISO(m.stopDate) && m.stopDate >= m.startDate ? m.stopDate : '', note: str(m.note).slice(0, 1000),
+    createdAt: isNum(m.createdAt) ? m.createdAt : Date.now()
+  };
+}
+function normDose(d) {
+  if (!d || typeof d !== 'object') return null;
+  const dose = str(d.dose).trim();
+  if (!str(d.medId) || !dose || !isISO(d.date)) return null;
+  return { id: str(d.id) || uid(), medId: str(d.medId), date: d.date, dose: dose.slice(0, 60), note: str(d.note).slice(0, 300), createdAt: isNum(d.createdAt) ? d.createdAt : Date.now() };
+}
+function normVisit(v) {
+  if (!v || typeof v !== 'object' || !isISO(v.date)) return null;
+  return {
+    id: str(v.id) || uid(), date: v.date, provider: str(v.provider).trim().slice(0, 120), reason: str(v.reason).trim().slice(0, 200),
+    notes: str(v.notes).slice(0, 5000), followUp: isISO(v.followUp) ? v.followUp : '', createdAt: isNum(v.createdAt) ? v.createdAt : Date.now()
+  };
+}
+const NORM = { metrics: normMetric, readings: normReading, meds: normMed, doses: normDose, visits: normVisit };
+function normalizeData(raw) {
+  let dropped = 0; const out = {};
+  for (const k of COLLS) {
+    const src = Array.isArray(raw && raw[k]) ? raw[k] : [];
+    const seen = new Set(); const list = [];
+    for (const x of src) {
+      const n = NORM[k](x);
+      if (!n || seen.has(n.id)) { dropped++; continue; }
+      seen.add(n.id); list.push(n);
+    }
+    if (list.length > MAX[k]) { dropped += list.length - MAX[k]; list.length = MAX[k]; }
+    out[k] = list;
+  }
+  const mids = new Set(out.metrics.map(m => m.id)), dids = new Set(out.meds.map(m => m.id));
+  const nr = out.readings.length, nd = out.doses.length;
+  out.readings = out.readings.filter(r => mids.has(r.metricId));
+  out.doses = out.doses.filter(d => dids.has(d.medId));
+  dropped += (nr - out.readings.length) + (nd - out.doses.length);
+  return { data: out, dropped };
+}
+const defaultState = () => ({ schemaVersion: SCHEMA, meta: { lastBackup: null, lastChange: null }, settings: {}, metrics: [], readings: [], meds: [], doses: [], visits: [] });
+function loadState(parsed) {
+  const { data } = normalizeData(parsed);
+  const m = (parsed && parsed.meta) || {};
+  return { schemaVersion: SCHEMA, meta: { lastBackup: str(m.lastBackup) || null, lastChange: str(m.lastChange) || null }, settings: {}, ...data };
+}
+const exportData = () => { const o = {}; for (const k of COLLS) o[k] = state[k]; return o; };
+const hasAnyData = () => COLLS.some(k => state[k].length);
+
+/* ---- persistence ---- */
+let state = defaultState(), db = null, saveFailed = false, persistAsked = false, saveChain = Promise.resolve();
+function persist({ touch = true } = {}) {
+  if (touch) state.meta.lastChange = new Date().toISOString();
+  if (!db) return Promise.resolve();
+  const snap = JSON.stringify(state);
+  saveChain = saveChain.then(() => idbPut(db, 'state', snap)).then(() => { saveFailed = false; }).catch(err => { console.error(err); saveFailed = true; });
+  if (!persistAsked && navigator.storage && navigator.storage.persist) { persistAsked = true; navigator.storage.persist().catch(() => {}); }
+  return saveChain;
+}
+const commit = () => { persist(); render(); };
+
+/* ---- selectors ---- */
+const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
+const metricById = id => state.metrics.find(m => m.id === id);
+const medById = id => state.meds.find(m => m.id === id);
+const cmpReading = (a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time) || a.createdAt - b.createdAt;
+const readingsFor = id => state.readings.filter(r => r.metricId === id).sort(cmpReading);
+const fmtVal = (m, r, withPulse = true) => m.kind === 'bp'
+  ? `${fmtNum(r.value)}/${r.value2 == null ? '–' : fmtNum(r.value2)}${withPulse && r.pulse != null ? ' · ' + fmtNum(r.pulse) + ' bpm' : ''}`
+  : fmtNum(r.value);
+const unitOf = m => (m.unit ? ' ' + m.unit : '');
+function outOfRef(m, r) {
+  if (m.refLow != null && r.value < m.refLow) return true;
+  if (m.refHigh != null && r.value > m.refHigh) return true;
+  if (m.kind === 'bp' && r.value2 != null) {
+    if (m.ref2Low != null && r.value2 < m.ref2Low) return true;
+    if (m.ref2High != null && r.value2 > m.ref2High) return true;
+  }
+  return false;
+}
+const refMark = (m, r) => (outOfRef(m, r) ? '<span class="refmark" title="Outside the reference range you entered">outside ref</span>' : '');
+const refText = m => {
+  const f = (lo, hi) => (lo != null && hi != null ? `${fmtNum(lo)}–${fmtNum(hi)}` : lo != null ? `≥ ${fmtNum(lo)}` : hi != null ? `≤ ${fmtNum(hi)}` : '');
+  const a = f(m.refLow, m.refHigh), b = m.kind === 'bp' ? f(m.ref2Low, m.ref2High) : '';
+  return a && b ? `${a} / ${b}` : a || b;
+};
+function trendOf(m, rs) {
+  if (rs.length < 2) return null;
+  const a = rs[rs.length - 1], p = rs[rs.length - 2];
+  const d = a.value - p.value, d2 = m.kind === 'bp' && a.value2 != null && p.value2 != null ? a.value2 - p.value2 : null;
+  const arrow = d > 0 ? '▲' : d < 0 ? '▼' : '►';
+  const sg = x => (x > 0 ? '+' : '') + fmtNum(x);
+  return `${arrow} ${sg(d)}${d2 != null ? '/' + sg(d2) : ''}`;
+}
+const dayNum = iso => daysBetween('1970-01-01', iso);
+const isoOfDay = n => addDays('1970-01-01', n);
+const timeNum = t => (TIME_RE.test(t) ? (+t.slice(0, 2) * 60 + +t.slice(3)) / 1440 : 0);
+function dosesFor(medId) { return state.doses.filter(d => d.medId === medId).sort((a, b) => a.date.localeCompare(b.date) || a.createdAt - b.createdAt); }
+const medActive = (m, today = todayISO()) => !m.stopDate || m.stopDate > today;
+function currentDose(m, today = todayISO()) {
+  const ds = dosesFor(m.id), lim = m.stopDate && m.stopDate <= today ? m.stopDate : today;
+  let cur = null;
+  for (const d of ds) if (d.date <= lim) cur = d;
+  return cur || (ds.length ? ds[0] : null);
+}
+const doseText = (m, d) => (d ? d.dose + (m.unit ? ' ' + m.unit : '') : '');
+
+/* ---- dialogs ---- */
+function addPreset(i) {
+  const p = PRESETS[i];
+  if (!p) return null;
+  if (state.metrics.length >= MAX.metrics) { toast('Metric limit reached.'); return null; }
+  if (state.metrics.some(m => m.name.toLowerCase() === p.name.toLowerCase())) { toast(`${p.name} already exists.`); return null; }
+  const m = normMetric({ ...p, pinned: true });
+  state.metrics.push(m); commit(); toast(`Added ${m.name}`);
+  return m;
+}
+function metricDialog(id) {
+  const m = id ? metricById(id) : null;
+  if (id && !m) return;
+  const isBp = m ? m.kind === 'bp' : false;
+  const fields = [
+    { name: 'name', label: 'Name', required: true, value: m && m.name, placeholder: 'e.g. PSA' },
+    { name: 'unit', label: 'Unit', value: m && m.unit, placeholder: 'e.g. ng/mL', capitalize: 'none' },
+    { name: 'group', label: 'Group', type: 'select', options: GROUPS, value: m ? m.group : 'Lab' }
+  ];
+  if (!m) fields.push({ name: 'kind', label: 'Type', type: 'select', options: [['single', 'Single value'], ['bp', 'Blood pressure (systolic / diastolic + pulse)']], value: 'single' });
+  fields.push(
+    { name: 'refLow', label: isBp ? 'Systolic ref low' : 'Reference low', type: 'number', value: m && m.refLow != null ? m.refLow : '', hint: 'Optional. Only what you type is used.' },
+    { name: 'refHigh', label: isBp ? 'Systolic ref high' : 'Reference high', type: 'number', value: m && m.refHigh != null ? m.refHigh : '' }
+  );
+  if (!m || isBp) fields.push(
+    { name: 'ref2Low', label: 'Diastolic ref low (BP only)', type: 'number', value: m && m.ref2Low != null ? m.ref2Low : '' },
+    { name: 'ref2High', label: 'Diastolic ref high (BP only)', type: 'number', value: m && m.ref2High != null ? m.ref2High : '' });
+  fields.push({ name: 'pinned', label: 'Show on Summary', type: 'checkbox', value: m ? m.pinned : true });
+  formDialog({
+    title: m ? 'Edit metric' : 'Add metric', fields, submitLabel: m ? 'Save' : 'Add metric',
+    onSubmit: v => {
+      const name = v.name.trim();
+      if (state.metrics.some(x => x.id !== (m && m.id) && x.name.toLowerCase() === name.toLowerCase())) return 'A metric with that name already exists.';
+      const nums = {};
+      for (const k of ['refLow', 'refHigh', 'ref2Low', 'ref2High']) {
+        const raw = v[k] == null ? '' : String(v[k]).trim();
+        if (raw === '') nums[k] = null; else { nums[k] = parseNum(raw); if (nums[k] == null) return 'Reference values must be numbers.'; }
+      }
+      if (!m && state.metrics.length >= MAX.metrics) return 'Metric limit reached.';
+      const rec = normMetric({ ...(m || {}), id: m ? m.id : uid(), name, unit: v.unit, group: v.group, kind: m ? m.kind : v.kind, ...nums, pinned: v.pinned, createdAt: m ? m.createdAt : Date.now() });
+      if (m) Object.assign(m, rec); else state.metrics.push(rec);
+      commit();
+    },
+    onDelete: m ? async () => {
+      const n = state.readings.filter(r => r.metricId === m.id).length;
+      if (!(await confirmBox(`Delete “${m.name}”?`, `This also deletes its ${plural(n, 'reading')}.`, 'Delete metric'))) return false;
+      state.metrics = state.metrics.filter(x => x.id !== m.id);
+      state.readings = state.readings.filter(r => r.metricId !== m.id);
+      ui.metric = null; commit(); toast('Metric deleted'); return true;
+    } : null
+  });
+}
+function readingDialog(metricId, id) {
+  const m = metricById(metricId); if (!m) return;
+  const r = id ? state.readings.find(x => x.id === id) : null;
+  if (id && !r) return;
+  const bp = m.kind === 'bp';
+  const fields = [{ name: 'date', label: 'Date', type: 'date', required: true, value: r ? r.date : todayISO() }];
+  if (bp) fields.push(
+    { name: 'value', label: 'Systolic', type: 'number', required: true, value: r ? r.value : '' },
+    { name: 'value2', label: 'Diastolic', type: 'number', required: true, value: r && r.value2 != null ? r.value2 : '' },
+    { name: 'pulse', label: 'Pulse (optional)', type: 'number', value: r && r.pulse != null ? r.pulse : '' });
+  else fields.push({ name: 'value', label: `Value${m.unit ? ' (' + m.unit + ')' : ''}`, type: 'number', required: true, value: r ? r.value : '' });
+  fields.push(
+    { name: 'time', label: 'Time of day (optional)', type: 'time', value: r ? r.time : '' },
+    { name: 'context', label: 'Context (optional)', value: r && r.context, placeholder: 'fasting, after exercise…' },
+    { name: 'source', label: 'Lab / source (optional)', value: r && r.source, placeholder: 'e.g. Quest' });
+  formDialog({
+    title: `${r ? 'Edit' : 'Log'} ${m.name}`, fields, submitLabel: r ? 'Save' : 'Add reading',
+    onSubmit: v => {
+      if (!isISO(v.date)) return 'Pick a valid date.';
+      const value = parseNum(v.value);
+      if (value == null) return 'Enter a valid number.';
+      let value2 = null, pulse = null;
+      if (bp) {
+        value2 = parseNum(v.value2); if (value2 == null) return 'Enter a valid diastolic number.';
+        if (String(v.pulse || '').trim() !== '') { pulse = parseNum(v.pulse); if (pulse == null) return 'Pulse must be a number.'; }
+      }
+      const time = String(v.time || '').trim();
+      if (time && !TIME_RE.test(time)) return 'Time must look like 07:30.';
+      if (!r && state.readings.length >= MAX.readings) return 'Reading limit reached.';
+      const rec = { date: v.date, time, value, value2, pulse, context: v.context.trim().slice(0, 300), source: v.source.trim().slice(0, 120) };
+      if (r) Object.assign(r, rec); else state.readings.push({ id: uid(), metricId: m.id, ...rec, createdAt: Date.now() });
+      commit();
+    },
+    onDelete: r ? async () => {
+      if (!(await confirmBox('Delete this reading?', `${m.name} ${fmtVal(m, r)} on ${fmtDate(r.date)}.`, 'Delete'))) return false;
+      state.readings = state.readings.filter(x => x.id !== r.id); commit(); toast('Reading deleted'); return true;
+    } : null
+  });
+}
+function pickMetricThen(fn) {
+  if (!state.metrics.length) { toast('Add a metric first (Metrics tab).'); go('metrics'); return; }
+  if (state.metrics.length === 1) return fn(state.metrics[0].id);
+  formDialog({
+    title: 'Log a reading', submitLabel: 'Next',
+    fields: [{ name: 'metric', label: 'Metric', type: 'select', options: [...state.metrics].sort((a, b) => a.name.localeCompare(b.name)).map(m => [m.id, m.name]) }],
+    onSubmit: v => { setTimeout(() => fn(v.metric), 0); }
+  });
+}
+function medDialog(id) {
+  const m = id ? medById(id) : null;
+  if (id && !m) return;
+  const fields = [
+    { name: 'name', label: 'Medication', required: true, value: m && m.name, placeholder: 'e.g. Atorvastatin' }
+  ];
+  if (!m) fields.push({ name: 'dose', label: 'Starting dose', required: true, placeholder: 'e.g. 20' });
+  fields.push(
+    { name: 'unit', label: 'Dose unit', value: m && m.unit, placeholder: 'e.g. mg', capitalize: 'none' },
+    { name: 'startDate', label: 'Start date', type: 'date', required: true, value: m ? m.startDate : todayISO() },
+    { name: 'stopDate', label: 'Stop date (leave empty if still taking)', type: 'date', value: m ? m.stopDate : '' },
+    { name: 'note', label: 'Note', type: 'textarea', value: m && m.note });
+  formDialog({
+    title: m ? 'Edit medication' : 'Add medication', fields, submitLabel: m ? 'Save' : 'Add',
+    onSubmit: v => {
+      if (!isISO(v.startDate)) return 'Pick a valid start date.';
+      const stop = String(v.stopDate || '').trim();
+      if (stop && (!isISO(stop) || stop < v.startDate)) return 'Stop date must be on or after the start date.';
+      if (!m && state.meds.length >= MAX.meds) return 'Medication limit reached.';
+      const rec = { name: v.name.trim().slice(0, 80), unit: v.unit.trim().slice(0, 24), startDate: v.startDate, stopDate: stop, note: v.note.trim() };
+      if (m) Object.assign(m, rec);
+      else {
+        const n = { id: uid(), ...rec, createdAt: Date.now() };
+        state.meds.push(n);
+        state.doses.push({ id: uid(), medId: n.id, date: n.startDate, dose: v.dose.trim().slice(0, 60), note: '', createdAt: Date.now() });
+        ui.med = n.id; ui.tab = 'meds';
+      }
+      commit();
+    },
+    onDelete: m ? async () => {
+      if (!(await confirmBox(`Delete “${m.name}”?`, 'Its dose history is deleted too.', 'Delete medication'))) return false;
+      state.meds = state.meds.filter(x => x.id !== m.id); state.doses = state.doses.filter(d => d.medId !== m.id);
+      ui.med = null; commit(); toast('Medication deleted'); return true;
+    } : null
+  });
+}
+function doseDialog(medId, id) {
+  const m = medById(medId); if (!m) return;
+  const d = id ? state.doses.find(x => x.id === id) : null;
+  if (id && !d) return;
+  formDialog({
+    title: d ? 'Edit dose entry' : `Change dose · ${m.name}`, submitLabel: d ? 'Save' : 'Add',
+    fields: [
+      { name: 'date', label: 'Effective date', type: 'date', required: true, value: d ? d.date : todayISO() },
+      { name: 'dose', label: `Dose${m.unit ? ' (' + m.unit + ')' : ''}`, required: true, value: d && d.dose, placeholder: 'e.g. 5' },
+      { name: 'note', label: 'Note (optional)', value: d && d.note }
+    ],
+    onSubmit: v => {
+      if (!isISO(v.date)) return 'Pick a valid date.';
+      if (!d && state.doses.length >= MAX.doses) return 'Dose history limit reached.';
+      const rec = { date: v.date, dose: v.dose.trim().slice(0, 60), note: v.note.trim().slice(0, 300) };
+      if (d) Object.assign(d, rec); else state.doses.push({ id: uid(), medId: m.id, ...rec, createdAt: Date.now() });
+      commit();
+    },
+    onDelete: d ? async () => {
+      if (dosesFor(m.id).length <= 1) { toast('A medication needs at least one dose entry.'); return false; }
+      if (!(await confirmBox('Delete this dose entry?', '', 'Delete'))) return false;
+      state.doses = state.doses.filter(x => x.id !== d.id); commit(); return true;
+    } : null
+  });
+}
+function visitDialog(id) {
+  const v0 = id ? state.visits.find(x => x.id === id) : null;
+  if (id && !v0) return;
+  formDialog({
+    title: v0 ? 'Edit visit' : 'Add visit', submitLabel: v0 ? 'Save' : 'Add visit',
+    fields: [
+      { name: 'date', label: 'Date', type: 'date', required: true, value: v0 ? v0.date : todayISO() },
+      { name: 'provider', label: 'Provider', value: v0 && v0.provider, placeholder: 'e.g. Dr. Smith' },
+      { name: 'reason', label: 'Reason', value: v0 && v0.reason },
+      { name: 'notes', label: 'Notes', type: 'textarea', value: v0 && v0.notes },
+      { name: 'followUp', label: 'Follow-up date (optional)', type: 'date', value: v0 ? v0.followUp : '' }
+    ],
+    onSubmit: v => {
+      if (!isISO(v.date)) return 'Pick a valid date.';
+      const fu = String(v.followUp || '').trim();
+      if (fu && !isISO(fu)) return 'Pick a valid follow-up date.';
+      if (!v0 && state.visits.length >= MAX.visits) return 'Visit limit reached.';
+      const rec = { date: v.date, provider: v.provider.trim(), reason: v.reason.trim(), notes: v.notes.trim(), followUp: fu };
+      if (v0) Object.assign(v0, rec); else state.visits.push({ id: uid(), ...rec, createdAt: Date.now() });
+      commit();
+    },
+    onDelete: v0 ? async () => {
+      if (!(await confirmBox('Delete this visit?', '', 'Delete'))) return false;
+      state.visits = state.visits.filter(x => x.id !== v0.id); commit(); toast('Visit deleted'); return true;
+    } : null
+  });
+}
+
+/* ---- chart (inline SVG, no libraries) ---- */
+const CW = 340, CH = 210, PL = 42, PR = 10, PT = 10, PB = 26;
+let chartCtx = null;
+function niceStep(raw) {
+  if (!(raw > 0)) return 1;
+  const p = Math.pow(10, Math.floor(Math.log10(raw))), f = raw / p;
+  return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 5 ? 5 : 10) * p;
+}
+function rangePoints(all, range, today = todayISO()) {
+  const from = range === '3m' ? addMonths(today, -3) : range === '1y' ? addMonths(today, -12) : '';
+  return from ? all.filter(r => r.date >= from) : all;
+}
+function chartSVG(m, pts, style) {
+  const n = pts.length, bp = m.kind === 'bp';
+  const xs = pts.map(r => dayNum(r.date) + timeNum(r.time) * 0.99);
+  let x0 = xs[0], x1 = xs[n - 1];
+  if (x1 - x0 < 1) { x0 -= 1; x1 += 1; }
+  const vals = [];
+  for (const r of pts) { vals.push(r.value); if (bp && r.value2 != null) vals.push(r.value2); }
+  let lo = Math.min(...vals.slice(0, 200000)), hi = Math.max(...vals.slice(0, 200000));
+  for (const v of [m.refLow, m.refHigh, m.ref2Low, m.ref2High]) if (v != null) { lo = Math.min(lo, v); hi = Math.max(hi, v); }
+  if (hi === lo) { const d = Math.abs(hi) * 0.1 || 1; lo -= d; hi += d; }
+  const step = niceStep((hi - lo) / 4);
+  const y0 = Math.floor(lo / step + 1e-9) * step, y1 = Math.ceil(hi / step - 1e-9) * step;
+  const pw = CW - PL - PR, ph = CH - PT - PB;
+  const X = x => PL + pw * (x - x0) / (x1 - x0), Y = v => PT + ph * (1 - (v - y0) / (y1 - y0));
+  const f1 = v => Math.round(v * 10) / 10;
+  let g = '';
+  for (let t = y0; t <= y1 + step / 2; t += step) {
+    g += `<line x1="${PL}" x2="${CW - PR}" y1="${f1(Y(t))}" y2="${f1(Y(t))}" stroke="var(--line)" stroke-width="1"/><text x="${PL - 5}" y="${f1(Y(t)) + 3}" text-anchor="end" font-size="10" fill="var(--muted)">${esc(fmtNum(t))}</text>`;
+  }
+  const band = (a, b, cls) => {
+    if (a == null && b == null) return '';
+    const top = Y(Math.min(b == null ? y1 : b, y1)), bot = Y(Math.max(a == null ? y0 : a, y0));
+    return bot > top ? `<rect class="${cls}" x="${PL}" y="${f1(top)}" width="${pw}" height="${f1(bot - top)}" fill="var(--accent)" opacity=".13"/>` : '';
+  };
+  g = band(m.refLow, m.refHigh, 'refband') + (bp ? band(m.ref2Low, m.ref2High, 'refband') : '') + g;
+  for (const [x, a] of [[x0, 'start'], [(x0 + x1) / 2, 'middle'], [x1, 'end']])
+    g += `<text x="${a === 'start' ? PL : a === 'end' ? CW - PR : f1(X(x))}" y="${CH - 8}" text-anchor="${a}" font-size="10" fill="var(--muted)">${esc(fmtDate(isoOfDay(Math.round(x)), false))}</text>`;
+  const px = xs.map(X);
+  // downsample very large series: per pixel column keep the min and max point
+  let idx;
+  if (n > 400) {
+    const buckets = new Map();
+    for (let i = 0; i < n; i++) {
+      const k = Math.floor(px[i]), b = buckets.get(k);
+      if (!b) buckets.set(k, { mn: i, mx: i });
+      else { if (pts[i].value < pts[b.mn].value) b.mn = i; if (pts[i].value > pts[b.mx].value) b.mx = i; }
+    }
+    idx = [];
+    for (const b of buckets.values()) { if (b.mn === b.mx) idx.push(b.mn); else idx.push(Math.min(b.mn, b.mx), Math.max(b.mn, b.mx)); }
+    idx.sort((a, b) => a - b);
+  } else idx = pts.map((_, i) => i);
+  const dots = n <= 120;
+  const tipTitle = i => `${pts[i].date}${pts[i].time ? ' ' + pts[i].time : ''}: ${fmtVal(m, pts[i])}${pts[i].context ? ' (' + pts[i].context + ')' : ''}`;
+  if (style === 'bar') {
+    const bw = Math.max(1.5, Math.min(16, pw / Math.max(idx.length, 1) * 0.7));
+    for (const i of idx) {
+      const r = pts[i], top = Y(r.value), bot = bp && r.value2 != null ? Y(r.value2) : Y(y0);
+      g += `<rect x="${f1(px[i] - bw / 2)}" y="${f1(Math.min(top, bot))}" width="${f1(bw)}" height="${f1(Math.max(1.5, Math.abs(bot - top)))}" rx="1" fill="var(--accent)" opacity=".85">${dots ? `<title>${esc(tipTitle(i))}</title>` : ''}</rect>`;
+    }
+  } else {
+    const line = fn => 'M' + idx.map(i => `${f1(px[i])} ${f1(Y(fn(pts[i])))}`).join('L');
+    g += `<path d="${line(r => r.value)}" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round"/>`;
+    if (bp) {
+      const ii = idx.filter(i => pts[i].value2 != null);
+      if (ii.length) g += `<path d="M${ii.map(i => `${f1(px[i])} ${f1(Y(pts[i].value2))}`).join('L')}" fill="none" stroke="var(--muted)" stroke-width="2" stroke-linejoin="round"/>`;
+    }
+    if (dots) for (const i of idx) {
+      g += `<circle cx="${f1(px[i])}" cy="${f1(Y(pts[i].value))}" r="3.5" fill="var(--accent)"><title>${esc(tipTitle(i))}</title></circle>`;
+      if (bp && pts[i].value2 != null) g += `<circle cx="${f1(px[i])}" cy="${f1(Y(pts[i].value2))}" r="3" fill="var(--card)" stroke="var(--muted)" stroke-width="1.5"/>`;
+    }
+  }
+  g += '<circle id="sel" r="7" fill="none" stroke="var(--ink)" stroke-width="2" display="none"/>';
+  chartCtx = { m, pts, px, py: pts.map(r => Y(r.value)) };
+  return `<svg viewBox="0 0 ${CW} ${CH}" role="img" aria-label="${esc(m.name)} chart, ${n} readings" data-chart="1">${g}</svg>`;
+}
+function chartPick(i) {
+  if (!chartCtx || !chartCtx.pts[i]) return;
+  const { m, pts, px, py } = chartCtx, r = pts[i];
+  const sel = $('#sel');
+  if (sel) { sel.setAttribute('cx', px[i]); sel.setAttribute('cy', py[i]); sel.removeAttribute('display'); }
+  const tip = $('#tip');
+  if (tip) tip.innerHTML = `<b>${esc(fmtDate(r.date))}${r.time ? ' ' + esc(r.time) : ''}</b> · <b>${esc(fmtVal(m, r))}${esc(unitOf(m))}</b>${refMark(m, r)}${r.context || r.source ? '<br><span class="muted">' + esc([r.context, r.source].filter(Boolean).join(' · ')) + '</span>' : ''}`;
+}
+function chartTapX(clientX, svg) {
+  if (!chartCtx) return;
+  const rect = svg.getBoundingClientRect();
+  const x = (clientX - rect.left) * CW / (rect.width || CW);
+  const px = chartCtx.px; let lo = 0, hi = px.length - 1;
+  while (lo < hi) { const mid = (lo + hi) >> 1; if (px[mid] < x) lo = mid + 1; else hi = mid; }
+  if (lo > 0 && Math.abs(px[lo - 1] - x) <= Math.abs(px[lo] - x)) lo--;
+  chartPick(lo);
+}
+
+/* ---- views ---- */
+const view = $('#view');
+const ui = { tab: 'summary', metric: null, med: null, range: '1y', style: 'line', limit: 100 };
+function storageBannerHTML() {
+  if (saveFailed) return '<div class="banner bad">Couldn’t save to this device’s storage. Back up now so nothing is lost.</div>';
+  if (!db) return '<div class="banner bad">This browser isn’t allowing storage (private mode?). Changes won’t survive closing the app — use Backup often.</div>';
+  return '';
+}
+const daysLabel = d => (d === 0 ? 'today' : d === 1 ? 'tomorrow' : d > 0 ? `in ${d} days` : `${-d} days ago`);
+function metricRow(m) {
+  const rs = readingsFor(m.id), last = rs[rs.length - 1];
+  const tr = trendOf(m, rs);
+  return `<li class="row" data-action="metric" data-id="${esc(m.id)}"><div class="row-main"><div class="row-title">${esc(m.name)}${last ? refMark(m, last) : ''}</div>
+    <div class="row-sub">${last ? esc(fmtDate(last.date)) + (tr ? ' · <span class="trend">' + esc(tr) + '</span>' : '') : 'No readings yet'}</div></div>
+    ${last ? `<div class="mval num">${esc(fmtVal(m, last, false))}<span class="muted" style="font-weight:500;font-size:13px">${esc(unitOf(m))}</span></div>` : ''}</li>`;
+}
+function medRow(m, today) {
+  const cd = currentDose(m, today), active = medActive(m, today);
+  const since = cd ? `since ${fmtDate(cd.date)}` : '';
+  return `<li class="row ${active ? '' : 'faded'}" data-action="med" data-id="${esc(m.id)}"><div class="row-main"><div class="row-title">${esc(m.name)}${active ? '' : '<span class="badge">Stopped</span>'}</div>
+    <div class="row-sub">${active ? esc(since) : 'stopped ' + esc(fmtDate(m.stopDate))}</div></div>
+    <div class="mval">${esc(doseText(m, cd))}</div></li>`;
+}
+function visitRow(v, today) {
+  const fu = v.followUp ? daysBetween(today, v.followUp) : null;
+  return `<li class="row" data-action="visit" data-id="${esc(v.id)}"><div class="row-main"><div class="row-title">${esc(v.provider || v.reason || 'Visit')}${fu != null && fu >= 0 ? `<span class="badge acc">Follow-up ${esc(daysLabel(fu))}</span>` : ''}</div>
+    <div class="row-sub">${esc(fmtDate(v.date))}${v.provider && v.reason ? ' · ' + esc(v.reason) : ''}${v.followUp ? ' · follow-up ' + esc(fmtDate(v.followUp)) : ''}</div>
+    ${v.notes ? `<div class="row-sub">${esc(v.notes.length > 140 ? v.notes.slice(0, 140) + '…' : v.notes)}</div>` : ''}</div></li>`;
+}
+function renderSummary() {
+  const today = todayISO();
+  if (!hasAnyData()) return storageBannerHTML() + `<div class="empty"><div class="big">🩺</div><h2>Nothing logged yet</h2>
+    <p>Add the metrics you track (PSA, lipids, blood pressure, weight…), then log readings. Everything stays on this device.</p>
+    <button class="btn primary" data-action="go-metrics">Set up metrics</button><br><button class="btn ghost" data-action="restore">Restore from a backup file</button></div>`;
+  const pinned = state.metrics.filter(m => m.pinned).sort((a, b) => a.name.localeCompare(b.name));
+  const meds = state.meds.filter(m => medActive(m, today)).sort((a, b) => a.name.localeCompare(b.name));
+  const ups = state.visits.filter(v => v.followUp && v.followUp >= today).sort((a, b) => a.followUp.localeCompare(b.followUp));
+  return storageBannerHTML() + `<div class="ctl"><button type="button" class="btn primary" data-action="log">+ Log reading</button><button type="button" class="btn" data-action="doctor">Doctor summary</button></div>
+    <div class="sec-h"><span>Latest</span></div>
+    ${pinned.length ? `<ul class="card list">${pinned.map(metricRow).join('')}</ul>` : '<div class="card pad muted">No metrics are shown here. Turn on “Show on Summary” in a metric, or add one in Metrics.</div>'}
+    <div class="sec-h"><span>Active medications</span></div>
+    ${meds.length ? `<ul class="card list">${meds.map(m => medRow(m, today)).join('')}</ul>` : '<div class="card pad muted">None.</div>'}
+    <div class="sec-h"><span>Upcoming follow-ups</span></div>
+    ${ups.length ? `<ul class="card list">${ups.map(v => `<li class="row" data-action="visit" data-id="${esc(v.id)}"><div class="row-main"><div class="row-title">${esc(v.provider || v.reason || 'Visit')}</div><div class="row-sub">${esc(v.reason && v.provider ? v.reason + ' · ' : '')}${esc(fmtDate(v.followUp))}</div></div><div class="mval">${esc(daysLabel(daysBetween(today, v.followUp)))}</div></li>`).join('')}</ul>` : '<div class="card pad muted">None scheduled.</div>'}`;
+}
+function renderMetrics() {
+  const have = new Set(state.metrics.map(m => m.name.toLowerCase()));
+  const missing = PRESETS.map((p, i) => [p, i]).filter(([p]) => !have.has(p.name.toLowerCase()));
+  let html = storageBannerHTML();
+  for (const g of GROUPS) {
+    const ms = state.metrics.filter(m => m.group === g).sort((a, b) => a.name.localeCompare(b.name));
+    if (ms.length) html += `<div class="sec-h"><span>${esc(g)}</span></div><ul class="card list">${ms.map(metricRow).join('')}</ul>`;
+  }
+  if (!state.metrics.length) html += '<div class="empty"><div class="big">🧪</div><h2>No metrics yet</h2><p>Tap a preset below or add your own. No values are preloaded.</p></div>';
+  if (missing.length) html += `<div class="sec-h"><span>Quick add</span></div><div class="chips">${missing.map(([p, i]) => `<button type="button" class="chip" data-action="preset" data-i="${i}">+ ${esc(p.name)}</button>`).join('')}</div>`;
+  return html;
+}
+function renderMetricDetail() {
+  const m = metricById(ui.metric);
+  if (!m) { ui.metric = null; return renderMetrics(); }
+  const all = readingsFor(m.id), pts = rangePoints(all, ui.range);
+  const seg = (key, opts) => `<div class="chips">${opts.map(([v, l]) => `<button type="button" class="chip" data-action="${key}" data-v="${v}" aria-pressed="${ui[key === 'range' ? 'range' : 'style'] === v}">${l}</button>`).join('')}</div>`;
+  let body;
+  if (!all.length) body = '<div class="card pad muted" style="margin-top:12px">No readings yet.</div>';
+  else if (!pts.length) body = '<div class="card pad muted" style="margin-top:12px">No readings in this range. Pick “All”.</div>';
+  else {
+    const bp = m.kind === 'bp', n = pts.length;
+    const sum = a => a.reduce((s, x) => s + x, 0);
+    const v1 = pts.map(r => r.value), v2 = pts.filter(r => r.value2 != null).map(r => r.value2);
+    const two = (f1, f2) => bp ? `${fmtNum(f1(v1))}/${v2.length ? fmtNum(f2(v2)) : '–'}` : fmtNum(f1(v1));
+    const last = pts[n - 1];
+    const stats = [['Latest', fmtVal(m, last, false)], ['Average', two(a => sum(a) / a.length, a => sum(a) / a.length)],
+      ['Min', two(a => a.reduce((x, y) => Math.min(x, y), Infinity), a => a.reduce((x, y) => Math.min(x, y), Infinity))],
+      ['Max', two(a => a.reduce((x, y) => Math.max(x, y), -Infinity), a => a.reduce((x, y) => Math.max(x, y), -Infinity))]];
+    const tr = trendOf(m, all);
+    body = `<div class="card chartbox" data-chartbox="1">${chartSVG(m, pts, ui.style)}<div class="tip" id="tip"><span class="muted">Tap the chart to see a reading.</span></div></div>
+      <div class="stats">${stats.map(([l, v]) => `<div class="card tile"><div class="lbl">${l}</div><div class="val num">${esc(v)}</div></div>`).join('')}</div>
+      <p class="hint" style="margin:8px 4px 0">${plural(n, 'reading')} in range${tr ? ` · latest vs previous: <b>${esc(tr)}</b>${esc(unitOf(m))}` : ''}${refText(m) ? ` · your reference ${esc(refText(m))}` : ''}</p>`;
+  }
+  const shown = [...all].reverse().slice(0, ui.limit);
+  const row = r => `<li class="row" data-action="edit-reading" data-id="${esc(r.id)}"><div class="row-main"><div class="row-title">${esc(fmtDate(r.date))}${r.time ? ' · ' + esc(r.time) : ''}${refMark(m, r)}</div>
+    ${r.context || r.source ? `<div class="row-sub">${esc([r.context, r.source].filter(Boolean).join(' · '))}</div>` : ''}</div>
+    <div class="mval num">${esc(fmtVal(m, r))}<span class="muted" style="font-weight:500;font-size:13px">${esc(unitOf(m))}</span></div></li>`;
+  return storageBannerHTML() + `<div class="ctl">${seg('range', [['3m', '3 mo'], ['1y', '1 yr'], ['all', 'All']])}${seg('style', [['line', 'Line'], ['bar', 'Bars']])}</div>${body}
+    <div class="ctl"><button type="button" class="btn primary" data-action="add-reading" data-id="${esc(m.id)}">+ Log reading</button><button type="button" class="btn" data-action="edit-metric" data-id="${esc(m.id)}">Edit metric</button></div>
+    ${all.length ? `<div class="sec-h"><span>All readings (${all.length})</span></div><ul class="card list">${shown.map(row).join('')}</ul>${all.length > shown.length ? `<div style="text-align:center;margin-top:10px"><button type="button" class="btn" data-action="more">Show more</button></div>` : ''}` : ''}`;
+}
+function renderMeds() {
+  const today = todayISO();
+  if (ui.med && medById(ui.med)) return renderMedDetail();
+  ui.med = null;
+  if (!state.meds.length) return storageBannerHTML() + '<div class="empty"><div class="big">💊</div><h2>No medications yet</h2><p>Add a medication with its starting dose. Log each dose change with a date to keep the history.</p><button class="btn primary" data-action="add-med">Add medication</button></div>';
+  const act = state.meds.filter(m => medActive(m, today)).sort((a, b) => a.name.localeCompare(b.name));
+  const stp = state.meds.filter(m => !medActive(m, today)).sort((a, b) => b.stopDate.localeCompare(a.stopDate));
+  return storageBannerHTML() + (act.length ? `<div class="sec-h"><span>Active</span></div><ul class="card list">${act.map(m => medRow(m, today)).join('')}</ul>` : '')
+    + (stp.length ? `<div class="sec-h"><span>Stopped</span></div><ul class="card list">${stp.map(m => medRow(m, today)).join('')}</ul>` : '');
+}
+function renderMedDetail() {
+  const m = medById(ui.med), today = todayISO(), cd = currentDose(m, today), ds = dosesFor(m.id);
+  const rows = [...ds].reverse().map((d, i, arr) => `<li class="row" data-action="edit-dose" data-id="${esc(d.id)}" data-med="${esc(m.id)}"><div class="row-main"><div class="row-title">${esc(fmtDate(d.date))}</div>${d.note ? `<div class="row-sub">${esc(d.note)}</div>` : ''}</div><div class="mval">${esc(doseText(m, d))}</div></li>`).join('');
+  return storageBannerHTML() + `<div class="card pad" style="margin-top:14px"><div class="muted" style="font-size:13px;font-weight:600">${medActive(m, today) ? 'Current dose' : 'Last dose'}</div>
+    <div style="font-size:24px;font-weight:700">${esc(doseText(m, cd) || '—')}</div>
+    <div class="muted">${cd ? 'since ' + esc(fmtDate(cd.date)) : ''}${medActive(m, today) ? '' : ' · stopped ' + esc(fmtDate(m.stopDate))}</div>
+    <div class="muted" style="margin-top:4px">Started ${esc(fmtDate(m.startDate))}</div>${m.note ? `<p class="pre" style="margin-top:8px">${esc(m.note)}</p>` : ''}</div>
+    <div class="ctl"><button type="button" class="btn primary" data-action="add-dose" data-id="${esc(m.id)}">Change dose</button><button type="button" class="btn" data-action="edit-med" data-id="${esc(m.id)}">Edit / stop</button></div>
+    <div class="sec-h"><span>Dose history</span></div><ul class="card list">${rows}</ul>`;
+}
+function renderVisits() {
+  if (!state.visits.length) return storageBannerHTML() + '<div class="empty"><div class="big">🩺</div><h2>No visits yet</h2><p>Log appointments with notes and an optional follow-up date.</p><button class="btn primary" data-action="add-visit">Add visit</button></div>';
+  const today = todayISO();
+  const all = [...state.visits].sort((a, b) => b.date.localeCompare(a.date) || b.createdAt - a.createdAt);
+  return storageBannerHTML() + `<ul class="card list" style="margin-top:14px">${all.map(v => visitRow(v, today)).join('')}</ul>`;
+}
+function renderBackup() {
+  const last = state.meta.lastBackup ? `Last backup: ${esc(fmtDateTime(state.meta.lastBackup))}.` : 'No backup made yet.';
+  const canEncrypt = !!(window.crypto && crypto.subtle);
+  return storageBannerHTML() + installCardHTML() + `<div class="stack">
+    <section class="card pad"><h3>Back up</h3>
+      <p class="muted">${last}</p>
+      <p>Saves one file with everything in this app. On iPhone it opens the share sheet — save it to Files or OneDrive. <b>Never put this file in your GitHub repo.</b></p>
+      ${canEncrypt ? `<div class="field"><label for="bkPass">Passphrase (optional — encrypts the file)</label><input id="bkPass" type="password" autocomplete="new-password"></div>
+      <div class="field" style="margin-top:8px"><label for="bkPass2">Repeat passphrase</label><input id="bkPass2" type="password" autocomplete="new-password"></div>
+      <p class="hint">If you set one, the file can’t be opened without it — not even by me. Health data: encrypting is recommended.</p>` : ''}
+      <button type="button" class="btn primary block" style="margin-top:12px" data-action="export">Back up now</button></section>
+    <section class="card pad"><h3>Restore</h3><p>Pick a backup file made by this app. You’ll choose whether to replace what’s here or merge it in.</p>
+      <button type="button" class="btn block" data-action="restore">Choose backup file…</button></section>
+    <section class="card pad"><h3>Import readings</h3><p>Paste lines like <span class="num">2026-08-31, PSA, 3.86, ng/mL, Quest fasting</span> (CSV, tab-separated or JSON). You see a preview first.</p>
+      <button type="button" class="btn block" data-action="import">Import readings…</button></section>
+    <section class="card pad"><h3>Use in Excel</h3><p>All readings as a CSV file.</p>
+      <button type="button" class="btn block" data-action="csv">Export readings (CSV)</button></section>
+    <section class="card pad"><h3>Danger zone</h3><p>Erases everything in this app on this device.</p>
+      <button type="button" class="btn danger block" data-action="wipe">Erase everything on this device</button></section>
+    <p class="hint" style="text-align:center">Your data lives only on this device. Nothing is sent anywhere.</p></div>`;
+}
+const TITLES = { summary: 'Summary', metrics: 'Metrics', meds: 'Medications', visits: 'Visits', backup: 'Backup & restore' };
+function render() {
+  const y = window.scrollY;
+  const m = ui.tab === 'metrics' && ui.metric ? metricById(ui.metric) : null;
+  if (ui.tab === 'metrics' && ui.metric && !m) ui.metric = null;
+  const med = ui.tab === 'meds' && ui.med ? medById(ui.med) : null;
+  if (ui.tab === 'meds' && ui.med && !med) ui.med = null;
+  view.innerHTML = { summary: renderSummary, metrics: m ? renderMetricDetail : renderMetrics, meds: renderMeds, visits: renderVisits, backup: renderBackup }[ui.tab]();
+  $$('nav.tabs button').forEach(b => b.setAttribute('aria-current', b.dataset.tab === ui.tab ? 'page' : 'false'));
+  const add = $('#addBtn');
+  const addLabel = m ? '+ Reading' : med ? '+ Dose' : { metrics: '+ Metric', meds: '+ Med', visits: '+ Visit' }[ui.tab];
+  add.classList.toggle('hide', !addLabel); if (addLabel) add.textContent = addLabel;
+  $('#backBtn').classList.toggle('hide', !(m || med));
+  $('#title').textContent = m ? m.name : med ? med.name : TITLES[ui.tab];
+  $('#sub').textContent = m ? [m.group, m.unit, refText(m) ? 'ref ' + refText(m) : ''].filter(Boolean).join(' · ') : new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+  window.scrollTo(0, y);
+}
+function go(t) { ui.tab = t; ui.metric = null; ui.med = null; ui.limit = 100; render(); window.scrollTo(0, 0); }
+function openMetric(id) { ui.tab = 'metrics'; ui.metric = id; ui.limit = 100; render(); window.scrollTo(0, 0); }
+
+/* ---- doctor summary (print + copy) ---- */
+function buildSummary(o) {
+  const today = todayISO();
+  const tx = [];
+  tx.push('HEALTH SUMMARY', `Period: ${o.from} to ${o.to}  (generated ${today})`, '');
+  let h = `<h1>Health summary</h1><p class="pa-sub">${esc(o.from)} to ${esc(o.to)} · generated ${esc(today)}</p>`;
+  const ms = o.metricIds.map(metricById).filter(Boolean);
+  if (ms.length) { tx.push('LABS & VITALS'); h += '<h2>Labs & vitals</h2>'; }
+  for (const m of ms) {
+    const rs = readingsFor(m.id).filter(r => r.date >= o.from && r.date <= o.to);
+    const ref = refText(m);
+    tx.push(`${m.name}${m.unit ? ' (' + m.unit + ')' : ''}${ref ? '  [ref ' + ref + ']' : ''}`);
+    h += `<h3>${esc(m.name)}${m.unit ? ' (' + esc(m.unit) + ')' : ''}${ref ? ' <span class="pa-n">ref ' + esc(ref) + '</span>' : ''}</h3>`;
+    if (!rs.length) { tx.push('  No readings in this period.'); h += '<p class="pa-n">No readings in this period.</p>'; continue; }
+    h += '<table>';
+    for (const r of rs) {
+      const extra = [r.context, r.source].filter(Boolean).join(' · ');
+      tx.push(`  ${r.date}${r.time ? ' ' + r.time : ''}  ${fmtVal(m, r)}${extra ? '  (' + extra + ')' : ''}${outOfRef(m, r) ? '  *' : ''}`);
+      h += `<tr><td style="width:24%">${esc(r.date)}${r.time ? ' ' + esc(r.time) : ''}</td><td style="width:22%"><b>${esc(fmtVal(m, r))}</b>${outOfRef(m, r) ? ' *' : ''}</td><td>${esc(extra)}</td></tr>`;
+    }
+    h += '</table>';
+    tx.push('');
+  }
+  if (ms.some(m => refText(m))) { tx.push('* outside the reference range entered in the app', ''); h += '<p class="pa-n">* outside the reference range entered in the app</p>'; }
+  if (o.meds) {
+    const list = state.meds.filter(m => m.startDate <= o.to && (!m.stopDate || m.stopDate >= o.from)).sort((a, b) => a.name.localeCompare(b.name));
+    if (list.length) { tx.push('MEDICATIONS'); h += '<h2>Medications</h2><table>'; }
+    for (const m of list) {
+      const cd = currentDose(m, o.to), act = medActive(m, today);
+      const hist = dosesFor(m.id).map(d => `${d.date} ${doseText(m, d)}`).join('; ');
+      tx.push(`${m.name} — ${doseText(m, cd)}${cd ? ' since ' + cd.date : ''}${act ? '' : ' (stopped ' + m.stopDate + ')'}`, `  Started ${m.startDate}. History: ${hist}`);
+      if (o.notes && m.note) tx.push('  ' + m.note);
+      h += `<tr><td style="width:30%"><b>${esc(m.name)}</b></td><td>${esc(doseText(m, cd))}${cd ? ' since ' + esc(cd.date) : ''}${act ? '' : ' (stopped ' + esc(m.stopDate) + ')'}<div class="pa-n">Started ${esc(m.startDate)}. ${esc(hist)}${o.notes && m.note ? '<br>' + esc(m.note) : ''}</div></td></tr>`;
+    }
+    if (list.length) { tx.push(''); h += '</table>'; }
+  }
+  if (o.visits) {
+    const list = state.visits.filter(v => v.date >= o.from && v.date <= o.to).sort((a, b) => a.date.localeCompare(b.date));
+    if (list.length) { tx.push('VISITS'); h += '<h2>Visits</h2><table>'; }
+    for (const v of list) {
+      const head = [v.provider, v.reason].filter(Boolean).join(' — ') || 'Visit';
+      tx.push(`${v.date}  ${head}${v.followUp ? '  (follow-up ' + v.followUp + ')' : ''}`);
+      if (o.notes && v.notes) tx.push('  ' + v.notes.replace(/\n/g, '\n  '));
+      h += `<tr><td style="width:20%">${esc(v.date)}</td><td><b>${esc(head)}</b>${v.followUp ? ' · follow-up ' + esc(v.followUp) : ''}${o.notes && v.notes ? '<div class="pa-n" style="white-space:pre-wrap">' + esc(v.notes) + '</div>' : ''}</td></tr>`;
+    }
+    if (list.length) { tx.push(''); h += '</table>'; }
+  }
+  return { html: h, text: tx.join('\n').trim() + '\n' };
+}
+function doPrint(html, title) {
+  let pa = document.getElementById('printArea');
+  if (!pa) { pa = document.createElement('div'); pa.id = 'printArea'; document.body.appendChild(pa); }
+  pa.innerHTML = html;
+  const oldTitle = document.title; document.title = title || oldTitle;
+  const done = () => { window.removeEventListener('afterprint', done); document.title = oldTitle; const p = document.getElementById('printArea'); if (p) p.innerHTML = ''; };
+  window.addEventListener('afterprint', done);
+  setTimeout(() => window.print(), 60);
+}
+async function copyText(t) {
+  try { await navigator.clipboard.writeText(t); return true; } catch {}
+  try { const ta = document.createElement('textarea'); ta.value = t; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); const ok = document.execCommand('copy'); ta.remove(); return !!ok; } catch { return false; }
+}
+function doctorDialog() {
+  if (!state.metrics.length && !state.meds.length && !state.visits.length) return toast('Nothing to summarize yet.');
+  const ms = [...state.metrics].sort((a, b) => a.name.localeCompare(b.name));
+  const fields = [
+    { name: 'from', label: 'From', type: 'date', required: true, value: addMonths(todayISO(), -12) },
+    { name: 'to', label: 'To', type: 'date', required: true, value: todayISO() },
+    ...ms.map((m, i) => ({ name: 'm' + i, label: m.name, type: 'checkbox', value: state.readings.some(r => r.metricId === m.id) })),
+    { name: 'meds', label: 'Medications', type: 'checkbox', value: true },
+    { name: 'visits', label: 'Visits', type: 'checkbox', value: true },
+    { name: 'notes', label: 'Include notes', type: 'checkbox', value: true }
+  ];
+  const read = v => {
+    if (!isISO(v.from) || !isISO(v.to)) return 'Pick valid dates.';
+    if (v.from > v.to) return '“From” must be before “To”.';
+    return { from: v.from, to: v.to, metricIds: ms.filter((m, i) => v['m' + i]).map(m => m.id), meds: v.meds, visits: v.visits, notes: v.notes };
+  };
+  formDialog({
+    title: 'Doctor summary', intro: 'Pick the period and what to include.', fields, grid: 'checkgrid', submitLabel: 'Print',
+    extra: [{ label: 'Copy as text', onClick: async v => {
+      const o = read(v); if (typeof o === 'string') return toast(o);
+      const ok = await copyText(buildSummary(o).text);
+      toast(ok ? 'Copied to clipboard' : 'Couldn’t copy on this device.');
+    } }],
+    onSubmit: v => { const o = read(v); if (typeof o === 'string') return o; doPrint(buildSummary(o).html, `Health summary ${o.from} to ${o.to}`); }
+  });
+}
+
+/* ---- import / export of readings ---- */
+function splitLine(line) {
+  const d = line.includes('\t') ? '\t' : ',';
+  const out = []; let cur = '', q = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (q) { if (c === '"') { if (line[i + 1] === '"') { cur += '"'; i++; } else q = false; } else cur += c; }
+    else if (c === '"' && !cur.trim()) { q = true; cur = ''; }
+    else if (c === d) { out.push(cur.trim()); cur = ''; }
+    else cur += c;
+  }
+  out.push(cur.trim());
+  return out;
+}
+function parseDateLoose(s) {
+  s = str(s).trim();
+  let m = /^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})(?:[T ].*)?$/.exec(s), y, mo, d;
+  if (m) { y = +m[1]; mo = +m[2]; d = +m[3]; }
+  else if ((m = /^(\d{1,2})[-/.](\d{1,2})[-/.](\d{2}|\d{4})$/.exec(s))) { mo = +m[1]; d = +m[2]; y = +m[3]; if (y < 100) y += 2000; }
+  else return null;
+  const iso = `${String(y).padStart(4, '0')}-${pad(mo)}-${pad(d)}`;
+  return isISO(iso) ? iso : null;
+}
+function buildRow(o, line, raw) {
+  const err = msg => ({ error: { line, text: str(raw).slice(0, 120), msg } });
+  const date = parseDateLoose(o.date);
+  if (!date) return err('Unreadable date');
+  const metric = str(o.metric).trim();
+  if (!metric) return err('Missing metric name');
+  let value, value2 = numOrNull(o.value2), pulse = numOrNull(o.pulse);
+  const vs = str(o.value).trim();
+  if (vs.includes('/')) {
+    const p = vs.split('/').map(x => parseNum(x));
+    if (p[0] == null || p[1] == null) return err('Unreadable blood pressure value');
+    value = p[0]; value2 = p[1]; if (p[2] != null) pulse = p[2];
+  } else {
+    value = parseNum(vs);
+    if (value == null) return err(vs ? `Unreadable value “${vs.slice(0, 20)}”` : 'Missing value');
+  }
+  const time = str(o.time).trim();
+  if (time && !TIME_RE.test(time)) return err('Time must look like 07:30');
+  return { row: { date, time, metric: metric.slice(0, 80), value, value2, pulse, unit: str(o.unit).trim().slice(0, 24), context: str(o.context).trim().slice(0, 300), source: str(o.source).trim().slice(0, 120), line } };
+}
+function parseImport(text) {
+  const rows = [], errors = [];
+  text = str(text).replace(/^﻿/, '').trim();
+  if (!text) return { rows, errors };
+  if (/^[\[{]/.test(text)) {
+    let j;
+    try { j = JSON.parse(text); } catch { return { rows, errors: [{ line: 1, text: text.slice(0, 80), msg: 'Not valid JSON' }] }; }
+    const arr = Array.isArray(j) ? j : Array.isArray(j && j.readings) ? j.readings : null;
+    if (!arr) return { rows, errors: [{ line: 1, text: '', msg: 'JSON must be a list of readings' }] };
+    arr.forEach((x, i) => {
+      if (!x || typeof x !== 'object') return errors.push({ line: i + 1, text: str(x).slice(0, 80), msg: 'Not a reading object' });
+      const metricName = x.metric ?? x.name ?? x.test;
+      const r = buildRow({ date: x.date, time: x.time, metric: typeof metricName === 'object' ? '' : metricName, value: x.value, value2: x.value2 ?? x.diastolic, pulse: x.pulse, unit: x.unit, context: x.context ?? x.notes, source: x.source ?? x.lab }, i + 1, JSON.stringify(x));
+      if (r.error) errors.push(r.error); else rows.push(r.row);
+    });
+    return { rows, errors };
+  }
+  const lines = text.split(/\r?\n/);
+  let map = null, started = false;
+  lines.forEach((ln, i) => {
+    if (!ln.trim() || /^\s*(#|\/\/)/.test(ln)) return;
+    const c = splitLine(ln);
+    if (!started) {
+      started = true;
+      const low = c.map(x => x.toLowerCase());
+      if (low.includes('date') && (low.includes('metric') || low.includes('name') || low.includes('test'))) {
+        const f = (...ks) => low.findIndex(x => ks.includes(x));
+        map = { date: f('date'), time: f('time'), metric: f('metric', 'name', 'test'), value: f('value', 'systolic', 'sys', 'result'), value2: f('value2', 'diastolic', 'dia'), pulse: f('pulse'), unit: f('unit', 'units'), context: f('context', 'notes', 'note', 'comment'), source: f('source', 'lab') };
+        return;
+      }
+    }
+    let o;
+    if (map) { const g = k => (map[k] >= 0 ? c[map[k]] : ''); o = { date: g('date'), time: g('time'), metric: g('metric'), value: g('value'), value2: g('value2'), pulse: g('pulse'), unit: g('unit'), context: g('context'), source: g('source') }; }
+    else {
+      let unit = c[3] || '', rest = c.slice(4);
+      if (unit && (unit.length > 12 || /\s/.test(unit))) { rest = c.slice(3); unit = ''; }
+      o = { date: c[0], metric: c[1], value: c[2], unit, context: rest.filter(Boolean).join(', ') };
+    }
+    const r = buildRow(o, i + 1, ln);
+    if (r.error) errors.push(r.error); else rows.push(r.row);
+  });
+  return { rows, errors };
+}
+const rkey = (mid, r) => [mid, r.date, r.time, r.value, r.value2 == null ? '' : r.value2].join('|');
+function planImport(rows) {
+  const byName = new Map(state.metrics.map(m => [m.name.toLowerCase(), m]));
+  const defs = new Map(), errors = [], items = [], seen = new Set(state.readings.map(r => rkey(r.metricId, r)));
+  let dups = 0;
+  for (const row of rows) {
+    const lc = row.metric.toLowerCase().replace(/\s+/g, ' ');
+    const canon = (ALIASES[lc] || row.metric).toLowerCase();
+    let m = byName.get(canon) || byName.get(lc), def = null;
+    if (!m) {
+      def = defs.get(canon);
+      if (!def) {
+        if (byName.size + defs.size >= MAX.metrics) { errors.push({ line: row.line, text: row.metric, msg: 'Metric limit reached' }); continue; }
+        const p = PRESETS.find(x => x.name.toLowerCase() === canon);
+        def = p ? { ...p } : { name: row.metric, unit: row.unit, group: 'Other', kind: /^(bp|blood pressure)$/i.test(row.metric) || row.value2 != null ? 'bp' : 'single' };
+        if (row.unit && !def.unit) def.unit = row.unit;
+        defs.set(canon, def);
+      }
+    }
+    const kind = m ? m.kind : def.kind === 'bp' ? 'bp' : 'single';
+    if (kind === 'bp' && row.value2 == null) { errors.push({ line: row.line, text: row.metric, msg: 'Blood pressure needs systolic/diastolic (e.g. 128/82)' }); continue; }
+    if (kind !== 'bp' && row.value2 != null) { errors.push({ line: row.line, text: row.metric, msg: `${m ? m.name : def.name} takes a single value` }); continue; }
+    const rec = { ...row, value2: kind === 'bp' ? row.value2 : null, pulse: kind === 'bp' ? row.pulse : null };
+    const k = rkey(m ? m.id : 'new:' + canon, rec);
+    if (seen.has(k)) { dups++; continue; }
+    seen.add(k);
+    items.push({ canon, metricId: m ? m.id : null, rec });
+  }
+  let truncated = 0;
+  if (state.readings.length + items.length > MAX.readings) { truncated = state.readings.length + items.length - MAX.readings; items.length = Math.max(0, MAX.readings - state.readings.length); }
+  const used = new Set(items.filter(i => !i.metricId).map(i => i.canon));
+  return { items, newDefs: [...defs].filter(([k]) => used.has(k)), dups, errors, truncated };
+}
+function applyPlan(plan) {
+  const ids = new Map();
+  for (const [canon, def] of plan.newDefs) { const m = normMetric({ ...def, pinned: true }); state.metrics.push(m); ids.set(canon, m.id); }
+  let n = 0;
+  for (const it of plan.items) {
+    const r = normReading({ id: uid(), metricId: it.metricId || ids.get(it.canon), ...it.rec, createdAt: Date.now() });
+    if (r) { state.readings.push(r); n++; }
+  }
+  commit();
+  return n;
+}
+async function importText(text) {
+  const { rows, errors: perr } = parseImport(text);
+  const plan = planImport(rows);
+  const errors = [...perr, ...plan.errors].sort((a, b) => a.line - b.line);
+  if (!plan.items.length && !errors.length && !plan.dups) { await msgBox('Nothing to import', 'No readings found in that text.'); return 0; }
+  const newNames = plan.newDefs.map(([, d]) => d.name);
+  const body = `<p><b>${plural(plan.items.length, 'reading')}</b> ready to import.</p>
+    ${plan.dups ? `<p class="muted">${plural(plan.dups, 'duplicate')} skipped (already logged).</p>` : ''}
+    ${newNames.length ? `<p class="muted">New metrics will be created: ${esc(newNames.join(', '))}.</p>` : ''}
+    ${plan.truncated ? `<p class="bad">${plural(plan.truncated, 'reading')} over the ${MAX.readings} limit will be left out.</p>` : ''}
+    ${errors.length ? `<p class="bad">${plural(errors.length, 'line')} can’t be read:</p><div class="errlist">${errors.slice(0, 100).map(e => `<div>Line ${e.line}: ${esc(e.msg)}${e.text ? ' — <span class="muted">' + esc(e.text) + '</span>' : ''}</div>`).join('')}${errors.length > 100 ? `<div>…and ${errors.length - 100} more</div>` : ''}</div>` : ''}`;
+  const ch = await askDialog({ title: 'Import preview', body, buttons: plan.items.length ? [{ label: 'Cancel', value: 'cancel' }, { label: `Import ${plan.items.length}`, value: 'go', kind: 'primary' }] : [{ label: 'Close', value: 'cancel' }] });
+  if (ch !== 'go') return 0;
+  const n = applyPlan(plan);
+  toast(`Imported ${plural(n, 'reading')}`);
+  return n;
+}
+function importDialog() {
+  formDialog({
+    title: 'Import readings', intro: 'One reading per line: date, metric, value, unit, context. Blood pressure value as 128/82. CSV with a header row or a JSON list also works.',
+    fields: [{ name: 'text', label: 'Paste here', type: 'textarea', placeholder: '2026-08-31, PSA, 3.86, ng/mL, Quest fasting' }],
+    submitLabel: 'Preview',
+    extra: [{ label: 'Choose file…', onClick: async () => {
+      const f = await pickFile('.csv,.json,.txt,text/csv,application/json,text/plain'); if (!f) return;
+      try { $('#f_text').value = await readFileText(f); } catch { toast('Couldn’t read that file.'); }
+    } }],
+    onSubmit: v => {
+      if (!v.text.trim()) return 'Paste some readings or choose a file.';
+      setTimeout(() => importText(v.text), 0);
+    }
+  });
+  const ta = $('#f_text'); if (ta) ta.classList.add('big');
+}
+function readingsCsv() {
+  const head = ['Date', 'Time', 'Metric', 'Value', 'Value2', 'Pulse', 'Unit', 'Context', 'Source', 'Group'];
+  const rows = [...state.readings].sort(cmpReading).map(r => { const m = metricById(r.metricId); return [r.date, r.time, m ? m.name : '', fmtNum(r.value), r.value2 == null ? '' : fmtNum(r.value2), r.pulse == null ? '' : fmtNum(r.pulse), m ? m.unit : '', r.context, r.source, m ? m.group : '']; });
+  return '﻿' + [head, ...rows].map(r => r.map(csvCell).join(',')).join('\r\n');
+}
+async function doCsv() {
+  if (!state.readings.length) return toast('No readings to export yet.');
+  const r = await deliverFile(`health-readings-${todayISO()}.csv`, readingsCsv(), 'text/csv');
+  if (r !== 'cancelled') toast(r === 'shared' ? 'CSV shared' : 'CSV saved to your downloads');
+}
+
+/* ---- backup / restore ---- */
+async function doExport() {
+  const pass = ($('#bkPass') || {}).value || '', pass2 = ($('#bkPass2') || {}).value || '';
+  if (pass) {
+    if (pass.length < 8) return toast('Use at least 8 characters for the passphrase.');
+    if (pass !== pass2) return toast('The two passphrases don’t match.');
+  }
+  const btn = $('[data-action="export"]'); if (btn) btn.disabled = true;
+  try {
+    const text = await Backup.build({ appId: APP_ID, schema: SCHEMA, data: exportData(), passphrase: pass || null });
+    const r = await deliverFile(`goobs-health-backup-${todayISO()}${pass ? '-encrypted' : ''}.json`, text, 'application/json');
+    if (r !== 'cancelled') {
+      state.meta.lastBackup = new Date().toISOString();
+      await persist({ touch: false });
+      render();
+      toast(r === 'shared' ? 'Backup shared' : 'Backup saved to your downloads');
+    }
+  } catch (e) { toast('Backup failed: ' + e.message); }
+  finally { const b2 = $('[data-action="export"]'); if (b2) b2.disabled = false; }
+}
+async function restoreFromText(text) {
+  let parsed;
+  try { parsed = await Backup.parse(text, { appId: APP_ID, schema: SCHEMA }); }
+  catch (e) { await msgBox('Can’t restore that file', e.message); return false; }
+  if (!parsed) return false;
+  const { data, dropped } = normalizeData(parsed.data);
+  if (!COLLS.some(k => data[k].length)) { await msgBox('Nothing to restore', 'That backup has no data in it.'); return false; }
+  const hasLocal = hasAnyData();
+  const sum = `${plural(data.metrics.length, 'metric')}, ${plural(data.readings.length, 'reading')}, ${plural(data.meds.length, 'medication')}, ${plural(data.visits.length, 'visit')}`;
+  const when = parsed.exportedAt ? ` Backup made ${fmtDateTime(parsed.exportedAt)}.` : '';
+  const skipped = dropped ? ` ${plural(dropped, 'unreadable item')} will be skipped.` : '';
+  const body = `<p>${esc(sum + '.' + when + skipped)}</p>` + (hasLocal ? '<p class="muted"><b>Replace all</b> swaps everything here for the backup. <b>Merge</b> adds what isn’t here yet and keeps the rest.</p>' : '');
+  const choice = await askDialog({
+    title: 'Restore this backup?', body,
+    buttons: hasLocal
+      ? [{ label: 'Cancel', value: 'cancel' }, { label: 'Merge', value: 'merge' }, { label: 'Replace all', value: 'replace', kind: 'danger' }]
+      : [{ label: 'Cancel', value: 'cancel' }, { label: 'Restore', value: 'replace', kind: 'primary' }]
+  });
+  if (choice === 'replace') {
+    const ts = parsed.exportedAt && !isNaN(Date.parse(parsed.exportedAt)) ? parsed.exportedAt : new Date().toISOString();
+    for (const k of COLLS) state[k] = data[k];
+    state.meta.lastBackup = ts; state.meta.lastChange = ts;
+    await persist({ touch: false });
+    render(); toast(`Restored ${sum}`); return true;
+  }
+  if (choice === 'merge') {
+    const merged = {}; let added = 0;
+    for (const k of COLLS) { const ids = new Set(state[k].map(x => x.id)); merged[k] = [...state[k]]; for (const x of data[k]) if (!ids.has(x.id)) { merged[k].push(x); added++; } }
+    const n = normalizeData(merged).data;
+    for (const k of COLLS) state[k] = n[k];
+    await persist(); render(); toast(`Merged in ${plural(added, 'item')}`); return true;
+  }
+  return false;
+}
+async function doRestore() {
+  const f = await pickFile(); if (!f) return;
+  let text;
+  try { text = await readFileText(f); } catch { await msgBox('Couldn’t read that file', 'Try choosing it again.'); return; }
+  await restoreFromText(text);
+}
+async function doWipe() {
+  if (!(await confirmBox('Erase everything?', 'This permanently deletes all metrics, readings, medications and visits on this device. Make a backup first if you might want them.', 'Erase everything'))) return;
+  state = defaultState(); ui.metric = null; ui.med = null;
+  await persist({ touch: false });
+  render(); toast('Everything erased');
+}
+
+/* ---- wiring ---- */
+view.addEventListener('click', e => {
+  const svg = e.target.closest('svg[data-chart]');
+  if (svg) return chartTapX(e.clientX, svg);
+  const el = e.target.closest('[data-action]');
+  if (!el) return;
+  const id = el.dataset.id;
+  switch (el.dataset.action) {
+    case 'go-metrics': go('metrics'); break;
+    case 'log': pickMetricThen(mid => readingDialog(mid)); break;
+    case 'doctor': doctorDialog(); break;
+    case 'metric': openMetric(id); break;
+    case 'preset': addPreset(+el.dataset.i); break;
+    case 'add-reading': readingDialog(id); break;
+    case 'edit-reading': readingDialog(ui.metric, id); break;
+    case 'edit-metric': metricDialog(id); break;
+    case 'range': ui.range = el.dataset.v; render(); break;
+    case 'style': ui.style = el.dataset.v; render(); break;
+    case 'more': ui.limit += 200; render(); break;
+    case 'med': ui.tab = 'meds'; ui.med = id; render(); window.scrollTo(0, 0); break;
+    case 'add-med': medDialog(); break;
+    case 'edit-med': medDialog(id); break;
+    case 'add-dose': doseDialog(id); break;
+    case 'edit-dose': doseDialog(el.dataset.med, id); break;
+    case 'visit': visitDialog(id); break;
+    case 'add-visit': visitDialog(); break;
+    case 'export': doExport(); break;
+    case 'restore': doRestore(); break;
+    case 'import': importDialog(); break;
+    case 'csv': doCsv(); break;
+    case 'wipe': doWipe(); break;
+    case 'install': runInstall(); break;
+  }
+});
+$('#addBtn').onclick = () => {
+  if (ui.tab === 'metrics' && ui.metric) return readingDialog(ui.metric);
+  if (ui.tab === 'meds' && ui.med) return doseDialog(ui.med);
+  ({ summary: () => pickMetricThen(mid => readingDialog(mid)), metrics: () => metricDialog(), meds: () => medDialog(), visits: () => visitDialog() }[ui.tab] || (() => {}))();
+};
+$('#backBtn').onclick = () => { ui.metric = null; ui.med = null; render(); window.scrollTo(0, 0); };
+$$('nav.tabs button').forEach(b => { b.onclick = () => go(b.dataset.tab); });
+document.addEventListener('visibilitychange', () => { if (!document.hidden && !$('dialog[open]')) render(); });
+
+(async function init() {
+  try { db = await openDB(DB_NAME); } catch (e) { console.error(e); db = null; }
+  if (db) {
+    try {
+      const raw = await idbGet(db, 'state');
+      if (raw) {
+        try { state = loadState(JSON.parse(raw)); }
+        catch (e) { console.error(e); await idbPut(db, 'state-damaged-' + Date.now(), raw); toast('Saved data looked damaged — a copy was kept aside.'); }
+      }
+    } catch (e) { console.error(e); db = null; }
+  }
+  render();
+})();
+</script>
+</body>
+</html>

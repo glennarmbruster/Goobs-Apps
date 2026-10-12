@@ -1,0 +1,1784 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Inventory</title>
+<meta name="description" content="Home inventory for insurance plus a storm and emergency checklist. Data stays on your device.">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#f7f5fb" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1311" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Inventory">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<style>
+:root{
+  --bg:#f5f4ef; --card:#ffffff; --ink:#1b2420; --muted:#66736d; --line:#e2e0d6; --soft:#efede5;
+  --accent:#0f766e; --accent-ink:#ffffff; --accent-soft:#d9f0ec;
+  --bad:#b42318; --bad-soft:#fde8e6; --warn:#9a5b00; --warn-soft:#fdf0d5; --ok:#166534; --ok-soft:#dcf5e3;
+  --radius:14px; --shadow:0 1px 2px rgba(16,24,20,.06),0 6px 18px rgba(16,24,20,.06);
+  color-scheme:light dark;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0e1311; --card:#171f1c; --ink:#e7eeeb; --muted:#97a69f; --line:#27332e; --soft:#1e2824;
+    --accent:#2dd4bf; --accent-ink:#06211d; --accent-soft:#12332e;
+    --bad:#ff8a80; --bad-soft:#3a1a18; --warn:#f6c26b; --warn-soft:#3a2c12; --ok:#7ee2a0; --ok-soft:#14301f;
+    --shadow:none;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation;
+  padding-bottom:calc(92px + env(safe-area-inset-bottom));
+}
+a{color:var(--accent)}
+h1,h2,h3{margin:0;line-height:1.2}
+h3{font-size:16px}
+p{margin:0 0 8px}
+.wrap{max-width:720px;margin:0 auto;padding:0 16px}
+.muted{color:var(--muted)} .bad{color:var(--bad)} .warn{color:var(--warn)} .ok{color:var(--ok)}
+.num{font-variant-numeric:tabular-nums}
+.hide{display:none!important}
+.pad{padding:14px 16px}
+.hint{font-size:13px;color:var(--muted);margin-top:4px}
+
+/* header */
+header.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top)}
+header.top .wrap{display:flex;align-items:center;gap:12px;min-height:58px}
+header.top .grow{flex:1;min-width:0}
+header.top h1{font-size:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+header.top .sub{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.back{display:inline-flex;align-items:center;min-height:44px;padding-right:6px;text-decoration:none;font-weight:600}
+
+/* cards, tiles, lists */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+.tile{padding:12px}
+.tile .lbl{font-size:12px;color:var(--muted);font-weight:600}
+.tile .val{font-size:20px;font-weight:700;margin-top:2px}
+.sec-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin:22px 4px 8px;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700}
+.sec-h .btn{text-transform:none;letter-spacing:0}
+.list{list-style:none;margin:0;padding:0}
+.row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-top:1px solid var(--line);cursor:pointer}
+.row:first-child{border-top:0}
+.row.static{cursor:default}
+.row-main{flex:1;min-width:0}
+.row-title{font-weight:600;overflow-wrap:anywhere}
+.row-sub{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.row-amt{font-weight:700;white-space:nowrap}
+.row.faded{opacity:.6}
+.badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 7px;border-radius:999px;background:var(--soft);color:var(--muted);vertical-align:middle;margin-left:6px}
+.badge.ok{background:var(--ok-soft);color:var(--ok)} .badge.warn{background:var(--warn-soft);color:var(--warn)} .badge.bad{background:var(--bad-soft);color:var(--bad)} .badge.acc{background:var(--accent-soft);color:var(--accent)}
+.empty{text-align:center;padding:40px 20px;color:var(--muted)}
+.empty .big{font-size:40px;line-height:1;margin-bottom:10px}
+.empty h2{color:var(--ink);font-size:18px;margin-bottom:6px}
+.empty .btn{margin-top:14px}
+.banner{padding:12px 14px;border-radius:12px;background:var(--warn-soft);color:var(--warn);font-size:14px;margin:14px 0;display:flex;gap:10px;justify-content:space-between;align-items:center}
+.banner.bad{background:var(--bad-soft);color:var(--bad)}
+.bar{height:8px;border-radius:99px;background:var(--soft);overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--accent);border-radius:99px}
+.bar.over>i{background:var(--bad)}
+
+/* buttons */
+.btn{white-space:nowrap;appearance:none;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-weight:600;min-height:44px;padding:0 16px;border-radius:12px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.danger{color:var(--bad)}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--accent)}
+.btn.small{min-height:36px;padding:0 12px;font-size:14px;border-radius:10px}
+.btn.block{width:100%}
+.btn:active{transform:translateY(1px)}
+.btn:disabled{opacity:.5;cursor:default}
+.btn:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible,.chip:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 14px;min-height:36px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+
+/* bottom nav + fab */
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+nav.tabs .wrap{display:flex;padding:0}
+nav.tabs a,nav.tabs button{flex:1;min-height:58px;border:0;background:none;color:var(--muted);font:inherit;font-size:11px;font-weight:600;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;text-decoration:none}
+nav.tabs .ico{font-size:20px;line-height:1}
+nav.tabs [aria-current="page"]{color:var(--accent)}
+.fab{position:fixed;right:max(16px,calc(50vw - 344px));bottom:calc(74px + env(safe-area-inset-bottom));z-index:7;width:56px;height:56px;border-radius:50%;border:0;background:var(--accent);color:var(--accent-ink);font-size:30px;line-height:1;box-shadow:0 6px 18px rgba(0,0,0,.28);cursor:pointer}
+.fab:active{transform:scale(.96)}
+
+/* forms + dialogs */
+input,select,textarea{width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-height:44px}
+textarea{min-height:92px;resize:vertical}
+input[type=checkbox]{width:22px;height:22px;min-height:0;padding:0;accent-color:var(--accent);flex:none}
+.field label{display:block;font-size:13px;font-weight:600;color:var(--muted);margin-bottom:4px}
+.field.check{display:flex;align-items:center;gap:10px}
+.field.check label{margin:0;color:var(--ink);font-size:16px;font-weight:500}
+.fields2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+dialog{border:0;border-radius:18px;padding:0;width:calc(100vw - 24px);max-width:520px;background:var(--card);color:var(--ink);box-shadow:0 20px 60px rgba(0,0,0,.35)}
+dialog::backdrop{background:rgba(10,15,12,.55)}
+.dlg-form{padding:20px;display:flex;flex-direction:column;gap:12px;max-height:85vh;max-height:85dvh;overflow:auto}
+.dlg-form h2{font-size:19px}
+.dlg-actions{display:flex;gap:8px;align-items:center;margin-top:6px;flex-wrap:wrap}
+.dlg-actions .spacer{flex:1}
+.ask-actions{justify-content:flex-end}
+.dlg-err{color:var(--bad);font-size:14px}
+.dlg-err:empty{display:none}
+.ask-body{font-size:15px;color:var(--ink)}
+.ask-body p{margin:0 0 8px}
+.checkgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px}
+.checkgrid .field.check label{font-size:15px}
+
+/* toast */
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom));background:#1b2420;color:#fff;padding:12px 16px;border-radius:12px;display:flex;gap:14px;align-items:center;z-index:60;max-width:calc(100vw - 24px);box-shadow:0 8px 24px rgba(0,0,0,.35);font-size:15px}
+.toast button{background:none;border:0;color:#7dd3c8;font:inherit;font-weight:700;cursor:pointer;min-height:36px}
+
+@media (prefers-reduced-motion:no-preference){.btn,.fab{transition:transform .08s}}
+
+.syncbadge{flex:none;white-space:nowrap;border:1px solid var(--line,#d5dbe0);background:var(--card,#fff);color:inherit;border-radius:999px;padding:4px 10px;font:inherit;font-size:.82rem;cursor:pointer;white-space:nowrap}
+.syncbadge.ok{color:#15803d}.syncbadge.bad{color:#b91c1c}
+.seg{display:flex;gap:8px;margin-top:6px}.seg .chip{flex:1;text-align:center}
+
+:root{--accent:#7c3aed;--accent-soft:#ece4fd;--bg:#f7f5fb}
+@media (prefers-color-scheme:dark){:root{--accent:#a78bfa;--accent-ink:#1a0b3d;--accent-soft:#2a1f4a;--bg:#0e1311}}
+.stack{display:flex;flex-direction:column;gap:14px;margin-top:14px}
+.row .btn{flex:none}
+.thumb{width:48px;height:48px;border-radius:10px;object-fit:cover;background:var(--soft);flex:none;display:flex;align-items:center;justify-content:center;font-size:22px}
+img.thumb{display:block}
+.filters{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:10px 0}
+.filters select{min-height:40px;padding:6px 6px;font-size:14px}
+.searchrow{display:flex;gap:8px;margin-top:14px}
+.searchrow input{flex:1}
+.chips{margin:2px 0 10px}
+.sumline{font-size:13px;color:var(--muted);margin:8px 4px}
+.row .sel{width:22px;height:22px;flex:none}
+.bulkbar{position:fixed;left:0;right:0;bottom:calc(58px + env(safe-area-inset-bottom));z-index:6;background:var(--card);border-top:1px solid var(--line);box-shadow:0 -4px 14px rgba(0,0,0,.12)}
+.bulkbar .wrap{display:flex;gap:8px;align-items:center;padding-top:8px;padding-bottom:8px}
+.bulkbar .grow{flex:1;font-weight:600;font-size:14px}
+.phstrip{display:flex;gap:10px;flex-wrap:wrap;margin:4px 0 8px}
+.ph{position:relative;width:76px;height:76px}
+.ph img{width:100%;height:100%;object-fit:cover;border-radius:10px;background:var(--soft);display:block;cursor:pointer}
+.ph .x{position:absolute;top:-8px;right:-8px;width:30px;height:30px;min-height:0;padding:0;border-radius:50%;border:0;background:rgba(0,0,0,.72);color:#fff;font-size:18px;line-height:1;cursor:pointer}
+.phbtns{display:flex;gap:8px;flex-wrap:wrap}
+.dlg-actions.stick{position:sticky;bottom:-20px;background:var(--card);padding:10px 0 4px;margin-bottom:-4px;border-top:1px solid var(--line);z-index:1}
+.viewer img{display:block;max-width:100%;max-height:60vh;margin:0 auto;border-radius:10px}
+.kitchk{display:flex;align-items:center;justify-content:center;width:44px;height:44px;margin:-8px -8px -8px -10px;flex:none;cursor:pointer}
+.kitrow .row-main{cursor:pointer}
+.kitrow.done .row-title{text-decoration:line-through;color:var(--muted)}
+.phasehead{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer}
+.phasehead h3{flex:1}
+.phasehead .cnt{font-size:13px;color:var(--muted);font-weight:600}
+.phasebar{padding:0 14px 10px}
+.phasebtns{display:flex;gap:8px;padding:10px 14px;border-top:1px solid var(--line);flex-wrap:wrap}
+.kv{display:grid;grid-template-columns:minmax(0,40%) minmax(0,1fr);gap:6px 12px;font-size:14px;padding:12px 14px}
+.kv dt{color:var(--muted);font-weight:600}
+.kv dd{margin:0;overflow-wrap:anywhere;white-space:pre-wrap}
+table.rep{width:100%;border-collapse:collapse;font-size:14px}
+table.rep td,table.rep th{padding:8px 14px;text-align:left;border-top:1px solid var(--line)}
+table.rep th{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;border-top:0}
+table.rep td.n,table.rep th.n{text-align:right;font-variant-numeric:tabular-nums}
+.minibar{display:block;height:5px;border-radius:99px;background:var(--accent);margin-top:4px;opacity:.8}
+.walkhead{text-align:center;margin:16px 0 6px}
+.walkhead h2{font-size:24px}
+.walknav{display:flex;gap:10px;margin:16px 0}
+.walknav .btn{flex:1}
+.dots{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin:8px 0}
+.dots i{width:8px;height:8px;border-radius:50%;background:var(--line)}
+.dots i.on{background:var(--accent)}
+.dots i.cur{background:var(--accent);transform:scale(1.5)}
+.previewbox{max-height:200px;overflow:auto;font-size:13px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+.previewbox table{width:100%;border-collapse:collapse}
+.previewbox td,.previewbox th{padding:2px 6px;text-align:left;white-space:nowrap}
+.progress{height:6px}
+#printArea{display:none}
+.sugchips{margin:8px 0}
+@media print{
+  header.top,nav.tabs,#view,.toast,dialog,.bulkbar{display:none!important}
+  html,body{background:#fff!important;color:#000!important;padding:0!important}
+  #printArea{display:block!important}
+}
+#printArea,.pa{color:#111;background:#fff;font:11pt/1.35 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.pa h1{font-size:20pt;margin:0 0 4px}
+.pa .meta{color:#444;font-size:10pt;margin-bottom:14px}
+.pa h2{font-size:14pt;margin:18px 0 6px;padding-bottom:3px;border-bottom:2px solid #333;display:flex;justify-content:space-between;gap:12px;break-after:avoid}
+.pa table{width:100%;table-layout:fixed;border-collapse:collapse;font-size:9.5pt}
+.pa th{text-align:left;font-size:8.5pt;text-transform:uppercase;color:#444;border-bottom:1px solid #999;padding:3px 4px}
+.pa td{padding:4px;border-bottom:1px solid #ddd;vertical-align:top}
+.pa tr{break-inside:avoid}
+.pa thead{display:table-header-group}
+.pa .n{text-align:right;white-space:nowrap}
+.pa img{width:56px;height:56px;object-fit:cover;border-radius:4px;display:block}
+.pa .sub{color:#555;font-size:8.5pt}
+.pa .grand{margin-top:18px;font-size:12pt;font-weight:700;text-align:right;border-top:2px solid #333;padding-top:6px}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap"><div class="grow"><h1 id="title">Inventory</h1><div class="sub" id="sub"></div></div><button type="button" class="btn small primary hide" id="addBtn">+ Add</button></div></header>
+<main class="wrap" id="view"></main>
+<div id="printArea" aria-hidden="true"></div>
+<nav class="tabs" aria-label="Sections"><div class="wrap">
+  <button type="button" data-tab="items"><span class="ico">📦</span>Items</button>
+  <button type="button" data-tab="rooms"><span class="ico">🚪</span>Rooms</button>
+  <button type="button" data-tab="kit"><span class="ico">🌀</span>Storm kit</button>
+  <button type="button" data-tab="report"><span class="ico">📋</span>Report</button>
+  <button type="button" data-tab="backup"><span class="ico">💾</span>Backup</button>
+</div></nav>
+<script>
+'use strict';
+/* ===================== shared helpers (identical in every Goobs app) ===================== */
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => Array.from(el.querySelectorAll(s));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const isNum = v => typeof v === 'number' && Number.isFinite(v);
+const str = v => (typeof v === 'string' ? v : v == null ? '' : String(v));
+
+/* ---- dates: always local calendar dates stored as 'YYYY-MM-DD' ---- */
+const pad = n => String(n).padStart(2, '0');
+const fmtISO = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const parseISO = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+const isISO = s => typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s) && fmtISO(parseISO(s)) === s;
+const todayISO = () => fmtISO(new Date());
+const daysBetween = (a, b) => Math.round((parseISO(b) - parseISO(a)) / 86400000);
+const addDays = (s, n) => { const d = parseISO(s); d.setDate(d.getDate() + n); return fmtISO(d); };
+function addMonths(s, n, anchorDay) {
+  const d = parseISO(s);
+  const day = anchorDay || d.getDate();
+  const first = new Date(d.getFullYear(), d.getMonth() + n, 1);
+  const last = new Date(first.getFullYear(), first.getMonth() + 1, 0).getDate();
+  first.setDate(Math.min(day, last));
+  return fmtISO(first);
+}
+const monthEndISO = s => { const d = parseISO(s); return fmtISO(new Date(d.getFullYear(), d.getMonth() + 1, 0)); };
+
+function fmtDate(s, withWeekday = true) {
+  const d = parseISO(s);
+  const o = { month: 'short', day: 'numeric' };
+  if (withWeekday) o.weekday = 'short';
+  if (d.getFullYear() !== new Date().getFullYear()) o.year = 'numeric';
+  return d.toLocaleDateString(undefined, o);
+}
+function fmtDateTime(iso) {
+  const d = new Date(iso);
+  return isNaN(d) ? 'unknown date' : d.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+}
+const _mf = {};
+function money(n, cur = 'USD') {
+  if (!_mf[cur]) {
+    try { _mf[cur] = new Intl.NumberFormat(undefined, { style: 'currency', currency: cur }); }
+    catch { _mf[cur] = new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }); }
+  }
+  return _mf[cur].format(n);
+}
+const csvCell = v => {
+  let s = String(v ?? '');
+  if (/^[=+\-@\t\r]/.test(s)) s = "'" + s; // neutralise spreadsheet formula injection
+  return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+};
+function safeUrl(u) {
+  let s = String(u ?? '').trim();
+  if (!s) return '';
+  if (!/^[a-z][a-z0-9+.-]*:/i.test(s)) s = 'https://' + s;
+  try { const x = new URL(s); return /^https?:$/.test(x.protocol) ? x.href : ''; } catch { return ''; }
+}
+
+/* ---- storage: one JSON string under one key in IndexedDB ---- */
+function openDB(name) {
+  return new Promise((res, rej) => {
+    if (!window.indexedDB) return rej(new Error('IndexedDB unavailable'));
+    const r = indexedDB.open(name, 1);
+    r.onupgradeneeded = () => { r.result.createObjectStore('kv'); };
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+    r.onblocked = () => rej(new Error('Database blocked'));
+  });
+}
+function idbGet(db, key) {
+  return new Promise((res, rej) => {
+    const q = db.transaction('kv').objectStore('kv').get(key);
+    q.onsuccess = () => res(q.result);
+    q.onerror = () => rej(q.error);
+  });
+}
+function idbPut(db, key, val) {
+  return new Promise((res, rej) => {
+    const tx = db.transaction('kv', 'readwrite');
+    tx.objectStore('kv').put(val, key);
+    tx.oncomplete = () => res();
+    tx.onerror = () => rej(tx.error);
+    tx.onabort = () => rej(tx.error || new Error('Write aborted'));
+  });
+}
+
+/* ---- toast ---- */
+function toast(msg, action) {
+  const old = $('.toast'); if (old) old.remove();
+  const t = document.createElement('div');
+  t.className = 'toast'; t.setAttribute('role', 'status');
+  t.innerHTML = `<span>${esc(msg)}</span>` + (action ? `<button type="button">${esc(action.label)}</button>` : '');
+  if (action) t.querySelector('button').onclick = () => { t.remove(); action.fn(); };
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), action ? 8000 : 3200);
+}
+
+/* ---- dialogs ---- */
+if (!$('#dlg')) document.body.insertAdjacentHTML('beforeend', '<dialog id="dlg"></dialog><dialog id="ask"></dialog>');
+{
+  const dlg = $('#dlg'); let down = false;
+  dlg.addEventListener('pointerdown', e => { down = e.target === dlg; });
+  dlg.addEventListener('click', e => { if (e.target === dlg && down) dlg.close(); });
+}
+
+function fieldHTML(f) {
+  const id = 'f_' + f.name, v = f.value ?? '';
+  if (f.type === 'checkbox')
+    return `<div class="field check"><input type="checkbox" id="${id}" name="${f.name}"${f.value ? ' checked' : ''}><label for="${id}">${esc(f.label)}</label></div>`;
+  let ctl;
+  if (f.type === 'select') {
+    ctl = `<select id="${id}" name="${f.name}">${f.options.map(o => {
+      const [val, label] = Array.isArray(o) ? o : [o, o];
+      return `<option value="${esc(val)}"${String(val) === String(v) ? ' selected' : ''}>${esc(label)}</option>`;
+    }).join('')}</select>`;
+  } else if (f.type === 'textarea') {
+    ctl = `<textarea id="${id}" name="${f.name}" placeholder="${esc(f.placeholder || '')}">${esc(v)}</textarea>`;
+  } else {
+    const t = f.type || 'text';
+    const extra = t === 'number' ? ` inputmode="decimal" step="${f.step || 'any'}"` : '';
+    ctl = `<input id="${id}" name="${f.name}" type="${t}" value="${esc(v)}" placeholder="${esc(f.placeholder || '')}"${extra}${f.min != null ? ` min="${f.min}"` : ''}${f.max != null ? ` max="${f.max}"` : ''} autocomplete="${f.autocomplete || 'off'}" autocapitalize="${f.capitalize || (t === 'email' || t === 'password' ? 'none' : 'sentences')}">`;
+  }
+  return `<div class="field"><label for="${id}">${esc(f.label)}${f.required ? ' *' : ''}</label>${ctl}${f.hint ? `<div class="hint">${esc(f.hint)}</div>` : ''}</div>`;
+}
+
+/* formDialog: fields -> values. onSubmit(values) may return an error string (keeps dialog open).
+   onDelete() may return true to close. extra: [{label, kind, onClick}] extra buttons. */
+function formDialog({ title, intro = '', fields, submitLabel = 'Save', onSubmit, onDelete, deleteLabel = 'Delete', extra = [], onClose, grid = '' }) {
+  const dlg = $('#dlg');
+  const body = grid ? `<div class="${grid}">${fields.map(fieldHTML).join('')}</div>` : fields.map(fieldHTML).join('');
+  dlg.innerHTML = `<form class="dlg-form" novalidate>
+    <h2>${esc(title)}</h2>${intro ? `<p class="muted">${esc(intro)}</p>` : ''}${body}
+    <div class="dlg-err" role="alert"></div>
+    <div class="dlg-actions">
+      ${onDelete ? `<button type="button" class="btn danger" data-k="del">${esc(deleteLabel)}</button>` : ''}
+      ${extra.map((x, i) => `<button type="button" class="btn ${x.kind || ''}" data-x="${i}">${esc(x.label)}</button>`).join('')}
+      <span class="spacer"></span>
+      <button type="button" class="btn ghost" data-k="cancel">Cancel</button>
+      <button type="submit" class="btn primary">${esc(submitLabel)}</button>
+    </div></form>`;
+  const form = $('form', dlg), err = $('.dlg-err', dlg);
+  const collect = () => {
+    const vals = {};
+    for (const f of fields) { const el = form.elements[f.name]; vals[f.name] = f.type === 'checkbox' ? el.checked : el.value; }
+    return vals;
+  };
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const vals = collect();
+    for (const f of fields) if (f.required && !String(vals[f.name]).trim()) { err.textContent = `${f.label} is required.`; return; }
+    err.textContent = '';
+    let msg;
+    try { msg = await onSubmit(vals); } catch (ex) { msg = ex.message || 'Something went wrong.'; }
+    if (msg) err.textContent = msg; else dlg.close();
+  });
+  $('[data-k="cancel"]', dlg).onclick = () => dlg.close();
+  if (onDelete) $('[data-k="del"]', dlg).onclick = async () => { if (await onDelete()) dlg.close(); };
+  $$('[data-x]', dlg).forEach(b => { b.onclick = () => extra[+b.dataset.x].onClick(collect()); });
+  dlg.onclose = () => { dlg.onclose = null; if (onClose) onClose(); };
+  dlg.showModal();
+  const first = form.querySelector('input:not([type=checkbox]),textarea');
+  if (first && !first.value) first.focus(); // new-item forms open ready to type; edit forms don't pop the keyboard
+}
+
+function askDialog({ title, body = '', buttons }) {
+  return new Promise(resolve => {
+    const d = $('#ask'); let done = false;
+    d.innerHTML = `<div class="dlg-form"><h2>${esc(title)}</h2>${body ? `<div class="ask-body">${body}</div>` : ''}
+      <div class="dlg-actions ask-actions">${buttons.map((b, i) => `<button type="button" class="btn ${b.kind || ''}" data-i="${i}">${esc(b.label)}</button>`).join('')}</div></div>`;
+    const finish = v => { if (done) return; done = true; d.close(); resolve(v); };
+    $$('button', d).forEach(btn => { btn.onclick = () => finish(buttons[+btn.dataset.i].value); });
+    d.oncancel = () => { done = true; resolve(undefined); };
+    d.showModal();
+  });
+}
+const confirmBox = async (title, bodyText, okLabel = 'Delete', danger = true) =>
+  (await askDialog({ title, body: bodyText ? `<p>${esc(bodyText)}</p>` : '', buttons: [{ label: 'Cancel', value: false }, { label: okLabel, value: true, kind: danger ? 'danger' : 'primary' }] })) === true;
+const msgBox = (title, bodyText) =>
+  askDialog({ title, body: `<p>${esc(bodyText)}</p>`, buttons: [{ label: 'OK', value: true, kind: 'primary' }] });
+
+/* ---- backup: optional AES-GCM passphrase encryption (Web Crypto, PBKDF2-SHA256) ---- */
+const b64 = buf => { let s = ''; const b = new Uint8Array(buf); for (let i = 0; i < b.length; i += 0x8000) s += String.fromCharCode.apply(null, b.subarray(i, i + 0x8000)); return btoa(s); };
+const unb64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+async function deriveKey(pass, salt, iterations) {
+  const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(pass), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey({ name: 'PBKDF2', salt, iterations, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+}
+async function encryptPayload(obj, pass) {
+  const salt = crypto.getRandomValues(new Uint8Array(16)), iv = crypto.getRandomValues(new Uint8Array(12));
+  const iterations = 250000;
+  const key = await deriveKey(pass, salt, iterations);
+  const ct = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, new TextEncoder().encode(JSON.stringify(obj)));
+  return { encrypted: true, kdf: 'PBKDF2-SHA256', iterations, salt: b64(salt), iv: b64(iv), data: b64(ct) };
+}
+async function decryptPayload(env, pass) {
+  const key = await deriveKey(pass, unb64(env.salt), env.iterations);
+  try {
+    const pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: unb64(env.iv) }, key, unb64(env.data));
+    return JSON.parse(new TextDecoder().decode(pt));
+  } catch { throw new Error('Wrong passphrase, or the file is damaged.'); }
+}
+function promptDecrypt(env) {
+  return new Promise(resolve => {
+    let result = null;
+    formDialog({
+      title: 'Encrypted backup', intro: 'Enter the passphrase you chose when you made this backup.',
+      fields: [{ name: 'pass', label: 'Passphrase', type: 'password', required: true }], submitLabel: 'Unlock',
+      onSubmit: async v => { try { result = await decryptPayload(env, v.pass); } catch (e) { return e.message; } },
+      onClose: () => resolve(result)
+    });
+  });
+}
+const Backup = {
+  async build({ appId, schema, data, passphrase }) {
+    const head = { app: appId, schemaVersion: schema, exportedAt: new Date().toISOString() };
+    if (passphrase) return JSON.stringify({ ...head, ...(await encryptPayload(data, passphrase)) });
+    return JSON.stringify({ ...head, encrypted: false, data }, null, 2);
+  },
+  /* returns {data, exportedAt, schemaVersion}, or null if the user cancelled the passphrase prompt; throws Error with a friendly message */
+  async parse(text, { appId, schema }) {
+    let env;
+    try { env = JSON.parse(text); } catch { throw new Error('That file isn’t a valid backup (it isn’t JSON).'); }
+    if (!env || typeof env !== 'object' || env.app !== appId)
+      throw new Error(env && typeof env === 'object' && env.app ? `That backup belongs to a different app (${String(env.app).slice(0, 40)}).` : 'That file isn’t a backup from this app.');
+    if (!Number.isInteger(env.schemaVersion) || env.schemaVersion < 1) throw new Error('The backup is missing its version number.');
+    if (env.schemaVersion > schema) throw new Error('That backup was made by a newer version of the app. Close and reopen this app to update it, then try again.');
+    let data;
+    if (env.encrypted) {
+      if (!(window.crypto && crypto.subtle)) throw new Error('Encrypted backups need a secure (https) connection.');
+      if (!(env.iterations >= 1000 && env.iterations <= 2000000) || typeof env.salt !== 'string' || typeof env.iv !== 'string' || typeof env.data !== 'string')
+        throw new Error('The encrypted backup is damaged.');
+      data = await promptDecrypt(env);
+      if (data === null) return null;
+    } else data = env.data;
+    if (!data || typeof data !== 'object') throw new Error('The backup contains no data.');
+    return { data, exportedAt: typeof env.exportedAt === 'string' ? env.exportedAt : null, schemaVersion: env.schemaVersion };
+  }
+};
+
+/* share sheet when the platform supports sharing files (iPhone), otherwise a normal download */
+async function deliverFile(filename, text, mime = 'application/json') {
+  const file = new File([text], filename, { type: mime });
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try { await navigator.share({ files: [file], title: filename }); return 'shared'; }
+    catch (e) { if (e && e.name === 'AbortError') return 'cancelled'; /* otherwise fall back to a download */ }
+  }
+  const url = URL.createObjectURL(file);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.style.display = 'none';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 15000);
+  return 'downloaded';
+}
+function pickFile(accept = '.json,application/json') {
+  return new Promise(resolve => {
+    const i = document.createElement('input');
+    i.type = 'file'; i.accept = accept; i.style.display = 'none';
+    document.body.appendChild(i);
+    let done = false;
+    const fin = f => { if (done) return; done = true; i.remove(); resolve(f); };
+    i.addEventListener('change', () => fin((i.files && i.files[0]) || null));
+    i.addEventListener('cancel', () => fin(null));
+    i.click();
+  });
+}
+const readFileText = f => (f.text ? f.text() : new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = () => rej(r.error); r.readAsText(f); }));
+
+/* nag banner: only when there is data and no recent backup */
+function backupNag(meta, hasData) {
+  if (!hasData) return null;
+  if (!meta.lastBackup) return 'You have data but no backup yet. Make one so you can restore it if this device loses it.';
+  const age = (Date.now() - Date.parse(meta.lastBackup)) / 86400000;
+  const changed = meta.lastChange && Date.parse(meta.lastChange) > Date.parse(meta.lastBackup) + 1000;
+  if (changed && age >= 7) return `Your last backup was ${Math.floor(age)} days ago and you’ve made changes since.`;
+  return null;
+}
+
+/* ---- install helper ---- */
+let deferredInstall = null;
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferredInstall = e; if (typeof render === 'function') render(); });
+const isStandalone = () => (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+function installCardHTML() {
+  if (isStandalone()) return '';
+  const ios = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const msg = deferredInstall
+    ? '<p>Install it for its own window and full offline use.</p><button class="btn primary" data-action="install">Install app</button>'
+    : ios
+      ? '<p>In Safari tap <b>Share</b> → <b>Add to Home Screen</b>. <b>Do this before entering data</b> — the home-screen app keeps its own separate storage from the Safari tab. Then open it from the new icon.</p>'
+      : '<p>Use your browser’s menu → <b>Install app</b> (or <b>Add to Home Screen</b>).</p>';
+  return `<section class="card pad"><h3>Install on this device</h3>${msg}</section>`;
+}
+async function runInstall() { if (!deferredInstall) return; deferredInstall.prompt(); try { await deferredInstall.userChoice; } catch {} deferredInstall = null; if (typeof render === 'function') render(); }
+
+
+
+if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol))
+  window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
+
+
+/* ===================== Inventory app ===================== */
+const APP_ID = 'goobs-inventory', DB_NAME = 'goobs-inventory-db', PHOTO_DB = 'goobs-inventory-photos', SCHEMA = 1;
+const MAX_ITEMS = 2000, MAX_ROOMS = 100, MAX_KIT = 500, MAX_PHOTOS = 4, MAX_TAGS = 12, MAX_QTY = 9999;
+const PHOTO_EDGE = 1280, THUMB_EDGE = 240, PHOTO_WARN = 15e6, PHOTO_HARD = 100e6, PHOTO_TOTAL_WARN = 250e6, MAX_ORIGINAL = 6e6;
+const CATEGORIES = ['Electronics', 'Appliances', 'Furniture', 'Tools & outdoor', 'Vehicles & toys', 'Jewelry', 'Clothing', 'Documents', 'Other'];
+const CAT_ICON = { 'Electronics': '📺', 'Appliances': '🧺', 'Furniture': '🛋️', 'Tools & outdoor': '🛠️', 'Vehicles & toys': '🚲', 'Jewelry': '💍', 'Clothing': '👕', 'Documents': '📄', 'Other': '📦' };
+const SERIAL_CATS = ['Electronics', 'Appliances', 'Tools & outdoor', 'Vehicles & toys'];
+const SUGGEST_ROOMS = ['Living room', 'Kitchen', 'Dining room', 'Primary bedroom', 'Bedroom 2', 'Bedroom 3', 'Bathroom', 'Office', 'Laundry room', 'Garage', 'Attic', 'Patio', 'Backyard', 'Pool equipment'];
+const PHASES = [['before', 'Before the storm', '🌀'], ['power', 'Generator & power', '🔌'], ['supplies', 'Water & food', '💧'], ['docs', 'Documents & cash', '📄'], ['leave', 'Leaving (evacuation)', '🚗'], ['after', 'After the storm', '🧰']];
+const PHASE_IDS = PHASES.map(p => p[0]);
+const PHASE_NAME = Object.fromEntries(PHASES.map(p => [p[0], p[1]]));
+const CONTACT_FIELDS = [
+  ['insurer', 'Homeowners insurance company', 'text'], ['policy', 'Policy number', 'text'], ['agent', 'Agent name', 'text'],
+  ['agentPhone', 'Agent phone', 'tel'], ['claimsPhone', 'Claims phone', 'tel'], ['flood', 'Flood insurance (company and policy)', 'text'],
+  ['power', 'Electric utility phone', 'tel'], ['gas', 'Gas utility phone', 'tel'], ['water', 'Water utility phone', 'tel'], ['internet', 'Internet / Starlink support', 'tel'],
+  ['vet', 'Vet / pet boarding', 'text'], ['outOfArea', 'Out-of-area contact (name and phone)', 'text'],
+  ['route', 'Evacuation route notes', 'textarea'], ['meeting', 'Family meeting point', 'text'], ['other', 'Other key info', 'textarea']
+];
+
+/* ---- starter storm checklist: [phase, text, qty, note] ---- */
+const STARTER = [
+  ['before', 'Check the forecast and local alerts; sign up for county emergency alerts', '', ''],
+  ['before', 'Decide early: stay or evacuate (know your zone and any mandatory orders)', '', ''],
+  ['before', 'Charge phones, laptops, power banks and the Starlink/backup battery', '', ''],
+  ['before', 'Charge EVs to 100% and keep the charge cables with the cars', '', ''],
+  ['before', 'Fill vehicle gas tanks', '', 'Stations run dry 24-48 hours before landfall'],
+  ['before', 'Refill prescriptions (14-day supply minimum)', '', ''],
+  ['before', 'Photograph and video the house inside and out (see Items tab)', '', ''],
+  ['before', 'Bring in or tie down patio furniture, grill, decor, trash cans', '', ''],
+  ['before', 'Pool: shock the water, turn pool equipment off at the breaker, secure or store loose items', '', 'Do not drain the pool'],
+  ['before', 'Close shutters or board windows; check garage door', '', ''],
+  ['before', 'Clear gutters and storm drains near the house', '', ''],
+  ['before', 'Set fridge and freezer to coldest; freeze water bottles and ice packs', '', ''],
+  ['before', 'Fill bathtubs or buckets with water for flushing', '', ''],
+  ['before', 'Park cars in the garage or away from trees and flood-prone spots', '', ''],
+  ['power', 'Whole-home generator: confirm it starts and carries the load (test run)', '', ''],
+  ['power', 'Generator fuel supply confirmed (gas line is on, or propane tank level)', '', 'Note the level here'],
+  ['power', 'Generator: oil level checked, spare oil and filter on hand', '', ''],
+  ['power', 'Breaker panel / transfer switch labeled and accessible', '', ''],
+  ['power', 'Flashlights and headlamps', '4', ''],
+  ['power', 'AA / AAA batteries', '24', 'Add an expiry date'],
+  ['power', 'Lanterns (LED, battery)', '2', ''],
+  ['power', 'Power banks charged', '3', ''],
+  ['power', 'Backup internet (Starlink / cellular hotspot) tested and a way to power it', '', ''],
+  ['power', 'NOAA weather radio (battery or hand crank)', '', ''],
+  ['power', 'Carbon monoxide alarms have fresh batteries', '', ''],
+  ['power', 'Outdoor-rated extension cords', '', ''],
+  ['power', 'Fire extinguisher checked', '', ''],
+  ['supplies', 'Drinking water, 1 gallon per person per day for 7 days', '', 'Add an expiry date'],
+  ['supplies', 'Water for the cats', '', ''],
+  ['supplies', 'Water purification tablets or filter', '', ''],
+  ['supplies', 'Non-perishable food for 7 days', '', 'Add an expiry date'],
+  ['supplies', 'Manual can opener', '', ''],
+  ['supplies', 'Cat food, 7+ days', '', 'Add an expiry date'],
+  ['supplies', 'Cat litter and disposable pans', '', ''],
+  ['supplies', 'Cooler and ice', '', ''],
+  ['supplies', 'Paper plates, cups, utensils, trash bags', '', ''],
+  ['supplies', 'Prescription medications, 14-day supply', '', 'Add an expiry date'],
+  ['supplies', 'First-aid kit', '', 'Add an expiry date'],
+  ['supplies', 'Over-the-counter meds (pain, allergy, stomach)', '', 'Add an expiry date'],
+  ['supplies', 'Insect repellent and sunscreen', '', ''],
+  ['supplies', 'Toilet paper, wipes, hygiene supplies', '', ''],
+  ['supplies', 'Propane / fuel for grill or camp stove, lighters', '', ''],
+  ['docs', 'IDs, passports, birth certificates, Social Security cards (waterproof bag or copies)', '', ''],
+  ['docs', 'Insurance policies: homeowners, flood, wind, auto (see Emergency info below)', '', ''],
+  ['docs', 'Fresh backup of this app saved off this device (OneDrive / Files)', '', 'Back up on the Backup tab'],
+  ['docs', 'Deed, mortgage, vehicle titles and registrations', '', ''],
+  ['docs', 'Medical info, prescription list, cat vaccination records', '', ''],
+  ['docs', 'Cash in small bills', '', 'Note the amount'],
+  ['docs', 'Spare keys (house, cars)', '', ''],
+  ['docs', 'Paper list of key phone numbers', '', ''],
+  ['leave', 'Know the evacuation route and a backup route; check EV charging and fuel stops', '', ''],
+  ['leave', 'Cat carriers out and ready, one per cat', '', ''],
+  ['leave', 'Pack the go-bag: clothes for 3-7 days, toiletries, chargers', '', ''],
+  ['leave', 'Load medications, documents bag, cash, laptops, hard drives', '', ''],
+  ['leave', 'Cat supplies: food, litter, vet records, medications', '', ''],
+  ['leave', 'Pet-friendly lodging or a place to stay is lined up', '', ''],
+  ['leave', 'Turn off the main water valve; shut off breakers or gas only if the utility tells you to', '', 'The generator may need gas'],
+  ['leave', 'Lock up; unplug small appliances and electronics', '', ''],
+  ['leave', 'Tell your out-of-area contact where you are going', '', ''],
+  ['after', 'Wait for the official all-clear; stay 35 feet or more from downed power lines', '', ''],
+  ['after', 'Photograph all damage before cleaning up or moving anything', '', ''],
+  ['after', 'Call the insurance company to open a claim (numbers are in Emergency info)', '', ''],
+  ['after', 'Check for gas smell, water line breaks and roof / window / attic leaks', '', ''],
+  ['after', 'Check the boil-water notice before drinking tap water', '', ''],
+  ['after', 'Toss refrigerated food that was above 40 F for 2+ hours', '', ''],
+  ['after', 'Pool: do not run equipment until electrical is dry and safe; test and shock the water, remove debris', '', ''],
+  ['after', 'Charge EVs when power is back; do not charge a flooded vehicle', '', ''],
+  ['after', 'Keep receipts for repairs, hotel and food', '', ''],
+  ['after', 'Dry out wet areas within 24-48 hours to prevent mold', '', ''],
+  ['after', 'Check on neighbors', '', ''],
+  ['after', 'Mark damaged or lost items in the inventory', '', ''],
+  ['after', 'Restock what you used; reset the checks for next time', '', '']
+];
+
+/* ---- normalizing ---- */
+const arr = v => (Array.isArray(v) ? v : []);
+const clampStr = (v, n) => str(v).trim().slice(0, n);
+const round2 = n => Math.round(n * 100) / 100;
+const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
+const fmtBytes = n => (n < 1024 ? n + ' B' : n < 1048576 ? (n / 1024).toFixed(0) + ' KB' : (n / 1048576).toFixed(1) + ' MB');
+const yieldUI = () => new Promise(r => setTimeout(r, 0));
+function numOrNull(v) {
+  if (v === '' || v == null || (typeof v !== 'number' && typeof v !== 'string')) return null;
+  const n = typeof v === 'number' ? v : Number(String(v).replace(/[$,\s]/g, ''));
+  return Number.isFinite(n) && n >= 0 && n < 1e9 ? round2(n) : null;
+}
+const normQty = v => { const n = Math.floor(Number(v)); return Number.isFinite(n) && n >= 1 ? Math.min(n, MAX_QTY) : 1; };
+const normId = v => clampStr(v, 64);
+function normTags(v) {
+  const src = Array.isArray(v) ? v : typeof v === 'string' ? v.split(/[,;]/) : [];
+  const out = [], seen = new Set();
+  for (const t of src) { const s = clampStr(t, 30); if (s && !seen.has(s.toLowerCase())) { seen.add(s.toLowerCase()); out.push(s); } if (out.length >= MAX_TAGS) break; }
+  return out;
+}
+function normPhotoRefs(v) {
+  const out = [], seen = new Set();
+  for (const p of arr(v)) {
+    const id = normId(p && typeof p === 'object' ? p.id : p);
+    if (!id || seen.has(id)) continue;
+    seen.add(id);
+    out.push({ id, size: p && isNum(p.size) && p.size >= 0 ? Math.floor(p.size) : 0 });
+    if (out.length >= MAX_PHOTOS) break;
+  }
+  return out;
+}
+function normRoom(r) {
+  if (!r || typeof r !== 'object') return null;
+  const name = clampStr(r.name, 60);
+  if (!name) return null;
+  return { id: normId(r.id) || uid(), name, createdAt: isNum(r.createdAt) ? r.createdAt : Date.now() };
+}
+function normItem(x) {
+  if (!x || typeof x !== 'object') return null;
+  const name = clampStr(x.name, 120);
+  if (!name) return null;
+  return {
+    id: normId(x.id) || uid(), name, roomId: normId(x.roomId), category: CATEGORIES.includes(x.category) ? x.category : 'Other',
+    qty: normQty(x.qty), make: clampStr(x.make, 80), model: clampStr(x.model, 80), serial: clampStr(x.serial, 80),
+    purchaseDate: isISO(x.purchaseDate) ? x.purchaseDate : '', price: numOrNull(x.price), value: numOrNull(x.value),
+    store: clampStr(x.store, 200), notes: str(x.notes).trim().slice(0, 2000), tags: normTags(x.tags), photos: normPhotoRefs(x.photos),
+    createdAt: isNum(x.createdAt) ? x.createdAt : Date.now(), updatedAt: isNum(x.updatedAt) ? x.updatedAt : (isNum(x.createdAt) ? x.createdAt : Date.now())
+  };
+}
+function normKitItem(k) {
+  if (!k || typeof k !== 'object') return null;
+  const text = clampStr(k.text, 240);
+  if (!text) return null;
+  return { id: normId(k.id) || uid(), phase: PHASE_IDS.includes(k.phase) ? k.phase : 'before', text, qty: clampStr(k.qty, 24), expiry: isISO(k.expiry) ? k.expiry : '', note: clampStr(k.note, 500), done: k.done === true };
+}
+const emptyContacts = () => Object.fromEntries(CONTACT_FIELDS.map(f => [f[0], '']));
+function normContacts(c) {
+  const out = emptyContacts();
+  if (c && typeof c === 'object') for (const [k, , t] of CONTACT_FIELDS) out[k] = str(c[k]).trim().slice(0, t === 'textarea' ? 1500 : 300);
+  return out;
+}
+function normalizeData(raw) {
+  raw = raw && typeof raw === 'object' ? raw : {};
+  let dropped = 0;
+  const rooms = [], rid = new Set(), rname = new Map();
+  const roomMap = new Map(); // dropped duplicate room id -> surviving id
+  for (const r of arr(raw.rooms)) {
+    const n = normRoom(r);
+    if (!n || rid.has(n.id) || rooms.length >= MAX_ROOMS) { dropped++; continue; }
+    const key = n.name.toLowerCase();
+    if (rname.has(key)) { roomMap.set(n.id, rname.get(key)); dropped++; continue; }
+    rid.add(n.id); rname.set(key, n.id); rooms.push(n);
+  }
+  const items = [], iid = new Set();
+  for (const x of arr(raw.items)) {
+    const n = normItem(x);
+    if (!n || iid.has(n.id) || items.length >= MAX_ITEMS) { dropped++; continue; }
+    if (roomMap.has(n.roomId)) n.roomId = roomMap.get(n.roomId);
+    if (n.roomId && !rid.has(n.roomId)) n.roomId = '';
+    iid.add(n.id); items.push(n);
+  }
+  const kitRaw = raw.kit && typeof raw.kit === 'object' ? raw.kit : {};
+  const kitItems = [], kid = new Set();
+  for (const k of arr(kitRaw.items)) {
+    const n = normKitItem(k);
+    if (!n || kid.has(n.id) || kitItems.length >= MAX_KIT) { dropped++; continue; }
+    kid.add(n.id); kitItems.push(n);
+  }
+  return { data: { rooms, items, kit: { lastReviewed: isISO(kitRaw.lastReviewed) ? kitRaw.lastReviewed : null, items: kitItems }, contacts: normContacts(raw.contacts) }, dropped };
+}
+function normPhotoMap(raw) {
+  const out = new Map();
+  if (!raw || typeof raw !== 'object') return out;
+  for (const id of Object.keys(raw).slice(0, MAX_ITEMS * MAX_PHOTOS)) {
+    const p = raw[id];
+    if (!p || typeof p.d !== 'string' || !/^data:image\/[a-z0-9.+-]+;base64,/i.test(p.d.slice(0, 60))) continue;
+    const t = typeof p.t === 'string' && p.t.startsWith('data:image/') ? p.t : null;
+    out.set(normId(id), { data: p.d, thumb: t });
+  }
+  return out;
+}
+const defaultState = () => ({ schemaVersion: SCHEMA, meta: { lastBackup: null, lastChange: null }, settings: { lastRoom: '', thumbs: true }, rooms: [], items: [], kit: { lastReviewed: null, items: [] }, contacts: emptyContacts() });
+function loadState(parsed) {
+  const { data } = normalizeData(parsed);
+  const s = parsed && parsed.settings && typeof parsed.settings === 'object' ? parsed.settings : {};
+  const m = parsed && parsed.meta;
+  return {
+    schemaVersion: SCHEMA, meta: { lastBackup: str(m && m.lastBackup) || null, lastChange: str(m && m.lastChange) || null },
+    settings: { lastRoom: data.rooms.some(r => r.id === s.lastRoom) ? s.lastRoom : '', thumbs: s.thumbs !== false },
+    rooms: data.rooms, items: data.items, kit: data.kit, contacts: data.contacts
+  };
+}
+
+/* ---- persistence: main state (small JSON) in one DB, photos in another ---- */
+let state = defaultState(), db = null, pdb = null, saveFailed = false, persistAsked = false, saveChain = Promise.resolve(), stateTrusted = false;
+function persist({ touch = true } = {}) {
+  if (touch) state.meta.lastChange = new Date().toISOString();
+  if (!db) return Promise.resolve();
+  const snap = JSON.stringify(state);
+  saveChain = saveChain.then(() => idbPut(db, 'state', snap)).then(() => { saveFailed = false; }).catch(err => { console.error(err); saveFailed = true; });
+  if (!persistAsked && navigator.storage && navigator.storage.persist) { persistAsked = true; navigator.storage.persist().catch(() => {}); }
+  return saveChain;
+}
+const commit = () => { persist(); render(); };
+
+const pdbDel = id => new Promise((res, rej) => {
+  if (!pdb) return res();
+  const tx = pdb.transaction('kv', 'readwrite'); tx.objectStore('kv').delete(id);
+  tx.oncomplete = () => res(); tx.onerror = () => rej(tx.error); tx.onabort = () => rej(tx.error || new Error('Write aborted'));
+});
+const pdbKeys = () => new Promise((res, rej) => {
+  if (!pdb) return res([]);
+  const q = pdb.transaction('kv').objectStore('kv').getAllKeys();
+  q.onsuccess = () => res(q.result.map(String)); q.onerror = () => rej(q.error);
+});
+const pdbClear = () => new Promise((res, rej) => {
+  if (!pdb) return res();
+  const tx = pdb.transaction('kv', 'readwrite'); tx.objectStore('kv').clear();
+  tx.oncomplete = () => res(); tx.onerror = () => rej(tx.error); tx.onabort = () => rej(tx.error || new Error('Write aborted'));
+});
+const pdbPutRec = rec => idbPut(pdb, rec.id, rec);
+const pdbGetRec = id => (pdb ? idbGet(pdb, id) : Promise.resolve(undefined));
+
+/* ---- photos ---- */
+const thumbCache = new Map();
+function cacheThumb(id, src) { thumbCache.set(id, src); if (thumbCache.size > 500) thumbCache.delete(thumbCache.keys().next().value); }
+async function getThumb(id) {
+  if (thumbCache.has(id)) return thumbCache.get(id);
+  try { const rec = await pdbGetRec(id); if (rec) { const src = rec.thumb || rec.data; cacheThumb(id, src); return src; } } catch (e) { console.error(e); }
+  return null;
+}
+function hydratePhotos(root = view) {
+  $$('img[data-ph]', root).forEach(img => {
+    if (img.getAttribute('src')) return;
+    getThumb(img.dataset.ph).then(src => { if (src && img.isConnected && !img.getAttribute('src')) img.src = src; });
+  });
+}
+const readDataURL = f => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = () => rej(r.error || new Error('Could not read the photo')); r.readAsDataURL(f); });
+/* downscale with canvas; returns {data, thumb} or null when the browser can't (e.g. no createImageBitmap) */
+async function shrinkImage(file) {
+  if (typeof createImageBitmap !== 'function') return null;
+  let bmp;
+  try {
+    bmp = await createImageBitmap(file);
+    const draw = (edge, q) => {
+      const k = Math.min(1, edge / Math.max(bmp.width, bmp.height));
+      const c = document.createElement('canvas');
+      c.width = Math.max(1, Math.round(bmp.width * k)); c.height = Math.max(1, Math.round(bmp.height * k));
+      const ctx = c.getContext('2d');
+      if (!ctx) throw new Error('no canvas');
+      ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height);
+      ctx.drawImage(bmp, 0, 0, c.width, c.height);
+      const out = c.toDataURL('image/jpeg', q);
+      if (!out.startsWith('data:image/jpeg')) throw new Error('no jpeg');
+      return out;
+    };
+    return { data: draw(PHOTO_EDGE, 0.7), thumb: draw(THUMB_EDGE, 0.6) };
+  } catch (e) { return null; }
+  finally { if (bmp && bmp.close) bmp.close(); }
+}
+/* stores one picked image file; returns the {id,size} ref. Throws Error with a friendly message. */
+async function storePhoto(file) {
+  if (!pdb) throw new Error('This browser isn’t allowing photo storage.');
+  if (!file || !/^image\//i.test(file.type || 'image/jpeg')) throw new Error('That file isn’t an image.');
+  let out = await shrinkImage(file);
+  if (!out) {
+    const orig = await readDataURL(file);
+    if (orig.length > MAX_ORIGINAL) throw new Error('This browser can’t shrink that photo and it is too big to keep.');
+    out = { data: orig, thumb: null };
+  }
+  const id = 'p' + uid();
+  const size = out.data.length + (out.thumb ? out.thumb.length : 0);
+  await pdbPutRec({ id, data: out.data, thumb: out.thumb, size });
+  cacheThumb(id, out.thumb || out.data);
+  return { id, size };
+}
+const photoStats = () => { let count = 0, bytes = 0; for (const it of state.items) for (const p of it.photos) { count++; bytes += p.size; } return { count, bytes }; };
+function pickImages(capture) {
+  return new Promise(resolve => {
+    const i = document.createElement('input');
+    i.type = 'file'; i.accept = 'image/*'; i.style.display = 'none';
+    if (capture) i.setAttribute('capture', 'environment'); else i.multiple = true;
+    document.body.appendChild(i);
+    let done = false;
+    const fin = f => { if (done) return; done = true; i.remove(); resolve(f); };
+    i.addEventListener('change', () => fin(Array.from(i.files || [])));
+    i.addEventListener('cancel', () => fin([]));
+    i.click();
+  });
+}
+async function viewPhoto(id) {
+  let rec = null;
+  try { rec = await pdbGetRec(id); } catch {}
+  if (!rec) return toast('That photo is missing.');
+  await askDialog({ title: 'Photo', body: `<div class="viewer"><img alt="Item photo" src="${esc(rec.data)}"></div>`, buttons: [{ label: 'Close', value: true, kind: 'primary' }] });
+}
+async function cleanupOrphans() {
+  if (!pdb || !stateTrusted) return;
+  try {
+    const keep = new Set(); for (const it of state.items) for (const p of it.photos) keep.add(p.id);
+    for (const k of await pdbKeys()) if (!keep.has(k)) await pdbDel(k);
+  } catch (e) { console.error(e); }
+}
+
+/* ---- model helpers ---- */
+const view = $('#view');
+const itemById = id => state.items.find(i => i.id === id);
+const roomById = id => state.rooms.find(r => r.id === id);
+const roomName = id => { const r = roomById(id); return r ? r.name : 'No room'; };
+const needsSerial = it => SERIAL_CATS.includes(it.category) && !it.serial;
+const lineVal = it => (it.value == null ? 0 : it.value * it.qty);
+const linePrice = it => (it.price == null ? 0 : it.price * it.qty);
+const sumVal = a => a.reduce((s, i) => s + lineVal(i), 0);
+const sumQty = a => a.reduce((s, i) => s + i.qty, 0);
+function findOrCreateRoom(name) {
+  name = clampStr(name, 60);
+  if (!name) return '';
+  const hit = state.rooms.find(r => r.name.toLowerCase() === name.toLowerCase());
+  if (hit) return hit.id;
+  if (state.rooms.length >= MAX_ROOMS) return '';
+  const r = { id: uid(), name, createdAt: Date.now() };
+  state.rooms.push(r);
+  return r.id;
+}
+function missingList(it) {
+  const m = [];
+  if (!it.photos.length) m.push('photo');
+  if (needsSerial(it)) m.push('serial');
+  if (it.value == null) m.push('value');
+  return m;
+}
+
+/* ---- UI state (in memory) ---- */
+let tab = 'items', walk = null, sel = null, shown = 150;
+const F = { q: '', room: '', cat: '', noPhoto: false, noSerial: false, noValue: false, sort: 'name' };
+const collapsed = new Set();
+
+/* ===================== Items ===================== */
+function filteredItems() {
+  const q = F.q.trim().toLowerCase();
+  const a = state.items.filter(it => {
+    if (F.room === '__none') { if (it.roomId) return false; } else if (F.room && it.roomId !== F.room) return false;
+    if (F.cat && it.category !== F.cat) return false;
+    if (F.noPhoto && it.photos.length) return false;
+    if (F.noSerial && !needsSerial(it)) return false;
+    if (F.noValue && it.value != null) return false;
+    if (q && ![it.name, it.make, it.model, it.serial, it.store, it.notes, it.category, roomName(it.roomId), it.tags.join(' ')].join('\n').toLowerCase().includes(q)) return false;
+    return true;
+  });
+  const byName = (x, y) => x.name.localeCompare(y.name);
+  if (F.sort === 'room') a.sort((x, y) => roomName(x.roomId).localeCompare(roomName(y.roomId)) || byName(x, y));
+  else if (F.sort === 'value') a.sort((x, y) => lineVal(y) - lineVal(x) || byName(x, y));
+  else if (F.sort === 'recent') a.sort((x, y) => y.updatedAt - x.updatedAt || byName(x, y));
+  else a.sort(byName);
+  return a;
+}
+function thumbHTML(it) {
+  return it.photos.length ? `<img class="thumb" data-ph="${esc(it.photos[0].id)}" alt="">` : `<span class="thumb" aria-hidden="true">${CAT_ICON[it.category] || '📦'}</span>`;
+}
+function itemRow(it) {
+  const miss = missingList(it);
+  const picked = sel && sel.has(it.id);
+  return `<li class="row" data-action="${sel ? 'pick' : 'open'}" data-id="${esc(it.id)}">
+    ${sel ? `<input type="checkbox" class="sel" tabindex="-1" aria-label="Select ${esc(it.name)}"${picked ? ' checked' : ''}>` : ''}
+    ${thumbHTML(it)}
+    <div class="row-main"><div class="row-title">${esc(it.name)}${it.qty > 1 ? `<span class="badge acc">×${it.qty}</span>` : ''}</div>
+    <div class="row-sub">${esc(roomName(it.roomId))} · ${esc(it.category)}</div>
+    ${miss.length ? `<div class="row-sub warn">Missing: ${esc(miss.join(', '))}</div>` : ''}</div>
+    <div class="row-amt num">${it.value == null ? '<span class="muted">—</span>' : esc(money(lineVal(it)))}</div></li>`;
+}
+function listHTML(list) {
+  if (!list.length) return '<div class="card empty"><div class="big">🔍</div><h2>No matches</h2><p>Nothing fits those filters.</p><button class="btn" data-action="clear-filters">Clear filters</button></div>';
+  const part = list.slice(0, shown);
+  return `<ul class="card list">${part.map(itemRow).join('')}</ul>` +
+    (list.length > part.length ? `<button type="button" class="btn block" style="margin-top:10px" data-action="more">Show more (${list.length - part.length} left)</button>` : '');
+}
+function summaryLine(list) {
+  const filtered = list.length !== state.items.length;
+  return `${filtered ? `${list.length} of ${plural(state.items.length, 'item')}` : plural(list.length, 'item')} · est. value ${money(sumVal(list))}`;
+}
+function refreshList() {
+  const list = filteredItems();
+  const box = $('#itemList'); if (!box) return;
+  box.innerHTML = listHTML(list);
+  $('#itemSum').textContent = summaryLine(list);
+  hydratePhotos(box);
+}
+function storageBannerHTML() {
+  if (saveFailed) return '<div class="banner bad">Couldn’t save to this device’s storage. Back up now so nothing is lost.</div>';
+  if (!db) return '<div class="banner bad">This browser isn’t allowing storage (private mode?). Changes won’t survive closing the app — use Backup often.</div>';
+  return '';
+}
+function photoBannerHTML() {
+  const st = photoStats();
+  if (st.bytes > PHOTO_TOTAL_WARN) return `<div class="banner">Photos now use ${esc(fmtBytes(st.bytes))} on this device. Phones can run short on space — consider removing a few.</div>`;
+  return '';
+}
+function emptyItemsHTML() {
+  return `<div class="empty"><div class="big">📦</div><h2>No items yet</h2>
+  <p>Fast way: name, a photo and the room. Add details later. Walk through the house room by room from the Rooms tab.</p>
+  <button class="btn primary" data-action="add">Add your first item</button><br>
+  <button class="btn ghost" data-action="import">Import from a CSV</button><br>
+  <button class="btn ghost" data-action="restore">Restore from a backup file</button></div>`;
+}
+function renderItems() {
+  if (!state.items.length) return storageBannerHTML() + emptyItemsHTML();
+  const list = filteredItems();
+  const roomOpts = `<option value="">All rooms</option>` + state.rooms.map(r => `<option value="${esc(r.id)}"${F.room === r.id ? ' selected' : ''}>${esc(r.name)}</option>`).join('') + `<option value="__none"${F.room === '__none' ? ' selected' : ''}>No room</option>`;
+  const catOpts = `<option value="">Category</option>` + CATEGORIES.map(c => `<option${F.cat === c ? ' selected' : ''}>${esc(c)}</option>`).join('');
+  const sortOpts = [['name', 'A–Z'], ['room', 'By room'], ['value', 'By value'], ['recent', 'Recent']].map(([v, l]) => `<option value="${v}"${F.sort === v ? ' selected' : ''}>${l}</option>`).join('');
+  const st = photoStats();
+  return storageBannerHTML() + photoBannerHTML() + `
+    <div class="searchrow"><input type="search" id="q" data-f="q" placeholder="Search items, serials, tags…" value="${esc(F.q)}" aria-label="Search items" autocomplete="off">
+      <button type="button" class="btn" data-action="select-mode">${sel ? 'Done' : 'Select'}</button></div>
+    <div class="filters">
+      <select data-f="room" aria-label="Filter by room">${roomOpts}</select>
+      <select data-f="cat" aria-label="Filter by category">${catOpts}</select>
+      <select data-f="sort" aria-label="Sort">${sortOpts}</select></div>
+    <div class="chips" role="group" aria-label="Missing information">
+      <button type="button" class="chip" data-action="flag" data-k="noPhoto" aria-pressed="${F.noPhoto}">No photo</button>
+      <button type="button" class="chip" data-action="flag" data-k="noSerial" aria-pressed="${F.noSerial}">Missing serial</button>
+      <button type="button" class="chip" data-action="flag" data-k="noValue" aria-pressed="${F.noValue}">No value</button></div>
+    <div class="sumline" id="itemSum">${esc(summaryLine(list))}</div>
+    <div id="itemList">${listHTML(list)}</div>
+    <p class="hint" style="text-align:center;margin-top:14px">${st.count ? `${plural(st.count, 'photo')} · ${esc(fmtBytes(st.bytes))} stored on this device` : 'No photos yet'}</p>
+    ${sel ? bulkBarHTML() : ''}`;
+}
+function bulkBarHTML() {
+  return `<div class="bulkbar"><div class="wrap"><div class="grow">${sel.size} selected</div>
+    <button type="button" class="btn small" data-action="sel-all">All shown</button>
+    <button type="button" class="btn small primary" data-action="bulk-move"${sel.size ? '' : ' disabled'}>Move</button>
+    <button type="button" class="btn small danger" data-action="bulk-del"${sel.size ? '' : ' disabled'}>Delete</button></div></div>`;
+}
+
+/* ---- item dialog (quick add + full edit) ---- */
+function roomSelectOptions() { return [['', '— No room —'], ...state.rooms.map(r => [r.id, r.name])]; }
+function itemDialog(id, { quick = false, roomId } = {}) {
+  const it = id ? itemById(id) : null;
+  if (id && !it) return;
+  if (!it && state.items.length >= MAX_ITEMS) return toast(`The ${MAX_ITEMS} item limit is reached.`);
+  const dlg = $('#dlg');
+  const q = quick && !it;
+  const defRoom = it ? it.roomId : roomId != null ? roomId : (F.room && F.room !== '__none' && roomById(F.room) ? F.room : (roomById(state.settings.lastRoom) ? state.settings.lastRoom : ''));
+  const draft = { photos: it ? it.photos.map(p => ({ ...p })) : [], added: [], saved: false };
+  const fields = [
+    { name: 'name', label: 'Name', required: true, value: it && it.name, placeholder: 'e.g. 65" Samsung TV', capitalize: 'words' },
+    { name: 'roomId', label: 'Room', type: 'select', options: roomSelectOptions(), value: defRoom },
+    { name: 'newRoom', label: 'Or a new room', placeholder: 'Type to create one', capitalize: 'words' },
+    { name: 'category', label: 'Category', type: 'select', options: CATEGORIES, value: it ? it.category : 'Other' },
+    { name: 'qty', label: 'Quantity', type: 'number', value: it ? it.qty : 1, min: 1, step: 1 }
+  ];
+  const more = [
+    { name: 'make', label: 'Make / brand', value: it && it.make }, { name: 'model', label: 'Model', value: it && it.model },
+    { name: 'serial', label: 'Serial number', value: it && it.serial, capitalize: 'characters' },
+    { name: 'purchaseDate', label: 'Purchase date', type: 'date', value: it && it.purchaseDate },
+    { name: 'price', label: 'Purchase price (each)', type: 'number', value: it && it.price != null ? it.price : '', min: 0, placeholder: '0.00' },
+    { name: 'value', label: 'Estimated value now (each)', type: 'number', value: it && it.value != null ? it.value : '', min: 0, placeholder: '0.00' },
+    { name: 'store', label: 'Store / receipt note', value: it && it.store, placeholder: 'e.g. Best Buy, receipt in Documents folder' },
+    { name: 'tags', label: 'Tags (comma separated)', value: it && it.tags.join(', ') },
+    { name: 'notes', label: 'Notes', type: 'textarea', value: it && it.notes }
+  ];
+  const H = {}; fields.concat(more).forEach(f => { H[f.name] = fieldHTML(f); });
+  const two = (a, b) => `<div class="fields2">${H[a]}${H[b]}</div>`;
+  const photoHTML = `<div class="field"><label>Photos (<span id="phCount">0</span> of ${MAX_PHOTOS})</label><div class="phstrip" id="phStrip"></div>
+    <div class="phbtns"><button type="button" class="btn small" id="phCam">📷 Take photo</button><button type="button" class="btn small" id="phLib">🖼 Choose</button></div>
+    <div class="hint">Shrunk to ${PHOTO_EDGE}px and kept only on this device.</div></div>`;
+  const body = q
+    ? H.name + H.roomId + H.newRoom + photoHTML + two('category', 'qty')
+    : H.name + H.roomId + H.newRoom + two('category', 'qty') + two('make', 'model') + two('serial', 'purchaseDate') + two('price', 'value') + H.store + H.tags + H.notes + photoHTML;
+  dlg.innerHTML = `<form class="dlg-form" novalidate><h2>${it ? 'Edit item' : q ? 'Quick add' : 'Add item'}</h2>${body}
+    <div class="dlg-err" role="alert"></div>
+    <div class="dlg-actions stick">
+      ${it ? '<button type="button" class="btn danger" data-k="del">Delete</button><button type="button" class="btn" data-k="dup">Duplicate</button>' : ''}
+      ${q ? '<button type="button" class="btn" data-k="another">Save &amp; add another</button><button type="button" class="btn" data-k="details">Add details…</button>' : ''}
+      <span class="spacer"></span><button type="button" class="btn ghost" data-k="cancel">Cancel</button><button type="submit" class="btn primary">Save</button></div></form>`;
+  const form = $('form', dlg), err = $('.dlg-err', dlg);
+  const strip = $('#phStrip', dlg);
+  function paintStrip() {
+    strip.innerHTML = draft.photos.map(p => `<div class="ph"><img data-ph="${esc(p.id)}" data-view="${esc(p.id)}" alt="Photo"><button type="button" class="x" data-rm="${esc(p.id)}" aria-label="Remove photo">×</button></div>`).join('');
+    $('#phCount', dlg).textContent = draft.photos.length;
+    $('#phCam', dlg).disabled = $('#phLib', dlg).disabled = draft.photos.length >= MAX_PHOTOS;
+    hydratePhotos(strip);
+  }
+  async function addFiles(files) {
+    let skipped = 0;
+    for (const f of files) {
+      if (draft.photos.length >= MAX_PHOTOS) { skipped++; continue; }
+      try { const ref = await storePhoto(f); draft.photos.push(ref); draft.added.push(ref.id); }
+      catch (e) { err.textContent = e.message; }
+    }
+    if (skipped) toast(`Only ${MAX_PHOTOS} photos per item.`);
+    paintStrip();
+  }
+  dlg._addFiles = addFiles;
+  strip.addEventListener('click', e => {
+    const rm = e.target.closest('[data-rm]'), vw = e.target.closest('[data-view]');
+    if (rm) { draft.photos = draft.photos.filter(p => p.id !== rm.dataset.rm); paintStrip(); }
+    else if (vw) viewPhoto(vw.dataset.view);
+  });
+  $('#phCam', dlg).onclick = async () => addFiles(await pickImages(true));
+  $('#phLib', dlg).onclick = async () => addFiles(await pickImages(false));
+  paintStrip();
+
+  function save() {
+    const v = {};
+    for (const f of (q ? fields : fields.concat(more))) v[f.name] = form.elements[f.name].value;
+    if (!v.name.trim()) return { error: 'Name is required.' };
+    const qtyN = Math.floor(Number(v.qty === '' ? 1 : v.qty));
+    if (!(qtyN >= 1 && qtyN <= MAX_QTY)) return { error: `Quantity must be 1 to ${MAX_QTY}.` };
+    let price = null, value = null, purchaseDate = '';
+    if (!q) {
+      if (String(v.price).trim() !== '') { price = numOrNull(v.price); if (price == null) return { error: 'Enter a valid purchase price.' }; }
+      if (String(v.value).trim() !== '') { value = numOrNull(v.value); if (value == null) return { error: 'Enter a valid estimated value.' }; }
+      if (v.purchaseDate) { if (!isISO(v.purchaseDate)) return { error: 'Pick a valid purchase date.' }; purchaseDate = v.purchaseDate; }
+    }
+    if (v.newRoom.trim() && !state.rooms.some(r => r.name.toLowerCase() === v.newRoom.trim().toLowerCase()) && state.rooms.length >= MAX_ROOMS) return { error: `The ${MAX_ROOMS} room limit is reached.` };
+    const rid = v.newRoom.trim() ? findOrCreateRoom(v.newRoom) : (roomById(v.roomId) ? v.roomId : '');
+    const rec = { name: v.name.trim().slice(0, 120), roomId: rid, category: CATEGORIES.includes(v.category) ? v.category : 'Other', qty: qtyN };
+    if (!q) Object.assign(rec, { make: clampStr(v.make, 80), model: clampStr(v.model, 80), serial: clampStr(v.serial, 80), purchaseDate, price, value, store: clampStr(v.store, 200), tags: normTags(v.tags), notes: v.notes.trim().slice(0, 2000) });
+    const removed = it ? it.photos.filter(p => !draft.photos.some(d => d.id === p.id)).map(p => p.id) : [];
+    let target = it;
+    if (it) Object.assign(it, rec, { photos: draft.photos, updatedAt: Date.now() });
+    else {
+      if (state.items.length >= MAX_ITEMS) return { error: `The ${MAX_ITEMS} item limit is reached.` };
+      target = normItem({ ...rec, photos: draft.photos, createdAt: Date.now() });
+      state.items.push(target);
+    }
+    if (rid) state.settings.lastRoom = rid;
+    draft.saved = true;
+    commit();
+    removed.forEach(pid => pdbDel(pid).catch(() => {}));
+    return { item: target };
+  }
+  form.addEventListener('submit', e => { e.preventDefault(); const r = save(); if (r.error) err.textContent = r.error; else dlg.close(); });
+  $('[data-k="cancel"]', dlg).onclick = () => dlg.close();
+  if (it) {
+    $('[data-k="del"]', dlg).onclick = async () => {
+      if (!(await confirmBox(`Delete “${it.name}”?`, it.photos.length ? 'Its photos are deleted too.' : '', 'Delete item'))) return;
+      deleteItems([it.id]); dlg.close(); toast('Item deleted');
+    };
+    $('[data-k="dup"]', dlg).onclick = () => { dlg.close(); setTimeout(() => dupItem(it.id), 60); };
+  }
+  if (q) {
+    $('[data-k="another"]', dlg).onclick = () => { const r = save(); if (r.error) { err.textContent = r.error; return; } toast(`Saved “${r.item.name}”`); dlg.close(); setTimeout(() => itemDialog(null, { quick: true, roomId: r.item.roomId }), 60); };
+    $('[data-k="details"]', dlg).onclick = () => { const r = save(); if (r.error) { err.textContent = r.error; return; } dlg.close(); setTimeout(() => itemDialog(r.item.id), 60); };
+  }
+  dlg.onclose = () => {
+    dlg.onclose = null; dlg._addFiles = null;
+    const keep = new Set(draft.saved ? draft.photos.map(p => p.id) : []);
+    draft.added.filter(pid => !keep.has(pid)).forEach(pid => { thumbCache.delete(pid); pdbDel(pid).catch(() => {}); });
+  };
+  dlg.showModal();
+  const nm = form.elements.name; if (nm && !nm.value) nm.focus();
+}
+function deleteItems(ids) {
+  const set = new Set(ids), gone = [];
+  for (const it of state.items) if (set.has(it.id)) it.photos.forEach(p => gone.push(p.id));
+  state.items = state.items.filter(i => !set.has(i.id));
+  commit();
+  gone.forEach(pid => { thumbCache.delete(pid); pdbDel(pid).catch(() => {}); });
+}
+function dupItem(id) {
+  const it = itemById(id); if (!it) return;
+  if (state.items.length >= MAX_ITEMS) return toast(`The ${MAX_ITEMS} item limit is reached.`);
+  const copy = normItem({ ...it, id: uid(), serial: '', photos: [], createdAt: Date.now(), updatedAt: Date.now() });
+  const idx = state.items.indexOf(it);
+  state.items.splice(idx + 1, 0, copy);
+  commit();
+  toast('Duplicated without photos or serial. Edit the copy.');
+  itemDialog(copy.id);
+}
+function bulkMove() {
+  if (!sel || !sel.size) return;
+  formDialog({
+    title: `Move ${plural(sel.size, 'item')}`,
+    fields: [{ name: 'roomId', label: 'To room', type: 'select', options: roomSelectOptions(), value: '' }, { name: 'newRoom', label: 'Or a new room', placeholder: 'Type to create one', capitalize: 'words' }],
+    submitLabel: 'Move',
+    onSubmit: v => {
+      const rid = v.newRoom.trim() ? findOrCreateRoom(v.newRoom) : (roomById(v.roomId) ? v.roomId : '');
+      const n = sel.size;
+      for (const it of state.items) if (sel.has(it.id)) { it.roomId = rid; it.updatedAt = Date.now(); }
+      sel = null;
+      commit(); toast(`Moved ${plural(n, 'item')} to ${roomName(rid)}`);
+    }
+  });
+}
+async function bulkDelete() {
+  if (!sel || !sel.size) return;
+  if (!(await confirmBox(`Delete ${plural(sel.size, 'item')}?`, 'Their photos are deleted too. This can’t be undone.', 'Delete'))) return;
+  const ids = [...sel]; sel = null;
+  deleteItems(ids); toast(`Deleted ${plural(ids.length, 'item')}`);
+}
+
+/* ===================== Rooms ===================== */
+function roomStats(id) { const a = state.items.filter(i => i.roomId === id); return { n: a.length, qty: sumQty(a), val: sumVal(a), noVal: a.filter(i => i.value == null).length }; }
+function roomDialog(id) {
+  const r = id ? roomById(id) : null;
+  if (id && !r) return;
+  if (!r && state.rooms.length >= MAX_ROOMS) return toast(`The ${MAX_ROOMS} room limit is reached.`);
+  formDialog({
+    title: r ? 'Rename room' : 'Add room', fields: [{ name: 'name', label: 'Room or area', required: true, value: r && r.name, placeholder: 'e.g. Garage', capitalize: 'words' }],
+    submitLabel: r ? 'Save' : 'Add room',
+    onSubmit: v => {
+      const name = clampStr(v.name, 60);
+      if (state.rooms.some(x => x.id !== (r && r.id) && x.name.toLowerCase() === name.toLowerCase())) return 'You already have a room with that name.';
+      if (r) r.name = name; else state.rooms.push({ id: uid(), name, createdAt: Date.now() });
+      commit();
+    },
+    onDelete: r ? async () => {
+      const n = state.items.filter(i => i.roomId === r.id).length;
+      if (!(await confirmBox(`Delete “${r.name}”?`, n ? `${plural(n, 'item')} will be kept and shown as “No room”.` : '', 'Delete room'))) return false;
+      state.items.forEach(i => { if (i.roomId === r.id) i.roomId = ''; });
+      state.rooms = state.rooms.filter(x => x.id !== r.id);
+      if (F.room === r.id) F.room = '';
+      if (state.settings.lastRoom === r.id) state.settings.lastRoom = '';
+      walk = null;
+      commit(); toast('Room deleted'); return true;
+    } : null
+  });
+}
+function roomCard(r) {
+  const s = r ? roomStats(r.id) : roomStats('');
+  const id = r ? r.id : '__none';
+  return `<li class="row" data-action="room-open" data-id="${esc(id)}"><span class="thumb" aria-hidden="true">${r ? '🚪' : '📦'}</span>
+    <div class="row-main"><div class="row-title">${esc(r ? r.name : 'No room')}</div>
+    <div class="row-sub">${plural(s.n, 'item')}${s.noVal ? ` · ${s.noVal} without value` : ''}</div></div>
+    <div class="row-amt num">${esc(money(s.val))}</div>
+    ${r ? `<button type="button" class="btn small" data-action="room-edit" data-id="${esc(r.id)}" aria-label="Rename ${esc(r.name)}">Edit</button>` : ''}</li>`;
+}
+const remainingSuggestions = () => SUGGEST_ROOMS.filter(n => !state.rooms.some(r => r.name.toLowerCase() === n.toLowerCase()));
+function suggestionsHTML() {
+  const rem = remainingSuggestions();
+  return rem.length ? `<div class="sec-h"><span>Add common rooms</span></div><div class="chips sugchips">${rem.map(n => `<button type="button" class="chip" data-action="room-sug" data-name="${esc(n)}">+ ${esc(n)}</button>`).join('')}</div>` : '';
+}
+const walkSeq = () => { const s = state.rooms.map(r => ({ id: r.id, name: r.name })); if (state.items.some(i => !i.roomId)) s.push({ id: '', name: 'No room' }); return s; };
+function renderWalk() {
+  const seq = walkSeq();
+  if (!seq.length) { walk = null; return renderRooms(); }
+  walk.i = Math.max(0, Math.min(walk.i, seq.length - 1));
+  const cur = seq[walk.i], items = state.items.filter(i => i.roomId === cur.id).sort((a, b) => a.name.localeCompare(b.name));
+  const last = walk.i === seq.length - 1;
+  return `<div class="walkhead"><div class="muted">Room ${walk.i + 1} of ${seq.length}</div><h2>${esc(cur.name)}</h2>
+    <div class="muted num">${plural(items.length, 'item')} · ${esc(money(sumVal(items)))}</div></div>
+    <div class="dots" aria-hidden="true">${seq.map((_, k) => `<i class="${k < walk.i ? 'on' : k === walk.i ? 'cur' : ''}"></i>`).join('')}</div>
+    <button type="button" class="btn primary block" data-action="walk-add">+ Quick add to ${esc(cur.name)}</button>
+    <p class="hint" style="margin:8px 4px">Look around: is everything here written down? Tap an item to fix it.</p>
+    ${items.length ? `<ul class="card list">${items.map(itemRow).join('')}</ul>` : '<div class="card empty"><div class="big">🫙</div><h2>Nothing recorded here</h2><p>Add what you see, or tap Next if the room is empty.</p></div>'}
+    <div class="walknav"><button type="button" class="btn" data-action="walk-prev"${walk.i === 0 ? ' disabled' : ''}>← Back</button>
+    ${last ? '<button type="button" class="btn primary" data-action="walk-exit">Finish</button>' : '<button type="button" class="btn primary" data-action="walk-next">Next room →</button>'}</div>
+    <button type="button" class="btn ghost block" data-action="walk-exit">Stop walk-through</button>`;
+}
+function renderRooms() {
+  if (walk) return renderWalk();
+  if (!state.rooms.length && !state.items.some(i => !i.roomId)) {
+    return storageBannerHTML() + `<div class="empty"><div class="big">🚪</div><h2>No rooms yet</h2><p>Add the rooms and areas of your house, including the yard and pool equipment. Items live in a room.</p>
+      <button class="btn primary" data-action="add-room">Add a room</button></div>${suggestionsHTML()}`;
+  }
+  const unassigned = state.items.some(i => !i.roomId);
+  return storageBannerHTML() + `<div class="stack" style="margin-top:14px">
+    ${state.rooms.length ? '<button type="button" class="btn primary block" data-action="walk-start">▶ Room walk-through</button>' : ''}</div>
+    <div class="sec-h"><span>Your rooms</span><span class="num">${esc(money(sumVal(state.items)))}</span></div>
+    <ul class="card list">${state.rooms.map(r => roomCard(r)).join('')}${unassigned ? roomCard(null) : ''}</ul>
+    ${suggestionsHTML()}`;
+}
+
+/* ===================== Storm kit ===================== */
+function expStatus(exp, today) {
+  if (!exp) return null;
+  const d = daysBetween(today, exp);
+  return { d, k: d < 0 ? 'expired' : d <= 30 ? 'd30' : d <= 90 ? 'd90' : 'ok' };
+}
+function expBadge(k, today) {
+  const s = expStatus(k.expiry, today);
+  if (!s) return '';
+  if (s.k === 'expired') return `<span class="badge bad">Expired ${esc(fmtDate(k.expiry, false))}</span>`;
+  if (s.k === 'd30') return `<span class="badge bad">Expires in ${plural(s.d, 'day')}</span>`;
+  if (s.k === 'd90') return `<span class="badge warn">Expires ${esc(fmtDate(k.expiry, false))}</span>`;
+  return `<span class="badge">Exp ${esc(fmtDate(k.expiry, false))}</span>`;
+}
+function expiringKit(today) {
+  const a = state.kit.items.filter(k => { const s = expStatus(k.expiry, today); return s && s.k !== 'ok'; });
+  a.sort((x, y) => x.expiry.localeCompare(y.expiry));
+  const c = { expired: 0, d30: 0, d90: 0 };
+  a.forEach(k => { c[expStatus(k.expiry, today).k]++; });
+  return { list: a, ...c };
+}
+function kitRow(k, today) {
+  return `<li class="row static kitrow${k.done ? ' done' : ''}"><label class="kitchk"><input type="checkbox" data-action="kit-toggle" data-id="${esc(k.id)}" aria-label="${esc(k.text)}"${k.done ? ' checked' : ''}></label>
+    <div class="row-main" data-action="kit-edit" data-id="${esc(k.id)}"><div class="row-title">${k.qty ? `<span class="badge acc">${esc(k.qty)}</span> ` : ''}${esc(k.text)}${expBadge(k, today)}</div>
+    ${k.note ? `<div class="row-sub">${esc(k.note)}</div>` : ''}</div></li>`;
+}
+function isPhoneish(v) { return /^[\d\s().+\-x#]{7,}$/i.test(v) && (v.match(/\d/g) || []).length >= 7; }
+function contactsHTML() {
+  const c = state.contacts, filled = CONTACT_FIELDS.filter(f => c[f[0]]);
+  const body = filled.length
+    ? `<dl class="kv">${filled.map(([k, label, t]) => `<dt>${esc(label)}</dt><dd>${t === 'tel' && isPhoneish(c[k]) ? `<a href="tel:${esc(c[k].replace(/[^\d+]/g, ''))}">${esc(c[k])}</a>` : esc(c[k])}</dd>`).join('')}</dl>`
+    : '<p class="muted pad" style="margin:0">Insurance company, policy number, agent, utilities, evacuation route and meeting point. Add them once so they are at hand when the power and internet are out.</p>';
+  return `<section class="card" id="contactsCard"><div class="phasehead" style="cursor:default"><h3>Emergency contacts &amp; key info</h3><button type="button" class="btn small" data-action="contacts-edit">${filled.length ? 'Edit' : 'Add'}</button></div>${body}
+    <p class="hint" style="padding:0 14px 12px;margin:0">Stored only on this device. Skip account numbers and passwords.</p></section>`;
+}
+function renderKit() {
+  const today = todayISO(), items = state.kit.items;
+  const exp = expiringKit(today);
+  let html = storageBannerHTML();
+  if (!items.length) {
+    html += `<div class="empty"><div class="big">🌀</div><h2>Storm kit checklist</h2>
+      <p>A starter list for a Gulf Coast house: generator and power, water and food, documents, evacuation, and after the storm. You can edit, delete or add anything.</p>
+      <button class="btn primary" data-action="kit-starter">Add starter checklist</button><br>
+      <button class="btn ghost" data-action="kit-add">Start with my own items</button></div>`;
+    return html + `<div class="stack">${contactsHTML()}</div>`;
+  }
+  const lr = state.kit.lastReviewed;
+  const lrText = lr ? `Last reviewed ${fmtDate(lr, false)} (${daysBetween(lr, today) === 0 ? 'today' : plural(daysBetween(lr, today), 'day') + ' ago'})` : 'Not reviewed yet';
+  if (exp.list.length) {
+    const parts = [];
+    if (exp.expired) parts.push(`${exp.expired} expired`);
+    if (exp.d30) parts.push(`${exp.d30} expire within 30 days`);
+    if (exp.d90) parts.push(`${exp.d90} within 90 days`);
+    html += `<div class="banner ${exp.expired || exp.d30 ? 'bad' : ''}" role="status" style="display:block"><b>Check expiry dates:</b> ${esc(parts.join(' · '))}
+      <ul style="margin:6px 0 0;padding-left:18px">${exp.list.slice(0, 8).map(k => `<li>${esc(k.text)} — ${esc(fmtDate(k.expiry, false))}</li>`).join('')}${exp.list.length > 8 ? `<li>and ${exp.list.length - 8} more</li>` : ''}</ul></div>`;
+  }
+  html += `<section class="card pad" style="margin-top:14px;display:flex;gap:12px;align-items:center;justify-content:space-between"><div><h3>Kit review</h3><div class="muted" style="font-size:14px">${esc(lrText)}</div></div>
+    <button type="button" class="btn small" data-action="kit-reviewed">Mark reviewed today</button></section><div class="stack">`;
+  for (const [pid, name, ico] of PHASES) {
+    const a = items.filter(k => k.phase === pid), done = a.filter(k => k.done).length, open = !collapsed.has(pid);
+    html += `<section class="card" data-phase="${pid}"><div class="phasehead" data-action="phase-toggle" data-phase="${pid}" role="button" tabindex="0" aria-expanded="${open}"><span aria-hidden="true">${ico}</span><h3>${esc(name)}</h3><span class="cnt num">${done}/${a.length}</span><span aria-hidden="true">${open ? '▾' : '▸'}</span></div>
+      <div class="phasebar"><div class="bar progress"><i style="width:${a.length ? Math.round(done / a.length * 100) : 0}%"></i></div></div>
+      ${open ? `${a.length ? `<ul class="list">${a.map(k => kitRow(k, today)).join('')}</ul>` : '<p class="muted pad" style="margin:0">Nothing here yet.</p>'}
+      <div class="phasebtns"><button type="button" class="btn small" data-action="kit-add" data-phase="${pid}">+ Add item</button>
+      <button type="button" class="btn small ghost" data-action="kit-reset" data-phase="${pid}"${done ? '' : ' disabled'}>Reset all checks</button></div>` : ''}</section>`;
+  }
+  html += `</div><div class="stack">${contactsHTML()}
+    <section class="card pad"><button type="button" class="btn block" data-action="kit-starter">Add any missing starter items</button>
+    <button type="button" class="btn danger block" style="margin-top:8px" data-action="kit-clear">Delete the whole checklist</button></section></div>`;
+  return html;
+}
+function kitItemDialog(id, phase) {
+  const k = id ? state.kit.items.find(x => x.id === id) : null;
+  if (id && !k) return;
+  if (!k && state.kit.items.length >= MAX_KIT) return toast(`The ${MAX_KIT} checklist item limit is reached.`);
+  formDialog({
+    title: k ? 'Edit checklist item' : 'Add checklist item',
+    fields: [
+      { name: 'text', label: 'Item', required: true, value: k && k.text },
+      { name: 'phase', label: 'Phase', type: 'select', options: PHASES.map(p => [p[0], p[1]]), value: k ? k.phase : (phase || 'before') },
+      { name: 'qty', label: 'Quantity (optional)', value: k && k.qty, placeholder: 'e.g. 24 or 7 gal' },
+      { name: 'expiry', label: 'Expiry date (optional)', type: 'date', value: k && k.expiry, hint: 'For batteries, water, food, medications.' },
+      { name: 'note', label: 'Note', type: 'textarea', value: k && k.note }
+    ],
+    submitLabel: k ? 'Save' : 'Add',
+    onSubmit: v => {
+      if (v.expiry && !isISO(v.expiry)) return 'Pick a valid expiry date.';
+      const rec = { text: clampStr(v.text, 240), phase: PHASE_IDS.includes(v.phase) ? v.phase : 'before', qty: clampStr(v.qty, 24), expiry: v.expiry || '', note: clampStr(v.note, 500) };
+      if (k) Object.assign(k, rec); else state.kit.items.push({ id: uid(), ...rec, done: false });
+      commit();
+    },
+    onDelete: k ? async () => { state.kit.items = state.kit.items.filter(x => x.id !== k.id); commit(); toast('Item removed'); return true; } : null
+  });
+}
+function addStarter() {
+  const have = new Set(state.kit.items.map(k => k.phase + '|' + k.text.toLowerCase()));
+  let n = 0;
+  for (const [phase, text, qty, note] of STARTER) {
+    if (have.has(phase + '|' + text.toLowerCase())) continue;
+    if (state.kit.items.length >= MAX_KIT) break;
+    state.kit.items.push({ id: uid(), phase, text, qty, expiry: '', note, done: false }); n++;
+  }
+  commit();
+  toast(n ? `Added ${plural(n, 'starter item')}` : 'All starter items are already there.');
+  return n;
+}
+async function resetPhase(pid) {
+  const a = state.kit.items.filter(k => k.phase === pid && k.done);
+  if (!a.length) return;
+  if (!(await confirmBox(`Reset “${PHASE_NAME[pid]}”?`, `This unchecks ${plural(a.length, 'item')} so you can start fresh for the next storm.`, 'Reset checks', false))) return;
+  a.forEach(k => { k.done = false; });
+  commit(); toast('Checks reset');
+}
+function contactsDialog() {
+  formDialog({
+    title: 'Emergency contacts & key info', intro: 'Stays on this device. Skip account numbers and passwords.',
+    fields: CONTACT_FIELDS.map(([name, label, type]) => ({ name, label, type: type === 'textarea' ? 'textarea' : type, value: state.contacts[name] })),
+    submitLabel: 'Save',
+    onSubmit: v => { state.contacts = normContacts(v); commit(); }
+  });
+}
+
+/* ===================== Report ===================== */
+function groupsForListing() {
+  const g = state.rooms.map(r => ({ room: r.name, items: state.items.filter(i => i.roomId === r.id) }));
+  const none = state.items.filter(i => !i.roomId || !roomById(i.roomId));
+  if (none.length) g.push({ room: 'No room', items: none });
+  g.forEach(x => x.items.sort((a, b) => a.name.localeCompare(b.name)));
+  return g.filter(x => x.items.length);
+}
+function breakdown(keyFn) {
+  const m = new Map();
+  for (const it of state.items) {
+    const k = keyFn(it); const e = m.get(k) || { name: k, n: 0, qty: 0, val: 0 };
+    e.n++; e.qty += it.qty; e.val += lineVal(it); m.set(k, e);
+  }
+  return [...m.values()].sort((a, b) => b.val - a.val || a.name.localeCompare(b.name));
+}
+function breakdownTable(rows, title) {
+  const max = Math.max(1, ...rows.map(r => r.val));
+  return `<div class="sec-h"><span>${esc(title)}</span></div><div class="card"><table class="rep"><thead><tr><th>Name</th><th class="n">Items</th><th class="n">Value</th></tr></thead><tbody>
+    ${rows.map(r => `<tr><td>${esc(r.name)}<span class="minibar" style="width:${Math.round(r.val / max * 100)}%"></span></td><td class="n">${r.n}</td><td class="n">${esc(money(r.val))}</td></tr>`).join('')}</tbody></table></div>`;
+}
+function renderReport() {
+  if (!state.items.length) return storageBannerHTML() + `<div class="empty"><div class="big">📋</div><h2>Nothing to report yet</h2><p>Add items first. The report totals them by room and category and builds an insurance listing.</p>
+    <button class="btn primary" data-action="add">Add an item</button><br><button class="btn ghost" data-action="import">Import from a CSV</button></div>`;
+  const it = state.items, st = photoStats();
+  const noPhoto = it.filter(i => !i.photos.length).length, noSerial = it.filter(needsSerial).length, noValue = it.filter(i => i.value == null).length, noRoom = it.filter(i => !i.roomId).length, noPrice = it.filter(i => i.price == null).length;
+  const miss = (label, n, k) => `<li class="row" ${n ? `data-action="report-filter" data-k="${k}"` : 'style="cursor:default"'}><div class="row-main"><div class="row-title">${label}</div></div><span class="badge ${n ? 'warn' : 'ok'}">${n ? n : 'none'}</span>${n ? '<span class="muted">›</span>' : ''}</li>`;
+  return storageBannerHTML() + `
+    <div class="tiles" style="grid-template-columns:1fr 1fr">
+      <div class="card tile"><div class="lbl">Items (${sumQty(it)} counting quantity)</div><div class="val num">${it.length}</div></div>
+      <div class="card tile"><div class="lbl">Estimated value</div><div class="val num">${esc(money(sumVal(it)))}</div></div>
+      <div class="card tile"><div class="lbl">Purchase cost</div><div class="val num">${esc(money(it.reduce((s, i) => s + linePrice(i), 0)))}</div></div>
+      <div class="card tile"><div class="lbl">With photos</div><div class="val num">${it.length - noPhoto} <span class="muted" style="font-size:14px">/ ${it.length}</span></div></div>
+    </div>
+    <p class="hint" style="margin:-4px 4px 4px">Values are per item times quantity. Items with no estimated value count as $0.</p>
+    ${breakdownTable(breakdown(i => roomName(i.roomId)), 'By room')}
+    ${breakdownTable(breakdown(i => i.category), 'By category')}
+    <div class="sec-h"><span>Missing key info</span></div>
+    <ul class="card list">${miss('No photo', noPhoto, 'noPhoto')}${miss('No serial (electronics, appliances, tools, vehicles)', noSerial, 'noSerial')}${miss('No estimated value', noValue, 'noValue')}
+      <li class="row static"><div class="row-main"><div class="row-title">No purchase price</div></div><span class="badge ${noPrice ? 'warn' : 'ok'}">${noPrice || 'none'}</span></li>
+      <li class="row static"><div class="row-main"><div class="row-title">No room</div></div><span class="badge ${noRoom ? 'warn' : 'ok'}">${noRoom || 'none'}</span></li></ul>
+    <div class="sec-h"><span>Insurance listing</span></div>
+    <section class="card pad"><p>A printable list grouped by room, with totals. On iPhone use Print, then pinch the preview to save a PDF.</p>
+      <div class="chips" style="margin-bottom:12px"><button type="button" class="chip" data-action="thumbs" aria-pressed="${state.settings.thumbs}">Include photo thumbnails${st.count ? '' : ' (no photos yet)'}</button></div>
+      <button type="button" class="btn primary block" data-action="print">Print / save as PDF</button>
+      <div class="fields2" style="margin-top:8px"><button type="button" class="btn" data-action="csv">Export CSV</button><button type="button" class="btn" data-action="copy">Copy as text</button></div></section>
+    <div class="sec-h"><span>Import</span></div>
+    <section class="card pad"><p>Paste a spreadsheet or CSV with columns <b>name, room, qty, price, serial</b>.</p><button type="button" class="btn block" data-action="import">Import from CSV…</button></section>`;
+}
+const csvDate = s => s || '';
+function inventoryCSV() {
+  const head = ['Room', 'Item', 'Category', 'Qty', 'Make', 'Model', 'Serial', 'Purchase date', 'Purchase price each', 'Estimated value each', 'Line total value', 'Store / receipt', 'Tags', 'Notes', 'Photos'];
+  const rows = [head];
+  for (const g of groupsForListing()) for (const i of g.items)
+    rows.push([g.room, i.name, i.category, i.qty, i.make, i.model, i.serial, csvDate(i.purchaseDate), i.price == null ? '' : i.price.toFixed(2), i.value == null ? '' : i.value.toFixed(2), i.value == null ? '' : lineVal(i).toFixed(2), i.store, i.tags.join('; '), i.notes.replace(/\s*\n\s*/g, ' / '), i.photos.length]);
+  return '﻿' + rows.map(r => r.map(csvCell).join(',')).join('\r\n');
+}
+function inventoryText() {
+  const L = [`HOME INVENTORY — ${fmtDate(todayISO(), false)}`, `${plural(state.items.length, 'item')} · estimated value ${money(sumVal(state.items))}`, ''];
+  for (const g of groupsForListing()) {
+    L.push(`== ${g.room} (${plural(g.items.length, 'item')}, ${money(sumVal(g.items))}) ==`);
+    for (const i of g.items) {
+      const bits = [i.category, [i.make, i.model].filter(Boolean).join(' '), i.serial && `S/N ${i.serial}`, i.purchaseDate && `bought ${i.purchaseDate}${i.price != null ? ' ' + money(i.price) : ''}`, i.value != null && `est. ${money(i.value)}${i.qty > 1 ? ' each' : ''}`].filter(Boolean);
+      L.push(`- ${i.name}${i.qty > 1 ? ' x' + i.qty : ''} | ${bits.join(' | ')}`);
+    }
+    L.push('');
+  }
+  L.push(`TOTAL estimated value: ${money(sumVal(state.items))}`);
+  return L.join('\n');
+}
+async function buildPrintHTML(withThumbs) {
+  const thumbs = new Map();
+  if (withThumbs) for (const i of state.items) if (i.photos.length) { const s = await getThumb(i.photos[0].id); if (s) thumbs.set(i.id, s); }
+  let body = '';
+  for (const g of groupsForListing()) {
+    body += `<h2><span>${esc(g.room)}</span><span>${esc(money(sumVal(g.items)))}</span></h2><table><colgroup>${withThumbs ? '<col style="width:64px">' : ''}<col><col style="width:34px"><col style="width:22%"><col style="width:16%"><col style="width:14%"><col style="width:14%"></colgroup><thead><tr>${withThumbs ? '<th></th>' : ''}<th>Item</th><th class="n">Qty</th><th>Make / model / serial</th><th>Purchased</th><th class="n">Value each</th><th class="n">Total</th></tr></thead><tbody>`;
+    for (const i of g.items) {
+      body += `<tr>${withThumbs ? `<td style="width:62px">${thumbs.has(i.id) ? `<img alt="" src="${esc(thumbs.get(i.id))}">` : ''}</td>` : ''}
+        <td><b>${esc(i.name)}</b><div class="sub">${esc(i.category)}${i.store ? ' · ' + esc(i.store) : ''}${i.notes ? ' · ' + esc(i.notes.slice(0, 160)) : ''}</div></td><td class="n">${i.qty}</td>
+        <td>${esc([i.make, i.model].filter(Boolean).join(' '))}${i.serial ? `<div class="sub">S/N ${esc(i.serial)}</div>` : ''}</td>
+        <td>${esc(i.purchaseDate || '')}${i.price != null ? `<div class="sub">${esc(money(i.price))}</div>` : ''}</td>
+        <td class="n">${i.value == null ? '' : esc(money(i.value))}</td><td class="n">${i.value == null ? '' : esc(money(lineVal(i)))}</td></tr>`;
+    }
+    body += '</tbody></table>';
+  }
+  return `<div class="pa"><h1>Home inventory</h1><div class="meta">${esc(new Date().toLocaleDateString(undefined, { dateStyle: 'long' }))} · ${plural(state.items.length, 'item')} (${sumQty(state.items)} counting quantity)${state.contacts.insurer ? ' · Insurer: ' + esc(state.contacts.insurer) : ''}${state.contacts.policy ? ' · Policy ' + esc(state.contacts.policy) : ''}</div>${body}
+    <div class="grand">Total estimated value: ${esc(money(sumVal(state.items)))}</div></div>`;
+}
+async function doPrint() {
+  if (!state.items.length) return toast('Nothing to print yet.');
+  const area = $('#printArea');
+  toast('Preparing the listing…');
+  area.innerHTML = await buildPrintHTML(state.settings.thumbs);
+  window.addEventListener('afterprint', () => { area.innerHTML = ''; }, { once: true });
+  window.print();
+}
+async function doCsvExport() {
+  if (!state.items.length) return toast('Nothing to export yet.');
+  const r = await deliverFile(`inventory-${todayISO()}.csv`, inventoryCSV(), 'text/csv');
+  if (r !== 'cancelled') toast(r === 'shared' ? 'CSV shared' : 'CSV saved to your downloads');
+}
+async function doCopy() {
+  if (!state.items.length) return toast('Nothing to copy yet.');
+  const t = inventoryText();
+  try { if (navigator.clipboard && navigator.clipboard.writeText) { await navigator.clipboard.writeText(t); return toast('Copied to the clipboard'); } } catch {}
+  askDialog({ title: 'Copy this text', body: `<textarea readonly id="copyTa" style="min-height:240px;font-size:13px">${esc(t)}</textarea>`, buttons: [{ label: 'Close', value: true, kind: 'primary' }] });
+  const ta = $('#copyTa'); if (ta) { ta.focus(); ta.select(); }
+}
+
+/* ---- CSV import ---- */
+function parseDelimited(text, delim) {
+  const rows = []; let row = [], cur = '', q = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (q) { if (c === '"') { if (text[i + 1] === '"') { cur += '"'; i++; } else q = false; } else cur += c; }
+    else if (c === '"' && cur === '') q = true;
+    else if (c === delim) { row.push(cur); cur = ''; }
+    else if (c === '\n' || c === '\r') { if (c === '\r' && text[i + 1] === '\n') i++; row.push(cur); rows.push(row); row = []; cur = ''; }
+    else cur += c;
+  }
+  if (cur !== '' || row.length) { row.push(cur); rows.push(row); }
+  return rows.filter(r => r.some(c => c.trim() !== ''));
+}
+const HDR = { name: 'name', item: 'name', 'item name': 'name', room: 'room', location: 'room', qty: 'qty', quantity: 'qty', price: 'price', cost: 'price', 'purchase price': 'price', serial: 'serial', 'serial number': 'serial', 'serial #': 'serial', category: 'category', value: 'value', 'est. value': 'value', 'estimated value': 'value', make: 'make', brand: 'make', model: 'model' };
+function parseImport(text) {
+  text = str(text).replace(/^﻿/, '');
+  const first = text.split(/\r?\n/).find(l => l.trim()) || '';
+  const delim = first.includes('\t') ? '\t' : ',';
+  let rows = parseDelimited(text, delim);
+  const out = { rows: [], errors: [], total: 0, truncated: false };
+  if (!rows.length) return out;
+  let cols = ['name', 'room', 'qty', 'price', 'serial'];
+  const h = rows[0].map(c => HDR[c.trim().toLowerCase()]);
+  if (h.includes('name')) { cols = h; rows = rows.slice(1); }
+  const room = MAX_ITEMS - state.items.length;
+  rows.forEach((r, n) => {
+    out.total++;
+    const o = {};
+    cols.forEach((c, ci) => { if (c && r[ci] != null && o[c] === undefined) o[c] = r[ci].trim(); });
+    const line = n + 1 + (cols === h ? 1 : 0);
+    if (!o.name) { out.errors.push(`Row ${line}: no name, skipped`); return; }
+    if (o.price && numOrNull(o.price) == null) out.errors.push(`Row ${line}: price “${o.price.slice(0, 20)}” ignored`);
+    if (o.qty && !(Number(o.qty) >= 1)) out.errors.push(`Row ${line}: quantity “${o.qty.slice(0, 20)}” set to 1`);
+    if (out.rows.length >= room) { out.truncated = true; return; }
+    out.rows.push({ name: o.name, room: o.room || '', qty: normQty(o.qty), price: numOrNull(o.price), value: numOrNull(o.value), serial: o.serial || '', category: CATEGORIES.includes(o.category) ? o.category : 'Other', make: o.make || '', model: o.model || '' });
+  });
+  return out;
+}
+function applyImport(parsed) {
+  let n = 0;
+  for (const r of parsed.rows) {
+    if (state.items.length >= MAX_ITEMS) break;
+    const rid = r.room ? findOrCreateRoom(r.room) : '';
+    const it = normItem({ ...r, roomId: rid, id: uid() });
+    if (it) { state.items.push(it); n++; }
+  }
+  return n;
+}
+function importDialog() {
+  const dlg = $('#dlg');
+  dlg.innerHTML = `<form class="dlg-form" novalidate><h2>Import from CSV</h2>
+    <p class="muted">Columns: <b>name, room, qty, price, serial</b>. A header row is optional (it can also have category, value, make, model). Paste from Excel or a CSV file. Rooms that don’t exist are created.</p>
+    <div class="field"><label for="csvText">CSV text</label><textarea id="csvText" name="csv" style="min-height:130px;font-size:14px" placeholder="name, room, qty, price, serial&#10;Samsung TV, Living room, 1, 899, ABC123"></textarea></div>
+    <div id="csvPrev" class="previewbox hide"></div><div class="dlg-err" role="alert"></div>
+    <div class="dlg-actions"><button type="button" class="btn" data-k="file">Choose file…</button><button type="button" class="btn" data-k="prev">Preview</button><span class="spacer"></span><button type="button" class="btn ghost" data-k="cancel">Cancel</button><button type="submit" class="btn primary">Import</button></div></form>`;
+  const form = $('form', dlg), err = $('.dlg-err', dlg), prev = $('#csvPrev', dlg);
+  const preview = () => {
+    const p = parseImport(form.elements.csv.value);
+    err.textContent = '';
+    prev.classList.remove('hide');
+    if (!p.rows.length) { prev.innerHTML = `<b>Nothing to import.</b>${p.errors.length ? '<br>' + p.errors.slice(0, 5).map(esc).join('<br>') : ''}`; return p; }
+    prev.innerHTML = `<b>${plural(p.rows.length, 'item')} ready</b>${p.truncated ? ` (limit ${MAX_ITEMS}; the rest are skipped)` : ''}
+      <table><thead><tr><th>Name</th><th>Room</th><th>Qty</th><th>Price</th><th>Serial</th></tr></thead><tbody>${p.rows.slice(0, 8).map(r => `<tr><td>${esc(r.name.slice(0, 30))}</td><td>${esc(r.room.slice(0, 20))}</td><td>${r.qty}</td><td>${r.price == null ? '' : esc(money(r.price))}</td><td>${esc(r.serial.slice(0, 20))}</td></tr>`).join('')}</tbody></table>
+      ${p.rows.length > 8 ? `<div class="muted">…and ${p.rows.length - 8} more</div>` : ''}${p.errors.length ? `<div class="warn" style="margin-top:6px">${p.errors.slice(0, 5).map(esc).join('<br>')}${p.errors.length > 5 ? `<br>and ${p.errors.length - 5} more notes` : ''}</div>` : ''}`;
+    return p;
+  };
+  $('[data-k="prev"]', dlg).onclick = preview;
+  $('[data-k="cancel"]', dlg).onclick = () => dlg.close();
+  $('[data-k="file"]', dlg).onclick = async () => {
+    const f = await pickFile('.csv,.tsv,.txt,text/csv,text/plain'); if (!f) return;
+    try { form.elements.csv.value = await readFileText(f); preview(); } catch { err.textContent = 'Couldn’t read that file.'; }
+  };
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const p = preview();
+    if (!p.rows.length) { err.textContent = 'No valid rows found.'; return; }
+    const n = applyImport(p);
+    commit(); dlg.close(); toast(`Imported ${plural(n, 'item')}`);
+  });
+  dlg.onclose = null;
+  dlg.showModal();
+  form.elements.csv.focus();
+}
+
+/* ===================== Backup ===================== */
+function renderBackup() {
+  const last = state.meta.lastBackup ? `Last backup: ${esc(fmtDateTime(state.meta.lastBackup))}.` : 'No backup made yet.';
+  const canEncrypt = !!(window.crypto && crypto.subtle);
+  const st = photoStats();
+  return storageBannerHTML() + installCardHTML() + `<div class="stack">
+    <section class="card pad"><h3>Back up</h3>
+      <p class="muted">${last}</p>
+      <p>${plural(state.items.length, 'item')}, ${plural(state.rooms.length, 'room')}, the storm checklist and your emergency info${st.count ? `, and ${plural(st.count, 'photo')} (${esc(fmtBytes(st.bytes))})` : ''}. On iPhone it opens the share sheet — save it to Files or OneDrive. <b>Never put this file in your GitHub repo.</b></p>
+      ${canEncrypt ? `<div class="field"><label for="bkPass">Passphrase (optional — encrypts the file)</label><input id="bkPass" type="password" autocomplete="new-password"></div>
+      <div class="field" style="margin-top:8px"><label for="bkPass2">Repeat passphrase</label><input id="bkPass2" type="password" autocomplete="new-password"></div>
+      <p class="hint">If you set one, the file can’t be opened without it — not even by me.</p>` : ''}
+      <button type="button" class="btn primary block" style="margin-top:12px" data-action="export">${st.count ? 'Back up now (with photos)' : 'Back up now'}</button>
+      ${st.count ? '<button type="button" class="btn block" style="margin-top:8px" data-action="export-nophotos">Back up without photos</button><p class="hint">Photos make the file big: about ' + esc(fmtBytes(st.bytes)) + '. Without them the file is tiny but restoring brings back no pictures.</p>' : ''}
+      <div class="hint hide" id="bkProgress" role="status"></div></section>
+    <section class="card pad"><h3>Restore</h3><p>Pick a backup file made by this app. You’ll choose whether to replace what’s here or merge it in.</p>
+      <button type="button" class="btn block" data-action="restore">Choose backup file…</button></section>
+    <section class="card pad"><h3>Use in Excel</h3><p>The full inventory as a CSV file.</p>
+      <button type="button" class="btn block" data-action="csv">Export inventory (CSV)</button></section>
+    <section class="card pad"><h3>Storage</h3><p class="muted" id="quota">${st.count ? `${plural(st.count, 'photo')} · ${esc(fmtBytes(st.bytes))} in this app.` : 'No photos stored.'}</p></section>
+    <section class="card pad"><h3>Danger zone</h3><p>Erases all items, photos, rooms and the checklist on this device.</p>
+      <button type="button" class="btn danger block" data-action="wipe">Erase everything on this device</button></section>
+    <p class="hint" style="text-align:center">Your data lives only on this device. Nothing is sent anywhere.</p></div>`;
+}
+function fillQuota() {
+  const q = $('#quota');
+  if (!q || !navigator.storage || !navigator.storage.estimate) return;
+  navigator.storage.estimate().then(e => { const el = $('#quota'); if (el && e && e.quota) el.textContent += ` Device storage used by this app: ${fmtBytes(e.usage || 0)} of ${fmtBytes(e.quota)} available.`; }).catch(() => {});
+}
+async function collectPhotos(onProgress) {
+  const ids = []; for (const it of state.items) for (const p of it.photos) ids.push(p.id);
+  const out = {}; let i = 0;
+  for (const id of ids) {
+    try { const rec = await pdbGetRec(id); if (rec && rec.data) out[id] = { d: rec.data, t: rec.thumb || null }; } catch (e) { console.error(e); }
+    if (++i % 6 === 0) { if (onProgress) onProgress(i, ids.length); await yieldUI(); }
+  }
+  return out;
+}
+const exportData = photos => ({
+  rooms: state.rooms, kit: state.kit, contacts: state.contacts,
+  items: photos ? state.items : state.items.map(i => ({ ...i, photos: [] })),
+  ...(photos ? { photos } : {})
+});
+async function doExport(withPhotos) {
+  const pass = ($('#bkPass') || {}).value || '', pass2 = ($('#bkPass2') || {}).value || '';
+  if (pass) {
+    if (pass.length < 8) return toast('Use at least 8 characters for the passphrase.');
+    if (pass !== pass2) return toast('The two passphrases don’t match.');
+  }
+  const st = photoStats();
+  if (withPhotos && st.count) {
+    if (st.bytes > PHOTO_HARD) {
+      const c = await askDialog({ title: 'Too many photos for one file', body: `<p>Photos total ${esc(fmtBytes(st.bytes))}. A single backup file with them would be too large for a phone to build safely (limit about ${esc(fmtBytes(PHOTO_HARD))}).</p><p class="muted">Back up without photos, or remove some photos first.</p>`, buttons: [{ label: 'Cancel', value: 'cancel' }, { label: 'Back up without photos', value: 'no', kind: 'primary' }] });
+      if (c !== 'no') return;
+      withPhotos = false;
+    } else if (st.bytes > PHOTO_WARN) {
+      const c = await askDialog({ title: 'Large backup', body: `<p>Photos add about ${esc(fmtBytes(st.bytes))}. Building and encrypting the file can take a while${pass ? ' (you set a passphrase)' : ''}, and sharing it needs free space.</p>`, buttons: [{ label: 'Cancel', value: 'cancel' }, { label: 'Without photos', value: 'no' }, { label: 'Include photos', value: 'yes', kind: 'primary' }] });
+      if (c === 'no') withPhotos = false; else if (c !== 'yes') return;
+    }
+  }
+  const btns = $$('[data-action="export"],[data-action="export-nophotos"]'); btns.forEach(b => { b.disabled = true; });
+  const prog = $('#bkProgress');
+  try {
+    let photos = null;
+    if (withPhotos && st.count) {
+      if (prog) prog.classList.remove('hide');
+      photos = await collectPhotos((i, n) => { const p = $('#bkProgress'); if (p) p.textContent = `Reading photos ${i} of ${n}…`; });
+      const p = $('#bkProgress'); if (p) p.textContent = pass ? 'Encrypting…' : 'Building the file…';
+      await yieldUI();
+    } else if (pass) { await yieldUI(); }
+    const text = await Backup.build({ appId: APP_ID, schema: SCHEMA, data: exportData(photos), passphrase: pass || null });
+    const tag = `${pass ? '-encrypted' : ''}${st.count && !photos ? '-nophotos' : ''}`;
+    const r = await deliverFile(`goobs-inventory-backup-${todayISO()}${tag}.json`, text, 'application/json');
+    if (r !== 'cancelled') {
+      state.meta.lastBackup = new Date().toISOString();
+      await persist({ touch: false });
+      render();
+      toast(r === 'shared' ? 'Backup shared' : 'Backup saved to your downloads');
+    }
+  } catch (e) { toast('Backup failed: ' + e.message); }
+  finally { $$('[data-action="export"],[data-action="export-nophotos"]').forEach(b => { b.disabled = false; }); const p = $('#bkProgress'); if (p) p.classList.add('hide'); }
+}
+async function writePhotos(map, onlyIds) {
+  let n = 0;
+  for (const [id, p] of map) {
+    if (onlyIds && !onlyIds.has(id)) continue;
+    await pdbPutRec({ id, data: p.data, thumb: p.thumb, size: p.data.length + (p.thumb ? p.thumb.length : 0) });
+    if (++n % 8 === 0) await yieldUI();
+  }
+  return n;
+}
+const photoSizeOf = (map, id) => { const p = map.get(id); return p ? p.data.length + (p.thumb ? p.thumb.length : 0) : 0; };
+function fixPhotoRefs(items, map) {
+  for (const it of items) it.photos = it.photos.filter(p => map.has(p.id)).map(p => ({ id: p.id, size: photoSizeOf(map, p.id) }));
+}
+async function restoreFromText(text) {
+  let parsed;
+  try { parsed = await Backup.parse(text, { appId: APP_ID, schema: SCHEMA }); }
+  catch (e) { await msgBox('Can’t restore that file', e.message); return false; }
+  if (!parsed) return false;
+  const { data, dropped } = normalizeData(parsed.data);
+  const pmap = normPhotoMap(parsed.data.photos);
+  const hasContacts = CONTACT_FIELDS.some(f => data.contacts[f[0]]);
+  if (!data.items.length && !data.rooms.length && !data.kit.items.length && !hasContacts) { await msgBox('Nothing to restore', 'That backup has no items, rooms, checklist or contacts in it.'); return false; }
+  const hasLocal = state.items.length || state.rooms.length || state.kit.items.length || CONTACT_FIELDS.some(f => state.contacts[f[0]]);
+  const sum = `${plural(data.items.length, 'item')}, ${plural(data.rooms.length, 'room')}, ${plural(data.kit.items.length, 'checklist item')} and ${plural(pmap.size, 'photo')}`;
+  const when = parsed.exportedAt ? ` Backup made ${fmtDateTime(parsed.exportedAt)}.` : '';
+  const skipped = dropped ? ` ${plural(dropped, 'unreadable entry')} will be skipped.` : '';
+  const noPh = !pmap.size && data.items.length ? ' This backup has no photos, so Replace removes the photos on this device.' : '';
+  const body = `<p>${esc(sum + '.' + when + skipped)}</p>` + (hasLocal ? `<p class="muted"><b>Replace all</b> swaps everything here for the backup.${esc(noPh)} <b>Merge</b> adds what isn’t here yet and keeps the rest.</p>` : '');
+  const choice = await askDialog({
+    title: 'Restore this backup?', body,
+    buttons: hasLocal
+      ? [{ label: 'Cancel', value: 'cancel' }, { label: 'Merge', value: 'merge' }, { label: 'Replace all', value: 'replace', kind: 'danger' }]
+      : [{ label: 'Cancel', value: 'cancel' }, { label: 'Restore', value: 'replace', kind: 'primary' }]
+  });
+  try {
+    if (choice === 'replace') {
+      const ts = parsed.exportedAt && !isNaN(Date.parse(parsed.exportedAt)) ? parsed.exportedAt : new Date().toISOString();
+      if (pdb) { await pdbClear(); await writePhotos(pmap); }
+      thumbCache.clear();
+      fixPhotoRefs(data.items, pdb ? pmap : new Map());
+      state.rooms = data.rooms; state.items = data.items; state.kit = data.kit; state.contacts = data.contacts;
+      state.settings.lastRoom = ''; sel = null; walk = null;
+      state.meta.lastBackup = ts; state.meta.lastChange = ts;
+      await persist({ touch: false });
+      render(); toast(`Restored ${plural(data.items.length, 'item')}`); return true;
+    }
+    if (choice === 'merge') {
+      const roomMap = new Map();
+      for (const r of data.rooms) {
+        const hit = state.rooms.find(x => x.id === r.id) || state.rooms.find(x => x.name.toLowerCase() === r.name.toLowerCase());
+        if (hit) roomMap.set(r.id, hit.id);
+        else if (state.rooms.length < MAX_ROOMS) { state.rooms.push(r); roomMap.set(r.id, r.id); }
+        else roomMap.set(r.id, '');
+      }
+      const ids = new Set(state.items.map(i => i.id)), added = [];
+      for (const it of data.items) {
+        if (ids.has(it.id) || state.items.length >= MAX_ITEMS) continue;
+        it.roomId = it.roomId ? (roomMap.get(it.roomId) || '') : '';
+        state.items.push(it); added.push(it);
+      }
+      if (pdb) { fixPhotoRefs(added, pmap); await writePhotos(pmap, new Set(added.flatMap(i => i.photos.map(p => p.id)))); } else added.forEach(i => { i.photos = []; });
+      const kids = new Set(state.kit.items.map(k => k.id));
+      let nk = 0;
+      for (const k of data.kit.items) if (!kids.has(k.id) && state.kit.items.length < MAX_KIT) { state.kit.items.push(k); nk++; }
+      if (data.kit.lastReviewed && (!state.kit.lastReviewed || data.kit.lastReviewed > state.kit.lastReviewed)) state.kit.lastReviewed = data.kit.lastReviewed;
+      for (const [k] of CONTACT_FIELDS) if (!state.contacts[k] && data.contacts[k]) state.contacts[k] = data.contacts[k];
+      await persist(); render(); toast(`Merged in ${plural(added.length, 'item')} and ${plural(nk, 'checklist item')}`); return true;
+    }
+  } catch (e) { console.error(e); await msgBox('Restore failed', 'Something went wrong writing to this device: ' + e.message); return false; }
+  return false;
+}
+async function doRestore() {
+  const f = await pickFile(); if (!f) return;
+  let text;
+  try { text = await readFileText(f); } catch { await msgBox('Couldn’t read that file', 'Try choosing it again.'); return; }
+  await restoreFromText(text);
+}
+async function doWipe() {
+  if (!(await confirmBox('Erase everything?', 'This permanently deletes all items, photos, rooms, the checklist and emergency info on this device. Make a backup first if you might want them.', 'Erase everything'))) return;
+  try { await pdbClear(); } catch (e) { console.error(e); }
+  thumbCache.clear();
+  state = defaultState(); sel = null; walk = null;
+  Object.assign(F, { q: '', room: '', cat: '', noPhoto: false, noSerial: false, noValue: false, sort: 'name' });
+  await persist({ touch: false });
+  render(); toast('Everything erased');
+}
+
+/* ===================== shell ===================== */
+const TITLES = { items: 'Inventory', rooms: 'Rooms', kit: 'Storm kit', report: 'Report', backup: 'Backup & restore' };
+function render() {
+  const y = window.scrollY;
+  view.innerHTML = { items: renderItems, rooms: renderRooms, kit: renderKit, report: renderReport, backup: renderBackup }[tab]();
+  $$('nav.tabs button').forEach(b => b.setAttribute('aria-current', b.dataset.tab === tab ? 'page' : 'false'));
+  const add = $('#addBtn');
+  add.classList.toggle('hide', !(tab === 'items' || tab === 'kit' || (tab === 'rooms' && !walk)));
+  add.textContent = tab === 'rooms' ? '+ Add room' : tab === 'kit' ? '+ Add item' : '+ Add item';
+  $('#title').textContent = tab === 'rooms' && walk ? 'Walk-through' : TITLES[tab];
+  const sub = { items: `${plural(state.items.length, 'item')} · ${money(sumVal(state.items))}`, rooms: plural(state.rooms.length, 'room'), kit: state.kit.items.length ? `${state.kit.items.filter(k => k.done).length} of ${state.kit.items.length} checked` : 'Hurricane and emergency checklist', report: 'Totals and insurance listing', backup: 'On this device only' }[tab];
+  $('#sub').textContent = sub;
+  hydratePhotos();
+  if (tab === 'backup') fillQuota();
+  window.scrollTo(0, y);
+}
+function go(t) { tab = t; walk = null; sel = null; render(); window.scrollTo(0, 0); }
+
+view.addEventListener('click', async e => {
+  const el = e.target.closest('[data-action]');
+  if (!el) return;
+  const id = el.dataset.id;
+  switch (el.dataset.action) {
+    case 'add': itemDialog(null, { quick: true }); break;
+    case 'open': itemDialog(id); break;
+    case 'pick': if (sel.has(id)) sel.delete(id); else sel.add(id); render(); break;
+    case 'select-mode': sel = sel ? null : new Set(); render(); break;
+    case 'sel-all': filteredItems().slice(0, shown).forEach(i => sel.add(i.id)); render(); break;
+    case 'bulk-move': bulkMove(); break;
+    case 'bulk-del': bulkDelete(); break;
+    case 'more': shown += 150; render(); break;
+    case 'flag': F[el.dataset.k] = !F[el.dataset.k]; shown = 150; render(); break;
+    case 'clear-filters': Object.assign(F, { q: '', room: '', cat: '', noPhoto: false, noSerial: false, noValue: false }); render(); break;
+    case 'import': importDialog(); break;
+    case 'restore': doRestore(); break;
+    case 'add-room': roomDialog(); break;
+    case 'room-edit': roomDialog(id); break;
+    case 'room-open': Object.assign(F, { q: '', cat: '', noPhoto: false, noSerial: false, noValue: false, room: id }); tab = 'items'; render(); window.scrollTo(0, 0); break;
+    case 'room-sug': {
+      if (state.rooms.length >= MAX_ROOMS) { toast(`The ${MAX_ROOMS} room limit is reached.`); break; }
+      findOrCreateRoom(el.dataset.name); commit(); break;
+    }
+    case 'walk-start': walk = { i: 0 }; render(); window.scrollTo(0, 0); break;
+    case 'walk-next': walk.i++; render(); window.scrollTo(0, 0); break;
+    case 'walk-prev': walk.i--; render(); window.scrollTo(0, 0); break;
+    case 'walk-exit': { const n = state.items.length; walk = null; render(); toast(`${plural(n, 'item')} recorded`); break; }
+    case 'walk-add': { const s = walkSeq()[walk.i]; itemDialog(null, { quick: true, roomId: s ? s.id : '' }); break; }
+    case 'kit-starter': addStarter(); break;
+    case 'kit-add': kitItemDialog(null, el.dataset.phase); break;
+    case 'kit-edit': kitItemDialog(id); break;
+    case 'kit-toggle': { const k = state.kit.items.find(x => x.id === id); if (k) { k.done = !k.done; commit(); } break; }
+    case 'kit-reset': resetPhase(el.dataset.phase); break;
+    case 'kit-reviewed': state.kit.lastReviewed = todayISO(); commit(); toast('Marked as reviewed today'); break;
+    case 'kit-clear': if (await confirmBox('Delete the whole checklist?', 'All checklist items are removed. Emergency info stays.', 'Delete checklist')) { state.kit.items = []; commit(); toast('Checklist deleted'); } break;
+    case 'phase-toggle': { const p = el.dataset.phase; if (collapsed.has(p)) collapsed.delete(p); else collapsed.add(p); render(); break; }
+    case 'contacts-edit': contactsDialog(); break;
+    case 'report-filter': Object.assign(F, { q: '', room: '', cat: '', noPhoto: false, noSerial: false, noValue: false }); F[el.dataset.k] = true; tab = 'items'; render(); window.scrollTo(0, 0); break;
+    case 'thumbs': state.settings.thumbs = !state.settings.thumbs; commit(); break;
+    case 'print': doPrint(); break;
+    case 'csv': doCsvExport(); break;
+    case 'copy': doCopy(); break;
+    case 'export': doExport(true); break;
+    case 'export-nophotos': doExport(false); break;
+    case 'wipe': doWipe(); break;
+    case 'install': runInstall(); break;
+  }
+});
+view.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('.phasehead')) { e.preventDefault(); e.target.click(); } });
+view.addEventListener('input', e => { if (e.target.matches('[data-f="q"]')) { F.q = e.target.value; shown = 150; refreshList(); } });
+view.addEventListener('change', e => { const f = e.target.dataset && e.target.dataset.f; if (f && f !== 'q') { F[f] = e.target.value; shown = 150; render(); } });
+$('#addBtn').onclick = () => { if (tab === 'rooms') roomDialog(); else if (tab === 'kit') kitItemDialog(null); else itemDialog(null, { quick: true }); };
+$$('nav.tabs button').forEach(b => { b.onclick = () => go(b.dataset.tab); });
+document.addEventListener('visibilitychange', () => { if (!document.hidden && !$('dialog[open]')) render(); });
+
+(async function init() {
+  try { db = await openDB(DB_NAME); } catch (e) { console.error(e); db = null; }
+  try { pdb = await openDB(PHOTO_DB); } catch (e) { console.error(e); pdb = null; }
+  if (db) {
+    try {
+      const raw = await idbGet(db, 'state');
+      if (raw) {
+        try { state = loadState(JSON.parse(raw)); stateTrusted = true; }
+        catch (e) { console.error(e); await idbPut(db, 'state-damaged-' + Date.now(), raw); toast('Saved data looked damaged — a copy was kept aside.'); }
+      } else stateTrusted = true;
+    } catch (e) { console.error(e); db = null; }
+  }
+  render();
+  cleanupOrphans();
+})();
+</script>
+</body>
+</html>

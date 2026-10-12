@@ -1,0 +1,1813 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>House</title>
+<meta name="description" content="Home and equipment upkeep: recurring maintenance, readings logs, warranties and vehicle dates.">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#f3f7f8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1311" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="House">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<style>
+:root{
+  --bg:#f5f4ef; --card:#ffffff; --ink:#1b2420; --muted:#66736d; --line:#e2e0d6; --soft:#efede5;
+  --accent:#0f766e; --accent-ink:#ffffff; --accent-soft:#d9f0ec;
+  --bad:#b42318; --bad-soft:#fde8e6; --warn:#9a5b00; --warn-soft:#fdf0d5; --ok:#166534; --ok-soft:#dcf5e3;
+  --radius:14px; --shadow:0 1px 2px rgba(16,24,20,.06),0 6px 18px rgba(16,24,20,.06);
+  color-scheme:light dark;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0e1311; --card:#171f1c; --ink:#e7eeeb; --muted:#97a69f; --line:#27332e; --soft:#1e2824;
+    --accent:#2dd4bf; --accent-ink:#06211d; --accent-soft:#12332e;
+    --bad:#ff8a80; --bad-soft:#3a1a18; --warn:#f6c26b; --warn-soft:#3a2c12; --ok:#7ee2a0; --ok-soft:#14301f;
+    --shadow:none;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation;
+  padding-bottom:calc(92px + env(safe-area-inset-bottom));
+}
+a{color:var(--accent)}
+h1,h2,h3{margin:0;line-height:1.2}
+h3{font-size:16px}
+p{margin:0 0 8px}
+.wrap{max-width:720px;margin:0 auto;padding:0 16px}
+.muted{color:var(--muted)} .bad{color:var(--bad)} .warn{color:var(--warn)} .ok{color:var(--ok)}
+.num{font-variant-numeric:tabular-nums}
+.hide{display:none!important}
+.pad{padding:14px 16px}
+.hint{font-size:13px;color:var(--muted);margin-top:4px}
+
+/* header */
+header.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top)}
+header.top .wrap{display:flex;align-items:center;gap:12px;min-height:58px}
+header.top .grow{flex:1;min-width:0}
+header.top h1{font-size:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+header.top .sub{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.back{display:inline-flex;align-items:center;min-height:44px;padding-right:6px;text-decoration:none;font-weight:600}
+
+/* cards, tiles, lists */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+.tile{padding:12px}
+.tile .lbl{font-size:12px;color:var(--muted);font-weight:600}
+.tile .val{font-size:20px;font-weight:700;margin-top:2px}
+.sec-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin:22px 4px 8px;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700}
+.sec-h .btn{text-transform:none;letter-spacing:0}
+.list{list-style:none;margin:0;padding:0}
+.row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-top:1px solid var(--line);cursor:pointer}
+.row:first-child{border-top:0}
+.row.static{cursor:default}
+.row-main{flex:1;min-width:0}
+.row-title{font-weight:600;overflow-wrap:anywhere}
+.row-sub{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.row-amt{font-weight:700;white-space:nowrap}
+.row.faded{opacity:.6}
+.badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 7px;border-radius:999px;background:var(--soft);color:var(--muted);vertical-align:middle;margin-left:6px}
+.badge.ok{background:var(--ok-soft);color:var(--ok)} .badge.warn{background:var(--warn-soft);color:var(--warn)} .badge.bad{background:var(--bad-soft);color:var(--bad)} .badge.acc{background:var(--accent-soft);color:var(--accent)}
+.empty{text-align:center;padding:40px 20px;color:var(--muted)}
+.empty .big{font-size:40px;line-height:1;margin-bottom:10px}
+.empty h2{color:var(--ink);font-size:18px;margin-bottom:6px}
+.empty .btn{margin-top:14px}
+.banner{padding:12px 14px;border-radius:12px;background:var(--warn-soft);color:var(--warn);font-size:14px;margin:14px 0;display:flex;gap:10px;justify-content:space-between;align-items:center}
+.banner.bad{background:var(--bad-soft);color:var(--bad)}
+.bar{height:8px;border-radius:99px;background:var(--soft);overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--accent);border-radius:99px}
+.bar.over>i{background:var(--bad)}
+
+/* buttons */
+.btn{white-space:nowrap;appearance:none;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-weight:600;min-height:44px;padding:0 16px;border-radius:12px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.danger{color:var(--bad)}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--accent)}
+.btn.small{min-height:36px;padding:0 12px;font-size:14px;border-radius:10px}
+.btn.block{width:100%}
+.btn:active{transform:translateY(1px)}
+.btn:disabled{opacity:.5;cursor:default}
+.btn:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible,.chip:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 14px;min-height:36px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+
+/* bottom nav + fab */
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+nav.tabs .wrap{display:flex;padding:0}
+nav.tabs a,nav.tabs button{flex:1;min-height:58px;border:0;background:none;color:var(--muted);font:inherit;font-size:11px;font-weight:600;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;text-decoration:none}
+nav.tabs .ico{font-size:20px;line-height:1}
+nav.tabs [aria-current="page"]{color:var(--accent)}
+.fab{position:fixed;right:max(16px,calc(50vw - 344px));bottom:calc(74px + env(safe-area-inset-bottom));z-index:7;width:56px;height:56px;border-radius:50%;border:0;background:var(--accent);color:var(--accent-ink);font-size:30px;line-height:1;box-shadow:0 6px 18px rgba(0,0,0,.28);cursor:pointer}
+.fab:active{transform:scale(.96)}
+
+/* forms + dialogs */
+input,select,textarea{width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-height:44px}
+textarea{min-height:92px;resize:vertical}
+input[type=checkbox]{width:22px;height:22px;min-height:0;padding:0;accent-color:var(--accent);flex:none}
+.field label{display:block;font-size:13px;font-weight:600;color:var(--muted);margin-bottom:4px}
+.field.check{display:flex;align-items:center;gap:10px}
+.field.check label{margin:0;color:var(--ink);font-size:16px;font-weight:500}
+.fields2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+dialog{border:0;border-radius:18px;padding:0;width:calc(100vw - 24px);max-width:520px;background:var(--card);color:var(--ink);box-shadow:0 20px 60px rgba(0,0,0,.35)}
+dialog::backdrop{background:rgba(10,15,12,.55)}
+.dlg-form{padding:20px;display:flex;flex-direction:column;gap:12px;max-height:85vh;max-height:85dvh;overflow:auto}
+.dlg-form h2{font-size:19px}
+.dlg-actions{display:flex;gap:8px;align-items:center;margin-top:6px;flex-wrap:wrap}
+.dlg-actions .spacer{flex:1}
+.ask-actions{justify-content:flex-end}
+.dlg-err{color:var(--bad);font-size:14px}
+.dlg-err:empty{display:none}
+.ask-body{font-size:15px;color:var(--ink)}
+.ask-body p{margin:0 0 8px}
+.checkgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px}
+.checkgrid .field.check label{font-size:15px}
+
+/* toast */
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom));background:#1b2420;color:#fff;padding:12px 16px;border-radius:12px;display:flex;gap:14px;align-items:center;z-index:60;max-width:calc(100vw - 24px);box-shadow:0 8px 24px rgba(0,0,0,.35);font-size:15px}
+.toast button{background:none;border:0;color:#7dd3c8;font:inherit;font-weight:700;cursor:pointer;min-height:36px}
+
+@media (prefers-reduced-motion:no-preference){.btn,.fab{transition:transform .08s}}
+
+.syncbadge{flex:none;white-space:nowrap;border:1px solid var(--line,#d5dbe0);background:var(--card,#fff);color:inherit;border-radius:999px;padding:4px 10px;font:inherit;font-size:.82rem;cursor:pointer;white-space:nowrap}
+.syncbadge.ok{color:#15803d}.syncbadge.bad{color:#b91c1c}
+.seg{display:flex;gap:8px;margin-top:6px}.seg .chip{flex:1;text-align:center}
+
+:root{--bg:#f3f7f8;--accent:#0e7490;--accent-soft:#d3ecf2}
+@media (prefers-color-scheme:dark){:root{--bg:#0e1311;--accent:#22d3ee;--accent-ink:#04222b;--accent-soft:#0e3340}}
+.stack{display:flex;flex-direction:column;gap:14px;margin-top:14px}
+.row .btn{flex:none}
+.row-actions{display:flex;gap:6px;align-items:center;flex:none}
+.tiles .val{font-size:22px}
+.backlink{margin:10px 0 0}
+.card.pad+.card.pad{margin-top:12px}
+.vals{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px;margin-top:10px}
+.vc{padding:8px 10px;border-radius:10px;background:var(--soft)}
+.vc .n{font-size:12px;color:var(--muted);font-weight:600}
+.vc .v{font-size:18px;font-weight:700}
+.vc .d{font-size:11px;color:var(--muted)}
+.vc.bad{background:var(--bad-soft)} .vc.bad .v{color:var(--bad)}
+.vc.ok .v{color:var(--ok)}
+.chart{width:100%;height:auto;display:block;margin-top:6px}
+.chart .band{fill:var(--ok-soft)}
+.chart .ln{fill:none;stroke:var(--accent);stroke-width:2;stroke-linejoin:round}
+.chart .pt{fill:var(--accent)} .chart .pt.bad{fill:var(--bad)}
+.chart .grid{stroke:var(--line);stroke-width:1}
+.chart text{fill:var(--muted);font-size:10px}
+.tl{list-style:none;margin:8px 0 0;padding:0 0 0 10px;border-left:2px solid var(--line)}
+.tl li{padding:2px 0 6px 8px;font-size:14px;overflow-wrap:anywhere}
+.wbn{margin:10px 0 0;padding:8px 12px;border-radius:10px;font-size:14px;font-weight:600;background:var(--soft);color:var(--ink)}
+.wbn.warn{background:var(--warn-soft);color:var(--warn)} .wbn.bad{background:var(--bad-soft);color:var(--bad)} .wbn.ok{background:var(--ok-soft);color:var(--ok)}
+.kv{font-size:14px;color:var(--muted);overflow-wrap:anywhere;margin-top:4px}
+.kv b{color:var(--ink);font-weight:600}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+table.ct{width:100%;border-collapse:collapse;font-size:14px}
+table.ct th,table.ct td{padding:8px 10px;text-align:right;border-top:1px solid var(--line)}
+table.ct th:first-child,table.ct td:first-child{text-align:left;overflow-wrap:anywhere}
+table.ct thead th{border-top:0;color:var(--muted);font-size:12px}
+table.ct tfoot td{font-weight:700}
+textarea.mono{font-family:ui-monospace,Menlo,monospace;font-size:14px;min-height:130px}
+.pv li.err .row-sub{color:var(--bad)}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap"><div class="grow"><h1 id="title">Due</h1><div class="sub" id="sub"></div></div><button type="button" class="btn small primary hide" id="addBtn">+ Add</button></div></header>
+<main class="wrap" id="view"></main>
+<nav class="tabs" aria-label="Sections"><div class="wrap">
+  <button type="button" data-tab="due"><span class="ico">📅</span>Due</button>
+  <button type="button" data-tab="things"><span class="ico">🏠</span>Things</button>
+  <button type="button" data-tab="logs"><span class="ico">📈</span>Logs</button>
+  <button type="button" data-tab="warranties"><span class="ico">🛡️</span>Warranties</button>
+  <button type="button" data-tab="backup"><span class="ico">💾</span>Backup</button>
+</div></nav>
+<script>
+'use strict';
+/* ===================== shared helpers (identical in every Goobs app) ===================== */
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => Array.from(el.querySelectorAll(s));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const isNum = v => typeof v === 'number' && Number.isFinite(v);
+const str = v => (typeof v === 'string' ? v : v == null ? '' : String(v));
+
+/* ---- dates: always local calendar dates stored as 'YYYY-MM-DD' ---- */
+const pad = n => String(n).padStart(2, '0');
+const fmtISO = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const parseISO = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+const isISO = s => typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s) && fmtISO(parseISO(s)) === s;
+const todayISO = () => fmtISO(new Date());
+const daysBetween = (a, b) => Math.round((parseISO(b) - parseISO(a)) / 86400000);
+const addDays = (s, n) => { const d = parseISO(s); d.setDate(d.getDate() + n); return fmtISO(d); };
+function addMonths(s, n, anchorDay) {
+  const d = parseISO(s);
+  const day = anchorDay || d.getDate();
+  const first = new Date(d.getFullYear(), d.getMonth() + n, 1);
+  const last = new Date(first.getFullYear(), first.getMonth() + 1, 0).getDate();
+  first.setDate(Math.min(day, last));
+  return fmtISO(first);
+}
+const monthEndISO = s => { const d = parseISO(s); return fmtISO(new Date(d.getFullYear(), d.getMonth() + 1, 0)); };
+
+function fmtDate(s, withWeekday = true) {
+  const d = parseISO(s);
+  const o = { month: 'short', day: 'numeric' };
+  if (withWeekday) o.weekday = 'short';
+  if (d.getFullYear() !== new Date().getFullYear()) o.year = 'numeric';
+  return d.toLocaleDateString(undefined, o);
+}
+function fmtDateTime(iso) {
+  const d = new Date(iso);
+  return isNaN(d) ? 'unknown date' : d.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+}
+const _mf = {};
+function money(n, cur = 'USD') {
+  if (!_mf[cur]) {
+    try { _mf[cur] = new Intl.NumberFormat(undefined, { style: 'currency', currency: cur }); }
+    catch { _mf[cur] = new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }); }
+  }
+  return _mf[cur].format(n);
+}
+const csvCell = v => {
+  let s = String(v ?? '');
+  if (/^[=+\-@\t\r]/.test(s)) s = "'" + s; // neutralise spreadsheet formula injection
+  return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+};
+function safeUrl(u) {
+  let s = String(u ?? '').trim();
+  if (!s) return '';
+  if (!/^[a-z][a-z0-9+.-]*:/i.test(s)) s = 'https://' + s;
+  try { const x = new URL(s); return /^https?:$/.test(x.protocol) ? x.href : ''; } catch { return ''; }
+}
+
+/* ---- storage: one JSON string under one key in IndexedDB ---- */
+function openDB(name) {
+  return new Promise((res, rej) => {
+    if (!window.indexedDB) return rej(new Error('IndexedDB unavailable'));
+    const r = indexedDB.open(name, 1);
+    r.onupgradeneeded = () => { r.result.createObjectStore('kv'); };
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+    r.onblocked = () => rej(new Error('Database blocked'));
+  });
+}
+function idbGet(db, key) {
+  return new Promise((res, rej) => {
+    const q = db.transaction('kv').objectStore('kv').get(key);
+    q.onsuccess = () => res(q.result);
+    q.onerror = () => rej(q.error);
+  });
+}
+function idbPut(db, key, val) {
+  return new Promise((res, rej) => {
+    const tx = db.transaction('kv', 'readwrite');
+    tx.objectStore('kv').put(val, key);
+    tx.oncomplete = () => res();
+    tx.onerror = () => rej(tx.error);
+    tx.onabort = () => rej(tx.error || new Error('Write aborted'));
+  });
+}
+
+/* ---- toast ---- */
+function toast(msg, action) {
+  const old = $('.toast'); if (old) old.remove();
+  const t = document.createElement('div');
+  t.className = 'toast'; t.setAttribute('role', 'status');
+  t.innerHTML = `<span>${esc(msg)}</span>` + (action ? `<button type="button">${esc(action.label)}</button>` : '');
+  if (action) t.querySelector('button').onclick = () => { t.remove(); action.fn(); };
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), action ? 8000 : 3200);
+}
+
+/* ---- dialogs ---- */
+if (!$('#dlg')) document.body.insertAdjacentHTML('beforeend', '<dialog id="dlg"></dialog><dialog id="ask"></dialog>');
+{
+  const dlg = $('#dlg'); let down = false;
+  dlg.addEventListener('pointerdown', e => { down = e.target === dlg; });
+  dlg.addEventListener('click', e => { if (e.target === dlg && down) dlg.close(); });
+}
+
+function fieldHTML(f) {
+  const id = 'f_' + f.name, v = f.value ?? '';
+  if (f.type === 'checkbox')
+    return `<div class="field check"><input type="checkbox" id="${id}" name="${f.name}"${f.value ? ' checked' : ''}><label for="${id}">${esc(f.label)}</label></div>`;
+  let ctl;
+  if (f.type === 'select') {
+    ctl = `<select id="${id}" name="${f.name}">${f.options.map(o => {
+      const [val, label] = Array.isArray(o) ? o : [o, o];
+      return `<option value="${esc(val)}"${String(val) === String(v) ? ' selected' : ''}>${esc(label)}</option>`;
+    }).join('')}</select>`;
+  } else if (f.type === 'textarea') {
+    ctl = `<textarea id="${id}" name="${f.name}" placeholder="${esc(f.placeholder || '')}">${esc(v)}</textarea>`;
+  } else {
+    const t = f.type || 'text';
+    const extra = t === 'number' ? ` inputmode="decimal" step="${f.step || 'any'}"` : '';
+    ctl = `<input id="${id}" name="${f.name}" type="${t}" value="${esc(v)}" placeholder="${esc(f.placeholder || '')}"${extra}${f.min != null ? ` min="${f.min}"` : ''}${f.max != null ? ` max="${f.max}"` : ''} autocomplete="${f.autocomplete || 'off'}" autocapitalize="${f.capitalize || (t === 'email' || t === 'password' ? 'none' : 'sentences')}">`;
+  }
+  return `<div class="field"><label for="${id}">${esc(f.label)}${f.required ? ' *' : ''}</label>${ctl}${f.hint ? `<div class="hint">${esc(f.hint)}</div>` : ''}</div>`;
+}
+
+/* formDialog: fields -> values. onSubmit(values) may return an error string (keeps dialog open).
+   onDelete() may return true to close. extra: [{label, kind, onClick}] extra buttons. */
+function formDialog({ title, intro = '', fields, submitLabel = 'Save', onSubmit, onDelete, deleteLabel = 'Delete', extra = [], onClose, grid = '' }) {
+  const dlg = $('#dlg');
+  const body = grid ? `<div class="${grid}">${fields.map(fieldHTML).join('')}</div>` : fields.map(fieldHTML).join('');
+  dlg.innerHTML = `<form class="dlg-form" novalidate>
+    <h2>${esc(title)}</h2>${intro ? `<p class="muted">${esc(intro)}</p>` : ''}${body}
+    <div class="dlg-err" role="alert"></div>
+    <div class="dlg-actions">
+      ${onDelete ? `<button type="button" class="btn danger" data-k="del">${esc(deleteLabel)}</button>` : ''}
+      ${extra.map((x, i) => `<button type="button" class="btn ${x.kind || ''}" data-x="${i}">${esc(x.label)}</button>`).join('')}
+      <span class="spacer"></span>
+      <button type="button" class="btn ghost" data-k="cancel">Cancel</button>
+      <button type="submit" class="btn primary">${esc(submitLabel)}</button>
+    </div></form>`;
+  const form = $('form', dlg), err = $('.dlg-err', dlg);
+  const collect = () => {
+    const vals = {};
+    for (const f of fields) { const el = form.elements[f.name]; vals[f.name] = f.type === 'checkbox' ? el.checked : el.value; }
+    return vals;
+  };
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const vals = collect();
+    for (const f of fields) if (f.required && !String(vals[f.name]).trim()) { err.textContent = `${f.label} is required.`; return; }
+    err.textContent = '';
+    let msg;
+    try { msg = await onSubmit(vals); } catch (ex) { msg = ex.message || 'Something went wrong.'; }
+    if (msg) err.textContent = msg; else dlg.close();
+  });
+  $('[data-k="cancel"]', dlg).onclick = () => dlg.close();
+  if (onDelete) $('[data-k="del"]', dlg).onclick = async () => { if (await onDelete()) dlg.close(); };
+  $$('[data-x]', dlg).forEach(b => { b.onclick = () => extra[+b.dataset.x].onClick(collect()); });
+  dlg.onclose = () => { dlg.onclose = null; if (onClose) onClose(); };
+  dlg.showModal();
+  const first = form.querySelector('input:not([type=checkbox]),textarea');
+  if (first && !first.value) first.focus(); // new-item forms open ready to type; edit forms don't pop the keyboard
+}
+
+function askDialog({ title, body = '', buttons }) {
+  return new Promise(resolve => {
+    const d = $('#ask'); let done = false;
+    d.innerHTML = `<div class="dlg-form"><h2>${esc(title)}</h2>${body ? `<div class="ask-body">${body}</div>` : ''}
+      <div class="dlg-actions ask-actions">${buttons.map((b, i) => `<button type="button" class="btn ${b.kind || ''}" data-i="${i}">${esc(b.label)}</button>`).join('')}</div></div>`;
+    const finish = v => { if (done) return; done = true; d.close(); resolve(v); };
+    $$('button', d).forEach(btn => { btn.onclick = () => finish(buttons[+btn.dataset.i].value); });
+    d.oncancel = () => { done = true; resolve(undefined); };
+    d.showModal();
+  });
+}
+const confirmBox = async (title, bodyText, okLabel = 'Delete', danger = true) =>
+  (await askDialog({ title, body: bodyText ? `<p>${esc(bodyText)}</p>` : '', buttons: [{ label: 'Cancel', value: false }, { label: okLabel, value: true, kind: danger ? 'danger' : 'primary' }] })) === true;
+const msgBox = (title, bodyText) =>
+  askDialog({ title, body: `<p>${esc(bodyText)}</p>`, buttons: [{ label: 'OK', value: true, kind: 'primary' }] });
+
+/* ---- backup: optional AES-GCM passphrase encryption (Web Crypto, PBKDF2-SHA256) ---- */
+const b64 = buf => { let s = ''; const b = new Uint8Array(buf); for (let i = 0; i < b.length; i += 0x8000) s += String.fromCharCode.apply(null, b.subarray(i, i + 0x8000)); return btoa(s); };
+const unb64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+async function deriveKey(pass, salt, iterations) {
+  const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(pass), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey({ name: 'PBKDF2', salt, iterations, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+}
+async function encryptPayload(obj, pass) {
+  const salt = crypto.getRandomValues(new Uint8Array(16)), iv = crypto.getRandomValues(new Uint8Array(12));
+  const iterations = 250000;
+  const key = await deriveKey(pass, salt, iterations);
+  const ct = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, new TextEncoder().encode(JSON.stringify(obj)));
+  return { encrypted: true, kdf: 'PBKDF2-SHA256', iterations, salt: b64(salt), iv: b64(iv), data: b64(ct) };
+}
+async function decryptPayload(env, pass) {
+  const key = await deriveKey(pass, unb64(env.salt), env.iterations);
+  try {
+    const pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: unb64(env.iv) }, key, unb64(env.data));
+    return JSON.parse(new TextDecoder().decode(pt));
+  } catch { throw new Error('Wrong passphrase, or the file is damaged.'); }
+}
+function promptDecrypt(env) {
+  return new Promise(resolve => {
+    let result = null;
+    formDialog({
+      title: 'Encrypted backup', intro: 'Enter the passphrase you chose when you made this backup.',
+      fields: [{ name: 'pass', label: 'Passphrase', type: 'password', required: true }], submitLabel: 'Unlock',
+      onSubmit: async v => { try { result = await decryptPayload(env, v.pass); } catch (e) { return e.message; } },
+      onClose: () => resolve(result)
+    });
+  });
+}
+const Backup = {
+  async build({ appId, schema, data, passphrase }) {
+    const head = { app: appId, schemaVersion: schema, exportedAt: new Date().toISOString() };
+    if (passphrase) return JSON.stringify({ ...head, ...(await encryptPayload(data, passphrase)) });
+    return JSON.stringify({ ...head, encrypted: false, data }, null, 2);
+  },
+  /* returns {data, exportedAt, schemaVersion}, or null if the user cancelled the passphrase prompt; throws Error with a friendly message */
+  async parse(text, { appId, schema }) {
+    let env;
+    try { env = JSON.parse(text); } catch { throw new Error('That file isn’t a valid backup (it isn’t JSON).'); }
+    if (!env || typeof env !== 'object' || env.app !== appId)
+      throw new Error(env && typeof env === 'object' && env.app ? `That backup belongs to a different app (${String(env.app).slice(0, 40)}).` : 'That file isn’t a backup from this app.');
+    if (!Number.isInteger(env.schemaVersion) || env.schemaVersion < 1) throw new Error('The backup is missing its version number.');
+    if (env.schemaVersion > schema) throw new Error('That backup was made by a newer version of the app. Close and reopen this app to update it, then try again.');
+    let data;
+    if (env.encrypted) {
+      if (!(window.crypto && crypto.subtle)) throw new Error('Encrypted backups need a secure (https) connection.');
+      if (!(env.iterations >= 1000 && env.iterations <= 2000000) || typeof env.salt !== 'string' || typeof env.iv !== 'string' || typeof env.data !== 'string')
+        throw new Error('The encrypted backup is damaged.');
+      data = await promptDecrypt(env);
+      if (data === null) return null;
+    } else data = env.data;
+    if (!data || typeof data !== 'object') throw new Error('The backup contains no data.');
+    return { data, exportedAt: typeof env.exportedAt === 'string' ? env.exportedAt : null, schemaVersion: env.schemaVersion };
+  }
+};
+
+/* share sheet when the platform supports sharing files (iPhone), otherwise a normal download */
+async function deliverFile(filename, text, mime = 'application/json') {
+  const file = new File([text], filename, { type: mime });
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try { await navigator.share({ files: [file], title: filename }); return 'shared'; }
+    catch (e) { if (e && e.name === 'AbortError') return 'cancelled'; /* otherwise fall back to a download */ }
+  }
+  const url = URL.createObjectURL(file);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.style.display = 'none';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 15000);
+  return 'downloaded';
+}
+function pickFile(accept = '.json,application/json') {
+  return new Promise(resolve => {
+    const i = document.createElement('input');
+    i.type = 'file'; i.accept = accept; i.style.display = 'none';
+    document.body.appendChild(i);
+    let done = false;
+    const fin = f => { if (done) return; done = true; i.remove(); resolve(f); };
+    i.addEventListener('change', () => fin((i.files && i.files[0]) || null));
+    i.addEventListener('cancel', () => fin(null));
+    i.click();
+  });
+}
+const readFileText = f => (f.text ? f.text() : new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = () => rej(r.error); r.readAsText(f); }));
+
+/* nag banner: only when there is data and no recent backup */
+function backupNag(meta, hasData) {
+  if (!hasData) return null;
+  if (!meta.lastBackup) return 'You have data but no backup yet. Make one so you can restore it if this device loses it.';
+  const age = (Date.now() - Date.parse(meta.lastBackup)) / 86400000;
+  const changed = meta.lastChange && Date.parse(meta.lastChange) > Date.parse(meta.lastBackup) + 1000;
+  if (changed && age >= 7) return `Your last backup was ${Math.floor(age)} days ago and you’ve made changes since.`;
+  return null;
+}
+
+/* ---- install helper ---- */
+let deferredInstall = null;
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferredInstall = e; if (typeof render === 'function') render(); });
+const isStandalone = () => (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+function installCardHTML() {
+  if (isStandalone()) return '';
+  const ios = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const msg = deferredInstall
+    ? '<p>Install it for its own window and full offline use.</p><button class="btn primary" data-action="install">Install app</button>'
+    : ios
+      ? '<p>In Safari tap <b>Share</b> → <b>Add to Home Screen</b>. <b>Do this before entering data</b> — the home-screen app keeps its own separate storage from the Safari tab. Then open it from the new icon.</p>'
+      : '<p>Use your browser’s menu → <b>Install app</b> (or <b>Add to Home Screen</b>).</p>';
+  return `<section class="card pad"><h3>Install on this device</h3>${msg}</section>`;
+}
+async function runInstall() { if (!deferredInstall) return; deferredInstall.prompt(); try { await deferredInstall.userChoice; } catch {} deferredInstall = null; if (typeof render === 'function') render(); }
+
+
+
+if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol))
+  window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
+
+
+/* ===================== House app ===================== */
+const APP_ID = 'goobs-house', DB_NAME = 'goobs-house-db', SCHEMA = 1;
+const MAX = { things: 200, tasks: 1000, history: 20000, logs: 100, readings: 20000, warranties: 500, fields: 12, claims: 60 };
+const KINDS = [['area', 'Home area'], ['equipment', 'Equipment'], ['vehicle', 'Vehicle']];
+const KIND_KEYS = KINDS.map(k => k[0]);
+const KIND_PLURAL = { area: 'Home areas', equipment: 'Equipment', vehicle: 'Vehicles' };
+const UNITS = [['day', 'days'], ['week', 'weeks'], ['month', 'months'], ['year', 'years'], ['fixed', 'same date every year'], ['miles', 'miles (odometer)'], ['once', 'one time only']];
+const UNIT_KEYS = UNITS.map(u => u[0]);
+const UNIT_CAP = { day: 3650, week: 520, month: 1200, year: 100, fixed: 1, miles: 1000000, once: 1 };
+const LOG_TYPES = [['readings', 'Readings (you define the fields)'], ['fuel', 'Fuel'], ['charge', 'Charging'], ['usage', 'Usage / hours'], ['cost', 'Cost log']];
+const LOG_TYPE_LABEL = { readings: 'Readings', fuel: 'Fuel', charge: 'Charging', usage: 'Usage', cost: 'Cost log' };
+const LOG_PRESETS = { readings: '', fuel: 'Gallons, gal\nOdometer, mi', charge: 'Energy, kWh\nCharge, %\nOdometer, mi', usage: 'Hours, h', cost: '' };
+const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+/* ---- small helpers ---- */
+const plural = (n, w) => `${n} ${n === 1 ? w : /[^aeiou]y$/.test(w) ? w.slice(0, -1) + 'ies' : w + 's'}`;
+const fmtNum = n => String(Math.round(n * 1000) / 1000);
+const fmtInt = n => Math.round(n).toLocaleString('en-US');
+const round2 = n => Math.round(n * 100) / 100;
+function numOrNull(v, lo = 0, hi = 1e9) {
+  if (v === '' || v == null || typeof v === 'boolean' || typeof v === 'object') return null;
+  const n = Number(v);
+  return Number.isFinite(n) && n >= lo && n <= hi ? n : null;
+}
+let lastTs = 0;
+const nowTs = () => { const n = Date.now(); lastTs = n > lastTs ? n : lastTs + 1; return lastTs; };
+const isoOr = (v, d = '') => (isISO(v) ? v : d);
+const byName = (a, b) => a.name.localeCompare(b.name);
+
+function normMonths(a) {
+  const out = [...new Set((Array.isArray(a) ? a : []).map(Number).filter(n => Number.isInteger(n) && n >= 1 && n <= 12))].sort((x, y) => x - y);
+  return out.length === 12 ? [] : out;
+}
+function monthsText(ms) {
+  if (!ms.length) return '';
+  const runs = []; let s = ms[0], p = ms[0];
+  for (const m of ms.slice(1)) { if (m === p + 1) p = m; else { runs.push([s, p]); s = p = m; } }
+  runs.push([s, p]);
+  return runs.map(([a, b]) => (a === b ? MONTH_NAMES[a - 1] : `${MONTH_NAMES[a - 1]}–${MONTH_NAMES[b - 1]}`)).join(', ');
+}
+/* "3-10", "3,4,5", "nov-feb" -> sorted month numbers; null when unreadable */
+function parseMonths(text) {
+  const t = str(text).trim();
+  if (!t) return [];
+  const one = x => {
+    x = x.trim().toLowerCase();
+    if (/^\d{1,2}$/.test(x)) { const n = +x; return n >= 1 && n <= 12 ? n : NaN; }
+    const i = MONTH_NAMES.findIndex(m => x.slice(0, 3) === m.toLowerCase());
+    return i >= 0 && /^[a-z]+$/.test(x) ? i + 1 : NaN;
+  };
+  const out = new Set();
+  for (const tok of t.split(/[,;\s]+/).filter(Boolean)) {
+    const parts = tok.split(/[-–]/);
+    if (parts.length > 2) return null;
+    const a = one(parts[0]), b = parts.length === 2 ? one(parts[1]) : a;
+    if (!(a >= 1) || !(b >= 1)) return null;
+    for (let m = a, i = 0; i < 12; i++) { out.add(m); if (m === b) break; m = m % 12 + 1; }
+  }
+  return normMonths([...out]);
+}
+/* seasonal tasks: a date outside the allowed months moves to the 1st of the next allowed month */
+function applySeason(dateISO, months) {
+  if (!dateISO || !months || !months.length) return dateISO;
+  const d = parseISO(dateISO), m = d.getMonth() + 1;
+  if (months.includes(m)) return dateISO;
+  for (let i = 1; i <= 12; i++) {
+    const mm = (m - 1 + i) % 12 + 1;
+    if (months.includes(mm)) return fmtISO(new Date(d.getFullYear() + (mm < m ? 1 : 0), mm - 1, 1));
+  }
+  return dateISO;
+}
+
+/* ---- model ---- */
+function normThing(t) {
+  if (!t || typeof t !== 'object') return null;
+  const name = str(t.name).trim().slice(0, 100);
+  if (!name) return null;
+  return {
+    id: str(t.id) || uid(), name, kind: KIND_KEYS.includes(t.kind) ? t.kind : 'equipment',
+    make: str(t.make).slice(0, 80), model: str(t.model).slice(0, 80), serial: str(t.serial).slice(0, 80),
+    date: isoOr(t.date), notes: str(t.notes).slice(0, 3000),
+    plate: str(t.plate).slice(0, 20), vin: str(t.vin).slice(0, 30),
+    odometer: numOrNull(t.odometer, 0, 5e6), odoDate: isoOr(t.odoDate),
+    createdAt: isNum(t.createdAt) ? t.createdAt : 0
+  };
+}
+function normPrev(p) {
+  if (!p || typeof p !== 'object') return null;
+  return {
+    nextDue: isoOr(p.nextDue), lastDone: isoOr(p.lastDone), nextOdo: numOrNull(p.nextOdo, 0, 1e8), lastOdo: numOrNull(p.lastOdo, 0, 1e8),
+    snoozeUntil: isoOr(p.snoozeUntil), active: p.active !== false, anchorDay: Number.isInteger(p.anchorDay) && p.anchorDay >= 1 && p.anchorDay <= 31 ? p.anchorDay : 1
+  };
+}
+function normTask(t) {
+  if (!t || typeof t !== 'object') return null;
+  const title = str(t.title).trim().slice(0, 120);
+  if (!title) return null;
+  const unit = UNIT_KEYS.includes(t.unit) ? t.unit : 'month';
+  let every = Math.floor(Number(t.every));
+  if (!(every >= 1)) every = 1;
+  every = Math.min(every, UNIT_CAP[unit]);
+  const nextDue = unit === 'miles' ? '' : isoOr(t.nextDue);
+  return {
+    id: str(t.id) || uid(), thingId: str(t.thingId), title, unit, every, nextDue,
+    anchorDay: Number.isInteger(t.anchorDay) && t.anchorDay >= 1 && t.anchorDay <= 31 ? t.anchorDay : (nextDue ? parseISO(nextDue).getDate() : 1),
+    nextOdo: unit === 'miles' ? numOrNull(t.nextOdo, 0, 1e8) : null, lastOdo: numOrNull(t.lastOdo, 0, 1e8),
+    lastDone: isoOr(t.lastDone), rollFrom: t.rollFrom === 'due' || unit === 'fixed' ? 'due' : 'done',
+    months: normMonths(t.months), snoozeUntil: isoOr(t.snoozeUntil), cost: numOrNull(t.cost, 0, 1e8),
+    notes: str(t.notes).slice(0, 3000), active: t.active !== false, createdAt: isNum(t.createdAt) ? t.createdAt : 0
+  };
+}
+function normHistory(h) {
+  if (!h || typeof h !== 'object' || !isISO(h.doneOn)) return null;
+  return {
+    id: str(h.id) || uid(), taskId: str(h.taskId), thingId: str(h.thingId), thingName: str(h.thingName).slice(0, 100),
+    title: str(h.title).trim().slice(0, 120) || '(unnamed task)', kind: h.kind === 'skipped' ? 'skipped' : 'done',
+    dueDate: isoOr(h.dueDate), doneOn: h.doneOn, cost: numOrNull(h.cost, 0, 1e8), who: str(h.who).slice(0, 100),
+    notes: str(h.notes).slice(0, 3000), odo: numOrNull(h.odo, 0, 1e8), prev: normPrev(h.prev),
+    prevThingOdo: h.prevThingOdo && typeof h.prevThingOdo === 'object' ? { odometer: numOrNull(h.prevThingOdo.odometer, 0, 5e6), odoDate: isoOr(h.prevThingOdo.odoDate) } : null,
+    createdAt: isNum(h.createdAt) ? h.createdAt : Date.parse(h.doneOn) || 0
+  };
+}
+function normField(f, seen) {
+  if (!f || typeof f !== 'object') return null;
+  const name = str(f.name).trim().slice(0, 40);
+  if (!name) return null;
+  let id = str(f.id).replace(/[^A-Za-z0-9_-]/g, '').slice(0, 20) || ('f' + uid());
+  while (seen.has(id)) id += 'x';
+  seen.add(id);
+  const min = numOrNull(f.min, -1e9, 1e9);
+  let max = numOrNull(f.max, -1e9, 1e9);
+  if (min != null && max != null && max < min) max = null;
+  return { id, name, unit: str(f.unit).trim().slice(0, 12), min, max };
+}
+function normLog(l) {
+  if (!l || typeof l !== 'object') return null;
+  const name = str(l.name).trim().slice(0, 100);
+  if (!name) return null;
+  const seen = new Set();
+  const fields = (Array.isArray(l.fields) ? l.fields : []).map(f => normField(f, seen)).filter(Boolean).slice(0, MAX.fields);
+  return { id: str(l.id) || uid(), name, thingId: str(l.thingId), type: LOG_TYPES.some(t => t[0] === l.type) ? l.type : 'readings', fields, createdAt: isNum(l.createdAt) ? l.createdAt : 0 };
+}
+function normReading(r) {
+  if (!r || typeof r !== 'object' || !isISO(r.date) || !str(r.logId)) return null;
+  const values = {};
+  if (r.values && typeof r.values === 'object' && !Array.isArray(r.values))
+    for (const k of Object.keys(r.values).slice(0, 40)) { const n = numOrNull(r.values[k], -1e9, 1e9); if (n != null) values[k.slice(0, 20)] = n; }
+  return { id: str(r.id) || uid(), logId: str(r.logId), date: r.date, values, cost: numOrNull(r.cost, 0, 1e8), note: str(r.note).slice(0, 1000), createdAt: isNum(r.createdAt) ? r.createdAt : 0 };
+}
+function normWarranty(w) {
+  if (!w || typeof w !== 'object') return null;
+  const item = str(w.item).trim().slice(0, 120);
+  if (!item) return null;
+  const claims = (Array.isArray(w.claims) ? w.claims : []).map(c => (c && typeof c === 'object' && isISO(c.date) ? { id: str(c.id) || uid(), date: c.date, note: str(c.note).slice(0, 1000) } : null)).filter(Boolean).slice(0, MAX.claims);
+  let n = Math.floor(Number(w.termN)); if (!(n >= 1)) n = 1; n = Math.min(n, 600);
+  return {
+    id: str(w.id) || uid(), item, thingId: str(w.thingId), vendor: str(w.vendor).slice(0, 100), start: isoOr(w.start),
+    mode: w.mode === 'end' ? 'end' : 'term', termN: n, termUnit: w.termUnit === 'month' ? 'month' : 'year', endDate: isoOr(w.endDate),
+    claimStatus: w.claimStatus === 'open' || w.claimStatus === 'closed' ? w.claimStatus : 'none', claims,
+    contact: str(w.contact).slice(0, 300), policyNo: str(w.policyNo).slice(0, 80), receipt: str(w.receipt).slice(0, 1000), notes: str(w.notes).slice(0, 3000),
+    createdAt: isNum(w.createdAt) ? w.createdAt : 0
+  };
+}
+function dedupe(arr, key = 'id') { const s = new Set(); return arr.filter(x => !s.has(x[key]) && s.add(x[key])); }
+function normalizeData(raw) {
+  let dropped = 0;
+  const run = (src, fn, max) => {
+    const list = Array.isArray(src) ? src : [];
+    let out = [];
+    for (const x of list) { const n = fn(x); if (n) out.push(n); else dropped++; }
+    const before = out.length; out = dedupe(out); dropped += before - out.length;
+    if (out.length > max) { dropped += out.length - max; out = out.slice(0, max); }
+    return out;
+  };
+  const r = raw && typeof raw === 'object' ? raw : {};
+  const things = run(r.things, normThing, MAX.things);
+  const tIds = new Set(things.map(t => t.id));
+  const fix = id => (tIds.has(id) ? id : '');
+  const tasks = run(r.tasks, normTask, MAX.tasks).map(t => ({ ...t, thingId: fix(t.thingId) }));
+  const history = run(r.history, normHistory, MAX.history);
+  const logs = run(r.logs, normLog, MAX.logs).map(l => ({ ...l, thingId: fix(l.thingId) }));
+  const lIds = new Set(logs.map(l => l.id));
+  const readings = run(r.readings, x => { const n = normReading(x); return n && lIds.has(n.logId) ? n : null; }, MAX.readings);
+  const fieldIds = new Map(logs.map(l => [l.id, new Set(l.fields.map(f => f.id))]));
+  for (const rd of readings) for (const k of Object.keys(rd.values)) if (!fieldIds.get(rd.logId).has(k)) delete rd.values[k];
+  const warranties = run(r.warranties, normWarranty, MAX.warranties).map(w => ({ ...w, thingId: fix(w.thingId) }));
+  return { data: { things, tasks, history, logs, readings, warranties }, dropped };
+}
+const defaultState = () => ({ schemaVersion: SCHEMA, meta: { lastBackup: null, lastChange: null }, settings: {}, things: [], tasks: [], history: [], logs: [], readings: [], warranties: [] });
+function loadState(parsed) {
+  const { data } = normalizeData(parsed);
+  const m = parsed && parsed.meta && typeof parsed.meta === 'object' ? parsed.meta : {};
+  return { schemaVersion: SCHEMA, meta: { lastBackup: str(m.lastBackup) || null, lastChange: str(m.lastChange) || null }, settings: {}, ...data };
+}
+const exportData = () => ({ things: state.things, tasks: state.tasks, history: state.history, logs: state.logs, readings: state.readings, warranties: state.warranties });
+const hasAnyData = () => state.things.length + state.tasks.length + state.history.length + state.logs.length + state.readings.length + state.warranties.length > 0;
+
+/* ---- persistence ---- */
+let state = defaultState(), db = null, saveFailed = false, persistAsked = false, saveChain = Promise.resolve();
+function persist({ touch = true } = {}) {
+  if (touch) state.meta.lastChange = new Date().toISOString();
+  if (!db) return Promise.resolve();
+  const snap = JSON.stringify(state);
+  saveChain = saveChain.then(() => idbPut(db, 'state', snap)).then(() => { saveFailed = false; }).catch(err => { console.error(err); saveFailed = true; });
+  if (!persistAsked && navigator.storage && navigator.storage.persist) { persistAsked = true; navigator.storage.persist().catch(() => {}); }
+  return saveChain;
+}
+const commit = () => { persist(); render(); };
+
+/* ---- lookups ---- */
+const thingById = id => state.things.find(x => x.id === id);
+const taskById = id => state.tasks.find(x => x.id === id);
+const logById = id => state.logs.find(x => x.id === id);
+const warrById = id => state.warranties.find(x => x.id === id);
+const thingName = id => { const t = thingById(id); return t ? t.name : 'General'; };
+
+/* ---- schedule engine ---- */
+function stepDate(t, d, anchor) {
+  const n = t.every;
+  if (t.unit === 'day') return addDays(d, n);
+  if (t.unit === 'week') return addDays(d, 7 * n);
+  if (t.unit === 'month') return addMonths(d, n, anchor);
+  if (t.unit === 'year' || t.unit === 'fixed') return addMonths(d, 12 * n, anchor);
+  return null;
+}
+function snapshotPrev(t) { return { nextDue: t.nextDue, lastDone: t.lastDone, nextOdo: t.nextOdo, lastOdo: t.lastOdo, snoozeUntil: t.snoozeUntil, active: t.active, anchorDay: t.anchorDay }; }
+/* Roll a task forward after it was done (or skipped). Mutates t. */
+function rollTask(t, doneOn, reading, { skip = false } = {}) {
+  const fromDue = skip || t.rollFrom === 'due' || t.unit === 'fixed';
+  if (t.unit === 'once') { t.active = false; }
+  else if (t.unit === 'miles') {
+    const th = thingById(t.thingId);
+    const base = isNum(reading) ? reading : (th && isNum(th.odometer) ? th.odometer : (t.nextOdo != null ? t.nextOdo : 0));
+    if (fromDue && t.nextOdo != null) {
+      let n = t.nextOdo + t.every;
+      for (let i = 0; i < 1000 && n <= base; i++) n += t.every;
+      t.nextOdo = n;
+    } else t.nextOdo = base + t.every;
+  } else {
+    let n;
+    if (fromDue && t.nextDue) {
+      n = stepDate(t, t.nextDue, t.anchorDay);
+      for (let i = 0; i < 5000 && n <= doneOn; i++) n = stepDate(t, n, t.anchorDay);
+    } else {
+      n = stepDate(t, doneOn);
+      t.anchorDay = parseISO(doneOn).getDate();
+    }
+    t.nextDue = applySeason(n, t.months);
+  }
+  if (!skip) { t.lastDone = doneOn; if (isNum(reading)) t.lastOdo = reading; }
+  t.snoozeUntil = '';
+}
+function latestEntry(taskId) {
+  let cur = null;
+  for (const h of state.history) if (h.taskId === taskId && (!cur || h.createdAt >= cur.createdAt)) cur = h;
+  return cur;
+}
+function recordDone(t, { doneOn, cost, who, notes, odo }) {
+  const th = thingById(t.thingId);
+  const entry = {
+    id: uid(), taskId: t.id, thingId: t.thingId, thingName: th ? th.name : '', title: t.title, kind: 'done', dueDate: t.nextDue || '', doneOn,
+    cost, who, notes, odo: isNum(odo) ? odo : null, prev: snapshotPrev(t), prevThingOdo: null, createdAt: nowTs()
+  };
+  if (th && isNum(odo) && (th.odometer == null || odo > th.odometer)) { entry.prevThingOdo = { odometer: th.odometer, odoDate: th.odoDate }; th.odometer = odo; th.odoDate = doneOn; }
+  rollTask(t, doneOn, isNum(odo) ? odo : null);
+  state.history.push(entry);
+  return entry;
+}
+function recordSkip(t) {
+  const th = thingById(t.thingId), today = todayISO();
+  const entry = {
+    id: uid(), taskId: t.id, thingId: t.thingId, thingName: th ? th.name : '', title: t.title, kind: 'skipped', dueDate: t.nextDue || '', doneOn: today,
+    cost: null, who: '', notes: '', odo: null, prev: snapshotPrev(t), prevThingOdo: null, createdAt: nowTs()
+  };
+  rollTask(t, today, null, { skip: true });
+  state.history.push(entry);
+  return entry;
+}
+function undoEntry(id) {
+  const e = state.history.find(h => h.id === id);
+  if (!e) return;
+  const t = taskById(e.taskId);
+  if (t) {
+    const latest = latestEntry(t.id);
+    if (!latest || latest.id !== e.id) { toast('Only the most recent entry of a task can be undone.'); return; }
+    if (e.prev) Object.assign(t, e.prev);
+  }
+  if (e.prevThingOdo) { const th = thingById(e.thingId); if (th) { th.odometer = e.prevThingOdo.odometer; th.odoDate = e.prevThingOdo.odoDate; } }
+  state.history = state.history.filter(h => h.id !== id);
+  commit();
+  toast('Undone');
+}
+function doneAction(t, vals) {
+  const entry = recordDone(t, vals);
+  commit();
+  toast(t.active ? `Done · next ${t.unit === 'miles' ? 'at ' + fmtInt(t.nextOdo) + ' mi' : fmtDate(t.nextDue)}` : 'Done · one-time task completed', { label: 'Undo', fn: () => undoEntry(entry.id) });
+}
+function skipAction(t) {
+  const entry = recordSkip(t);
+  commit();
+  toast('Skipped this one', { label: 'Undo', fn: () => undoEntry(entry.id) });
+}
+function snoozeTask(t, days) {
+  const prev = t.snoozeUntil;
+  t.snoozeUntil = days > 0 ? addDays(todayISO(), days) : '';
+  commit();
+  toast(days > 0 ? `Snoozed until ${fmtDate(t.snoozeUntil)}` : 'Snooze cleared', { label: 'Undo', fn: () => { t.snoozeUntil = prev; commit(); } });
+}
+
+/* ---- status of a task relative to today ---- */
+function taskStatus(t, today) {
+  const th = thingById(t.thingId);
+  const snoozed = !!(t.snoozeUntil && t.snoozeUntil > today);
+  const dated = (eff) => {
+    const diff = daysBetween(today, eff), when = fmtDate(eff);
+    const sec = diff < 0 ? 'overdue' : diff <= 7 ? 'week' : diff <= 30 ? 'month' : 'later';
+    let text, cls = '';
+    if (diff < 0) { text = `${plural(-diff, 'day')} overdue · was ${when}`; cls = 'bad'; }
+    else if (diff === 0) { text = 'Due today'; cls = 'warn'; }
+    else if (diff === 1) { text = `Due tomorrow · ${when}`; cls = 'warn'; }
+    else if (diff <= 7) { text = `Due ${when} · in ${diff} days`; cls = 'warn'; }
+    else text = `Due ${when}`;
+    if (snoozed) { text = `Snoozed to ${fmtDate(t.snoozeUntil)}`; cls = 'warn'; }
+    return { sec, text, cls, ord: diff, eff, snoozed };
+  };
+  if (t.unit === 'miles' && !snoozed) {
+    if (t.nextOdo == null) return { sec: 'later', text: 'No odometer target set', cls: '', ord: 1e9, snoozed };
+    const odo = th && isNum(th.odometer) ? th.odometer : null;
+    if (odo == null) return { sec: 'later', text: `Due at ${fmtInt(t.nextOdo)} mi · set the odometer on ${th ? th.name : 'a vehicle'}`, cls: '', ord: 1e9 - 1, snoozed };
+    const rem = t.nextOdo - odo;
+    if (rem < 0) return { sec: 'overdue', text: `${fmtInt(-rem)} mi overdue · was due at ${fmtInt(t.nextOdo)} mi`, cls: 'bad', ord: rem / 40, snoozed };
+    return { sec: rem <= 500 ? 'week' : rem <= 1500 ? 'month' : 'later', text: `${fmtInt(rem)} mi to go · due at ${fmtInt(t.nextOdo)} mi`, cls: rem <= 500 ? 'warn' : '', ord: rem / 40, snoozed };
+  }
+  let eff = t.nextDue || '';
+  if (snoozed && t.snoozeUntil > eff) eff = t.snoozeUntil;
+  if (!eff) return { sec: 'later', text: 'No due date set', cls: '', ord: 1e9, snoozed };
+  return dated(eff);
+}
+function intervalText(t) {
+  let s;
+  if (t.unit === 'miles') s = `Every ${fmtInt(t.every)} mi`;
+  else if (t.unit === 'once') s = 'One time';
+  else if (t.unit === 'fixed') s = t.nextDue ? `Yearly on ${parseISO(t.nextDue).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}` : 'Yearly';
+  else { const w = { day: 'day', week: 'week', month: 'month', year: 'year' }[t.unit]; s = t.every === 1 ? `Every ${w}` : `Every ${t.every} ${w}s`; }
+  return t.months.length ? `${s} · ${monthsText(t.months)}` : s;
+}
+
+/* ---- warranties ---- */
+function warrantyExpiry(w) {
+  if (w.mode === 'end') return w.endDate || null;
+  if (!w.start) return null;
+  return addMonths(w.start, w.termUnit === 'year' ? w.termN * 12 : w.termN, parseISO(w.start).getDate());
+}
+function warrantyInfo(w, today) {
+  const expiry = warrantyExpiry(w);
+  if (!expiry) return { expiry: null, left: null, level: 'none', text: 'No expiry date set', cls: '' };
+  const left = daysBetween(today, expiry), when = fmtDate(expiry, false);
+  if (left < 0) return { expiry, left, level: 'expired', text: `Expired ${plural(-left, 'day')} ago · ${when}`, cls: 'bad' };
+  if (left === 0) return { expiry, left, level: 'd30', text: `Expires today · ${when}`, cls: 'bad' };
+  if (left <= 30) return { expiry, left, level: 'd30', text: `Expires in ${plural(left, 'day')} · ${when}`, cls: 'bad' };
+  if (left <= 90) return { expiry, left, level: 'd90', text: `Expires in ${plural(left, 'day')} · ${when}`, cls: 'warn' };
+  return { expiry, left, level: 'ok', text: `Expires ${when} · ${fmtInt(left)} days left`, cls: 'ok' };
+}
+
+/* ---- costs ---- */
+function costItems() {
+  const items = [];
+  for (const h of state.history) if (h.kind === 'done' && h.cost != null && h.cost > 0) {
+    const th = thingById(h.thingId);
+    items.push({ thingKey: th ? th.id : (h.thingName ? 'gone:' + h.thingName : ''), thingName: th ? th.name : (h.thingName || 'General'), year: h.doneOn.slice(0, 4), amount: h.cost, src: 'maint' });
+  }
+  for (const r of state.readings) if (r.cost != null && r.cost > 0) {
+    const l = logById(r.logId); if (!l) continue;
+    const th = thingById(l.thingId);
+    items.push({ thingKey: th ? th.id : '', thingName: th ? th.name : 'General', year: r.date.slice(0, 4), amount: r.cost, src: 'log' });
+  }
+  return items;
+}
+
+/* ---- starter items ---- */
+const STARTERS = [
+  { k: 'pool-filter', thing: 'Pool', kind: 'area', title: 'Clean pool filter', every: 3, unit: 'month', first: 21 },
+  { k: 'pool-chem', thing: 'Pool', kind: 'area', title: 'Test pool chemistry', every: 1, unit: 'week', first: 3 },
+  { k: 'pool-equip', thing: 'Pool', kind: 'area', title: 'Pool equipment and pump check', every: 1, unit: 'month', first: 10 },
+  { k: 'pool-log', thing: 'Pool', kind: 'area', type: 'log', title: 'Pool chemistry log (FC, pH, TA, CYA, CH, salt, temp)', logName: 'Pool chemistry', fields: 'FC, ppm\npH\nTA, ppm\nCYA, ppm\nCH, ppm\nSalt, ppm\nTemp, °F' },
+  { k: 'gen-ex', thing: 'Generator', kind: 'equipment', title: 'Check generator exercise cycle', every: 1, unit: 'month', first: 7 },
+  { k: 'gen-svc', thing: 'Generator', kind: 'equipment', title: 'Generator annual service', every: 1, unit: 'year', first: 90 },
+  { k: 'hvac-filter', thing: 'HVAC', kind: 'equipment', title: 'Replace HVAC filter', every: 3, unit: 'month', first: 14 },
+  { k: 'hvac-svc', thing: 'HVAC', kind: 'equipment', title: 'HVAC annual service', every: 1, unit: 'year', first: 60 },
+  { k: 'detectors', thing: 'Home', kind: 'area', title: 'Smoke and CO detector batteries', every: 6, unit: 'month', first: 30 },
+  { k: 'wh-flush', thing: 'Home', kind: 'area', title: 'Flush water heater', every: 1, unit: 'year', first: 45 },
+  { k: 'dryer-vent', thing: 'Home', kind: 'area', title: 'Clean dryer vent', every: 1, unit: 'year', first: 50 },
+  { k: 'gutters', thing: 'Home', kind: 'area', title: 'Clean gutters', every: 6, unit: 'month', first: 40 },
+  { k: 'termite', thing: 'Home', kind: 'area', title: 'Termite bond renewal', every: 1, unit: 'fixed', first: 120 },
+  { k: 'battery-tools', thing: 'Battery tools', kind: 'equipment', title: 'Battery tool charging check', every: 3, unit: 'month', first: 30 },
+  { k: 'pw', thing: 'Pressure washer', kind: 'equipment', title: 'Pressure washer winterize / service', every: 1, unit: 'year', first: 60 },
+  { k: 'v-reg', thing: 'Vehicle', kind: 'vehicle', title: 'Vehicle registration', every: 1, unit: 'fixed', first: 60 },
+  { k: 'v-insp', thing: 'Vehicle', kind: 'vehicle', title: 'State inspection', every: 1, unit: 'fixed', first: 60 },
+  { k: 'v-ins', thing: 'Vehicle', kind: 'vehicle', title: 'Vehicle insurance renewal', every: 1, unit: 'fixed', first: 90 },
+  { k: 'v-tire', thing: 'Vehicle', kind: 'vehicle', title: 'Tire rotation', every: 6, unit: 'month', first: 30 },
+  { k: 'v-oil', thing: 'Vehicle', kind: 'vehicle', title: 'Oil change / service', every: 6, unit: 'month', first: 30 }
+];
+function findOrAddThing(name, kind) {
+  const low = name.trim().toLowerCase();
+  let th = state.things.find(x => x.name.toLowerCase() === low);
+  if (!th) {
+    if (state.things.length >= MAX.things) return null;
+    th = normThing({ id: uid(), name, kind, createdAt: nowTs() });
+    state.things.push(th);
+  }
+  return th;
+}
+function addStarters(keys) {
+  const today = todayISO();
+  let nt = 0, nl = 0, skipped = 0;
+  for (const s of STARTERS) {
+    if (!keys.includes(s.k)) continue;
+    const th = findOrAddThing(s.thing, s.kind);
+    if (!th) { skipped++; continue; }
+    if (s.type === 'log') {
+      if (state.logs.some(l => l.thingId === th.id && l.name.toLowerCase() === s.logName.toLowerCase()) || state.logs.length >= MAX.logs) { skipped++; continue; }
+      state.logs.push(normLog({ id: uid(), name: s.logName, thingId: th.id, type: 'readings', fields: parseFieldLines(s.fields).fields, createdAt: nowTs() }));
+      nl++; continue;
+    }
+    if (state.tasks.some(t => t.thingId === th.id && t.title.toLowerCase() === s.title.toLowerCase()) || state.tasks.length >= MAX.tasks) { skipped++; continue; }
+    const nextDue = addDays(today, s.first);
+    state.tasks.push(normTask({ id: uid(), thingId: th.id, title: s.title, unit: s.unit, every: s.every, nextDue, anchorDay: parseISO(nextDue).getDate(), rollFrom: s.unit === 'fixed' ? 'due' : 'done', createdAt: nowTs() }));
+    nt++;
+  }
+  commit();
+  toast(`Added ${plural(nt, 'task')}${nl ? ` and ${plural(nl, 'log')}` : ''}${skipped ? ` (${skipped} already there)` : ''}`);
+}
+function starterDialog() {
+  formDialog({
+    title: 'Add starter items', intro: 'Tick what applies. Intervals are generic and the first dates are placeholders — edit each task to match your house. Nothing is added unless ticked.',
+    fields: STARTERS.map(s => ({ name: s.k, type: 'checkbox', value: false, label: s.type === 'log' ? `${s.thing}: ${s.title}` : `${s.thing}: ${s.title} (${intervalText({ ...s, months: [], nextDue: '' })})` })),
+    submitLabel: 'Add selected',
+    extra: [{ label: 'Select all', onClick: () => $$('#dlg input[type=checkbox]').forEach(c => { c.checked = true; }) }, { label: 'None', onClick: () => $$('#dlg input[type=checkbox]').forEach(c => { c.checked = false; }) }],
+    onSubmit: v => {
+      const keys = STARTERS.filter(s => v[s.k]).map(s => s.k);
+      if (!keys.length) return 'Tick at least one item.';
+      addStarters(keys);
+    }
+  });
+}
+
+/* ---- CSV task import ---- */
+function parseCSVLine(line) {
+  const out = []; let cur = '', q = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (q) { if (c === '"') { if (line[i + 1] === '"') { cur += '"'; i++; } else q = false; } else cur += c; }
+    else if (c === '"' && cur === '') q = true;
+    else if (c === ',') { out.push(cur.trim()); cur = ''; }
+    else cur += c;
+  }
+  out.push(cur.trim());
+  return out;
+}
+function parseEvery(s) {
+  s = str(s).trim().toLowerCase();
+  const words = { daily: [1, 'day'], weekly: [1, 'week'], biweekly: [2, 'week'], monthly: [1, 'month'], quarterly: [3, 'month'], semiannual: [6, 'month'], semiannually: [6, 'month'], yearly: [1, 'year'], annual: [1, 'year'], annually: [1, 'year'], once: [1, 'once'], '': [1, 'once'] };
+  if (words[s]) return { every: words[s][0], unit: words[s][1] };
+  const m = s.match(/^(?:every\s+)?(\d{1,4})\s*(d|days?|w|wks?|weeks?|m|mos?|months?|y|yrs?|years?)$/);
+  if (!m) return null;
+  const n = +m[1]; if (n < 1) return null;
+  const u = m[2][0] === 'd' ? 'day' : m[2][0] === 'w' ? 'week' : m[2][0] === 'm' ? 'month' : 'year';
+  return n <= UNIT_CAP[u] ? { every: n, unit: u } : null;
+}
+function parseDueDate(s) {
+  s = str(s).trim();
+  if (!s || s.toLowerCase() === 'today') return todayISO();
+  if (isISO(s)) return s;
+  const m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2}|\d{4})$/);
+  if (m) { const y = m[3].length === 2 ? 2000 + +m[3] : +m[3]; const iso = `${y}-${pad(+m[1])}-${pad(+m[2])}`; return isISO(iso) ? iso : null; }
+  return null;
+}
+function parseTaskLines(text) {
+  const rows = [];
+  const lines = str(text).split(/\r?\n/).slice(0, 600);
+  let first = true;
+  lines.forEach((raw, i) => {
+    if (!raw.trim()) return;
+    const cols = parseCSVLine(raw);
+    if (first) { first = false; if (/^title$/i.test(cols[0])) return; }
+    const r = { line: i + 1, raw, title: cols[0] || '', thingName: cols[1] || '', ok: false, err: '' };
+    if (!r.title) r.err = 'missing title';
+    else if (cols.length > 4) r.err = 'too many columns (put quotes around text that contains commas)';
+    else {
+      const ev = parseEvery(cols[2] || '');
+      const due = parseDueDate(cols[3] || '');
+      if (!ev) r.err = `can't read the interval "${cols[2] || ''}" (try "every 3 months")`;
+      else if (!due) r.err = `can't read the date "${cols[3]}" (use YYYY-MM-DD or M/D/YYYY)`;
+      else { r.title = r.title.slice(0, 120); Object.assign(r, ev, { nextDue: due, ok: true }); }
+    }
+    rows.push(r);
+  });
+  return rows;
+}
+function applyImport(rows) {
+  let n = 0, newThings = 0;
+  for (const r of rows) {
+    if (!r.ok || state.tasks.length >= MAX.tasks) continue;
+    let thingId = '';
+    if (r.thingName.trim()) {
+      const before = state.things.length;
+      const th = findOrAddThing(r.thingName.trim().slice(0, 100), 'equipment');
+      if (th) { thingId = th.id; if (state.things.length > before) newThings++; }
+    }
+    state.tasks.push(normTask({ id: uid(), thingId, title: r.title, unit: r.unit, every: r.every, nextDue: r.nextDue, anchorDay: parseISO(r.nextDue).getDate(), rollFrom: r.unit === 'fixed' ? 'due' : 'done', createdAt: nowTs() }));
+    n++;
+  }
+  return { n, newThings };
+}
+
+/* ---- log field helpers ---- */
+function parseFieldLines(text) {
+  const fields = []; let err = '';
+  for (const raw of str(text).split(/\r?\n/)) {
+    if (!raw.trim()) continue;
+    const c = raw.split(',').map(x => x.trim());
+    const name = c[0]; if (!name) continue;
+    const min = c[2] ? Number(c[2]) : null, max = c[3] ? Number(c[3]) : null;
+    if ((c[2] && !Number.isFinite(min)) || (c[3] && !Number.isFinite(max))) { err = `Line "${raw.trim()}": min and max must be numbers.`; break; }
+    if (min != null && max != null && max < min) { err = `Line "${raw.trim()}": max is below min.`; break; }
+    fields.push({ name: name.slice(0, 40), unit: (c[1] || '').slice(0, 12), min, max });
+  }
+  if (fields.length > MAX.fields) err = `Use at most ${MAX.fields} fields.`;
+  return { fields, err };
+}
+const fieldsToLines = fs => fs.map(f => [f.name, f.unit, f.min != null ? f.min : '', f.max != null ? f.max : ''].join(', ').replace(/(, )+$/, '')).join('\n');
+function rangeState(f, v) {
+  if (f.min != null && v < f.min) return 'low';
+  if (f.max != null && v > f.max) return 'high';
+  return f.min != null || f.max != null ? 'ok' : '';
+}
+const rangeText = f => (f.min != null && f.max != null ? `${fmtNum(f.min)}–${fmtNum(f.max)}` : f.min != null ? `≥ ${fmtNum(f.min)}` : f.max != null ? `≤ ${fmtNum(f.max)}` : '');
+const entriesOf = logId => state.readings.filter(r => r.logId === logId).sort((a, b) => a.date.localeCompare(b.date) || a.createdAt - b.createdAt);
+function latestPerField(log) {
+  const es = entriesOf(log.id), out = {};
+  for (const f of log.fields) for (let i = es.length - 1; i >= 0; i--) if (isNum(es[i].values[f.id])) { out[f.id] = { v: es[i].values[f.id], date: es[i].date }; break; }
+  return out;
+}
+function outOfTarget(log) {
+  const L = latestPerField(log); let n = 0;
+  for (const f of log.fields) if (L[f.id]) { const s = rangeState(f, L[f.id].v); if (s === 'low' || s === 'high') n++; }
+  return n;
+}
+function chartSVG(log, f) {
+  const pts = entriesOf(log.id).filter(r => isNum(r.values[f.id])).map(r => ({ d: r.date, v: r.values[f.id] })).slice(-60);
+  if (!pts.length) return '';
+  const W = 320, H = 130, pl = 38, pr = 10, pt = 10, pb = 22;
+  let lo = Math.min(...pts.map(p => p.v)), hi = Math.max(...pts.map(p => p.v));
+  if (f.min != null) lo = Math.min(lo, f.min);
+  if (f.max != null) hi = Math.max(hi, f.max);
+  if (lo === hi) { const d = Math.abs(lo) * 0.1 || 1; lo -= d; hi += d; }
+  const padv = (hi - lo) * 0.08; lo -= padv; hi += padv;
+  const Y = v => pt + (H - pt - pb) * (1 - (v - lo) / (hi - lo));
+  const t0 = parseISO(pts[0].d).getTime(), t1 = parseISO(pts[pts.length - 1].d).getTime();
+  const X = d => (t1 === t0 ? (pl + W - pr) / 2 : pl + (W - pl - pr) * (parseISO(d).getTime() - t0) / (t1 - t0));
+  let band = '';
+  if (f.min != null || f.max != null) {
+    const y1 = f.max != null ? Y(f.max) : pt, y2 = f.min != null ? Y(f.min) : H - pb;
+    band = `<rect class="band" x="${pl}" y="${y1.toFixed(1)}" width="${W - pl - pr}" height="${Math.max(1, y2 - y1).toFixed(1)}"></rect>`;
+  }
+  const line = pts.length > 1 ? `<polyline class="ln" points="${pts.map(p => `${X(p.d).toFixed(1)},${Y(p.v).toFixed(1)}`).join(' ')}"></polyline>` : '';
+  const dots = pts.map(p => { const s = rangeState(f, p.v); return `<circle class="pt${s === 'low' || s === 'high' ? ' bad' : ''}" cx="${X(p.d).toFixed(1)}" cy="${Y(p.v).toFixed(1)}" r="3.2"></circle>`; }).join('');
+  const last = pts[pts.length - 1];
+  const label = `${f.name}: ${plural(pts.length, 'reading')}, latest ${fmtNum(last.v)}${f.unit ? ' ' + f.unit : ''}${rangeText(f) ? ', target ' + rangeText(f) : ''}`;
+  const fd = d => parseISO(d).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(label)}">${band}
+    <line class="grid" x1="${pl}" y1="${H - pb}" x2="${W - pr}" y2="${H - pb}"></line>
+    <text x="${pl - 4}" y="${pt + 4}" text-anchor="end">${esc(fmtNum(hi - padv))}</text><text x="${pl - 4}" y="${H - pb}" text-anchor="end">${esc(fmtNum(lo + padv))}</text>
+    ${line}${dots}
+    <text x="${pl}" y="${H - 6}">${esc(fd(pts[0].d))}</text><text x="${W - pr}" y="${H - 6}" text-anchor="end">${esc(fd(last.d))}</text></svg>`;
+}
+
+/* ---- dialogs ---- */
+function thingOptions() { return [['', 'General (no thing)'], ...state.things.slice().sort(byName).map(x => [x.id, x.name])]; }
+function thingDialog(id) {
+  const t = id ? thingById(id) : null;
+  if (id && !t) return;
+  formDialog({
+    title: t ? 'Edit thing' : 'Add thing',
+    fields: [
+      { name: 'name', label: 'Name', required: true, value: t && t.name, placeholder: 'e.g. Pool, Generator, Jeep' },
+      { name: 'kind', label: 'Kind', type: 'select', options: KINDS, value: t ? t.kind : 'equipment' },
+      { name: 'make', label: 'Make', value: t && t.make }, { name: 'model', label: 'Model', value: t && t.model },
+      { name: 'serial', label: 'Serial number', value: t && t.serial },
+      { name: 'date', label: 'Purchase / install date', type: 'date', value: t && t.date },
+      { name: 'plate', label: 'Vehicle: plate', value: t && t.plate }, { name: 'vin', label: 'Vehicle: VIN', value: t && t.vin, capitalize: 'characters' },
+      { name: 'odometer', label: 'Vehicle: current odometer (miles, optional)', type: 'number', value: t && t.odometer != null ? t.odometer : '', min: 0 },
+      { name: 'notes', label: 'Notes', type: 'textarea', value: t && t.notes, placeholder: 'Text only. Avoid passwords.' }
+    ],
+    submitLabel: t ? 'Save' : 'Add thing',
+    onSubmit: v => {
+      if (!t && state.things.length >= MAX.things) return `Limit of ${MAX.things} things reached.`;
+      const odo = v.odometer === '' ? null : numOrNull(v.odometer, 0, 5e6);
+      if (v.odometer !== '' && odo == null) return 'Enter a valid odometer reading.';
+      if (v.date && !isISO(v.date)) return 'Pick a valid date.';
+      const rec = { name: v.name.trim().slice(0, 100), kind: v.kind, make: v.make.trim(), model: v.model.trim(), serial: v.serial.trim(), date: v.date || '', plate: v.plate.trim(), vin: v.vin.trim().toUpperCase(), notes: v.notes.trim() };
+      if (t) {
+        Object.assign(t, rec);
+        if (odo !== t.odometer) { t.odometer = odo; t.odoDate = odo != null ? todayISO() : ''; }
+      } else state.things.push(normThing({ id: uid(), ...rec, odometer: odo, odoDate: odo != null ? todayISO() : '', createdAt: nowTs() }));
+      commit();
+    },
+    onDelete: t ? async () => {
+      const nt = state.tasks.filter(x => x.thingId === t.id).length, nl = state.logs.filter(x => x.thingId === t.id).length, nw = state.warranties.filter(x => x.thingId === t.id).length;
+      const choice = await askDialog({
+        title: `Delete “${t.name}”?`,
+        body: `<p>It has ${plural(nt, 'task')}, ${plural(nl, 'log')} and ${plural(nw, 'warranty')}. History is always kept.</p>`,
+        buttons: [{ label: 'Cancel', value: 'cancel' }, { label: 'Keep items as General', value: 'keep' }, { label: 'Delete all', value: 'all', kind: 'danger' }]
+      });
+      if (choice !== 'keep' && choice !== 'all') return false;
+      if (choice === 'all') {
+        const lids = new Set(state.logs.filter(x => x.thingId === t.id).map(x => x.id));
+        state.tasks = state.tasks.filter(x => x.thingId !== t.id);
+        state.logs = state.logs.filter(x => x.thingId !== t.id);
+        state.readings = state.readings.filter(x => !lids.has(x.logId));
+        state.warranties = state.warranties.filter(x => x.thingId !== t.id);
+      } else {
+        for (const x of [...state.tasks, ...state.logs, ...state.warranties]) if (x.thingId === t.id) x.thingId = '';
+      }
+      for (const h of state.history) if (h.thingId === t.id) { h.thingName = t.name; h.thingId = ''; }
+      state.things = state.things.filter(x => x.id !== t.id);
+      if (nav.sub === 'thing' && nav.id === t.id) { nav.sub = null; nav.id = null; }
+      commit(); toast('Thing deleted'); return true;
+    } : null
+  });
+}
+function odoDialog(id) {
+  const t = thingById(id); if (!t) return;
+  formDialog({
+    title: `Odometer · ${t.name}`, intro: t.odometer != null ? `Last set: ${fmtInt(t.odometer)} mi${t.odoDate ? ' on ' + fmtDate(t.odoDate) : ''}.` : 'Not set yet.',
+    fields: [{ name: 'odometer', label: 'Odometer (miles)', type: 'number', value: t.odometer != null ? t.odometer : '', required: true, min: 0 }],
+    onSubmit: v => {
+      const n = numOrNull(v.odometer, 0, 5e6);
+      if (n == null) return 'Enter a valid odometer reading.';
+      t.odometer = n; t.odoDate = todayISO(); commit();
+    }
+  });
+}
+function taskDialog(id, presetThing) {
+  const t = id ? taskById(id) : null;
+  if (id && !t) return;
+  formDialog({
+    title: t ? 'Edit task' : 'Add task',
+    fields: [
+      { name: 'title', label: 'Task', required: true, value: t && t.title, placeholder: 'e.g. Replace HVAC filter' },
+      { name: 'thingId', label: 'Belongs to', type: 'select', options: thingOptions(), value: t ? t.thingId : (presetThing || '') },
+      { name: 'every', label: 'Repeats every', type: 'number', value: t ? t.every : 1, min: 1, step: 1 },
+      { name: 'unit', label: 'Unit', type: 'select', options: UNITS, value: t ? t.unit : 'month', hint: '“Same date every year” is for renewals (registration, bond). “Miles” uses the vehicle’s odometer.' },
+      { name: 'nextDue', label: 'Next due date', type: 'date', value: t ? t.nextDue : todayISO(), hint: 'Not used for odometer tasks.' },
+      { name: 'nextOdo', label: 'Next due at odometer (miles)', type: 'number', value: t && t.nextOdo != null ? t.nextOdo : '', min: 0, hint: 'Only for odometer tasks. Leave blank to use current odometer + interval.' },
+      { name: 'rollFrom', label: 'After it is done, count the next one from', type: 'select', options: [['done', 'The date I did it'], ['due', 'The original due date']], value: t ? t.rollFrom : 'done' },
+      { name: 'months', label: 'Only in these months (optional)', value: t ? monthsText(t.months).replace(/–/g, '-') : '', placeholder: 'e.g. 3-10 or Mar-Oct', hint: 'Seasonal tasks skip ahead to the next allowed month. Blank = all year.' },
+      { name: 'cost', label: 'Typical cost (optional)', type: 'number', value: t && t.cost != null ? t.cost : '', min: 0 },
+      { name: 'notes', label: 'Notes', type: 'textarea', value: t && t.notes, placeholder: 'Part numbers, who to call, how-to.' }
+    ],
+    submitLabel: t ? 'Save' : 'Add task',
+    extra: t && t.active && t.unit !== 'once' ? [{ label: 'Skip this one', onClick: () => { $('#dlg').close(); skipAction(t); } }] : [],
+    onSubmit: v => {
+      if (!t && state.tasks.length >= MAX.tasks) return `Limit of ${MAX.tasks} tasks reached.`;
+      let every = Math.floor(Number(v.every));
+      if (!(every >= 1)) return 'Enter an interval of 1 or more.';
+      const unit = v.unit;
+      every = Math.min(every, UNIT_CAP[unit]);
+      const months = parseMonths(v.months);
+      if (months === null) return 'Months: use numbers or names, like 3-10 or Mar-Oct.';
+      if (unit !== 'miles' && !isISO(v.nextDue)) return 'Pick the next due date.';
+      const th = thingById(v.thingId);
+      let nextOdo = null;
+      if (unit === 'miles') {
+        nextOdo = v.nextOdo === '' ? null : numOrNull(v.nextOdo, 0, 1e8);
+        if (v.nextOdo !== '' && nextOdo == null) return 'Enter a valid odometer target.';
+        if (nextOdo == null) {
+          if (th && th.odometer != null) nextOdo = th.odometer + every;
+          else return 'Enter the odometer reading where this is next due (or set the vehicle’s odometer first).';
+        }
+      }
+      const cost = v.cost === '' ? null : numOrNull(v.cost, 0, 1e8);
+      if (v.cost !== '' && cost == null) return 'Enter a valid cost.';
+      const nextDue = unit === 'miles' ? '' : applySeason(v.nextDue, months);
+      const rec = {
+        title: v.title.trim().slice(0, 120), thingId: v.thingId, unit, every: unit === 'fixed' || unit === 'once' ? 1 : every, nextDue, nextOdo, months,
+        rollFrom: unit === 'fixed' ? 'due' : v.rollFrom, cost, notes: v.notes.trim()
+      };
+      if (t) {
+        const dateChanged = t.nextDue !== rec.nextDue || t.unit !== rec.unit;
+        Object.assign(t, rec);
+        if (dateChanged) { t.anchorDay = nextDue ? parseISO(nextDue).getDate() : 1; t.snoozeUntil = ''; t.active = true; }
+      } else state.tasks.push(normTask({ id: uid(), ...rec, anchorDay: nextDue ? parseISO(nextDue).getDate() : 1, createdAt: nowTs() }));
+      commit();
+      if (nextDue && nextDue !== v.nextDue) toast(`Moved to ${fmtDate(nextDue)} (first allowed month)`);
+    },
+    onDelete: t ? async () => {
+      if (!(await confirmBox(`Delete “${t.title}”?`, 'Its history is kept.', 'Delete task'))) return false;
+      state.tasks = state.tasks.filter(x => x.id !== t.id); commit(); toast('Task deleted'); return true;
+    } : null
+  });
+}
+function doneDialog(id) {
+  const t = taskById(id); if (!t) return;
+  const th = thingById(t.thingId);
+  const wantsOdo = t.unit === 'miles' || (th && th.kind === 'vehicle');
+  const fields = [
+    { name: 'doneOn', label: 'Date done', type: 'date', value: todayISO(), required: true },
+    { name: 'cost', label: 'Cost (optional)', type: 'number', value: t.cost != null ? t.cost : '', min: 0 },
+    { name: 'who', label: 'Done by', value: '', placeholder: 'Me, vendor name…' }
+  ];
+  if (wantsOdo) fields.push({ name: 'odo', label: 'Odometer (miles)', type: 'number', value: th && th.odometer != null ? th.odometer : '', min: 0, hint: t.unit === 'miles' ? 'Next one is counted from this reading.' : '' });
+  fields.push({ name: 'notes', label: 'Notes', type: 'textarea', value: '' });
+  const st = taskStatus(t, todayISO());
+  formDialog({
+    title: `Done: ${t.title}`, intro: `${th ? th.name + ' · ' : ''}${st.text}.`, fields, submitLabel: 'Mark done',
+    onSubmit: v => {
+      if (!isISO(v.doneOn)) return 'Pick a valid date.';
+      const cost = v.cost === '' ? null : numOrNull(v.cost, 0, 1e8);
+      if (v.cost !== '' && cost == null) return 'Enter a valid cost.';
+      let odo = null;
+      if (wantsOdo && v.odo !== '') { odo = numOrNull(v.odo, 0, 1e8); if (odo == null) return 'Enter a valid odometer reading.'; }
+      doneAction(t, { doneOn: v.doneOn, cost, who: v.who.trim().slice(0, 100), notes: v.notes.trim(), odo });
+    }
+  });
+}
+function snoozeDialog(id) {
+  const t = taskById(id); if (!t) return;
+  askDialog({
+    title: `Snooze “${t.title}”`, body: '<p>Hides it until later. The schedule itself does not change.</p>',
+    buttons: [{ label: 'Cancel', value: null }, ...(t.snoozeUntil && t.snoozeUntil > todayISO() ? [{ label: 'Clear', value: 0 }] : []), { label: '1 day', value: 1 }, { label: '1 week', value: 7, kind: 'primary' }]
+  }).then(v => { if (v != null) snoozeTask(t, v); });
+}
+function historyDialog(id) {
+  const h = state.history.find(x => x.id === id); if (!h) return;
+  formDialog({
+    title: h.title, intro: `${h.thingName || thingName(h.thingId)} · ${h.kind === 'skipped' ? 'skipped' : 'done'}. Editing this does not change the schedule.`,
+    fields: [
+      { name: 'doneOn', label: 'Date', type: 'date', value: h.doneOn, required: true },
+      { name: 'cost', label: 'Cost', type: 'number', value: h.cost != null ? h.cost : '', min: 0 },
+      { name: 'who', label: 'Done by', value: h.who },
+      { name: 'notes', label: 'Notes', type: 'textarea', value: h.notes }
+    ],
+    onSubmit: v => {
+      if (!isISO(v.doneOn)) return 'Pick a valid date.';
+      const cost = v.cost === '' ? null : numOrNull(v.cost, 0, 1e8);
+      if (v.cost !== '' && cost == null) return 'Enter a valid cost.';
+      Object.assign(h, { doneOn: v.doneOn, cost, who: v.who.trim().slice(0, 100), notes: v.notes.trim() }); commit();
+    },
+    onDelete: async () => {
+      if (!(await confirmBox('Delete this history entry?', 'The task’s schedule is not changed. Use Undo to roll a task back.', 'Delete'))) return false;
+      state.history = state.history.filter(x => x.id !== h.id); commit(); return true;
+    }
+  });
+}
+function logDialog(id, presetThing) {
+  const l = id ? logById(id) : null;
+  if (id && !l) return;
+  formDialog({
+    title: l ? 'Edit log' : 'Add log',
+    fields: [
+      { name: 'name', label: 'Log name', required: true, value: l && l.name, placeholder: 'e.g. Pool chemistry, Jeep fuel' },
+      { name: 'thingId', label: 'Belongs to', type: 'select', options: thingOptions(), value: l ? l.thingId : (presetThing || '') },
+      { name: 'type', label: 'Type', type: 'select', options: LOG_TYPES, value: l ? l.type : 'readings' },
+      { name: 'fields', label: 'Fields (one per line: name, unit, min, max)', type: 'textarea', value: l ? fieldsToLines(l.fields) : '', placeholder: 'FC, ppm, 1, 3\npH, , 7.2, 7.8\nTA, ppm', hint: 'Min and max are optional and are your own targets. Only fields with a range are checked. For fuel, charging and usage types, leave blank to use the standard fields. Every entry can also carry a cost.' }
+    ],
+    submitLabel: l ? 'Save' : 'Add log',
+    onSubmit: v => {
+      if (!l && state.logs.length >= MAX.logs) return `Limit of ${MAX.logs} logs reached.`;
+      let text = v.fields;
+      if (!text.trim() && v.type !== 'readings') text = LOG_PRESETS[v.type];
+      const { fields, err } = parseFieldLines(text);
+      if (err) return err;
+      if (v.type === 'readings' && !fields.length) return 'Add at least one field (for example: pH).';
+      if (l) {
+        const oldFields = l.fields, used = new Set(), out = [];
+        const unmatchedNew = [];
+        for (const nf of fields) {
+          const m = oldFields.find(o => !used.has(o.id) && o.name.toLowerCase() === nf.name.toLowerCase());
+          if (m) { used.add(m.id); out.push({ ...nf, id: m.id }); } else { out.push(nf); unmatchedNew.push(nf); }
+        }
+        const unmatchedOld = oldFields.filter(o => !used.has(o.id));
+        if (unmatchedNew.length === 1 && unmatchedOld.length === 1) unmatchedNew[0].id = unmatchedOld[0].id; // single rename keeps its readings
+        const seen = new Set();
+        l.fields = out.map(f => normField(f, seen)).filter(Boolean);
+        const keep = new Set(l.fields.map(f => f.id));
+        for (const r of state.readings) if (r.logId === l.id) for (const k of Object.keys(r.values)) if (!keep.has(k)) delete r.values[k];
+        Object.assign(l, { name: v.name.trim().slice(0, 100), thingId: v.thingId, type: v.type });
+      } else {
+        const nl = normLog({ id: uid(), name: v.name.trim(), thingId: v.thingId, type: v.type, fields, createdAt: nowTs() });
+        state.logs.push(nl);
+        nav = { tab: 'logs', sub: 'log', id: nl.id };
+      }
+      commit();
+    },
+    onDelete: l ? async () => {
+      const n = state.readings.filter(r => r.logId === l.id).length;
+      if (!(await confirmBox(`Delete “${l.name}”?`, `This also deletes its ${plural(n, 'entry')}.`, 'Delete log'))) return false;
+      state.readings = state.readings.filter(r => r.logId !== l.id);
+      state.logs = state.logs.filter(x => x.id !== l.id);
+      nav = { tab: 'logs', sub: null, id: null };
+      commit(); toast('Log deleted'); return true;
+    } : null
+  });
+}
+function readingDialog(logId, id) {
+  const l = logById(logId); if (!l) return;
+  const r = id ? state.readings.find(x => x.id === id) : null;
+  if (id && !r) return;
+  const fields = [{ name: 'date', label: 'Date', type: 'date', value: r ? r.date : todayISO(), required: true }];
+  for (const f of l.fields) fields.push({ name: 'v_' + f.id, label: `${f.name}${f.unit ? ' (' + f.unit + ')' : ''}${rangeText(f) ? ' · target ' + rangeText(f) : ''}`, type: 'number', value: r && isNum(r.values[f.id]) ? r.values[f.id] : '', step: 'any' });
+  fields.push({ name: 'cost', label: 'Cost (optional)', type: 'number', value: r && r.cost != null ? r.cost : '', min: 0 });
+  fields.push({ name: 'note', label: 'Note', type: 'textarea', value: r && r.note });
+  formDialog({
+    title: `${r ? 'Edit entry' : 'Add entry'} · ${l.name}`, fields, submitLabel: r ? 'Save' : 'Add entry',
+    onSubmit: v => {
+      if (!isISO(v.date)) return 'Pick a valid date.';
+      const values = {};
+      for (const f of l.fields) {
+        const raw = v['v_' + f.id];
+        if (raw === '') continue;
+        const n = numOrNull(raw, -1e9, 1e9);
+        if (n == null) return `${f.name}: enter a number.`;
+        values[f.id] = n;
+      }
+      const cost = v.cost === '' ? null : numOrNull(v.cost, 0, 1e8);
+      if (v.cost !== '' && cost == null) return 'Enter a valid cost.';
+      if (!Object.keys(values).length && cost == null && !v.note.trim()) return 'Enter at least one value, a cost or a note.';
+      if (!r && state.readings.length >= MAX.readings) return `Limit of ${MAX.readings} entries reached.`;
+      if (r) Object.assign(r, { date: v.date, values, cost, note: v.note.trim() });
+      else state.readings.push(normReading({ id: uid(), logId: l.id, date: v.date, values, cost, note: v.note.trim(), createdAt: nowTs() }));
+      commit();
+    },
+    onDelete: r ? async () => {
+      if (!(await confirmBox('Delete this entry?', '', 'Delete'))) return false;
+      state.readings = state.readings.filter(x => x.id !== r.id); commit(); return true;
+    } : null
+  });
+}
+function warrantyDialog(id, presetThing) {
+  const w = id ? warrById(id) : null;
+  if (id && !w) return;
+  formDialog({
+    title: w ? 'Edit warranty' : 'Add warranty',
+    fields: [
+      { name: 'item', label: 'Item', required: true, value: w && w.item, placeholder: 'e.g. Pool pump and heater' },
+      { name: 'thingId', label: 'Belongs to', type: 'select', options: thingOptions(), value: w ? w.thingId : (presetThing || '') },
+      { name: 'vendor', label: 'Vendor / manufacturer', value: w && w.vendor },
+      { name: 'start', label: 'Start date', type: 'date', value: w && w.start },
+      { name: 'mode', label: 'Expiry is set by', type: 'select', options: [['term', 'Start date + term'], ['end', 'A fixed end date']], value: w ? w.mode : 'term' },
+      { name: 'termN', label: 'Term length', type: 'number', value: w ? w.termN : 1, min: 1, step: 1 },
+      { name: 'termUnit', label: 'Term unit', type: 'select', options: [['year', 'years'], ['month', 'months']], value: w ? w.termUnit : 'year' },
+      { name: 'endDate', label: 'End date (if fixed)', type: 'date', value: w && w.endDate },
+      { name: 'policyNo', label: 'Policy / claim number', value: w && w.policyNo },
+      { name: 'contact', label: 'Contact', value: w && w.contact, placeholder: 'Phone, email, rep name' },
+      { name: 'receipt', label: 'Receipt notes', type: 'textarea', value: w && w.receipt, placeholder: 'Where the receipt is, order number…' },
+      { name: 'notes', label: 'Notes', type: 'textarea', value: w && w.notes }
+    ],
+    submitLabel: w ? 'Save' : 'Add warranty',
+    onSubmit: v => {
+      if (!w && state.warranties.length >= MAX.warranties) return `Limit of ${MAX.warranties} warranties reached.`;
+      const tn = Math.floor(Number(v.termN));
+      if (v.mode === 'term') {
+        if (!isISO(v.start)) return 'Pick the start date.';
+        if (!(tn >= 1)) return 'Enter a term of 1 or more.';
+      } else if (!isISO(v.endDate)) return 'Pick the end date.';
+      const rec = { item: v.item.trim().slice(0, 120), thingId: v.thingId, vendor: v.vendor.trim(), start: isISO(v.start) ? v.start : '', mode: v.mode, termN: tn >= 1 ? tn : 1, termUnit: v.termUnit, endDate: isISO(v.endDate) ? v.endDate : '', policyNo: v.policyNo.trim(), contact: v.contact.trim(), receipt: v.receipt.trim(), notes: v.notes.trim() };
+      if (w) Object.assign(w, rec); else state.warranties.push(normWarranty({ id: uid(), ...rec, createdAt: nowTs() }));
+      commit();
+    },
+    onDelete: w ? async () => {
+      if (!(await confirmBox(`Delete “${w.item}”?`, '', 'Delete warranty'))) return false;
+      state.warranties = state.warranties.filter(x => x.id !== w.id); commit(); return true;
+    } : null
+  });
+}
+function claimDialog(id) {
+  const w = warrById(id); if (!w) return;
+  formDialog({
+    title: `Claim note · ${w.item}`,
+    fields: [
+      { name: 'status', label: 'Claim status', type: 'select', options: [['none', 'No claim'], ['open', 'Open'], ['closed', 'Closed']], value: w.claimStatus === 'none' ? 'open' : w.claimStatus },
+      { name: 'date', label: 'Date', type: 'date', value: todayISO(), required: true },
+      { name: 'note', label: 'What happened', type: 'textarea', value: '', placeholder: 'Called vendor, case number, part shipped, denied…' }
+    ],
+    submitLabel: 'Add to timeline',
+    extra: w.claims.length ? [{ label: 'Remove last note', kind: 'danger', onClick: () => { w.claims.pop(); $('#dlg').close(); commit(); } }] : [],
+    onSubmit: v => {
+      if (!isISO(v.date)) return 'Pick a valid date.';
+      if (!v.note.trim()) return 'Write a short note.';
+      if (w.claims.length >= MAX.claims) return `Limit of ${MAX.claims} notes per warranty reached.`;
+      w.claims.push({ id: uid(), date: v.date, note: v.note.trim().slice(0, 1000) });
+      w.claims.sort((a, b) => a.date.localeCompare(b.date));
+      w.claimStatus = v.status;
+      commit();
+    }
+  });
+}
+
+/* ---- navigation + views ---- */
+const view = $('#view');
+let nav = { tab: 'due', sub: null, id: null };
+let costYear = 'all', importText = '', importRows = null;
+const storageBannerHTML = () => saveFailed ? '<div class="banner bad">Couldn’t save to this device’s storage. Back up now so nothing is lost.</div>'
+  : !db ? '<div class="banner bad">This browser isn’t allowing storage (private mode?). Changes won’t survive closing the app — use Backup often.</div>' : '';
+const backLink = (label) => `<div class="backlink"><button type="button" class="btn small ghost" data-action="back">← ${esc(label)}</button></div>`;
+
+function taskRow(t, today) {
+  const S = taskStatus(t, today), id = esc(t.id), th = thingById(t.thingId);
+  const sub = `${th ? th.name : 'General'} · ${intervalText(t)}${t.lastDone ? ' · last ' + fmtDate(t.lastDone, false) : ''}`;
+  return `<li class="row" data-action="edit-task" data-id="${id}">
+    <div class="row-main"><div class="row-title">${esc(t.title)}${S.snoozed ? '<span class="badge warn">Snoozed</span>' : ''}${!t.active ? '<span class="badge">Done</span>' : ''}</div>
+    <div class="row-sub">${esc(sub)}</div><div class="row-sub ${S.cls}">${esc(S.text)}</div></div>
+    <div class="row-actions">${t.active ? `<button type="button" class="btn small" data-action="snooze" data-id="${id}" aria-label="Snooze ${esc(t.title)}">⏰</button>
+    <button type="button" class="btn small primary" data-action="done" data-id="${id}" aria-label="Mark ${esc(t.title)} done">Done</button>` : ''}</div></li>`;
+}
+function histRow(h, canUndo) {
+  const id = esc(h.id), nm = h.thingName || (h.thingId ? thingName(h.thingId) : '');
+  const th = thingById(h.thingId);
+  const sub = `${th ? th.name : (nm || 'General')} · ${h.kind === 'skipped' ? 'Skipped' : 'Done'} ${fmtDate(h.doneOn)}${h.who ? ' · ' + h.who : ''}${h.odo != null ? ' · ' + fmtInt(h.odo) + ' mi' : ''}`;
+  return `<li class="row ${h.kind === 'skipped' ? 'faded' : ''}" data-action="edit-hist" data-id="${id}">
+    <div class="row-main"><div class="row-title">${esc(h.title)}${h.kind === 'skipped' ? '<span class="badge">Skipped</span>' : ''}</div><div class="row-sub">${esc(sub)}</div>${h.notes ? `<div class="row-sub">${esc(h.notes)}</div>` : ''}</div>
+    <div class="row-amt num">${h.cost != null ? money(h.cost) : ''}</div>
+    ${canUndo ? `<button type="button" class="btn small" data-action="undo" data-id="${id}">Undo</button>` : ''}</li>`;
+}
+const latestIds = () => { const m = new Map(); for (const h of state.history) { const c = m.get(h.taskId); if (!c || h.createdAt >= c.createdAt) m.set(h.taskId, h); } return new Set([...m.values()].filter(h => taskById(h.taskId)).map(h => h.id)); };
+const histSorted = () => [...state.history].sort((a, b) => b.doneOn.localeCompare(a.doneOn) || b.createdAt - a.createdAt);
+
+function renderDue() {
+  const today = todayISO();
+  if (!state.tasks.length) {
+    return storageBannerHTML() + `<div class="empty"><div class="big">🏠</div><h2>Nothing to track yet</h2>
+      <p>Add the things around the house that have an interval or an expiry: filters, service, inspections, registrations. Mark one done and it rolls to the next date.</p>
+      <button class="btn primary" data-action="add">Add a task</button><br>
+      <button class="btn" data-action="starters" style="margin-top:10px">Add starter items…</button><br>
+      <button class="btn ghost" data-action="restore">Restore from a backup file</button></div>`;
+  }
+  const active = state.tasks.filter(t => t.active).map(t => ({ t, S: taskStatus(t, today) })).sort((a, b) => a.S.ord - b.S.ord || a.t.title.localeCompare(b.t.title));
+  const g = { overdue: [], week: [], month: [], later: [] };
+  for (const x of active) g[x.S.sec].push(x.t);
+  const sec = (title, hint, arr) => arr.length ? `<div class="sec-h"><span>${title}${hint ? ` <span style="text-transform:none;letter-spacing:0;font-weight:500">${hint}</span>` : ''}</span><span class="num">${arr.length}</span></div><ul class="card list">${arr.map(t => taskRow(t, today)).join('')}</ul>` : '';
+  const wsoon = state.warranties.map(w => ({ w, i: warrantyInfo(w, today) })).filter(x => x.i.level === 'd30').sort((a, b) => a.i.left - b.i.left);
+  const wbanner = wsoon.length ? `<div class="banner" data-action="go-warranties" style="cursor:pointer"><span>${wsoon.length === 1 ? `Warranty “${esc(wsoon[0].w.item)}” ends in ${plural(wsoon[0].i.left, 'day')}.` : `${wsoon.length} warranties end within 30 days.`}</span><b>View</b></div>` : '';
+  const recent = histSorted().slice(0, 5), lat = latestIds();
+  const done = state.tasks.filter(t => !t.active).sort((a, b) => a.title.localeCompare(b.title));
+  return storageBannerHTML() + wbanner + `
+    <div class="tiles">
+      <div class="card tile"><div class="lbl">Overdue</div><div class="val num ${g.overdue.length ? 'bad' : ''}">${g.overdue.length}</div></div>
+      <div class="card tile"><div class="lbl">This week</div><div class="val num ${g.week.length ? 'warn' : ''}">${g.week.length}</div></div>
+      <div class="card tile"><div class="lbl">This month</div><div class="val num">${g.month.length}</div></div>
+    </div>
+    ${sec('Overdue', '', g.overdue)}${sec('This week', '(7 days)', g.week)}${sec('This month', '(30 days)', g.month)}${sec('Later', '', g.later)}
+    ${active.length ? '' : '<div class="card empty"><div class="big">🎉</div><h2>All caught up</h2><p>No active tasks.</p></div>'}
+    ${done.length ? `<div class="sec-h"><span>Completed one-time tasks</span></div><ul class="card list">${done.map(t => taskRow(t, today)).join('')}</ul>` : ''}
+    ${recent.length ? `<div class="sec-h"><span>Recently done</span><button type="button" class="btn small ghost" data-action="history">All history</button></div><ul class="card list">${recent.map(h => histRow(h, lat.has(h.id))).join('')}</ul>` : ''}`;
+}
+function thingRow(t, today) {
+  const ts = state.tasks.filter(x => x.thingId === t.id && x.active).map(x => ({ x, S: taskStatus(x, today) })).sort((a, b) => a.S.ord - b.S.ord);
+  const over = ts.filter(z => z.S.sec === 'overdue').length;
+  const bits = [[t.make, t.model].filter(Boolean).join(' '), t.kind === 'vehicle' && t.odometer != null ? fmtInt(t.odometer) + ' mi' : '', plural(ts.length, 'task')].filter(Boolean);
+  return `<li class="row" data-action="open-thing" data-id="${esc(t.id)}"><div class="row-main"><div class="row-title">${esc(t.name)}${over ? `<span class="badge bad">${over} overdue</span>` : ''}</div>
+    <div class="row-sub">${esc(bits.join(' · '))}</div>${ts[0] ? `<div class="row-sub ${ts[0].S.cls}">${esc(ts[0].x.title)} — ${esc(ts[0].S.text)}</div>` : ''}</div><span class="muted">›</span></li>`;
+}
+function renderThings() {
+  const today = todayISO();
+  const head = `<div class="btnrow" style="margin:14px 0 0"><button type="button" class="btn small" data-action="costs">💲 Costs</button><button type="button" class="btn small" data-action="starters">Starter items…</button></div>`;
+  if (!state.things.length) return storageBannerHTML() + `<div class="empty"><div class="big">🏡</div><h2>No things yet</h2><p>A thing is a home area, a piece of equipment or a vehicle: Pool, Generator, HVAC, Jeep. Tasks, logs and warranties attach to it.</p>
+    <button class="btn primary" data-action="add">Add a thing</button><br><button class="btn" data-action="starters" style="margin-top:10px">Add starter items…</button></div>`;
+  let html = storageBannerHTML() + head;
+  for (const [k] of KINDS) {
+    const arr = state.things.filter(t => t.kind === k).sort(byName);
+    if (arr.length) html += `<div class="sec-h"><span>${KIND_PLURAL[k]}</span><span class="num">${arr.length}</span></div><ul class="card list">${arr.map(t => thingRow(t, today)).join('')}</ul>`;
+  }
+  const loose = state.tasks.filter(t => !thingById(t.thingId) && t.active).length;
+  if (loose) html += `<p class="hint" style="margin:12px 4px">${plural(loose, 'task')} not attached to a thing show on the Due tab as “General”.</p>`;
+  return html;
+}
+function renderThing(id) {
+  const t = thingById(id);
+  if (!t) { nav.sub = null; return renderThings(); }
+  const today = todayISO();
+  const tasks = state.tasks.filter(x => x.thingId === id).map(x => ({ x, S: taskStatus(x, today) })).sort((a, b) => (a.x.active === b.x.active ? 0 : a.x.active ? -1 : 1) || a.S.ord - b.S.ord);
+  const logs = state.logs.filter(l => l.thingId === id), ws = state.warranties.filter(w => w.thingId === id);
+  const hist = histSorted().filter(h => h.thingId === id).slice(0, 8), lat = latestIds();
+  const kv = (k, v) => (v ? `<div class="kv">${esc(k)}: <b>${esc(v)}</b></div>` : '');
+  return storageBannerHTML() + backLink('Things') + `
+    <section class="card pad" style="margin-top:12px"><h3>${esc(t.name)} <span class="badge acc">${esc(KINDS.find(k => k[0] === t.kind)[1])}</span></h3>
+      ${kv('Make / model', [t.make, t.model].filter(Boolean).join(' '))}${kv('Serial', t.serial)}${kv('Installed / bought', t.date ? fmtDate(t.date, false) : '')}
+      ${t.kind === 'vehicle' ? kv('Plate', t.plate) + kv('VIN', t.vin) + `<div class="kv">Odometer: <b>${t.odometer != null ? fmtInt(t.odometer) + ' mi' : 'not set'}</b>${t.odoDate ? ' (' + esc(fmtDate(t.odoDate, false)) + ')' : ''}</div>` : ''}
+      ${t.notes ? `<div class="kv" style="white-space:pre-wrap">${esc(t.notes)}</div>` : ''}
+      <div class="btnrow"><button type="button" class="btn small" data-action="edit-thing" data-id="${esc(id)}">Edit</button>${t.kind === 'vehicle' ? `<button type="button" class="btn small" data-action="odo" data-id="${esc(id)}">Update odometer</button>` : ''}</div></section>
+    <div class="sec-h"><span>Tasks</span><button type="button" class="btn small ghost" data-action="add-task-for" data-id="${esc(id)}">+ Task</button></div>
+    ${tasks.length ? `<ul class="card list">${tasks.map(z => taskRow(z.x, today)).join('')}</ul>` : '<p class="muted" style="margin:0 4px">No tasks yet.</p>'}
+    <div class="sec-h"><span>Logs</span><button type="button" class="btn small ghost" data-action="add-log-for" data-id="${esc(id)}">+ Log</button></div>
+    ${logs.length ? `<ul class="card list">${logs.map(logRow).join('')}</ul>` : '<p class="muted" style="margin:0 4px">No logs.</p>'}
+    <div class="sec-h"><span>Warranties</span><button type="button" class="btn small ghost" data-action="add-warr-for" data-id="${esc(id)}">+ Warranty</button></div>
+    ${ws.length ? ws.map(w => warrantyCard(w, today)).join('') : '<p class="muted" style="margin:0 4px">No warranties.</p>'}
+    ${hist.length ? `<div class="sec-h"><span>History</span></div><ul class="card list">${hist.map(h => histRow(h, lat.has(h.id))).join('')}</ul>` : ''}`;
+}
+function logRow(l) {
+  const es = entriesOf(l.id), last = es[es.length - 1], oot = outOfTarget(l);
+  return `<li class="row" data-action="open-log" data-id="${esc(l.id)}"><div class="row-main"><div class="row-title">${esc(l.name)}${oot ? `<span class="badge bad">${oot} out of target</span>` : ''}</div>
+    <div class="row-sub">${esc(thingName(l.thingId))} · ${esc(LOG_TYPE_LABEL[l.type])} · ${plural(es.length, 'entry')}${last ? ' · last ' + esc(fmtDate(last.date, false)) : ''}</div></div><span class="muted">›</span></li>`;
+}
+function renderLogs() {
+  if (!state.logs.length) return storageBannerHTML() + `<div class="empty"><div class="big">📈</div><h2>No logs yet</h2><p>Logs record dated readings: pool chemistry (FC, pH, TA…), fuel, charging, usage hours, or just costs. Set your own target ranges and see charts.</p>
+    <button class="btn primary" data-action="add">Add a log</button></div>`;
+  return storageBannerHTML() + `<ul class="card list" style="margin-top:14px">${state.logs.slice().sort((a, b) => a.name.localeCompare(b.name)).map(logRow).join('')}</ul>`;
+}
+function renderLog(id) {
+  const l = logById(id);
+  if (!l) { nav.sub = null; return renderLogs(); }
+  const es = entriesOf(id), lat = latestPerField(l);
+  const withData = l.fields.filter(f => lat[f.id]);
+  const chip = f => {
+    const x = lat[f.id];
+    if (!x) return `<div class="vc"><div class="n">${esc(f.name)}</div><div class="v muted">—</div></div>`;
+    const s = rangeState(f, x.v), mark = s === 'high' ? ' ▲ high' : s === 'low' ? ' ▼ low' : s === 'ok' ? ' ✓' : '';
+    return `<div class="vc ${s === 'high' || s === 'low' ? 'bad' : s === 'ok' ? 'ok' : ''}"><div class="n">${esc(f.name)}${rangeText(f) ? ' · ' + esc(rangeText(f)) : ''}</div><div class="v">${esc(fmtNum(x.v))}${f.unit ? ' <span style="font-size:12px;font-weight:500">' + esc(f.unit) + '</span>' : ''}${mark ? '<span style="font-size:12px">' + mark + '</span>' : ''}</div><div class="d">${esc(fmtDate(x.date, false))}</div></div>`;
+  };
+  const rows = es.slice().reverse().slice(0, 100).map(r => {
+    const vals = l.fields.filter(f => isNum(r.values[f.id])).map(f => {
+      const s = rangeState(f, r.values[f.id]);
+      return `<span class="${s === 'high' || s === 'low' ? 'bad' : ''}">${esc(f.name)} ${esc(fmtNum(r.values[f.id]))}${f.unit ? ' ' + esc(f.unit) : ''}</span>`;
+    }).join(' · ');
+    return `<li class="row" data-action="edit-reading" data-id="${esc(r.id)}"><div class="row-main"><div class="row-title">${esc(fmtDate(r.date))}</div><div class="row-sub">${vals || '—'}${r.note ? ' · ' + esc(r.note) : ''}</div></div>${r.cost != null ? `<div class="row-amt num">${money(r.cost)}</div>` : ''}</li>`;
+  }).join('');
+  return storageBannerHTML() + backLink('Logs') + `
+    <section class="card pad" style="margin-top:12px"><h3>${esc(l.name)}</h3><div class="kv">${esc(thingName(l.thingId))} · ${esc(LOG_TYPE_LABEL[l.type])} · ${plural(es.length, 'entry')}</div>
+      <div class="btnrow"><button type="button" class="btn small primary" data-action="add-reading" data-id="${esc(id)}">+ Add entry</button><button type="button" class="btn small" data-action="edit-log" data-id="${esc(id)}">Edit log</button><button type="button" class="btn small" data-action="log-csv" data-id="${esc(id)}">Export CSV</button></div></section>
+    ${withData.length ? `<div class="sec-h"><span>Latest</span></div><section class="card pad"><div class="vals" style="margin-top:0">${l.fields.map(chip).join('')}</div>${l.fields.some(f => f.min != null || f.max != null) ? '<p class="hint">Markers compare against the ranges you set. Fields without a range are never flagged.</p>' : ''}</section>` : ''}
+    ${withData.map(f => `<div class="sec-h"><span style="text-transform:none;letter-spacing:0;font-size:14px;color:var(--ink)">${esc(f.name)}${f.unit ? ' (' + esc(f.unit) + ')' : ''}</span><span style="text-transform:none;letter-spacing:0">${esc(rangeText(f) ? 'target ' + rangeText(f) : '')}</span></div><section class="card pad">${chartSVG(l, f)}</section>`).join('')}
+    <div class="sec-h"><span>Entries</span><span class="num">${es.length > 100 ? 'newest 100' : es.length}</span></div>
+    ${es.length ? `<ul class="card list">${rows}</ul>` : '<div class="card empty"><p>No entries yet.</p></div>'}`;
+}
+function warrantyCard(w, today) {
+  const I = warrantyInfo(w, today), id = esc(w.id);
+  const claim = w.claimStatus === 'open' ? '<span class="badge warn">Claim open</span>' : w.claimStatus === 'closed' ? '<span class="badge">Claim closed</span>' : '';
+  const bnCls = I.level === 'expired' ? 'bad' : I.level === 'd30' ? 'bad' : I.level === 'd90' ? 'warn' : I.level === 'ok' ? 'ok' : '';
+  const kv = (k, v) => (v ? `<div class="kv">${esc(k)}: <b>${esc(v)}</b></div>` : '');
+  const termTxt = w.mode === 'term' ? `${w.termN} ${w.termUnit}${w.termN === 1 ? '' : 's'} from ${w.start ? fmtDate(w.start, false) : '?'}` : 'fixed end date';
+  return `<section class="card pad" style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start"><h3 style="overflow-wrap:anywhere">${esc(w.item)}${claim}</h3>
+    <button type="button" class="btn small" data-action="edit-warr" data-id="${id}">Edit</button></div>
+    <div class="wbn ${bnCls}" role="status">${esc(I.text)}${I.level === 'd90' || I.level === 'd30' ? ' — consider filing anything outstanding.' : ''}</div>
+    <div class="kv">${esc(thingName(w.thingId))}${w.vendor ? ' · ' + esc(w.vendor) : ''} · ${esc(termTxt)}</div>
+    ${kv('Policy / claim #', w.policyNo)}${kv('Contact', w.contact)}${kv('Receipt', w.receipt)}${w.notes ? `<div class="kv" style="white-space:pre-wrap">${esc(w.notes)}</div>` : ''}
+    ${w.claims.length ? `<ul class="tl">${w.claims.map(c => `<li><b>${esc(fmtDate(c.date, false))}</b> · ${esc(c.note)}</li>`).join('')}</ul>` : ''}
+    <div class="btnrow"><button type="button" class="btn small" data-action="claim" data-id="${id}">${w.claimStatus === 'open' ? 'Add claim note / close' : 'Claim note'}</button></div></section>`;
+}
+function renderWarranties() {
+  if (!state.warranties.length) return storageBannerHTML() + `<div class="empty"><div class="big">🛡️</div><h2>No warranties yet</h2><p>Track what is covered and until when. You get a banner at 90 and 30 days, and when one has expired.</p>
+    <button class="btn primary" data-action="add">Add a warranty</button></div>`;
+  const today = todayISO();
+  const list = state.warranties.map(w => ({ w, I: warrantyInfo(w, today) }));
+  const act = list.filter(x => x.I.level !== 'expired').sort((a, b) => (a.I.expiry ? a.I.expiry : '9999').localeCompare(b.I.expiry ? b.I.expiry : '9999'));
+  const exp = list.filter(x => x.I.level === 'expired').sort((a, b) => b.I.expiry.localeCompare(a.I.expiry));
+  return storageBannerHTML() + `<div style="margin-top:14px">${act.map(x => warrantyCard(x.w, today)).join('')}</div>` +
+    (exp.length ? `<div class="sec-h"><span>Expired</span><span class="num">${exp.length}</span></div>${exp.map(x => warrantyCard(x.w, today)).join('')}` : '');
+}
+function renderCosts() {
+  const items = costItems();
+  const years = [...new Set(items.map(i => i.year))].sort().reverse();
+  if (costYear !== 'all' && !years.includes(costYear)) costYear = 'all';
+  const sel = costYear === 'all' ? items : items.filter(i => i.year === costYear);
+  const by = new Map();
+  for (const i of sel) {
+    if (!by.has(i.thingKey)) by.set(i.thingKey, { name: i.thingName, maint: 0, log: 0 });
+    by.get(i.thingKey)[i.src === 'maint' ? 'maint' : 'log'] += i.amount;
+  }
+  const rows = [...by.values()].sort((a, b) => (b.maint + b.log) - (a.maint + a.log) || a.name.localeCompare(b.name));
+  const tm = rows.reduce((s, r) => s + r.maint, 0), tl = rows.reduce((s, r) => s + r.log, 0);
+  const perYear = years.map(y => [y, items.filter(i => i.year === y).reduce((s, i) => s + i.amount, 0)]);
+  return storageBannerHTML() + backLink('Things') + `
+    <div class="sec-h"><span>Costs</span></div>
+    <div class="chips" role="group" aria-label="Year"><button type="button" class="chip" aria-pressed="${costYear === 'all'}" data-action="cost-year" data-id="all">All years</button>${years.map(y => `<button type="button" class="chip" aria-pressed="${costYear === y}" data-action="cost-year" data-id="${y}">${y}</button>`).join('')}</div>
+    ${rows.length ? `<section class="card" style="margin-top:12px;overflow:auto"><table class="ct"><thead><tr><th>Thing</th><th>Maintenance</th><th>Logs</th><th>Total</th></tr></thead><tbody>
+      ${rows.map(r => `<tr><td>${esc(r.name)}</td><td class="num">${money(r.maint)}</td><td class="num">${money(r.log)}</td><td class="num">${money(r.maint + r.log)}</td></tr>`).join('')}</tbody>
+      <tfoot><tr><td>Total</td><td class="num">${money(tm)}</td><td class="num">${money(tl)}</td><td class="num">${money(tm + tl)}</td></tr></tfoot></table></section>` : '<div class="card empty" style="margin-top:12px"><p>No costs recorded yet. Add a cost when you mark a task done, or on a log entry.</p></div>'}
+    ${perYear.length > 1 ? `<div class="sec-h"><span>By year</span></div><section class="card pad">${perYear.map(([y, a]) => `<div style="display:flex;justify-content:space-between"><span>${y}</span><b class="num">${money(a)}</b></div>`).join('')}</section>` : ''}
+    <div class="btnrow"><button type="button" class="btn small" data-action="costs-csv">Export costs (CSV)</button></div>`;
+}
+function renderHistoryAll() {
+  const hs = histSorted(), lat = latestIds();
+  if (!hs.length) return storageBannerHTML() + backLink('Due') + '<div class="empty"><div class="big">✅</div><h2>No history yet</h2><p>Marking a task done records it here.</p></div>';
+  const groups = new Map();
+  for (const h of hs) { const k = h.doneOn.slice(0, 4); if (!groups.has(k)) groups.set(k, []); groups.get(k).push(h); }
+  let html = storageBannerHTML() + backLink('Due');
+  for (const [y, arr] of groups) html += `<div class="sec-h"><span>${y}</span><span class="num">${money(arr.filter(h => h.kind === 'done').reduce((s, h) => s + (h.cost || 0), 0))}</span></div><ul class="card list">${arr.slice(0, 300).map(h => histRow(h, lat.has(h.id))).join('')}</ul>`;
+  return html + '<div class="btnrow"><button type="button" class="btn small" data-action="hist-csv">Export history (CSV)</button></div>';
+}
+function renderImport() {
+  let pv = '';
+  if (importRows) {
+    const ok = importRows.filter(r => r.ok).length;
+    pv = importRows.length ? `<div class="sec-h"><span>Preview</span><span class="num">${ok} of ${importRows.length} ready</span></div><ul class="card list pv">${importRows.map(r => `<li class="row static ${r.ok ? '' : 'err'}"><div class="row-main"><div class="row-title">${esc(r.title || '(no title)')}</div>
+      <div class="row-sub">${r.ok ? `${esc(r.thingName.trim() || 'General')}${r.thingName.trim() && !state.things.some(t => t.name.toLowerCase() === r.thingName.trim().toLowerCase()) ? ' (new thing)' : ''} · ${esc(intervalText({ ...r, months: [] }))} · next ${esc(fmtDate(r.nextDue))}` : `Line ${r.line}: ${esc(r.err)}`}</div></div><span class="badge ${r.ok ? 'ok' : 'bad'}">${r.ok ? 'OK' : 'Skip'}</span></li>`).join('')}</ul>
+      <button type="button" class="btn primary block" style="margin-top:12px" data-action="import-go" ${ok ? '' : 'disabled'}>Import ${plural(ok, 'task')}</button>` : '<div class="card empty" style="margin-top:12px"><p>Nothing to import. Paste some lines first.</p></div>';
+  }
+  return storageBannerHTML() + backLink('Backup') + `<section class="card pad" style="margin-top:12px"><h3>Import tasks from CSV lines</h3>
+    <p class="muted">One task per line: <code>title, thing, every N unit, next due</code>. Units: days, weeks, months, years. Examples:</p>
+    <p class="hint" style="white-space:pre-wrap">Replace HVAC filter, HVAC, every 3 months, 2026-11-15
+Clean gutters, Home, every 6 months, 12/1/2026
+Pool pump check, Pool, weekly, 2026-10-18</p>
+    <div class="field"><label for="impText">Paste lines</label><textarea id="impText" class="mono" placeholder="title, thing, every 3 months, 2026-11-15">${esc(importText)}</textarea></div>
+    <button type="button" class="btn block" style="margin-top:10px" data-action="import-preview">Preview</button></section>${pv}`;
+}
+function renderBackup() {
+  const last = state.meta.lastBackup ? `Last backup: ${esc(fmtDateTime(state.meta.lastBackup))}.` : 'No backup made yet.';
+  const canEncrypt = !!(window.crypto && crypto.subtle);
+  return storageBannerHTML() + installCardHTML() + `<div class="stack">
+    <section class="card pad"><h3>Back up</h3>
+      <p class="muted">${last}</p>
+      <p>Saves one file with your things, tasks, history, logs and warranties. On iPhone it opens the share sheet — save it to Files or OneDrive. <b>Never put this file in your GitHub repo.</b></p>
+      ${canEncrypt ? `<div class="field"><label for="bkPass">Passphrase (optional — encrypts the file)</label><input id="bkPass" type="password" autocomplete="new-password"></div>
+      <div class="field" style="margin-top:8px"><label for="bkPass2">Repeat passphrase</label><input id="bkPass2" type="password" autocomplete="new-password"></div>
+      <p class="hint">If you set one, the file can’t be opened without it — not even by me.</p>` : ''}
+      <button type="button" class="btn primary block" style="margin-top:12px" data-action="export">Back up now</button></section>
+    <section class="card pad"><h3>Restore</h3><p>Pick a backup file made by this app. You’ll choose whether to replace what’s here or merge it in.</p>
+      <button type="button" class="btn block" data-action="restore">Choose backup file…</button></section>
+    <section class="card pad"><h3>Set up</h3><p>Add common house, pool, generator and vehicle tasks (you choose which), or paste your own list.</p>
+      <div class="btnrow"><button type="button" class="btn" data-action="starters">Add starter items…</button><button type="button" class="btn" data-action="import">Import tasks from CSV…</button></div></section>
+    <section class="card pad"><h3>Use in Excel</h3><p>Maintenance history, or yearly costs, as CSV files. Each log exports from its own screen.</p>
+      <div class="btnrow"><button type="button" class="btn" data-action="hist-csv">Export history</button><button type="button" class="btn" data-action="costs-csv">Export costs</button></div></section>
+    <section class="card pad"><h3>Danger zone</h3><p>Erases everything on this device.</p>
+      <button type="button" class="btn danger block" data-action="wipe">Erase everything on this device</button></section>
+    <p class="hint" style="text-align:center">Your data lives only on this device. Nothing is sent anywhere.</p></div>`;
+}
+const TITLES = { due: 'Due', things: 'Things', logs: 'Logs', warranties: 'Warranties', backup: 'Backup & restore' };
+const ADD_LABEL = { due: '+ Task', things: '+ Thing', logs: '+ Log', warranties: '+ Warranty' };
+function render() {
+  const y = window.scrollY;
+  let html, title = TITLES[nav.tab], add = ADD_LABEL[nav.tab] || null;
+  if (nav.tab === 'things' && nav.sub === 'thing') { const t = thingById(nav.id); html = renderThing(nav.id); title = t ? t.name : 'Things'; add = '+ Task'; }
+  else if (nav.tab === 'things' && nav.sub === 'costs') { html = renderCosts(); title = 'Costs'; add = null; }
+  else if (nav.tab === 'logs' && nav.sub === 'log') { const l = logById(nav.id); html = renderLog(nav.id); title = l ? l.name : 'Logs'; add = '+ Entry'; }
+  else if (nav.tab === 'due' && nav.sub === 'history') { html = renderHistoryAll(); title = 'History'; add = null; }
+  else if (nav.tab === 'backup' && nav.sub === 'import') { html = renderImport(); title = 'Import tasks'; add = null; }
+  else html = { due: renderDue, things: renderThings, logs: renderLogs, warranties: renderWarranties, backup: renderBackup }[nav.tab]();
+  view.innerHTML = html;
+  $$('nav.tabs button').forEach(b => b.setAttribute('aria-current', b.dataset.tab === nav.tab ? 'page' : 'false'));
+  const ab = $('#addBtn'); ab.classList.toggle('hide', !add); if (add) ab.textContent = add;
+  $('#title').textContent = title;
+  $('#sub').textContent = new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+  window.scrollTo(0, y);
+}
+function go(tab, sub = null, id = null) { nav = { tab, sub, id }; render(); window.scrollTo(0, 0); }
+function addForCurrent() {
+  if (nav.sub === 'thing') return taskDialog(null, nav.id);
+  if (nav.sub === 'log') return readingDialog(nav.id);
+  ({ due: () => taskDialog(), things: () => thingDialog(), logs: () => logDialog(), warranties: () => warrantyDialog() }[nav.tab] || (() => {}))();
+}
+
+/* ---- backup / restore / csv ---- */
+async function doExport() {
+  const pass = ($('#bkPass') || {}).value || '', pass2 = ($('#bkPass2') || {}).value || '';
+  if (pass) {
+    if (pass.length < 8) return toast('Use at least 8 characters for the passphrase.');
+    if (pass !== pass2) return toast('The two passphrases don’t match.');
+  }
+  const btn = $('[data-action="export"]'); if (btn) btn.disabled = true;
+  try {
+    const text = await Backup.build({ appId: APP_ID, schema: SCHEMA, data: exportData(), passphrase: pass || null });
+    const r = await deliverFile(`goobs-house-backup-${todayISO()}${pass ? '-encrypted' : ''}.json`, text, 'application/json');
+    if (r !== 'cancelled') {
+      state.meta.lastBackup = new Date().toISOString();
+      await persist({ touch: false });
+      render();
+      toast(r === 'shared' ? 'Backup shared' : 'Backup saved to your downloads');
+    }
+  } catch (e) { toast('Backup failed: ' + e.message); }
+  finally { const b2 = $('[data-action="export"]'); if (b2) b2.disabled = false; }
+}
+const pl = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+const countsText = d => `${plural(d.things.length, 'thing')}, ${plural(d.tasks.length, 'task')}, ${pl(d.history.length, 'history entry', 'history entries')}, ${plural(d.logs.length, 'log')}, ${pl(d.readings.length, 'log entry', 'log entries')} and ${pl(d.warranties.length, 'warranty', 'warranties')}`;
+async function restoreFromText(text) {
+  let parsed;
+  try { parsed = await Backup.parse(text, { appId: APP_ID, schema: SCHEMA }); }
+  catch (e) { await msgBox('Can’t restore that file', e.message); return false; }
+  if (!parsed) return false;
+  const { data, dropped } = normalizeData(parsed.data);
+  const total = data.things.length + data.tasks.length + data.history.length + data.logs.length + data.readings.length + data.warranties.length;
+  if (!total) { await msgBox('Nothing to restore', 'That backup has no things, tasks, logs or warranties in it.'); return false; }
+  const hasLocal = hasAnyData();
+  const sum = countsText(data);
+  const when = parsed.exportedAt ? ` Backup made ${fmtDateTime(parsed.exportedAt)}.` : '';
+  const skipped = dropped ? ` ${plural(dropped, 'unreadable item')} will be skipped.` : '';
+  const body = `<p>${esc(sum + '.' + when + skipped)}</p>` + (hasLocal ? '<p class="muted"><b>Replace all</b> swaps everything here for the backup. <b>Merge</b> adds what isn’t here yet and keeps the rest.</p>' : '');
+  const choice = await askDialog({
+    title: 'Restore this backup?', body,
+    buttons: hasLocal
+      ? [{ label: 'Cancel', value: 'cancel' }, { label: 'Merge', value: 'merge' }, { label: 'Replace all', value: 'replace', kind: 'danger' }]
+      : [{ label: 'Cancel', value: 'cancel' }, { label: 'Restore', value: 'replace', kind: 'primary' }]
+  });
+  if (choice === 'replace') {
+    const ts = parsed.exportedAt && !isNaN(Date.parse(parsed.exportedAt)) ? parsed.exportedAt : new Date().toISOString();
+    Object.assign(state, data);
+    state.meta.lastBackup = ts; state.meta.lastChange = ts;
+    nav = { tab: nav.tab, sub: null, id: null };
+    await persist({ touch: false });
+    render(); toast('Backup restored'); return true;
+  }
+  if (choice === 'merge') {
+    let added = 0;
+    for (const k of ['things', 'tasks', 'history', 'logs', 'readings', 'warranties']) {
+      const ids = new Set(state[k].map(x => x.id));
+      for (const x of data[k]) if (!ids.has(x.id) && state[k].length < MAX[k]) { state[k].push(x); added++; }
+    }
+    await persist(); render(); toast(`Merged in ${plural(added, 'item')}`); return true;
+  }
+  return false;
+}
+async function doRestore() {
+  const f = await pickFile(); if (!f) return;
+  let text;
+  try { text = await readFileText(f); } catch { await msgBox('Couldn’t read that file', 'Try choosing it again.'); return; }
+  await restoreFromText(text);
+}
+async function sendCsv(name, rows) {
+  const csv = '﻿' + rows.map(r => r.map(csvCell).join(',')).join('\r\n');
+  const r = await deliverFile(name, csv, 'text/csv');
+  if (r !== 'cancelled') toast(r === 'shared' ? 'CSV shared' : 'CSV saved to your downloads');
+}
+async function doHistCsv() {
+  if (!state.history.length) return toast('No history to export yet.');
+  const rows = [['Date', 'Thing', 'Task', 'Status', 'Cost', 'Done by', 'Odometer', 'Notes'],
+    ...[...state.history].sort((a, b) => a.doneOn.localeCompare(b.doneOn) || a.createdAt - b.createdAt).map(h => [h.doneOn, h.thingId ? thingName(h.thingId) : h.thingName, h.title, h.kind, h.cost != null ? h.cost.toFixed(2) : '', h.who, h.odo != null ? h.odo : '', h.notes])];
+  await sendCsv(`house-history-${todayISO()}.csv`, rows);
+}
+async function doLogCsv(id) {
+  const l = logById(id); if (!l) return;
+  const es = entriesOf(id);
+  if (!es.length) return toast('No entries to export yet.');
+  const rows = [['Date', ...l.fields.map(f => f.unit ? `${f.name} (${f.unit})` : f.name), 'Cost', 'Note'],
+    ...es.map(r => [r.date, ...l.fields.map(f => isNum(r.values[f.id]) ? r.values[f.id] : ''), r.cost != null ? r.cost.toFixed(2) : '', r.note])];
+  await sendCsv(`house-${l.name.replace(/[^A-Za-z0-9]+/g, '-').replace(/^-|-$/g, '').toLowerCase() || 'log'}-${todayISO()}.csv`, rows);
+}
+async function doCostsCsv() {
+  const items = costItems();
+  if (!items.length) return toast('No costs recorded yet.');
+  const by = new Map();
+  for (const i of items) {
+    const k = i.thingName + '\u0000' + i.year;
+    if (!by.has(k)) by.set(k, { thing: i.thingName, year: i.year, maint: 0, log: 0 });
+    by.get(k)[i.src === 'maint' ? 'maint' : 'log'] += i.amount;
+  }
+  const rows = [['Thing', 'Year', 'Maintenance', 'Logs', 'Total'], ...[...by.values()].sort((a, b) => a.thing.localeCompare(b.thing) || a.year.localeCompare(b.year)).map(r => [r.thing, r.year, r.maint.toFixed(2), r.log.toFixed(2), (r.maint + r.log).toFixed(2)])];
+  await sendCsv(`house-costs-${todayISO()}.csv`, rows);
+}
+async function doWipe() {
+  if (!(await confirmBox('Erase everything?', 'This permanently deletes all things, tasks, history, logs and warranties on this device. Make a backup first if you might want them.', 'Erase everything'))) return;
+  state = defaultState(); nav = { tab: nav.tab, sub: null, id: null };
+  await persist({ touch: false });
+  render(); toast('Everything erased');
+}
+
+/* ---- wiring ---- */
+view.addEventListener('click', e => {
+  const el = e.target.closest('[data-action]');
+  if (!el) return;
+  const id = el.dataset.id;
+  switch (el.dataset.action) {
+    case 'add': addForCurrent(); break;
+    case 'edit-task': taskDialog(id); break;
+    case 'done': doneDialog(id); break;
+    case 'snooze': snoozeDialog(id); break;
+    case 'undo': undoEntry(id); break;
+    case 'edit-hist': historyDialog(id); break;
+    case 'history': go('due', 'history'); break;
+    case 'back': go(nav.tab); break;
+    case 'open-thing': go('things', 'thing', id); break;
+    case 'edit-thing': thingDialog(id); break;
+    case 'odo': odoDialog(id); break;
+    case 'add-task-for': taskDialog(null, id); break;
+    case 'add-log-for': logDialog(null, id); break;
+    case 'add-warr-for': warrantyDialog(null, id); break;
+    case 'costs': go('things', 'costs'); break;
+    case 'cost-year': costYear = id; render(); break;
+    case 'open-log': go('logs', 'log', id); break;
+    case 'edit-log': logDialog(id); break;
+    case 'add-reading': readingDialog(id); break;
+    case 'edit-reading': readingDialog(nav.id, id); break;
+    case 'log-csv': doLogCsv(id); break;
+    case 'edit-warr': warrantyDialog(id); break;
+    case 'claim': claimDialog(id); break;
+    case 'go-warranties': go('warranties'); break;
+    case 'starters': starterDialog(); break;
+    case 'import': importRows = null; go('backup', 'import'); break;
+    case 'import-preview': { const ta = $('#impText'); importText = ta ? ta.value : importText; importRows = parseTaskLines(importText); render(); break; }
+    case 'import-go': {
+      const r = applyImport(importRows || []);
+      importRows = null; importText = '';
+      commit(); toast(`Imported ${plural(r.n, 'task')}${r.newThings ? ` and created ${plural(r.newThings, 'thing')}` : ''}`);
+      go('due'); break;
+    }
+    case 'export': doExport(); break;
+    case 'restore': doRestore(); break;
+    case 'hist-csv': doHistCsv(); break;
+    case 'costs-csv': doCostsCsv(); break;
+    case 'wipe': doWipe(); break;
+    case 'install': runInstall(); break;
+  }
+});
+view.addEventListener('input', e => { if (e.target.id === 'impText') importText = e.target.value; });
+$('#addBtn').onclick = () => addForCurrent();
+$$('nav.tabs button').forEach(b => { b.onclick = () => go(b.dataset.tab); });
+document.addEventListener('visibilitychange', () => { if (!document.hidden && !$('dialog[open]')) render(); });
+
+(async function init() {
+  try { db = await openDB(DB_NAME); } catch (e) { console.error(e); db = null; }
+  if (db) {
+    try {
+      const raw = await idbGet(db, 'state');
+      if (raw) {
+        try { state = loadState(JSON.parse(raw)); }
+        catch (e) { console.error(e); await idbPut(db, 'state-damaged-' + Date.now(), raw); toast('Saved data looked damaged — a copy was kept aside.'); }
+      }
+    } catch (e) { console.error(e); db = null; }
+  }
+  render();
+})();
+</script>
+</body>
+</html>

@@ -32,3 +32,12 @@ Money is financial data: back it up with a passphrase and keep the file out of t
 
 Weather uses the free Open-Meteo service (no account or key); only the destination coordinates are sent.
 Printing (Trips only): the Print buttons on Overview, Packing, Plan and Weather open a chooser (itinerary, weather, packing lists, to-dos, budget). On iPhone use the Share button in the print preview to save a PDF.
+
+
+## Added: Health, VA Claim, House, Inventory (+ expense Split in Trips)
+- `health/` labs, vitals, meds, visits, charts, doctor summary. On-device only.
+- `va/` VA claim organizer: ITF clock, conditions, evidence, contacts, log. On-device only.
+- `house/` recurring upkeep, reading logs (pool), warranties, vehicles. On-device only.
+- `inventory/` home inventory with photos for insurance, plus an opt-in storm checklist. On-device only.
+- Trips: Budget now has a Split view (people, expenses, who-pays-whom) that syncs like the rest of the trip.
+None of the new apps use Firebase; each has its own encrypted Backup screen.

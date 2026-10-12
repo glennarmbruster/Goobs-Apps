@@ -1,0 +1,1309 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>VA Claim</title>
+<meta name="description" content="Track a VA disability claim: deadlines, conditions, evidence, statements, records requests and a contact log. Data stays on your device.">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#f4f6fa" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1311" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="VA Claim">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<style>
+:root{
+  --bg:#f5f4ef; --card:#ffffff; --ink:#1b2420; --muted:#66736d; --line:#e2e0d6; --soft:#efede5;
+  --accent:#0f766e; --accent-ink:#ffffff; --accent-soft:#d9f0ec;
+  --bad:#b42318; --bad-soft:#fde8e6; --warn:#9a5b00; --warn-soft:#fdf0d5; --ok:#166534; --ok-soft:#dcf5e3;
+  --radius:14px; --shadow:0 1px 2px rgba(16,24,20,.06),0 6px 18px rgba(16,24,20,.06);
+  color-scheme:light dark;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0e1311; --card:#171f1c; --ink:#e7eeeb; --muted:#97a69f; --line:#27332e; --soft:#1e2824;
+    --accent:#2dd4bf; --accent-ink:#06211d; --accent-soft:#12332e;
+    --bad:#ff8a80; --bad-soft:#3a1a18; --warn:#f6c26b; --warn-soft:#3a2c12; --ok:#7ee2a0; --ok-soft:#14301f;
+    --shadow:none;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation;
+  padding-bottom:calc(92px + env(safe-area-inset-bottom));
+}
+a{color:var(--accent)}
+h1,h2,h3{margin:0;line-height:1.2}
+h3{font-size:16px}
+p{margin:0 0 8px}
+.wrap{max-width:720px;margin:0 auto;padding:0 16px}
+.muted{color:var(--muted)} .bad{color:var(--bad)} .warn{color:var(--warn)} .ok{color:var(--ok)}
+.num{font-variant-numeric:tabular-nums}
+.hide{display:none!important}
+.pad{padding:14px 16px}
+.hint{font-size:13px;color:var(--muted);margin-top:4px}
+
+/* header */
+header.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top)}
+header.top .wrap{display:flex;align-items:center;gap:12px;min-height:58px}
+header.top .grow{flex:1;min-width:0}
+header.top h1{font-size:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+header.top .sub{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.back{display:inline-flex;align-items:center;min-height:44px;padding-right:6px;text-decoration:none;font-weight:600}
+
+/* cards, tiles, lists */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+.tile{padding:12px}
+.tile .lbl{font-size:12px;color:var(--muted);font-weight:600}
+.tile .val{font-size:20px;font-weight:700;margin-top:2px}
+.sec-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin:22px 4px 8px;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700}
+.sec-h .btn{text-transform:none;letter-spacing:0}
+.list{list-style:none;margin:0;padding:0}
+.row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-top:1px solid var(--line);cursor:pointer}
+.row:first-child{border-top:0}
+.row.static{cursor:default}
+.row-main{flex:1;min-width:0}
+.row-title{font-weight:600;overflow-wrap:anywhere}
+.row-sub{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.row-amt{font-weight:700;white-space:nowrap}
+.row.faded{opacity:.6}
+.badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 7px;border-radius:999px;background:var(--soft);color:var(--muted);vertical-align:middle;margin-left:6px}
+.badge.ok{background:var(--ok-soft);color:var(--ok)} .badge.warn{background:var(--warn-soft);color:var(--warn)} .badge.bad{background:var(--bad-soft);color:var(--bad)} .badge.acc{background:var(--accent-soft);color:var(--accent)}
+.empty{text-align:center;padding:40px 20px;color:var(--muted)}
+.empty .big{font-size:40px;line-height:1;margin-bottom:10px}
+.empty h2{color:var(--ink);font-size:18px;margin-bottom:6px}
+.empty .btn{margin-top:14px}
+.banner{padding:12px 14px;border-radius:12px;background:var(--warn-soft);color:var(--warn);font-size:14px;margin:14px 0;display:flex;gap:10px;justify-content:space-between;align-items:center}
+.banner.bad{background:var(--bad-soft);color:var(--bad)}
+.bar{height:8px;border-radius:99px;background:var(--soft);overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--accent);border-radius:99px}
+.bar.over>i{background:var(--bad)}
+
+/* buttons */
+.btn{white-space:nowrap;appearance:none;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-weight:600;min-height:44px;padding:0 16px;border-radius:12px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.danger{color:var(--bad)}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--accent)}
+.btn.small{min-height:36px;padding:0 12px;font-size:14px;border-radius:10px}
+.btn.block{width:100%}
+.btn:active{transform:translateY(1px)}
+.btn:disabled{opacity:.5;cursor:default}
+.btn:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible,.chip:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 14px;min-height:36px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+
+/* bottom nav + fab */
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+nav.tabs .wrap{display:flex;padding:0}
+nav.tabs a,nav.tabs button{flex:1;min-height:58px;border:0;background:none;color:var(--muted);font:inherit;font-size:11px;font-weight:600;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;text-decoration:none}
+nav.tabs .ico{font-size:20px;line-height:1}
+nav.tabs [aria-current="page"]{color:var(--accent)}
+.fab{position:fixed;right:max(16px,calc(50vw - 344px));bottom:calc(74px + env(safe-area-inset-bottom));z-index:7;width:56px;height:56px;border-radius:50%;border:0;background:var(--accent);color:var(--accent-ink);font-size:30px;line-height:1;box-shadow:0 6px 18px rgba(0,0,0,.28);cursor:pointer}
+.fab:active{transform:scale(.96)}
+
+/* forms + dialogs */
+input,select,textarea{width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-height:44px}
+textarea{min-height:92px;resize:vertical}
+input[type=checkbox]{width:22px;height:22px;min-height:0;padding:0;accent-color:var(--accent);flex:none}
+.field label{display:block;font-size:13px;font-weight:600;color:var(--muted);margin-bottom:4px}
+.field.check{display:flex;align-items:center;gap:10px}
+.field.check label{margin:0;color:var(--ink);font-size:16px;font-weight:500}
+.fields2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+dialog{border:0;border-radius:18px;padding:0;width:calc(100vw - 24px);max-width:520px;background:var(--card);color:var(--ink);box-shadow:0 20px 60px rgba(0,0,0,.35)}
+dialog::backdrop{background:rgba(10,15,12,.55)}
+.dlg-form{padding:20px;display:flex;flex-direction:column;gap:12px;max-height:85vh;max-height:85dvh;overflow:auto}
+.dlg-form h2{font-size:19px}
+.dlg-actions{display:flex;gap:8px;align-items:center;margin-top:6px;flex-wrap:wrap}
+.dlg-actions .spacer{flex:1}
+.ask-actions{justify-content:flex-end}
+.dlg-err{color:var(--bad);font-size:14px}
+.dlg-err:empty{display:none}
+.ask-body{font-size:15px;color:var(--ink)}
+.ask-body p{margin:0 0 8px}
+.checkgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px}
+.checkgrid .field.check label{font-size:15px}
+
+/* toast */
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom));background:#1b2420;color:#fff;padding:12px 16px;border-radius:12px;display:flex;gap:14px;align-items:center;z-index:60;max-width:calc(100vw - 24px);box-shadow:0 8px 24px rgba(0,0,0,.35);font-size:15px}
+.toast button{background:none;border:0;color:#7dd3c8;font:inherit;font-weight:700;cursor:pointer;min-height:36px}
+
+@media (prefers-reduced-motion:no-preference){.btn,.fab{transition:transform .08s}}
+
+.syncbadge{flex:none;white-space:nowrap;border:1px solid var(--line,#d5dbe0);background:var(--card,#fff);color:inherit;border-radius:999px;padding:4px 10px;font:inherit;font-size:.82rem;cursor:pointer;white-space:nowrap}
+.syncbadge.ok{color:#15803d}.syncbadge.bad{color:#b91c1c}
+.seg{display:flex;gap:8px;margin-top:6px}.seg .chip{flex:1;text-align:center}
+
+:root{--accent:#1e3a8a;--accent-soft:#dde6fb}
+@media (prefers-color-scheme:dark){:root{--accent:#8fb0ff;--accent-ink:#0b1a40;--accent-soft:#1a2a52}}
+.stack{display:flex;flex-direction:column;gap:14px;margin-top:14px}
+.row .btn{flex:none}
+.kd{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--line);cursor:pointer}
+.kd:first-of-type{border-top:0}
+.kd .k{font-weight:600}
+.kd .v{text-align:right;font-weight:600;overflow-wrap:anywhere}
+.kd .s{font-size:13px;color:var(--muted);font-weight:400}
+.kd.static{cursor:default}
+.counts{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:14px 0}
+.counts .tile{padding:10px 6px;text-align:center}
+.counts .val{font-size:20px}
+.counts .lbl{font-size:11px}
+.ms{display:flex;gap:12px;align-items:center;padding:10px 14px;border-top:1px solid var(--line);cursor:pointer}
+.ms:first-child{border-top:0}
+.dot{flex:none;width:14px;height:14px;border-radius:50%;border:2px solid var(--muted);background:transparent}
+.dot.doing{border-color:var(--warn);background:var(--warn-soft)}
+.dot.done{border-color:var(--ok);background:var(--ok)}
+.bar.small{height:6px;margin-top:6px}
+.chk{display:flex;gap:12px;align-items:center;padding:8px 14px;border-top:1px solid var(--line)}
+.chk:first-child{border-top:0}
+.chk input{margin:0}
+.chk .t{flex:1;min-width:0;overflow-wrap:anywhere}
+.chk.done .t{color:var(--muted);text-decoration:line-through}
+.chk .btn{min-height:32px}
+.disc{font-size:13px;color:var(--muted);margin:18px 4px 0}
+.seg2{display:flex;gap:8px;margin:14px 0 0}
+.seg2 .chip{flex:1;text-align:center}
+.filters{display:flex;gap:8px;overflow-x:auto;margin:14px 0 0;padding-bottom:2px}
+.filters .chip{flex:none}
+.linkrow a{margin-right:12px}
+textarea.sel{min-height:200px;font-size:13px}
+#printArea{display:none}
+@media print{
+  @page{margin:14mm}
+  html,body{background:#fff!important;color:#000!important}
+  body>*:not(#printArea){display:none!important}
+  #printArea{display:block!important;font:10.5pt/1.35 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:#000;background:#fff}
+  #printArea h1{font-size:18pt;margin:0 0 2pt}
+  #printArea h2{font-size:12pt;margin:10pt 0 4pt;border-bottom:1.5pt solid #000;padding-bottom:2pt;break-after:avoid}
+  #printArea .pa-sub{color:#333;margin:0 0 4pt}
+  #printArea table{width:100%;border-collapse:collapse;font-size:9.5pt}
+  #printArea th,#printArea td{border-bottom:.5pt solid #999;padding:2pt 4pt;text-align:left;vertical-align:top}
+  #printArea tr{break-inside:avoid}
+  #printArea .pa-note{font-size:9pt;color:#333;margin-top:8pt}
+}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap"><div class="grow"><h1 id="title">VA Claim</h1><div class="sub" id="sub"></div></div><button type="button" class="btn small primary hide" id="addBtn">+ Add</button></div></header>
+<main class="wrap" id="view"></main>
+<nav class="tabs" aria-label="Sections"><div class="wrap">
+  <button type="button" data-tab="overview"><span class="ico">🧭</span>Overview</button>
+  <button type="button" data-tab="conditions"><span class="ico">🩺</span>Conditions</button>
+  <button type="button" data-tab="evidence"><span class="ico">📎</span>Evidence</button>
+  <button type="button" data-tab="people"><span class="ico">👥</span>People &amp; log</button>
+  <button type="button" data-tab="backup"><span class="ico">💾</span>Backup</button>
+</div></nav>
+<script>
+'use strict';
+/* ===================== shared helpers (identical in every Goobs app) ===================== */
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => Array.from(el.querySelectorAll(s));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const isNum = v => typeof v === 'number' && Number.isFinite(v);
+const str = v => (typeof v === 'string' ? v : v == null ? '' : String(v));
+
+/* ---- dates: always local calendar dates stored as 'YYYY-MM-DD' ---- */
+const pad = n => String(n).padStart(2, '0');
+const fmtISO = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const parseISO = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+const isISO = s => typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s) && fmtISO(parseISO(s)) === s;
+const todayISO = () => fmtISO(new Date());
+const daysBetween = (a, b) => Math.round((parseISO(b) - parseISO(a)) / 86400000);
+const addDays = (s, n) => { const d = parseISO(s); d.setDate(d.getDate() + n); return fmtISO(d); };
+function addMonths(s, n, anchorDay) {
+  const d = parseISO(s);
+  const day = anchorDay || d.getDate();
+  const first = new Date(d.getFullYear(), d.getMonth() + n, 1);
+  const last = new Date(first.getFullYear(), first.getMonth() + 1, 0).getDate();
+  first.setDate(Math.min(day, last));
+  return fmtISO(first);
+}
+const monthEndISO = s => { const d = parseISO(s); return fmtISO(new Date(d.getFullYear(), d.getMonth() + 1, 0)); };
+
+function fmtDate(s, withWeekday = true) {
+  const d = parseISO(s);
+  const o = { month: 'short', day: 'numeric' };
+  if (withWeekday) o.weekday = 'short';
+  if (d.getFullYear() !== new Date().getFullYear()) o.year = 'numeric';
+  return d.toLocaleDateString(undefined, o);
+}
+function fmtDateTime(iso) {
+  const d = new Date(iso);
+  return isNaN(d) ? 'unknown date' : d.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+}
+const _mf = {};
+function money(n, cur = 'USD') {
+  if (!_mf[cur]) {
+    try { _mf[cur] = new Intl.NumberFormat(undefined, { style: 'currency', currency: cur }); }
+    catch { _mf[cur] = new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }); }
+  }
+  return _mf[cur].format(n);
+}
+const csvCell = v => {
+  let s = String(v ?? '');
+  if (/^[=+\-@\t\r]/.test(s)) s = "'" + s; // neutralise spreadsheet formula injection
+  return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+};
+function safeUrl(u) {
+  let s = String(u ?? '').trim();
+  if (!s) return '';
+  if (!/^[a-z][a-z0-9+.-]*:/i.test(s)) s = 'https://' + s;
+  try { const x = new URL(s); return /^https?:$/.test(x.protocol) ? x.href : ''; } catch { return ''; }
+}
+
+/* ---- storage: one JSON string under one key in IndexedDB ---- */
+function openDB(name) {
+  return new Promise((res, rej) => {
+    if (!window.indexedDB) return rej(new Error('IndexedDB unavailable'));
+    const r = indexedDB.open(name, 1);
+    r.onupgradeneeded = () => { r.result.createObjectStore('kv'); };
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+    r.onblocked = () => rej(new Error('Database blocked'));
+  });
+}
+function idbGet(db, key) {
+  return new Promise((res, rej) => {
+    const q = db.transaction('kv').objectStore('kv').get(key);
+    q.onsuccess = () => res(q.result);
+    q.onerror = () => rej(q.error);
+  });
+}
+function idbPut(db, key, val) {
+  return new Promise((res, rej) => {
+    const tx = db.transaction('kv', 'readwrite');
+    tx.objectStore('kv').put(val, key);
+    tx.oncomplete = () => res();
+    tx.onerror = () => rej(tx.error);
+    tx.onabort = () => rej(tx.error || new Error('Write aborted'));
+  });
+}
+
+/* ---- toast ---- */
+function toast(msg, action) {
+  const old = $('.toast'); if (old) old.remove();
+  const t = document.createElement('div');
+  t.className = 'toast'; t.setAttribute('role', 'status');
+  t.innerHTML = `<span>${esc(msg)}</span>` + (action ? `<button type="button">${esc(action.label)}</button>` : '');
+  if (action) t.querySelector('button').onclick = () => { t.remove(); action.fn(); };
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), action ? 8000 : 3200);
+}
+
+/* ---- dialogs ---- */
+if (!$('#dlg')) document.body.insertAdjacentHTML('beforeend', '<dialog id="dlg"></dialog><dialog id="ask"></dialog>');
+{
+  const dlg = $('#dlg'); let down = false;
+  dlg.addEventListener('pointerdown', e => { down = e.target === dlg; });
+  dlg.addEventListener('click', e => { if (e.target === dlg && down) dlg.close(); });
+}
+
+function fieldHTML(f) {
+  const id = 'f_' + f.name, v = f.value ?? '';
+  if (f.type === 'checkbox')
+    return `<div class="field check"><input type="checkbox" id="${id}" name="${f.name}"${f.value ? ' checked' : ''}><label for="${id}">${esc(f.label)}</label></div>`;
+  let ctl;
+  if (f.type === 'select') {
+    ctl = `<select id="${id}" name="${f.name}">${f.options.map(o => {
+      const [val, label] = Array.isArray(o) ? o : [o, o];
+      return `<option value="${esc(val)}"${String(val) === String(v) ? ' selected' : ''}>${esc(label)}</option>`;
+    }).join('')}</select>`;
+  } else if (f.type === 'textarea') {
+    ctl = `<textarea id="${id}" name="${f.name}" placeholder="${esc(f.placeholder || '')}">${esc(v)}</textarea>`;
+  } else {
+    const t = f.type || 'text';
+    const extra = t === 'number' ? ` inputmode="decimal" step="${f.step || 'any'}"` : '';
+    ctl = `<input id="${id}" name="${f.name}" type="${t}" value="${esc(v)}" placeholder="${esc(f.placeholder || '')}"${extra}${f.min != null ? ` min="${f.min}"` : ''}${f.max != null ? ` max="${f.max}"` : ''} autocomplete="${f.autocomplete || 'off'}" autocapitalize="${f.capitalize || (t === 'email' || t === 'password' ? 'none' : 'sentences')}">`;
+  }
+  return `<div class="field"><label for="${id}">${esc(f.label)}${f.required ? ' *' : ''}</label>${ctl}${f.hint ? `<div class="hint">${esc(f.hint)}</div>` : ''}</div>`;
+}
+
+/* formDialog: fields -> values. onSubmit(values) may return an error string (keeps dialog open).
+   onDelete() may return true to close. extra: [{label, kind, onClick}] extra buttons. */
+function formDialog({ title, intro = '', fields, submitLabel = 'Save', onSubmit, onDelete, deleteLabel = 'Delete', extra = [], onClose, grid = '' }) {
+  const dlg = $('#dlg');
+  const body = grid ? `<div class="${grid}">${fields.map(fieldHTML).join('')}</div>` : fields.map(fieldHTML).join('');
+  dlg.innerHTML = `<form class="dlg-form" novalidate>
+    <h2>${esc(title)}</h2>${intro ? `<p class="muted">${esc(intro)}</p>` : ''}${body}
+    <div class="dlg-err" role="alert"></div>
+    <div class="dlg-actions">
+      ${onDelete ? `<button type="button" class="btn danger" data-k="del">${esc(deleteLabel)}</button>` : ''}
+      ${extra.map((x, i) => `<button type="button" class="btn ${x.kind || ''}" data-x="${i}">${esc(x.label)}</button>`).join('')}
+      <span class="spacer"></span>
+      <button type="button" class="btn ghost" data-k="cancel">Cancel</button>
+      <button type="submit" class="btn primary">${esc(submitLabel)}</button>
+    </div></form>`;
+  const form = $('form', dlg), err = $('.dlg-err', dlg);
+  const collect = () => {
+    const vals = {};
+    for (const f of fields) { const el = form.elements[f.name]; vals[f.name] = f.type === 'checkbox' ? el.checked : el.value; }
+    return vals;
+  };
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const vals = collect();
+    for (const f of fields) if (f.required && !String(vals[f.name]).trim()) { err.textContent = `${f.label} is required.`; return; }
+    err.textContent = '';
+    let msg;
+    try { msg = await onSubmit(vals); } catch (ex) { msg = ex.message || 'Something went wrong.'; }
+    if (msg) err.textContent = msg; else dlg.close();
+  });
+  $('[data-k="cancel"]', dlg).onclick = () => dlg.close();
+  if (onDelete) $('[data-k="del"]', dlg).onclick = async () => { if (await onDelete()) dlg.close(); };
+  $$('[data-x]', dlg).forEach(b => { b.onclick = () => extra[+b.dataset.x].onClick(collect()); });
+  dlg.onclose = () => { dlg.onclose = null; if (onClose) onClose(); };
+  dlg.showModal();
+  const first = form.querySelector('input:not([type=checkbox]),textarea');
+  if (first && !first.value) first.focus(); // new-item forms open ready to type; edit forms don't pop the keyboard
+}
+
+function askDialog({ title, body = '', buttons }) {
+  return new Promise(resolve => {
+    const d = $('#ask'); let done = false;
+    d.innerHTML = `<div class="dlg-form"><h2>${esc(title)}</h2>${body ? `<div class="ask-body">${body}</div>` : ''}
+      <div class="dlg-actions ask-actions">${buttons.map((b, i) => `<button type="button" class="btn ${b.kind || ''}" data-i="${i}">${esc(b.label)}</button>`).join('')}</div></div>`;
+    const finish = v => { if (done) return; done = true; d.close(); resolve(v); };
+    $$('button', d).forEach(btn => { btn.onclick = () => finish(buttons[+btn.dataset.i].value); });
+    d.oncancel = () => { done = true; resolve(undefined); };
+    d.showModal();
+  });
+}
+const confirmBox = async (title, bodyText, okLabel = 'Delete', danger = true) =>
+  (await askDialog({ title, body: bodyText ? `<p>${esc(bodyText)}</p>` : '', buttons: [{ label: 'Cancel', value: false }, { label: okLabel, value: true, kind: danger ? 'danger' : 'primary' }] })) === true;
+const msgBox = (title, bodyText) =>
+  askDialog({ title, body: `<p>${esc(bodyText)}</p>`, buttons: [{ label: 'OK', value: true, kind: 'primary' }] });
+
+/* ---- backup: optional AES-GCM passphrase encryption (Web Crypto, PBKDF2-SHA256) ---- */
+const b64 = buf => { let s = ''; const b = new Uint8Array(buf); for (let i = 0; i < b.length; i += 0x8000) s += String.fromCharCode.apply(null, b.subarray(i, i + 0x8000)); return btoa(s); };
+const unb64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+async function deriveKey(pass, salt, iterations) {
+  const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(pass), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey({ name: 'PBKDF2', salt, iterations, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+}
+async function encryptPayload(obj, pass) {
+  const salt = crypto.getRandomValues(new Uint8Array(16)), iv = crypto.getRandomValues(new Uint8Array(12));
+  const iterations = 250000;
+  const key = await deriveKey(pass, salt, iterations);
+  const ct = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, new TextEncoder().encode(JSON.stringify(obj)));
+  return { encrypted: true, kdf: 'PBKDF2-SHA256', iterations, salt: b64(salt), iv: b64(iv), data: b64(ct) };
+}
+async function decryptPayload(env, pass) {
+  const key = await deriveKey(pass, unb64(env.salt), env.iterations);
+  try {
+    const pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: unb64(env.iv) }, key, unb64(env.data));
+    return JSON.parse(new TextDecoder().decode(pt));
+  } catch { throw new Error('Wrong passphrase, or the file is damaged.'); }
+}
+function promptDecrypt(env) {
+  return new Promise(resolve => {
+    let result = null;
+    formDialog({
+      title: 'Encrypted backup', intro: 'Enter the passphrase you chose when you made this backup.',
+      fields: [{ name: 'pass', label: 'Passphrase', type: 'password', required: true }], submitLabel: 'Unlock',
+      onSubmit: async v => { try { result = await decryptPayload(env, v.pass); } catch (e) { return e.message; } },
+      onClose: () => resolve(result)
+    });
+  });
+}
+const Backup = {
+  async build({ appId, schema, data, passphrase }) {
+    const head = { app: appId, schemaVersion: schema, exportedAt: new Date().toISOString() };
+    if (passphrase) return JSON.stringify({ ...head, ...(await encryptPayload(data, passphrase)) });
+    return JSON.stringify({ ...head, encrypted: false, data }, null, 2);
+  },
+  /* returns {data, exportedAt, schemaVersion}, or null if the user cancelled the passphrase prompt; throws Error with a friendly message */
+  async parse(text, { appId, schema }) {
+    let env;
+    try { env = JSON.parse(text); } catch { throw new Error('That file isn’t a valid backup (it isn’t JSON).'); }
+    if (!env || typeof env !== 'object' || env.app !== appId)
+      throw new Error(env && typeof env === 'object' && env.app ? `That backup belongs to a different app (${String(env.app).slice(0, 40)}).` : 'That file isn’t a backup from this app.');
+    if (!Number.isInteger(env.schemaVersion) || env.schemaVersion < 1) throw new Error('The backup is missing its version number.');
+    if (env.schemaVersion > schema) throw new Error('That backup was made by a newer version of the app. Close and reopen this app to update it, then try again.');
+    let data;
+    if (env.encrypted) {
+      if (!(window.crypto && crypto.subtle)) throw new Error('Encrypted backups need a secure (https) connection.');
+      if (!(env.iterations >= 1000 && env.iterations <= 2000000) || typeof env.salt !== 'string' || typeof env.iv !== 'string' || typeof env.data !== 'string')
+        throw new Error('The encrypted backup is damaged.');
+      data = await promptDecrypt(env);
+      if (data === null) return null;
+    } else data = env.data;
+    if (!data || typeof data !== 'object') throw new Error('The backup contains no data.');
+    return { data, exportedAt: typeof env.exportedAt === 'string' ? env.exportedAt : null, schemaVersion: env.schemaVersion };
+  }
+};
+
+/* share sheet when the platform supports sharing files (iPhone), otherwise a normal download */
+async function deliverFile(filename, text, mime = 'application/json') {
+  const file = new File([text], filename, { type: mime });
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try { await navigator.share({ files: [file], title: filename }); return 'shared'; }
+    catch (e) { if (e && e.name === 'AbortError') return 'cancelled'; /* otherwise fall back to a download */ }
+  }
+  const url = URL.createObjectURL(file);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.style.display = 'none';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 15000);
+  return 'downloaded';
+}
+function pickFile(accept = '.json,application/json') {
+  return new Promise(resolve => {
+    const i = document.createElement('input');
+    i.type = 'file'; i.accept = accept; i.style.display = 'none';
+    document.body.appendChild(i);
+    let done = false;
+    const fin = f => { if (done) return; done = true; i.remove(); resolve(f); };
+    i.addEventListener('change', () => fin((i.files && i.files[0]) || null));
+    i.addEventListener('cancel', () => fin(null));
+    i.click();
+  });
+}
+const readFileText = f => (f.text ? f.text() : new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = () => rej(r.error); r.readAsText(f); }));
+
+/* nag banner: only when there is data and no recent backup */
+function backupNag(meta, hasData) {
+  if (!hasData) return null;
+  if (!meta.lastBackup) return 'You have data but no backup yet. Make one so you can restore it if this device loses it.';
+  const age = (Date.now() - Date.parse(meta.lastBackup)) / 86400000;
+  const changed = meta.lastChange && Date.parse(meta.lastChange) > Date.parse(meta.lastBackup) + 1000;
+  if (changed && age >= 7) return `Your last backup was ${Math.floor(age)} days ago and you’ve made changes since.`;
+  return null;
+}
+
+/* ---- install helper ---- */
+let deferredInstall = null;
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferredInstall = e; if (typeof render === 'function') render(); });
+const isStandalone = () => (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+function installCardHTML() {
+  if (isStandalone()) return '';
+  const ios = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const msg = deferredInstall
+    ? '<p>Install it for its own window and full offline use.</p><button class="btn primary" data-action="install">Install app</button>'
+    : ios
+      ? '<p>In Safari tap <b>Share</b> → <b>Add to Home Screen</b>. <b>Do this before entering data</b> — the home-screen app keeps its own separate storage from the Safari tab. Then open it from the new icon.</p>'
+      : '<p>Use your browser’s menu → <b>Install app</b> (or <b>Add to Home Screen</b>).</p>';
+  return `<section class="card pad"><h3>Install on this device</h3>${msg}</section>`;
+}
+async function runInstall() { if (!deferredInstall) return; deferredInstall.prompt(); try { await deferredInstall.userChoice; } catch {} deferredInstall = null; if (typeof render === 'function') render(); }
+
+
+
+if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol))
+  window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
+
+
+/* ===================== VA Claim tracker ===================== */
+const APP_ID = 'goobs-va', DB_NAME = 'goobs-va-db', SCHEMA = 1;
+const MAX = { conditions: 100, checklist: 40, evidence: 1000, people: 200, log: 2000 };
+const MS_DEFS = [
+  ['itf', 'Intent to File submitted'], ['cfile', 'C-file requested (VA Form 20-10206)'], ['records', 'Private medical records requested'],
+  ['submitted', 'Claim submitted (VA Form 21-526EZ)'], ['cp', 'C&P exam'], ['decision', 'Decision received']
+];
+const MS_STATUS = [['todo', 'Not started'], ['doing', 'In progress'], ['done', 'Done']];
+const COND_TYPES = [['direct', 'Direct'], ['secondary', 'Secondary to another condition'], ['presumptive', 'Presumptive'], ['increase', 'Increase']];
+const COND_STATUS = [['planning', 'Planning'], ['gathering', 'Gathering evidence'], ['submitted', 'Submitted'], ['decided', 'Decided']];
+const KINDS = [['medrec', 'Medical records request'], ['cfile', 'C-file / FOIA'], ['nexus', 'Nexus letter'], ['buddy', 'Buddy statement'],
+  ['service', 'Service records'], ['exam', 'Exam / test'], ['form', 'Form'], ['other', 'Other']];
+const EV_STATUS = [['todo', 'To do'], ['requested', 'Requested'], ['received', 'Received'], ['submitted', 'Submitted to VA'], ['notneeded', 'Not needed']];
+const ROLES = [['buddy', 'Buddy / witness'], ['doctor', 'Doctor'], ['rep', 'Accredited rep'], ['records', 'Records office'], ['other', 'Other']];
+const REQ_STATUS = [['notasked', 'Not asked'], ['asked', 'Asked'], ['drafted', 'Drafted'], ['signed', 'Signed'], ['sent', 'Sent']];
+const L = arr => Object.fromEntries(arr);
+const MS_LABEL = L(MS_DEFS), MS_STATUS_L = L(MS_STATUS), COND_TYPE_L = L(COND_TYPES), COND_STATUS_L = L(COND_STATUS),
+  KIND_L = L(KINDS), EV_STATUS_L = L(EV_STATUS), ROLE_L = L(ROLES), REQ_L = L(REQ_STATUS);
+const DEFAULT_CHECKLIST = ['Current diagnosis documented', 'In-service event, injury or exposure documented (service records)',
+  'Current treatment records', 'Nexus opinion from a treating doctor', 'Buddy / lay statement'];
+const COMMON_ITEMS = [
+  ['form', 'File Intent to File (ITF)', 'Starts the one-year clock. Put the date in Overview.'],
+  ['form', 'Submit VA Form 21-526EZ (full claim)', 'Submit before the ITF window ends.'],
+  ['cfile', 'Request C-file with VA Form 20-10206', 'Your claims file, via FOIA/Privacy Act request.'],
+  ['medrec', 'Request private medical records', 'One item per provider is easier to track. Copy this item for each.'],
+  ['buddy', 'Line up buddy statements', 'Track each person under People & log.'],
+  ['nexus', 'Get nexus letters from treating doctors', ''],
+  ['exam', 'Schedule and attend C&P exams', 'Put the exam date in the Overview timeline.'],
+  ['other', 'Keep copies of everything sent and received', '']
+];
+
+/* ---- model ---- */
+const oneOf = (map, v, def) => (typeof v === 'string' && Object.prototype.hasOwnProperty.call(map, v) ? v : def);
+const isoOr = v => (isISO(v) ? v : '');
+const clip = (v, n) => str(v).trim().slice(0, n);
+const defaultMilestones = () => MS_DEFS.map(([key]) => ({ key, date: '', status: 'todo', note: '' }));
+function normMilestones(raw) {
+  const base = defaultMilestones();
+  if (!Array.isArray(raw)) return base;
+  for (const m of raw) {
+    if (!m || typeof m !== 'object') continue;
+    const t = base.find(x => x.key === m.key);
+    if (t) { t.date = isoOr(m.date); t.status = oneOf(MS_STATUS_L, m.status, 'todo'); t.note = str(m.note).slice(0, 1000); }
+  }
+  return base;
+}
+function normCheck(c) {
+  if (!c || typeof c !== 'object') return null;
+  const label = clip(c.label, 200);
+  return label ? { id: str(c.id) || uid(), label, done: !!c.done } : null;
+}
+function normCond(c) {
+  if (!c || typeof c !== 'object') return null;
+  const name = clip(c.name, 120);
+  if (!name) return null;
+  const r = typeof c.rating === 'number' ? c.rating : (c.rating === '' || c.rating == null ? NaN : parseFloat(c.rating));
+  const seen = new Set();
+  const checklist = (Array.isArray(c.checklist) ? c.checklist : []).map(normCheck).filter(x => x && !seen.has(x.id) && seen.add(x.id)).slice(0, MAX.checklist);
+  const type = oneOf(COND_TYPE_L, c.type, 'direct');
+  return { id: str(c.id) || uid(), name, type, secondaryTo: type === 'secondary' ? str(c.secondaryTo) : '', status: oneOf(COND_STATUS_L, c.status, 'planning'),
+    rating: isNum(r) && r >= 0 && r <= 100 ? Math.round(r) : null, notes: str(c.notes).slice(0, 4000), checklist, createdAt: isNum(c.createdAt) ? c.createdAt : Date.now() };
+}
+function normEvidence(e) {
+  if (!e || typeof e !== 'object') return null;
+  const title = clip(e.title, 160);
+  if (!title) return null;
+  return { id: str(e.id) || uid(), title, kind: oneOf(KIND_L, e.kind, 'other'),
+    conditionIds: [...new Set((Array.isArray(e.conditionIds) ? e.conditionIds : []).map(str).filter(Boolean))].slice(0, MAX.conditions),
+    source: clip(e.source, 160), personId: str(e.personId), requestedOn: isoOr(e.requestedOn), dueOn: isoOr(e.dueOn),
+    receivedOn: isoOr(e.receivedOn), submittedOn: isoOr(e.submittedOn), status: oneOf(EV_STATUS_L, e.status, 'todo'),
+    notes: str(e.notes).slice(0, 4000), createdAt: isNum(e.createdAt) ? e.createdAt : Date.now() };
+}
+function normPerson(p) {
+  if (!p || typeof p !== 'object') return null;
+  const name = clip(p.name, 120);
+  if (!name) return null;
+  return { id: str(p.id) || uid(), name, role: oneOf(ROLE_L, p.role, 'other'), phone: clip(p.phone, 40), email: clip(p.email, 120),
+    notes: str(p.notes).slice(0, 4000), reqStatus: oneOf(REQ_L, p.reqStatus, 'notasked'), createdAt: isNum(p.createdAt) ? p.createdAt : Date.now() };
+}
+function normLog(l) {
+  if (!l || typeof l !== 'object' || !isISO(l.date)) return null;
+  const what = str(l.what).trim().slice(0, 2000), next = clip(l.next, 500);
+  if (!what && !next) return null;
+  return { id: str(l.id) || uid(), date: l.date, personId: str(l.personId), who: clip(l.who, 120), what, next,
+    followUp: isoOr(l.followUp), done: !!l.done, createdAt: isNum(l.createdAt) ? l.createdAt : Date.now() };
+}
+function normSettings(s) {
+  const n = s && typeof s === 'object' ? Math.round(Number(s.followDays)) : NaN;
+  return { followDays: isNum(n) && n >= 1 && n <= 365 ? n : 30 };
+}
+function dedupeCap(arr, max) {
+  const seen = new Set(), out = [];
+  for (const x of arr) if (!seen.has(x.id)) { seen.add(x.id); out.push(x); }
+  return { out: out.slice(0, max), lost: arr.length - Math.min(out.length, max) };
+}
+function normalizeData(raw) {
+  raw = raw && typeof raw === 'object' ? raw : {};
+  let dropped = 0;
+  const run = (src, fn, max) => {
+    const list = Array.isArray(src) ? src : [];
+    const mapped = list.map(fn).filter(Boolean);
+    dropped += list.length - mapped.length;
+    const { out, lost } = dedupeCap(mapped, max); dropped += lost; return out;
+  };
+  const conditions = run(raw.conditions, normCond, MAX.conditions);
+  const people = run(raw.people, normPerson, MAX.people);
+  const cids = new Set(conditions.map(c => c.id)), pids = new Set(people.map(p => p.id));
+  for (const c of conditions) if (!cids.has(c.secondaryTo) || c.secondaryTo === c.id) c.secondaryTo = '';
+  const evidence = run(raw.evidence, normEvidence, MAX.evidence);
+  for (const e of evidence) { e.conditionIds = e.conditionIds.filter(id => cids.has(id)); if (!pids.has(e.personId)) e.personId = ''; }
+  const log = run(raw.log, normLog, MAX.log);
+  for (const l of log) if (!pids.has(l.personId)) l.personId = '';
+  return { data: { settings: normSettings(raw.settings), milestones: normMilestones(raw.milestones), conditions, evidence, people, log }, dropped };
+}
+const defaultState = () => ({ schemaVersion: SCHEMA, meta: { lastBackup: null, lastChange: null }, settings: normSettings(), milestones: defaultMilestones(), conditions: [], evidence: [], people: [], log: [] });
+function loadState(parsed) {
+  const { data } = normalizeData(parsed);
+  const m = parsed && parsed.meta && typeof parsed.meta === 'object' ? parsed.meta : {};
+  return { schemaVersion: SCHEMA, meta: { lastBackup: str(m.lastBackup) || null, lastChange: str(m.lastChange) || null }, ...data };
+}
+const exportData = () => ({ settings: state.settings, milestones: state.milestones, conditions: state.conditions, evidence: state.evidence, people: state.people, log: state.log });
+const hasAnyData = () => state.conditions.length || state.evidence.length || state.people.length || state.log.length || state.milestones.some(m => m.date || m.status !== 'todo' || m.note);
+
+/* ---- persistence ---- */
+let state = defaultState(), db = null, saveFailed = false, persistAsked = false, saveChain = Promise.resolve();
+function persist({ touch = true } = {}) {
+  if (touch) state.meta.lastChange = new Date().toISOString();
+  if (!db) return Promise.resolve();
+  const snap = JSON.stringify(state);
+  saveChain = saveChain.then(() => idbPut(db, 'state', snap)).then(() => { saveFailed = false; }).catch(err => { console.error(err); saveFailed = true; });
+  if (!persistAsked && navigator.storage && navigator.storage.persist) { persistAsked = true; navigator.storage.persist().catch(() => {}); }
+  return saveChain;
+}
+const commit = () => { persist(); render(); };
+
+/* ---- derived logic ---- */
+const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
+const ms = key => state.milestones.find(m => m.key === key);
+const condById = id => state.conditions.find(c => c.id === id);
+const evById = id => state.evidence.find(e => e.id === id);
+const personById = id => state.people.find(p => p.id === id);
+const longDate = s => parseISO(s).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+const isOpenEv = e => e.status === 'todo' || e.status === 'requested';
+function readiness(c) {
+  const total = c.checklist.length, done = c.checklist.filter(x => x.done).length;
+  return { done, total, pct: total ? Math.round(done * 100 / total) : 0 };
+}
+function evFlag(e, today) {
+  if (!isOpenEv(e)) return null;
+  if (e.dueOn && e.dueOn < today) return { text: `Past due ${plural(daysBetween(e.dueOn, today), 'day')}`, cls: 'bad' };
+  if (e.status === 'requested' && !e.receivedOn && e.requestedOn) {
+    const n = daysBetween(e.requestedOn, today);
+    if (n > state.settings.followDays) return { text: `No reply after ${plural(n, 'day')} · follow up`, cls: 'warn' };
+  }
+  return null;
+}
+function evDate(e) {
+  if (!isOpenEv(e)) return '';
+  if (e.dueOn) return e.dueOn;
+  if (e.status === 'requested' && e.requestedOn) return addDays(e.requestedOn, state.settings.followDays);
+  return '';
+}
+function rel(date, today) {
+  const d = daysBetween(today, date);
+  if (d < 0) return { text: `${plural(-d, 'day')} overdue · ${fmtDate(date)}`, cls: 'bad' };
+  if (d === 0) return { text: 'Today', cls: 'warn' };
+  if (d === 1) return { text: `Tomorrow · ${fmtDate(date)}`, cls: 'warn' };
+  if (d <= 7) return { text: `${fmtDate(date)} · in ${d} days`, cls: 'warn' };
+  return { text: fmtDate(date), cls: '' };
+}
+function itfInfo(today) {
+  const itf = ms('itf').date;
+  if (!itf) return null;
+  const expiry = addMonths(itf, 12), left = daysBetween(today, expiry), sub = ms('submitted');
+  const submitted = sub.status === 'done';
+  let level = '', msg = '';
+  if (submitted) {
+    msg = sub.date && sub.date > expiry ? 'Claim was submitted after the ITF window ended. Ask your rep how that affects the effective date.' : 'Claim submitted.';
+  } else if (left < 0) { level = 'bad'; msg = `The ITF window ended ${plural(-left, 'day')} ago. Talk to your accredited rep about next steps.`; }
+  else if (left <= 30) { level = 'bad'; msg = `${plural(left, 'day')} left in the ITF window. Get the full claim (21-526EZ) in soon.`; }
+  else if (left <= 60) { level = 'warn'; msg = `${plural(left, 'day')} left in the ITF window. Plan the 21-526EZ submission.`; }
+  return { itf, expiry, left, submitted, level, msg };
+}
+function appealInfo(today) {
+  const d = ms('decision').date;
+  if (!d) return null;
+  const by = addMonths(d, 12), left = daysBetween(today, by);
+  return { by, left, level: left < 0 ? '' : left <= 30 ? 'bad' : left <= 60 ? 'warn' : '' };
+}
+function openItems(today = todayISO()) {
+  const out = [];
+  for (const e of state.evidence) if (isOpenEv(e)) {
+    const f = evFlag(e, today);
+    out.push({ type: 'ev', id: e.id, title: e.title, sub: `${KIND_L[e.kind]} · ${EV_STATUS_L[e.status]}`, date: evDate(e), flag: f });
+  }
+  for (const l of state.log) if (l.followUp && !l.done) out.push({ type: 'log', id: l.id, title: `Follow up: ${logWho(l) || 'contact'}`, sub: l.next || l.what.slice(0, 80), date: l.followUp });
+  for (const m of state.milestones) if (m.date && m.status !== 'done') out.push({ type: 'ms', id: m.key, title: MS_LABEL[m.key], sub: MS_STATUS_L[m.status], date: m.date });
+  const info = itfInfo(today);
+  if (info && !info.submitted) out.push({ type: 'itf', id: 'submitted', title: 'ITF window ends', sub: 'Submit the full claim before this date', date: info.expiry });
+  out.sort((a, b) => (a.date ? 0 : 1) - (b.date ? 0 : 1) || a.date.localeCompare(b.date) || a.title.localeCompare(b.title));
+  return out;
+}
+const evCounts = () => { const c = Object.fromEntries(EV_STATUS.map(([k]) => [k, 0])); for (const e of state.evidence) c[e.status]++; return c; };
+const logWho = l => { const p = personById(l.personId); return p ? p.name : l.who; };
+const condNames = e => e.conditionIds.map(id => condById(id)).filter(Boolean).map(c => c.name);
+
+/* ---- actions ---- */
+function addCommonItems() {
+  const have = new Set(state.evidence.map(e => e.title.toLowerCase()));
+  let n = 0;
+  for (const [kind, title, notes] of COMMON_ITEMS) {
+    if (have.has(title.toLowerCase()) || state.evidence.length >= MAX.evidence) continue;
+    state.evidence.push({ id: uid(), title, kind, conditionIds: [], source: '', personId: '', requestedOn: '', dueOn: '', receivedOn: '', submittedOn: '', status: 'todo', notes, createdAt: Date.now() + n });
+    n++;
+  }
+  commit();
+  toast(n ? `Added ${plural(n, 'item')}. Edit or delete any of them.` : 'Those items are already in your list.');
+}
+function advanceEvidence(id) {
+  const e = evById(id); if (!e) return;
+  const prev = { ...e, conditionIds: [...e.conditionIds] }, t = todayISO();
+  if (e.status === 'todo') { e.status = 'requested'; e.requestedOn = e.requestedOn || t; }
+  else if (e.status === 'requested') { e.status = 'received'; e.receivedOn = t; }
+  else if (e.status === 'received') { e.status = 'submitted'; e.submittedOn = t; }
+  else return;
+  commit();
+  toast(`Marked ${EV_STATUS_L[e.status].toLowerCase()}`, { label: 'Undo', fn: () => { Object.assign(e, prev); commit(); } });
+}
+const NEXT_EV = { todo: 'Requested', requested: 'Received', received: 'Submitted' };
+const NEXT_REQ = { notasked: ['asked', 'Asked'], asked: ['drafted', 'Drafted'], drafted: ['signed', 'Signed'], signed: ['sent', 'Sent'] };
+function advancePerson(id) {
+  const p = personById(id); if (!p || !NEXT_REQ[p.reqStatus]) return;
+  const prev = p.reqStatus; p.reqStatus = NEXT_REQ[prev][0];
+  commit();
+  toast(`${p.name}: ${REQ_L[p.reqStatus].toLowerCase()}`, { label: 'Undo', fn: () => { p.reqStatus = prev; commit(); } });
+}
+function finishFollowUp(id) {
+  const l = state.log.find(x => x.id === id); if (!l) return;
+  l.done = true; commit();
+  toast('Follow-up done', { label: 'Undo', fn: () => { l.done = false; commit(); } });
+}
+
+/* ---- dialogs ---- */
+const dateField = (name, label, value, extra = {}) => ({ name, label, type: 'date', value: value || '', ...extra });
+function msDialog(key) {
+  const m = ms(key); if (!m) return;
+  const hints = { itf: 'The date VA received your Intent to File. The one-year window is counted from here.', submitted: 'Date you submitted the full claim.', decision: 'Date on the decision letter.', cp: 'Exam date, once scheduled.' };
+  formDialog({
+    title: MS_LABEL[key], intro: hints[key] || '',
+    fields: [dateField('date', 'Date', m.date), { name: 'status', label: 'Status', type: 'select', options: MS_STATUS, value: m.status },
+      { name: 'note', label: 'Notes', type: 'textarea', value: m.note, placeholder: 'Confirmation numbers, who you spoke to...' }],
+    submitLabel: 'Save',
+    onSubmit: v => {
+      if (v.date && !isISO(v.date)) return 'Pick a valid date.';
+      m.date = v.date; m.status = v.status; m.note = v.note.trim().slice(0, 1000);
+      if (m.date && m.date <= todayISO() && m.status === 'todo') m.status = 'done';
+      commit();
+    },
+    extra: m.date || m.status !== 'todo' || m.note ? [{ label: 'Clear', onClick: () => { m.date = ''; m.status = 'todo'; m.note = ''; $('#dlg').close(); commit(); } }] : []
+  });
+}
+function condDialog(id) {
+  const c = id ? condById(id) : null;
+  if (id && !c) return;
+  if (!c && state.conditions.length >= MAX.conditions) return toast(`Limit of ${MAX.conditions} conditions reached.`);
+  const others = state.conditions.filter(x => !c || x.id !== c.id).map(x => [x.id, x.name]);
+  formDialog({
+    title: c ? 'Edit condition' : 'Add condition',
+    fields: [
+      { name: 'name', label: 'Condition', required: true, value: c && c.name },
+      { name: 'type', label: 'Claim type', type: 'select', options: COND_TYPES, value: c ? c.type : 'direct' },
+      { name: 'secondaryTo', label: 'Secondary to (if secondary)', type: 'select', options: [['', '—'], ...others], value: c ? c.secondaryTo : '' },
+      { name: 'status', label: 'Status', type: 'select', options: COND_STATUS, value: c ? c.status : 'planning' },
+      { name: 'rating', label: 'Current rating % (if any)', type: 'number', value: c && c.rating != null ? c.rating : '', min: 0, max: 100, step: 10 },
+      { name: 'notes', label: 'Notes', type: 'textarea', value: c && c.notes }
+    ],
+    submitLabel: c ? 'Save' : 'Add condition',
+    onSubmit: v => {
+      const name = v.name.trim().slice(0, 120);
+      let rating = null;
+      if (String(v.rating).trim() !== '') { const r = parseFloat(v.rating); if (!(r >= 0 && r <= 100)) return 'Rating must be between 0 and 100.'; rating = Math.round(r); }
+      const type = v.type, secondaryTo = type === 'secondary' ? v.secondaryTo : '';
+      if (c) { Object.assign(c, { name, type, secondaryTo, status: v.status, rating, notes: v.notes.trim().slice(0, 4000) }); }
+      else state.conditions.push({ id: uid(), name, type, secondaryTo, status: v.status, rating, notes: v.notes.trim().slice(0, 4000),
+        checklist: DEFAULT_CHECKLIST.map(label => ({ id: uid(), label, done: false })), createdAt: Date.now() });
+      commit();
+    },
+    onDelete: c ? async () => {
+      if (!(await confirmBox(`Delete “${c.name}”?`, 'Evidence items linked to it are kept but unlinked.', 'Delete condition'))) return false;
+      state.conditions = state.conditions.filter(x => x.id !== c.id);
+      for (const x of state.conditions) if (x.secondaryTo === c.id) x.secondaryTo = '';
+      for (const e of state.evidence) e.conditionIds = e.conditionIds.filter(i => i !== c.id);
+      if (condDetail === c.id) condDetail = null;
+      commit(); toast('Condition deleted'); return true;
+    } : null
+  });
+}
+function checkDialog(condId, itemId) {
+  const c = condById(condId); if (!c) return;
+  const it = itemId ? c.checklist.find(x => x.id === itemId) : null;
+  if (!it && c.checklist.length >= MAX.checklist) return toast(`Limit of ${MAX.checklist} checklist items reached.`);
+  formDialog({
+    title: it ? 'Edit checklist item' : 'Add checklist item',
+    fields: [{ name: 'label', label: 'Item', required: true, value: it && it.label }],
+    submitLabel: it ? 'Save' : 'Add',
+    onSubmit: v => { const label = v.label.trim().slice(0, 200); if (it) it.label = label; else c.checklist.push({ id: uid(), label, done: false }); commit(); },
+    onDelete: it ? () => { c.checklist = c.checklist.filter(x => x.id !== it.id); commit(); return true; } : null
+  });
+}
+function evDialog(id, preset = {}) {
+  const e = id ? evById(id) : null;
+  if (id && !e) return;
+  if (!e && state.evidence.length >= MAX.evidence) return toast(`Limit of ${MAX.evidence} items reached.`);
+  const linked = new Set(e ? e.conditionIds : []);
+  const condFields = state.conditions.map((c, i) => ({ name: 'c' + i, label: 'Linked: ' + c.name, type: 'checkbox', value: linked.has(c.id) }));
+  formDialog({
+    title: e ? 'Edit item' : 'Add evidence or request',
+    fields: [
+      { name: 'title', label: 'What is it', required: true, value: e && e.title, placeholder: 'e.g. Records from Dr. Smith' },
+      { name: 'kind', label: 'Kind', type: 'select', options: KINDS, value: e ? e.kind : (preset.kind || 'medrec') },
+      { name: 'status', label: 'Status', type: 'select', options: EV_STATUS, value: e ? e.status : 'todo' },
+      { name: 'source', label: 'Source / provider / person', value: e && e.source },
+      { name: 'personId', label: 'Contact', type: 'select', options: [['', '—'], ...state.people.map(p => [p.id, p.name])], value: e ? e.personId : '' },
+      ...condFields,
+      dateField('requestedOn', 'Date requested', e && e.requestedOn),
+      dateField('dueOn', 'Due / follow-up date', e && e.dueOn),
+      dateField('receivedOn', 'Date received', e && e.receivedOn),
+      dateField('submittedOn', 'Date submitted to VA', e && e.submittedOn),
+      { name: 'notes', label: 'Notes', type: 'textarea', value: e && e.notes }
+    ],
+    submitLabel: e ? 'Save' : 'Add',
+    onSubmit: v => {
+      for (const k of ['requestedOn', 'dueOn', 'receivedOn', 'submittedOn']) if (v[k] && !isISO(v[k])) return 'Pick valid dates.';
+      const rec = { title: v.title.trim().slice(0, 160), kind: v.kind, status: v.status, source: v.source.trim().slice(0, 160), personId: v.personId,
+        conditionIds: state.conditions.filter((c, i) => v['c' + i]).map(c => c.id), requestedOn: v.requestedOn, dueOn: v.dueOn,
+        receivedOn: v.receivedOn, submittedOn: v.submittedOn, notes: v.notes.trim().slice(0, 4000) };
+      const t = todayISO();
+      if (rec.status === 'requested' && !rec.requestedOn) rec.requestedOn = t;
+      if (rec.status === 'received' && !rec.receivedOn) rec.receivedOn = t;
+      if (rec.status === 'submitted' && !rec.submittedOn) rec.submittedOn = t;
+      if (e) Object.assign(e, rec); else state.evidence.push({ id: uid(), ...rec, createdAt: Date.now() });
+      commit();
+    },
+    onDelete: e ? async () => {
+      if (!(await confirmBox(`Delete “${e.title}”?`, '', 'Delete item'))) return false;
+      state.evidence = state.evidence.filter(x => x.id !== e.id); commit(); toast('Item deleted'); return true;
+    } : null
+  });
+}
+function followDialog() {
+  formDialog({
+    title: 'Follow-up reminder', intro: 'Requested items with no reply after this many days are highlighted.',
+    fields: [{ name: 'days', label: 'Days', type: 'number', value: state.settings.followDays, min: 1, max: 365, step: 1 }],
+    onSubmit: v => { const n = Math.round(parseFloat(v.days)); if (!(n >= 1 && n <= 365)) return 'Enter 1 to 365 days.'; state.settings.followDays = n; commit(); }
+  });
+}
+function personDialog(id) {
+  const p = id ? personById(id) : null;
+  if (id && !p) return;
+  if (!p && state.people.length >= MAX.people) return toast(`Limit of ${MAX.people} contacts reached.`);
+  formDialog({
+    title: p ? 'Edit contact' : 'Add contact',
+    fields: [
+      { name: 'name', label: 'Name', required: true, value: p && p.name },
+      { name: 'role', label: 'Role', type: 'select', options: ROLES, value: p ? p.role : 'buddy' },
+      { name: 'reqStatus', label: 'Statement / letter status', type: 'select', options: REQ_STATUS, value: p ? p.reqStatus : 'notasked' },
+      { name: 'phone', label: 'Phone', type: 'tel', value: p && p.phone, autocomplete: 'off' },
+      { name: 'email', label: 'Email', type: 'email', value: p && p.email },
+      { name: 'notes', label: 'Notes', type: 'textarea', value: p && p.notes }
+    ],
+    submitLabel: p ? 'Save' : 'Add contact',
+    extra: p ? [{ label: 'Log a contact', onClick: () => { $('#dlg').close(); logDialog(null, { personId: p.id }); } }] : [],
+    onSubmit: v => {
+      const rec = { name: v.name.trim().slice(0, 120), role: v.role, reqStatus: v.reqStatus, phone: v.phone.trim().slice(0, 40), email: v.email.trim().slice(0, 120), notes: v.notes.trim().slice(0, 4000) };
+      if (p) Object.assign(p, rec); else state.people.push({ id: uid(), ...rec, createdAt: Date.now() });
+      commit();
+    },
+    onDelete: p ? async () => {
+      if (!(await confirmBox(`Delete “${p.name}”?`, 'Log entries and items that mention them keep the name.', 'Delete contact'))) return false;
+      for (const l of state.log) if (l.personId === p.id) { l.who = l.who || p.name; l.personId = ''; }
+      for (const e of state.evidence) if (e.personId === p.id) { e.source = e.source || p.name; e.personId = ''; }
+      state.people = state.people.filter(x => x.id !== p.id); commit(); toast('Contact deleted'); return true;
+    } : null
+  });
+}
+function logDialog(id, preset = {}) {
+  const l = id ? state.log.find(x => x.id === id) : null;
+  if (id && !l) return;
+  if (!l && state.log.length >= MAX.log) return toast(`Limit of ${MAX.log} log entries reached.`);
+  formDialog({
+    title: l ? 'Edit log entry' : 'Log a contact',
+    fields: [
+      dateField('date', 'Date', l ? l.date : todayISO(), { required: true }),
+      { name: 'personId', label: 'Who (from contacts)', type: 'select', options: [['', '—'], ...state.people.map(p => [p.id, p.name])], value: l ? l.personId : (preset.personId || '') },
+      { name: 'who', label: 'Or someone not in contacts', value: l && l.who },
+      { name: 'what', label: 'What was said or promised', type: 'textarea', value: l && l.what },
+      { name: 'next', label: 'Next step', value: l && l.next },
+      dateField('followUp', 'Follow-up date', l && l.followUp),
+      { name: 'done', label: 'Follow-up done', type: 'checkbox', value: l && l.done }
+    ],
+    submitLabel: l ? 'Save' : 'Add entry',
+    onSubmit: v => {
+      if (!isISO(v.date)) return 'Pick a valid date.';
+      if (v.followUp && !isISO(v.followUp)) return 'Pick a valid follow-up date.';
+      if (!v.what.trim() && !v.next.trim()) return 'Add what was said or a next step.';
+      const rec = { date: v.date, personId: v.personId, who: v.who.trim().slice(0, 120), what: v.what.trim().slice(0, 2000), next: v.next.trim().slice(0, 500), followUp: v.followUp, done: v.done };
+      if (l) Object.assign(l, rec); else state.log.push({ id: uid(), ...rec, createdAt: Date.now() });
+      commit();
+    },
+    onDelete: l ? async () => {
+      if (!(await confirmBox('Delete this log entry?', '', 'Delete entry'))) return false;
+      state.log = state.log.filter(x => x.id !== l.id); commit(); toast('Entry deleted'); return true;
+    } : null
+  });
+}
+
+/* ---- views ---- */
+const view = $('#view');
+let tab = 'overview', condDetail = null, peopleSeg = 'people', evFilter = 'open';
+function storageBannerHTML() {
+  if (saveFailed) return '<div class="banner bad">Couldn’t save to this device’s storage. Back up now so nothing is lost.</div>';
+  if (!db) return '<div class="banner bad">This browser isn’t allowing storage (private mode?). Changes won’t survive closing the app. Use Backup.</div>';
+  return '';
+}
+const badge = (t, cls = '') => `<span class="badge ${cls}">${esc(t)}</span>`;
+const DISCLAIMER = '<p class="disc">This app is an organizer. It does not give legal advice or predict ratings or outcomes. Dates shown are general rules; confirm them with your accredited representative.</p>';
+
+function kd(label, value, sub, cls, key) {
+  return `<div class="kd${key ? '' : ' static'}"${key ? ` data-action="ms" data-key="${esc(key)}" role="button" tabindex="0"` : ''}><div class="k">${esc(label)}</div>
+    <div class="v ${cls || ''}">${value}${sub ? `<div class="s">${sub}</div>` : ''}</div></div>`;
+}
+function renderOverview() {
+  const today = todayISO(), info = itfInfo(today), app = appealInfo(today), items = openItems(today), counts = evCounts();
+  const sub = ms('submitted'), dec = ms('decision');
+  let k = '';
+  if (info) {
+    k += kd('Intent to File', esc(fmtDate(info.itf)), '', '', 'itf');
+    const cls = info.submitted ? 'ok' : info.level;
+    const dl = info.submitted ? 'Claim submitted' : info.left < 0 ? `Ended ${plural(-info.left, 'day')} ago` : info.left === 0 ? 'Ends today' : `${plural(info.left, 'day')} left`;
+    k += kd('ITF window ends', esc(fmtDate(info.expiry)), esc(dl), cls, null);
+  } else k += kd('Intent to File', '<span class="muted">Enter date</span>', 'Starts your one-year clock', '', 'itf');
+  k += kd('Claim submitted (21-526EZ)', sub.date ? esc(fmtDate(sub.date)) : sub.status === 'done' ? 'Done' : '<span class="muted">Not yet</span>', sub.status === 'doing' ? 'In progress' : '', sub.status === 'done' ? 'ok' : '', 'submitted');
+  k += kd('Decision', dec.date ? esc(fmtDate(dec.date)) : '<span class="muted">Not yet</span>', '', '', 'decision');
+  if (app) k += kd('One year from decision date', esc(fmtDate(app.by)), app.left < 0 ? `Passed ${plural(-app.left, 'day')} ago` : `${plural(app.left, 'day')} left`, app.level, null)
+    + `<p class="hint">General rule: one year from the decision date to appeal or choose a supplemental option. Verify with your rep.</p>`;
+  const next = items.find(i => i.date && i.date >= today);
+  k += kd('Next scheduled', next ? esc(next.title) : '<span class="muted">Nothing dated</span>', next ? esc(rel(next.date, today).text) : '', '', null);
+  const warn = info && info.msg && info.level ? `<div class="banner ${info.level === 'bad' ? 'bad' : ''}" role="alert">${esc(info.msg)}</div>` : '';
+  const msRows = state.milestones.map(m => `<li class="ms" data-action="ms" data-key="${m.key}" role="button" tabindex="0"><span class="dot ${m.status}"></span>
+    <div class="row-main"><div class="row-title">${esc(MS_LABEL[m.key])}</div><div class="row-sub">${esc(MS_STATUS_L[m.status])}${m.date ? ' · ' + esc(fmtDate(m.date)) : ''}${m.note ? ' · ' + esc(m.note.slice(0, 60)) : ''}</div></div>
+    ${m.status !== 'done' ? `<button type="button" class="btn small" data-action="ms-done" data-key="${m.key}" aria-label="Mark ${esc(MS_LABEL[m.key])} done">Done</button>` : ''}</li>`).join('');
+  const oiRow = i => {
+    const r = i.date ? rel(i.date, today) : null, f = i.flag;
+    const btn = i.type === 'ev' ? (() => { const e = evById(i.id); return e && NEXT_EV[e.status] ? `<button type="button" class="btn small" data-action="ev-next" data-id="${esc(i.id)}">${NEXT_EV[e.status]}</button>` : ''; })()
+      : i.type === 'log' ? `<button type="button" class="btn small" data-action="log-done" data-id="${esc(i.id)}">Done</button>`
+      : i.type === 'ms' ? `<button type="button" class="btn small" data-action="ms-done" data-key="${esc(i.id)}">Done</button>` : '';
+    const act = i.type === 'ev' ? 'ev-edit' : i.type === 'log' ? 'log-edit' : 'ms';
+    return `<li class="row" data-action="${act}" data-id="${esc(i.id)}" data-key="${esc(i.id)}"><div class="row-main"><div class="row-title">${esc(i.title)}</div>
+      <div class="row-sub">${esc(i.sub)}</div>${r ? `<div class="row-sub ${r.cls}">${esc(r.text)}</div>` : ''}${f ? `<div class="row-sub ${f.cls}">${esc(f.text)}</div>` : ''}</div>${btn}</li>`;
+  };
+  const tiles = EV_STATUS.map(([key, label]) => `<div class="card tile"><div class="lbl">${esc(label)}</div><div class="val num ${key === 'received' || key === 'submitted' ? 'ok' : ''}">${counts[key]}</div></div>`).join('');
+  const tmpl = !state.evidence.length ? `<section class="card pad" style="margin-top:14px"><h3>Start with a checklist</h3>
+    <p class="muted">One tap adds a generic list of claim tasks (ITF, 21-526EZ, C-file, records, statements, nexus letters, C&amp;P exams). Edit or delete any of them. Skip it if you prefer to start blank.</p>
+    <button type="button" class="btn primary block" data-action="template">Add common claim items</button></section>` : '';
+  return storageBannerHTML() + `${warn}<section class="card pad" style="margin-top:14px"><h3>Key dates</h3>${k}</section>
+    <div class="sec-h"><span>Timeline</span></div><ul class="card list">${msRows}</ul>
+    <div class="sec-h"><span>Open items</span><span class="num">${items.length}</span></div>
+    ${items.length ? `<ul class="card list">${items.map(oiRow).join('')}</ul>` : '<div class="card empty"><h2>Nothing open</h2><p>Dated milestones, evidence requests and contact follow-ups show up here.</p></div>'}
+    <div class="sec-h"><span>Evidence by status</span></div><div class="counts">${tiles}</div>${tmpl}
+    <section class="card pad" style="margin-top:14px"><h3>Hand to your rep</h3><p class="muted">A one-page status of dates, conditions, evidence, contacts and recent log.</p>
+      <div class="chips"><button type="button" class="btn small" data-action="copy-text">Copy as text</button><button type="button" class="btn small" data-action="print">Print / save PDF</button></div></section>${DISCLAIMER}`;
+}
+function condRow(c) {
+  const r = readiness(c), sec = c.type === 'secondary' && condById(c.secondaryTo);
+  return `<li class="row" data-action="cond-open" data-id="${esc(c.id)}"><div class="row-main"><div class="row-title">${esc(c.name)}</div>
+    <div class="row-sub">${esc(COND_TYPE_L[c.type].replace(' to another condition', ''))}${sec ? ' ' + esc(sec.name) : ''} · ${esc(COND_STATUS_L[c.status])}${c.rating != null ? ' · ' + c.rating + '%' : ''}</div>
+    <div class="bar small" aria-hidden="true"><i style="width:${r.pct}%"></i></div></div>
+    <div class="row-amt num" title="Evidence checklist">${r.total ? `${r.done}/${r.total}` : '–'}</div></li>`;
+}
+function renderConditions() {
+  if (condDetail) { const c = condById(condDetail); if (c) return renderCondDetail(c); condDetail = null; }
+  if (!state.conditions.length) return storageBannerHTML() + `<div class="empty"><div class="big">🩺</div><h2>No conditions yet</h2>
+    <p>Add each condition you are claiming. Each one gets an evidence checklist you can edit.</p><button type="button" class="btn primary" data-action="cond-add">Add a condition</button></div>`;
+  return storageBannerHTML() + `<div class="sec-h"><span>${plural(state.conditions.length, 'condition')}</span></div><ul class="card list">${[...state.conditions].sort((a, b) => a.name.localeCompare(b.name)).map(condRow).join('')}</ul>
+    <p class="hint" style="margin:8px 4px">The bar shows how many checklist items are done. It tracks your paperwork only; it says nothing about the outcome.</p>`;
+}
+function renderCondDetail(c) {
+  const r = readiness(c), sec = c.type === 'secondary' ? condById(c.secondaryTo) : null;
+  const items = c.checklist.map(x => `<li class="chk ${x.done ? 'done' : ''}"><input type="checkbox" id="ck_${esc(x.id)}" data-action="ck-toggle" data-id="${esc(c.id)}" data-item="${esc(x.id)}" ${x.done ? 'checked' : ''}>
+    <label class="t" for="ck_${esc(x.id)}">${esc(x.label)}</label><button type="button" class="btn small ghost" data-action="ck-edit" data-id="${esc(c.id)}" data-item="${esc(x.id)}" aria-label="Edit ${esc(x.label)}">Edit</button></li>`).join('');
+  const ev = state.evidence.filter(e => e.conditionIds.includes(c.id));
+  const evRows = ev.map(e => `<li class="row" data-action="ev-edit" data-id="${esc(e.id)}"><div class="row-main"><div class="row-title">${esc(e.title)}</div><div class="row-sub">${esc(KIND_L[e.kind])}</div></div>${badge(EV_STATUS_L[e.status], e.status === 'received' || e.status === 'submitted' ? 'ok' : e.status === 'requested' ? 'warn' : '')}</li>`).join('');
+  return storageBannerHTML() + `<div style="margin-top:6px"><button type="button" class="back btn ghost" data-action="cond-back">‹ All conditions</button></div>
+    <section class="card pad"><div style="display:flex;gap:10px;align-items:flex-start"><div style="flex:1;min-width:0"><h2 style="overflow-wrap:anywhere">${esc(c.name)}</h2>
+      <div class="row-sub">${esc(COND_TYPE_L[c.type])}${c.type === 'secondary' ? ': ' + (sec ? esc(sec.name) : 'link not set') : ''}</div>
+      <div class="row-sub">${esc(COND_STATUS_L[c.status])}${c.rating != null ? ' · current rating ' + c.rating + '%' : ''}</div></div>
+      <button type="button" class="btn small" data-action="cond-edit" data-id="${esc(c.id)}">Edit</button></div>
+      ${c.notes ? `<p style="margin-top:10px;white-space:pre-wrap;overflow-wrap:anywhere">${esc(c.notes)}</p>` : ''}</section>
+    <div class="sec-h"><span>Evidence checklist</span><span class="num">${r.done}/${r.total}</span></div>
+    <div class="bar" style="margin:0 4px 10px" role="progressbar" aria-valuenow="${r.pct}" aria-valuemin="0" aria-valuemax="100" aria-label="Checklist progress"><i style="width:${r.pct}%"></i></div>
+    ${c.checklist.length ? `<ul class="card list">${items}</ul>` : '<p class="muted" style="margin:0 4px">No checklist items.</p>'}
+    <div style="margin-top:10px"><button type="button" class="btn small" data-action="ck-add" data-id="${esc(c.id)}">+ Add checklist item</button></div>
+    <div class="sec-h"><span>Linked evidence &amp; requests</span><button type="button" class="btn small" data-action="ev-add-for" data-id="${esc(c.id)}">+ Add</button></div>
+    ${ev.length ? `<ul class="card list">${evRows}</ul>` : '<p class="muted" style="margin:0 4px">Nothing linked yet. Link items from the Evidence tab.</p>'}`;
+}
+function evRow(e, today) {
+  const f = evFlag(e, today), conds = condNames(e), p = personById(e.personId);
+  const who = [e.source, p && p.name !== e.source ? p.name : ''].filter(Boolean).join(' · ');
+  const dates = [e.requestedOn && 'Requested ' + fmtDate(e.requestedOn, false), e.dueOn && 'Follow up ' + fmtDate(e.dueOn, false), e.receivedOn && 'Received ' + fmtDate(e.receivedOn, false), e.submittedOn && 'Submitted ' + fmtDate(e.submittedOn, false)].filter(Boolean).join(' · ');
+  const cls = e.status === 'received' || e.status === 'submitted' ? 'ok' : e.status === 'requested' ? 'warn' : '';
+  return `<li class="row" data-action="ev-edit" data-id="${esc(e.id)}"><div class="row-main"><div class="row-title">${esc(e.title)}${badge(EV_STATUS_L[e.status], cls)}</div>
+    <div class="row-sub">${esc(KIND_L[e.kind])}${who ? ' · ' + esc(who) : ''}${conds.length ? ' · ' + esc(conds.slice(0, 3).join(', ') + (conds.length > 3 ? ` +${conds.length - 3}` : '')) : ''}</div>
+    ${dates ? `<div class="row-sub">${esc(dates)}</div>` : ''}${f ? `<div class="row-sub ${f.cls}">${esc(f.text)}</div>` : ''}</div>
+    ${NEXT_EV[e.status] ? `<button type="button" class="btn small" data-action="ev-next" data-id="${esc(e.id)}" aria-label="Mark ${esc(e.title)} ${NEXT_EV[e.status].toLowerCase()}">${NEXT_EV[e.status]}</button>` : ''}</li>`;
+}
+const EV_FILTERS = [['open', 'Open'], ['received', 'Received'], ['submitted', 'Submitted'], ['notneeded', 'Not needed'], ['all', 'All']];
+function renderEvidence() {
+  const today = todayISO();
+  if (!state.evidence.length) return storageBannerHTML() + `<div class="empty"><div class="big">📎</div><h2>No evidence or requests yet</h2>
+    <p>Track records requests, the C-file request, nexus letters, buddy statements and forms.</p>
+    <button type="button" class="btn primary" data-action="ev-add">Add an item</button><br><button type="button" class="btn ghost" data-action="template">Add common claim items</button></div>`;
+  const list = state.evidence.filter(e => evFilter === 'all' || (evFilter === 'open' ? isOpenEv(e) : e.status === evFilter))
+    .sort((a, b) => (evDate(a) ? 0 : 1) - (evDate(b) ? 0 : 1) || evDate(a).localeCompare(evDate(b)) || a.title.localeCompare(b.title));
+  return storageBannerHTML() + `<div class="filters" role="group" aria-label="Filter">${EV_FILTERS.map(([k, l]) => `<button type="button" class="chip" aria-pressed="${evFilter === k}" data-action="ev-filter" data-key="${k}">${esc(l)}</button>`).join('')}</div>
+    <p class="hint" style="margin:8px 4px">Requested items with no reply after ${plural(state.settings.followDays, 'day')} are flagged. <a href="#" data-action="follow-days">Change</a></p>
+    ${list.length ? `<ul class="card list" style="margin-top:8px">${list.map(e => evRow(e, today)).join('')}</ul>` : '<div class="card empty"><h2>Nothing here</h2></div>'}`;
+}
+function personRow(p) {
+  const adv = (p.role === 'buddy' || p.role === 'doctor') ? NEXT_REQ[p.reqStatus] : null, hasStatus = p.role === 'buddy' || p.role === 'doctor';
+  const phone = p.phone && /^[0-9+()\-.\s]+$/.test(p.phone) ? `<a href="tel:${esc(p.phone.replace(/[^0-9+]/g, ''))}">${esc(p.phone)}</a>` : esc(p.phone);
+  const email = p.email && /^[^\s@<>"]+@[^\s@<>"]+$/.test(p.email) ? `<a href="mailto:${esc(p.email)}">${esc(p.email)}</a>` : esc(p.email);
+  return `<li class="row" data-action="person-edit" data-id="${esc(p.id)}"><div class="row-main"><div class="row-title">${esc(p.name)}${badge(ROLE_L[p.role], 'acc')}${hasStatus ? badge(REQ_L[p.reqStatus], p.reqStatus === 'signed' || p.reqStatus === 'sent' ? 'ok' : p.reqStatus === 'notasked' ? '' : 'warn') : ''}</div>
+    ${p.phone || p.email ? `<div class="row-sub linkrow">${[phone, email].filter(Boolean).join(' · ')}</div>` : ''}${p.notes ? `<div class="row-sub">${esc(p.notes.slice(0, 100))}</div>` : ''}</div>
+    ${adv ? `<button type="button" class="btn small" data-action="person-next" data-id="${esc(p.id)}">${adv[1]}</button>` : ''}</li>`;
+}
+function logRow(l, today) {
+  const f = l.followUp && !l.done ? rel(l.followUp, today) : null;
+  return `<li class="row" data-action="log-edit" data-id="${esc(l.id)}"><div class="row-main"><div class="row-title">${esc(logWho(l) || 'Contact')} <span class="muted" style="font-weight:400">· ${esc(fmtDate(l.date))}</span></div>
+    ${l.what ? `<div class="row-sub" style="white-space:pre-wrap">${esc(l.what)}</div>` : ''}${l.next ? `<div class="row-sub">Next: ${esc(l.next)}</div>` : ''}
+    ${l.followUp ? `<div class="row-sub ${l.done ? 'ok' : f.cls}">${l.done ? 'Follow-up done' : 'Follow up ' + esc(f.text)}</div>` : ''}</div>
+    ${l.followUp && !l.done ? `<button type="button" class="btn small" data-action="log-done" data-id="${esc(l.id)}">Done</button>` : ''}</li>`;
+}
+function renderPeople() {
+  const today = todayISO();
+  const seg = `<div class="seg2" role="group" aria-label="Section"><button type="button" class="chip" aria-pressed="${peopleSeg === 'people'}" data-action="seg" data-key="people">People (${state.people.length})</button><button type="button" class="chip" aria-pressed="${peopleSeg === 'log'}" data-action="seg" data-key="log">Contact log (${state.log.length})</button></div>`;
+  if (peopleSeg === 'people') {
+    const order = Object.fromEntries(ROLES.map(([k], i) => [k, i]));
+    const list = [...state.people].sort((a, b) => order[a.role] - order[b.role] || a.name.localeCompare(b.name));
+    return storageBannerHTML() + seg + (list.length ? `<ul class="card list" style="margin-top:14px">${list.map(personRow).join('')}</ul>`
+      : '<div class="empty"><div class="big">👥</div><h2>No contacts yet</h2><p>Add buddies, doctors, your accredited rep and records offices. Track who has been asked for a statement.</p><button type="button" class="btn primary" data-action="person-add">Add a contact</button></div>');
+  }
+  const list = [...state.log].sort((a, b) => b.date.localeCompare(a.date) || b.createdAt - a.createdAt);
+  return storageBannerHTML() + seg + (list.length ? `<ul class="card list" style="margin-top:14px">${list.map(l => logRow(l, today)).join('')}</ul>`
+    : '<div class="empty"><div class="big">📞</div><h2>No log entries yet</h2><p>Note who you talked to, what was promised, and when to follow up. Follow-up dates show on the Overview.</p><button type="button" class="btn primary" data-action="log-add">Log a contact</button></div>');
+}
+function renderBackup() {
+  const last = state.meta.lastBackup ? `Last backup: ${esc(fmtDateTime(state.meta.lastBackup))}.` : 'No backup made yet.';
+  const canEncrypt = !!(window.crypto && crypto.subtle);
+  return storageBannerHTML() + installCardHTML() + `<div class="stack">
+    <section class="card pad"><h3>Share status</h3><p>A one-page summary to give your accredited rep.</p>
+      <div class="chips"><button type="button" class="btn small" data-action="copy-text">Copy as text</button><button type="button" class="btn small" data-action="print">Print / save PDF</button><button type="button" class="btn small" data-action="csv">Export evidence + log (CSV)</button></div></section>
+    <section class="card pad"><h3>Back up</h3>
+      <p class="muted">${last}</p>
+      <p>Saves one file with everything in this app. On iPhone it opens the share sheet: save it to Files or OneDrive. <b>Never put this file in your GitHub repo.</b> It holds personal health and claim details.</p>
+      ${canEncrypt ? `<div class="field"><label for="bkPass">Passphrase (optional, encrypts the file)</label><input id="bkPass" type="password" autocomplete="new-password"></div>
+      <div class="field" style="margin-top:8px"><label for="bkPass2">Repeat passphrase</label><input id="bkPass2" type="password" autocomplete="new-password"></div>
+      <p class="hint">If you set one, the file can’t be opened without it.</p>` : ''}
+      <button type="button" class="btn primary block" style="margin-top:12px" data-action="export">Back up now</button></section>
+    <section class="card pad"><h3>Restore</h3><p>Pick a backup file made by this app. You’ll choose whether to replace what’s here or merge it in.</p>
+      <button type="button" class="btn block" data-action="restore">Choose backup file…</button></section>
+    <section class="card pad"><h3>Follow-up reminder</h3><p>Flag requested items with no reply after ${plural(state.settings.followDays, 'day')}.</p>
+      <button type="button" class="btn block" data-action="follow-days">Change days</button></section>
+    <section class="card pad"><h3>Danger zone</h3><p>Erases everything on this device.</p>
+      <button type="button" class="btn danger block" data-action="wipe">Erase everything on this device</button></section>
+    <p class="hint" style="text-align:center">Your data lives only on this device. Nothing is sent anywhere.</p></div>`;
+}
+const TITLES = { overview: ['VA Claim', 'Overview'], conditions: ['Conditions', ''], evidence: ['Evidence & requests', ''], people: ['People & log', ''], backup: ['Backup & share', ''] };
+function render() {
+  const y = window.scrollY;
+  view.innerHTML = { overview: renderOverview, conditions: renderConditions, evidence: renderEvidence, people: renderPeople, backup: renderBackup }[tab]();
+  $$('nav.tabs button').forEach(b => b.setAttribute('aria-current', b.dataset.tab === tab ? 'page' : 'false'));
+  const add = $('#addBtn'), detail = tab === 'conditions' && condDetail;
+  const label = { conditions: '+ Condition', evidence: '+ Item', people: peopleSeg === 'log' ? '+ Log entry' : '+ Contact' }[tab];
+  add.classList.toggle('hide', !label || !!detail); if (label) add.textContent = label;
+  const c = detail && condById(condDetail);
+  $('#title').textContent = c ? c.name : TITLES[tab][0];
+  $('#sub').textContent = tab === 'overview' ? new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }) : (c ? 'Condition' : TITLES[tab][1]);
+  window.scrollTo(0, y);
+}
+function go(t) { tab = t; if (t !== 'conditions') condDetail = null; render(); window.scrollTo(0, 0); }
+
+/* ---- export: summary, print, csv ---- */
+function summaryModel() {
+  const today = todayISO(), info = itfInfo(today), app = appealInfo(today);
+  const dates = [];
+  const itf = ms('itf');
+  dates.push(['Intent to File', itf.date ? longDate(itf.date) : 'not entered']);
+  if (info) dates.push(['ITF window ends (one year)', `${longDate(info.expiry)}${info.submitted ? ' (claim submitted)' : info.left < 0 ? ` (ended ${plural(-info.left, 'day')} ago)` : ` (${plural(info.left, 'day')} left)`}`]);
+  const sub = ms('submitted'); dates.push(['Claim submitted (21-526EZ)', sub.date ? longDate(sub.date) : sub.status === 'done' ? 'done' : 'not yet']);
+  const cp = ms('cp'); dates.push(['C&P exam', cp.date ? `${longDate(cp.date)} (${MS_STATUS_L[cp.status].toLowerCase()})` : MS_STATUS_L[cp.status].toLowerCase()]);
+  const dec = ms('decision'); dates.push(['Decision', dec.date ? longDate(dec.date) : 'not yet']);
+  if (app) dates.push(['One year from decision (general rule, verify with rep)', `${longDate(app.by)}`]);
+  const milestones = state.milestones.map(m => [MS_LABEL[m.key], MS_STATUS_L[m.status] + (m.date ? ' · ' + longDate(m.date) : '')]);
+  const conditions = [...state.conditions].sort((a, b) => a.name.localeCompare(b.name)).map(c => {
+    const r = readiness(c), sec = c.type === 'secondary' ? condById(c.secondaryTo) : null;
+    return { name: c.name, type: COND_TYPE_L[c.type].replace(' to another condition', '') + (sec ? ' ' + sec.name : ''), status: COND_STATUS_L[c.status], rating: c.rating != null ? c.rating + '%' : '', ready: r.total ? `${r.done}/${r.total}` : '' };
+  });
+  const evidence = [...state.evidence].sort((a, b) => EV_STATUS.findIndex(x => x[0] === a.status) - EV_STATUS.findIndex(x => x[0] === b.status) || a.title.localeCompare(b.title)).map(e => {
+    const p = personById(e.personId);
+    return { title: e.title, kind: KIND_L[e.kind], status: EV_STATUS_L[e.status], conds: condNames(e).join('; '), who: [e.source, p && p.name !== e.source ? p.name : ''].filter(Boolean).join(' / '),
+      dates: [e.requestedOn && 'req ' + longDate(e.requestedOn), e.dueOn && 'follow-up ' + longDate(e.dueOn), e.receivedOn && 'recd ' + longDate(e.receivedOn), e.submittedOn && 'sent ' + longDate(e.submittedOn)].filter(Boolean).join(', ') };
+  });
+  const people = [...state.people].sort((a, b) => a.name.localeCompare(b.name)).map(p => ({ name: p.name, role: ROLE_L[p.role], contact: [p.phone, p.email].filter(Boolean).join(' · '),
+    status: p.role === 'buddy' || p.role === 'doctor' ? REQ_L[p.reqStatus] : '' }));
+  const log = [...state.log].sort((a, b) => b.date.localeCompare(a.date) || b.createdAt - a.createdAt).slice(0, 25).map(l => ({ date: longDate(l.date), who: logWho(l), what: l.what, next: l.next,
+    follow: l.followUp ? (l.done ? 'done ' : '') + longDate(l.followUp) : '' }));
+  return { today, dates, milestones, conditions, evidence, people, log };
+}
+function summaryText() {
+  const m = summaryModel(), out = [];
+  out.push(`VA CLAIM STATUS as of ${longDate(m.today)}`, '', 'KEY DATES', ...m.dates.map(([k, v]) => `- ${k}: ${v}`));
+  out.push('', 'CONDITIONS'); out.push(...(m.conditions.length ? m.conditions.map(c => `- ${c.name} (${c.type}) | ${c.status}${c.rating ? ' | rating ' + c.rating : ''}${c.ready ? ' | checklist ' + c.ready : ''}`) : ['- none entered']));
+  out.push('', 'EVIDENCE AND REQUESTS'); out.push(...(m.evidence.length ? m.evidence.map(e => `- [${e.status}] ${e.title} (${e.kind}${e.conds ? '; ' + e.conds : ''}${e.who ? '; ' + e.who : ''})${e.dates ? ' - ' + e.dates : ''}`) : ['- none entered']));
+  out.push('', 'PEOPLE'); out.push(...(m.people.length ? m.people.map(p => `- ${p.name} (${p.role})${p.contact ? ' ' + p.contact : ''}${p.status ? ' | statement: ' + p.status.toLowerCase() : ''}`) : ['- none entered']));
+  out.push('', 'RECENT CONTACT LOG'); out.push(...(m.log.length ? m.log.map(l => `- ${l.date} ${l.who || ''}: ${l.what.replace(/\s+/g, ' ')}${l.next ? ' | next: ' + l.next : ''}${l.follow ? ' | follow-up ' + l.follow : ''}`) : ['- none entered']));
+  out.push('', 'Prepared with a personal organizer. Dates are general-rule calculations; confirm with your accredited representative.');
+  return out.join('\n');
+}
+function printHTML() {
+  const m = summaryModel(), t = (rows, head) => rows.length ? `<table><thead><tr>${head.map(h => `<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${rows.map(r => `<tr>${r.map(c => `<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table>` : '<p>None entered.</p>';
+  return `<h1>VA Claim Status</h1><p class="pa-sub">As of ${esc(longDate(m.today))}</p>
+    <h2>Key dates</h2>${t(m.dates, ['Item', 'Date'])}
+    <h2>Timeline</h2>${t(m.milestones, ['Step', 'Status'])}
+    <h2>Conditions</h2>${t(m.conditions.map(c => [c.name, c.type, c.status, c.rating, c.ready]), ['Condition', 'Type', 'Status', 'Rating', 'Checklist'])}
+    <h2>Evidence and requests</h2>${t(m.evidence.map(e => [e.title, e.kind, e.status, e.conds, e.who, e.dates]), ['Item', 'Kind', 'Status', 'Conditions', 'Source', 'Dates'])}
+    <h2>People</h2>${t(m.people.map(p => [p.name, p.role, p.contact, p.status]), ['Name', 'Role', 'Contact', 'Statement'])}
+    <h2>Recent contact log</h2>${t(m.log.map(l => [l.date, l.who, l.what, l.next, l.follow]), ['Date', 'Who', 'What', 'Next step', 'Follow-up'])}
+    <p class="pa-note">Prepared with a personal organizer. Dates are general-rule calculations; confirm with your accredited representative.</p>`;
+}
+function doPrint() {
+  let pa = document.getElementById('printArea');
+  if (!pa) { pa = document.createElement('div'); pa.id = 'printArea'; document.body.appendChild(pa); }
+  pa.innerHTML = printHTML();
+  const old = document.title; document.title = 'VA Claim Status ' + todayISO();
+  const done = () => { window.removeEventListener('afterprint', done); document.title = old; const p = document.getElementById('printArea'); if (p) p.innerHTML = ''; };
+  window.addEventListener('afterprint', done);
+  setTimeout(() => window.print(), 60);
+}
+async function doCopyText() {
+  const text = summaryText();
+  try { await navigator.clipboard.writeText(text); toast('Summary copied'); return; } catch {}
+  try {
+    const ta = document.createElement('textarea'); ta.value = text; ta.style.cssText = 'position:fixed;opacity:0;top:0'; document.body.appendChild(ta); ta.select();
+    const ok = document.execCommand && document.execCommand('copy'); ta.remove();
+    if (ok) { toast('Summary copied'); return; }
+  } catch {}
+  await askDialog({ title: 'Copy this text', body: `<textarea class="sel" readonly>${esc(text)}</textarea>`, buttons: [{ label: 'Close', value: true, kind: 'primary' }] });
+}
+async function doCsv() {
+  if (!state.evidence.length && !state.log.length) return toast('No evidence or log entries to export yet.');
+  const head = ['Type', 'Date', 'Title / what', 'Kind', 'Status', 'Conditions', 'Source / who', 'Requested', 'Due / follow-up', 'Received', 'Submitted', 'Next step', 'Notes'];
+  const rows = [head];
+  for (const e of state.evidence) { const p = personById(e.personId); rows.push(['Evidence', '', e.title, KIND_L[e.kind], EV_STATUS_L[e.status], condNames(e).join('; '), [e.source, p && p.name !== e.source ? p.name : ''].filter(Boolean).join('; '), e.requestedOn, e.dueOn, e.receivedOn, e.submittedOn, '', e.notes]); }
+  for (const l of [...state.log].sort((a, b) => a.date.localeCompare(b.date))) rows.push(['Log', l.date, l.what, '', l.followUp ? (l.done ? 'Follow-up done' : 'Follow-up open') : '', '', logWho(l), '', l.followUp, '', '', l.next, '']);
+  const csv = '﻿' + rows.map(r => r.map(csvCell).join(',')).join('\r\n');
+  const r = await deliverFile(`va-claim-evidence-log-${todayISO()}.csv`, csv, 'text/csv');
+  if (r !== 'cancelled') toast(r === 'shared' ? 'CSV shared' : 'CSV saved to your downloads');
+}
+
+/* ---- backup / restore ---- */
+async function doExport() {
+  const pass = ($('#bkPass') || {}).value || '', pass2 = ($('#bkPass2') || {}).value || '';
+  if (pass) {
+    if (pass.length < 8) return toast('Use at least 8 characters for the passphrase.');
+    if (pass !== pass2) return toast('The two passphrases don’t match.');
+  }
+  const btn = $('[data-action="export"]'); if (btn) btn.disabled = true;
+  try {
+    const text = await Backup.build({ appId: APP_ID, schema: SCHEMA, data: exportData(), passphrase: pass || null });
+    const r = await deliverFile(`goobs-va-backup-${todayISO()}${pass ? '-encrypted' : ''}.json`, text, 'application/json');
+    if (r !== 'cancelled') {
+      state.meta.lastBackup = new Date().toISOString();
+      await persist({ touch: false });
+      render();
+      toast(r === 'shared' ? 'Backup shared' : 'Backup saved to your downloads');
+    }
+  } catch (e) { toast('Backup failed: ' + e.message); }
+  finally { const b2 = $('[data-action="export"]'); if (b2) b2.disabled = false; }
+}
+async function restoreFromText(text) {
+  let parsed;
+  try { parsed = await Backup.parse(text, { appId: APP_ID, schema: SCHEMA }); }
+  catch (e) { await msgBox('Can’t restore that file', e.message); return false; }
+  if (!parsed) return false;
+  const { data, dropped } = normalizeData(parsed.data);
+  const anyData = data.conditions.length || data.evidence.length || data.people.length || data.log.length || data.milestones.some(m => m.date || m.status !== 'todo' || m.note);
+  if (!anyData) { await msgBox('Nothing to restore', 'That backup has no claim data in it.'); return false; }
+  const hasLocal = !!hasAnyData();
+  const sum = `${plural(data.conditions.length, 'condition')}, ${plural(data.evidence.length, 'evidence item')}, ${plural(data.people.length, 'contact')}, ${plural(data.log.length, 'log entry')}`;
+  const when = parsed.exportedAt ? ` Backup made ${fmtDateTime(parsed.exportedAt)}.` : '';
+  const skipped = dropped ? ` ${plural(dropped, 'unreadable item')} will be skipped.` : '';
+  const body = `<p>${esc(sum + '.' + when + skipped)}</p>` + (hasLocal ? '<p class="muted"><b>Replace all</b> swaps everything here for the backup. <b>Merge</b> adds what isn’t here yet and keeps the rest.</p>' : '');
+  const choice = await askDialog({
+    title: 'Restore this backup?', body,
+    buttons: hasLocal
+      ? [{ label: 'Cancel', value: 'cancel' }, { label: 'Merge', value: 'merge' }, { label: 'Replace all', value: 'replace', kind: 'danger' }]
+      : [{ label: 'Cancel', value: 'cancel' }, { label: 'Restore', value: 'replace', kind: 'primary' }]
+  });
+  if (choice === 'replace') {
+    const ts = parsed.exportedAt && !isNaN(Date.parse(parsed.exportedAt)) ? parsed.exportedAt : new Date().toISOString();
+    Object.assign(state, data);
+    state.meta.lastBackup = ts; state.meta.lastChange = ts;
+    condDetail = null;
+    await persist({ touch: false });
+    render(); toast('Backup restored'); return true;
+  }
+  if (choice === 'merge') {
+    let n = 0;
+    const add = (key, max) => { const ids = new Set(state[key].map(x => x.id)); for (const x of data[key]) if (!ids.has(x.id) && state[key].length < max) { state[key].push(x); n++; } };
+    add('conditions', MAX.conditions); add('people', MAX.people); add('evidence', MAX.evidence); add('log', MAX.log);
+    const cids = new Set(state.conditions.map(c => c.id)), pids = new Set(state.people.map(p => p.id));
+    for (const e of state.evidence) { e.conditionIds = e.conditionIds.filter(i => cids.has(i)); if (!pids.has(e.personId)) e.personId = ''; }
+    for (const l of state.log) if (!pids.has(l.personId)) l.personId = '';
+    for (const c of state.conditions) if (!cids.has(c.secondaryTo)) c.secondaryTo = '';
+    for (const m of data.milestones) { const loc = ms(m.key); if (loc && !loc.date && loc.status === 'todo' && !loc.note && (m.date || m.status !== 'todo' || m.note)) { Object.assign(loc, m); n++; } }
+    await persist(); render(); toast(`Merged in ${plural(n, 'item')}`); return true;
+  }
+  return false;
+}
+async function doRestore() {
+  const f = await pickFile(); if (!f) return;
+  let text;
+  try { text = await readFileText(f); } catch { await msgBox('Couldn’t read that file', 'Try choosing it again.'); return; }
+  await restoreFromText(text);
+}
+async function doWipe() {
+  if (!(await confirmBox('Erase everything?', 'This permanently deletes all claim data on this device. Make a backup first if you might want it.', 'Erase everything'))) return;
+  state = defaultState(); condDetail = null;
+  await persist({ touch: false });
+  render(); toast('Everything erased');
+}
+
+/* ---- wiring ---- */
+view.addEventListener('click', e => {
+  if (e.target.closest('a[href^="tel:"],a[href^="mailto:"]')) return;
+  const el = e.target.closest('[data-action]');
+  if (!el) return;
+  const id = el.dataset.id, a = el.dataset.action;
+  if (a === 'ck-toggle') {
+    const c = condById(id), it = c && c.checklist.find(x => x.id === el.dataset.item);
+    if (it) { it.done = el.checked; commit(); }
+    return;
+  }
+  if (el.tagName === 'A') e.preventDefault();
+  switch (a) {
+    case 'ms': msDialog(el.dataset.key); break;
+    case 'ms-done': { const m = ms(el.dataset.key); if (m) { const prev = { ...m }; m.status = 'done'; if (!m.date) m.date = todayISO(); commit(); toast('Marked done', { label: 'Undo', fn: () => { Object.assign(m, prev); commit(); } }); } break; }
+    case 'template': addCommonItems(); break;
+    case 'copy-text': doCopyText(); break;
+    case 'print': doPrint(); break;
+    case 'cond-add': condDialog(); break;
+    case 'cond-open': condDetail = id; render(); window.scrollTo(0, 0); break;
+    case 'cond-back': condDetail = null; render(); break;
+    case 'cond-edit': condDialog(id); break;
+    case 'ck-add': checkDialog(id); break;
+    case 'ck-edit': checkDialog(id, el.dataset.item); break;
+    case 'ev-add': evDialog(); break;
+    case 'ev-add-for': { const c = condById(id); evDialog(); if (c) { const i = state.conditions.indexOf(c), box = $('#dlg [name="c' + i + '"]'); if (box) box.checked = true; } break; }
+    case 'ev-edit': evDialog(id); break;
+    case 'ev-next': advanceEvidence(id); break;
+    case 'ev-filter': evFilter = el.dataset.key; render(); break;
+    case 'follow-days': followDialog(); break;
+    case 'seg': peopleSeg = el.dataset.key; render(); break;
+    case 'person-add': personDialog(); break;
+    case 'person-edit': personDialog(id); break;
+    case 'person-next': advancePerson(id); break;
+    case 'log-add': logDialog(); break;
+    case 'log-edit': logDialog(id); break;
+    case 'log-done': finishFollowUp(id); break;
+    case 'export': doExport(); break;
+    case 'restore': doRestore(); break;
+    case 'csv': doCsv(); break;
+    case 'wipe': doWipe(); break;
+    case 'install': runInstall(); break;
+  }
+});
+view.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('[role="button"][data-action]')) { e.preventDefault(); e.target.click(); } });
+$('#addBtn').onclick = () => { if (tab === 'conditions') condDialog(); else if (tab === 'evidence') evDialog(); else if (tab === 'people') (peopleSeg === 'log' ? logDialog() : personDialog()); };
+$$('nav.tabs button').forEach(b => { b.onclick = () => go(b.dataset.tab); });
+document.addEventListener('visibilitychange', () => { if (!document.hidden && !$('dialog[open]')) render(); });
+
+(async function init() {
+  try { db = await openDB(DB_NAME); } catch (e) { console.error(e); db = null; }
+  if (db) {
+    try {
+      const raw = await idbGet(db, 'state');
+      if (raw) {
+        try { state = loadState(JSON.parse(raw)); }
+        catch (e) { console.error(e); await idbPut(db, 'state-damaged-' + Date.now(), raw); toast('Saved data looked damaged. A copy was kept aside.'); }
+      }
+    } catch (e) { console.error(e); db = null; }
+  }
+  render();
+})();
+</script>
+</body>
+</html>
