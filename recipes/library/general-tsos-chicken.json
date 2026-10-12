@@ -1,0 +1,72 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "general-tsos-chicken",
+  "title": "General Tso's Chicken (Unbreaded Thighs)",
+  "description": "Restaurant-quality General Tso's with unbreaded chicken thighs and roasted broccoli — big sauce, clean cook, calorie-conscious without sacrificing flavor.",
+  "category": "Main dish",
+  "tags": ["weeknight", "chicken", "asian", "stovetop", "apo"],
+  "servings": 4,
+  "servingsLabel": "servings",
+  "prepMin": 15,
+  "cookMin": 25,
+  "equipment": ["Anova Precision Oven", "large skillet or wok"],
+  "ingredients": [
+    { "id": "thighs", "qty": 1.5, "unit": "lb", "name": "boneless skinless chicken thighs", "note": "cut into small pieces" },
+    { "id": "broccoli", "qty": 2, "name": "fresh broccoli crowns", "note": "cut into florets" },
+    { "id": "coconut-aminos", "qty": 4, "unit": "tbsp", "name": "coconut aminos" },
+    { "id": "hoisin", "qty": 2, "unit": "tbsp", "name": "hoisin sauce" },
+    { "id": "rice-vinegar", "qty": 2, "unit": "tbsp", "name": "rice vinegar" },
+    { "id": "broth", "qty": 0.5, "unit": "cup", "name": "low-sodium chicken broth" },
+    { "id": "hot-honey", "qty": 2, "unit": "tbsp", "name": "hot honey" },
+    { "id": "sesame-oil", "qty": 1, "unit": "tsp", "name": "toasted sesame oil" },
+    { "id": "garlic", "qty": 2, "unit": "tsp", "name": "jarred minced garlic" },
+    { "id": "ginger", "qty": 0.5, "unit": "tsp", "name": "fresh ginger", "note": "grated" },
+    { "id": "cornstarch-slurry", "qty": 1.5, "unit": "tbsp", "name": "cornstarch", "note": "for sauce slurry", "group": "Sauce" },
+    { "id": "cornstarch-chicken", "qty": 2, "unit": "tbsp", "name": "cornstarch", "note": "for chicken coating", "group": "Chicken" },
+    { "id": "oil-chicken", "qty": 1, "unit": "tbsp", "name": "avocado oil", "note": "for chicken", "group": "Chicken" },
+    { "id": "oil-broccoli", "qty": 1, "unit": "tbsp", "name": "avocado oil", "note": "for broccoli", "group": "Broccoli" },
+    { "id": "chili-flakes", "qty": 1, "unit": "tbsp", "name": "dried red chili flakes", "note": "Glenn solo batch — reduce to 0.5 tsp for Cindy" },
+    { "id": "sesame-seeds", "qty": 1, "unit": "tsp", "name": "sesame seeds", "note": "garnish" }
+  ],
+  "steps": [
+    {
+      "title": "Roast the broccoli",
+      "text": "Preheat APO to 425°F, dry heat (or 20-30% steam for slightly less char). Cut {broccoli} into florets — roughly uniform size so they finish together. Toss with {oil-broccoli} and a pinch of kosher salt. Spread on the APO rack in a single layer. Roast 8-10 minutes until edges are charred and florets have color but still have bite. Pull them slightly underdone — they finish in the sauce. Set aside.",
+      "timer": 540
+    },
+    {
+      "title": "Mix the sauce",
+      "text": "In a small bowl, whisk together {coconut-aminos}, {hoisin}, {rice-vinegar}, {broth}, {hot-honey}, and {sesame-oil}. In a separate small bowl, mix {cornstarch-slurry} with 2 tbsp cold water until smooth — this is your slurry. Keep them separate until you're ready to thicken. Pre-mixing the slurry into the sauce causes it to clump when it hits heat."
+    },
+    {
+      "title": "Prep and coat the chicken",
+      "text": "Cut {thighs} into small pieces — keep them roughly uniform so they cook evenly. Toss with {cornstarch-chicken} and a pinch of kosher salt until lightly coated. This thin coating is not breading — it helps the chicken pick up color and contributes a small amount of body to the sauce."
+    },
+    {
+      "title": "Bloom the aromatics",
+      "text": "Heat {oil-chicken} in a large skillet or wok over medium-high heat until shimmering. Add {chili-flakes} and cook 30 seconds until fragrant. Add {garlic} and {ginger}, stir constantly for another 30 seconds. The goal is fragrant, not brown — burned garlic will make the whole sauce bitter.",
+      "timer": 60
+    },
+    {
+      "title": "Sear the chicken",
+      "text": "Add the coated chicken pieces to the pan in a single layer — don't crowd or they'll steam instead of sear. Cook undisturbed for 2-3 minutes until golden on the bottom, then stir and cook another 2-3 minutes. The chicken doesn't need to be fully cooked through — it finishes in the sauce. Remove to a plate and set aside.",
+      "timer": 300
+    },
+    {
+      "title": "Build and thicken the sauce",
+      "text": "Pour the sauce mixture into the same pan over medium heat. Stir and scrape up any browned bits — that's flavor. Once simmering, give the cornstarch slurry a quick re-stir and stream it in while stirring. The sauce will tighten up within about 60 seconds. Target consistency: thick enough to coat the back of a spoon and cling to the chicken.",
+      "timer": 90
+    },
+    {
+      "title": "Finish chicken and broccoli in the sauce",
+      "text": "Return the seared chicken to the pan along with the roasted broccoli florets. Toss everything to coat thoroughly. Simmer together for 2-3 minutes so the chicken finishes cooking, the broccoli heats through, and both absorb the sauce. Taste and adjust — a touch more rice vinegar brightens it, a touch more hot honey deepens the sweetness.",
+      "timer": 180
+    },
+    {
+      "title": "Serve",
+      "text": "Plate over Tiger rice cooker rice cooked with Better Than Bouillon and a pat of butter. Garnish with {sesame-seeds}. Sauce should be glossy, clingy, and coating every piece."
+    }
+  ],
+  "notes": "Broccoli: Buy fresh crowns — frozen releases too much water and kills the caramelization. Two crowns yields roughly 12 oz of florets after trimming. Pull them slightly underdone from the APO — they finish in the sauce.\n\nGinger: 0.5 tsp is intentionally conservative — background warmth only. Taste the sauce before it goes in and add more if you want it.\n\nChili flakes: 1 tbsp is the Glenn solo batch level. Cut to 0.5 tsp or less when Cindy is eating.\n\nWater chestnuts: Great addition for a Glenn-only batch — stir in when chicken and broccoli return to the pan. Omit for Cindy.\n\nReheat: Add a splash of broth to loosen the sauce. Freezer-friendly after fully cooked and cooled.\n\nDual protein: When Cindy is home, run chicken breasts through the same cornstarch coat and sear separately. Combine in the sauce at the end, or keep sauced separately for different heat levels."
+}
