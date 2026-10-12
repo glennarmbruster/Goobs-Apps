@@ -1,0 +1,32 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "cream-cheese-yukon-potatoes",
+  "title": "Cream Cheese Yukon Potatoes",
+  "description": "Yukon Gold potatoes cooked in a vacuum bag with cream cheese and butter in the Anova Precision Oven, then mashed right in the bag.",
+  "category": "Sides",
+  "tags": ["make-ahead", "sous-vide"],
+  "servings": 6,
+  "servingsLabel": "servings",
+  "prepMin": 15,
+  "cookMin": 210,
+  "equipment": ["Anova Precision Oven", "VacMaster VP220 chamber sealer", "Vacuum bag"],
+  "ingredients": [
+    { "id": "potatoes", "qty": 3, "unit": "lb", "name": "Yukon Gold potatoes", "note": "peeled and chunked" },
+    { "id": "creamcheese", "qty": 6, "unit": "oz", "name": "cream cheese" },
+    { "id": "butter", "qty": 4, "unit": "tbsp", "name": "unsalted butter" },
+    { "id": "salt", "qty": 1, "unit": "tsp", "name": "kosher salt" },
+    { "id": "milk", "name": "milk", "note": "only if needed, a splash" }
+  ],
+  "steps": [
+    { "title": "Bag", "text": "Place {potatoes}, {creamcheese}, {butter} and {salt} in a vacuum bag." },
+    { "title": "Seal", "text": "Vacuum seal the bag." },
+    { "title": "Cook", "text": "Cook in the Anova Precision Oven with Sous Vide Mode on at 194°F, 100% steam, for 3 to 4 hours." },
+    { "title": "Hold", "text": "When done, reduce the oven to 150 to 160°F and hold until serving time." },
+    { "title": "Mash", "text": "Remove the bag and mash the potatoes directly in the bag with your hands or a rolling pin." },
+    { "title": "Transfer", "text": "Open the bag and transfer the potatoes to a serving bowl. Stir briefly until smooth." },
+    { "title": "Adjust", "text": "Stir in {milk} only if needed." }
+  ],
+  "notes": "Start at 1:00 PM for a 5:30 PM dinner. Mashing in the bag keeps every bit of the buttery cream cheese liquid in the potatoes. Pairs with Chicken Piccata.",
+  "source": "Glenn"
+}

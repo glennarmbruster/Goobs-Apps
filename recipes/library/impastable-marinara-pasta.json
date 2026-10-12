@@ -1,0 +1,28 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "impastable-marinara-pasta",
+  "title": "Impastable Marinara Pasta",
+  "description": "Impastable pasta tossed with a little smooth marinara, with extra sauce on the side, to serve beside Chicken Parmesan.",
+  "category": "Sides",
+  "tags": ["weeknight"],
+  "servings": 4,
+  "servingsLabel": "servings",
+  "prepMin": 5,
+  "cookMin": 15,
+  "equipment": ["Large pot", "Saucepan"],
+  "ingredients": [
+    { "id": "pasta", "qty": 8, "qtyMax": 10, "unit": "oz", "name": "Impastable pasta" },
+    { "id": "salt", "name": "kosher salt", "note": "for the pasta water" },
+    { "id": "marinara", "qty": 1.5, "unit": "cup", "name": "smooth marinara sauce" }
+  ],
+  "steps": [
+    { "title": "Boil water", "text": "Bring a large pot of water to a boil and salt it generously with {salt}." },
+    { "title": "Cook pasta", "text": "Cook {pasta} according to the package directions. Drain." },
+    { "title": "Warm sauce", "text": "While the pasta cooks, warm {marinara} in a saucepan." },
+    { "title": "Toss", "text": "Toss the pasta with just enough sauce to coat it lightly." },
+    { "title": "Serve", "text": "Serve the remaining sauce on the side." }
+  ],
+  "notes": "Serve it next to the chicken, not under it, so the breading stays crisp.",
+  "source": "Glenn"
+}

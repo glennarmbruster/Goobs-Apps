@@ -1,0 +1,41 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "skillet-jambalaya",
+  "title": "Skillet Jambalaya",
+  "description": "One-skillet jambalaya with turkey sausage and chicken thighs, rice toasted in the pan and simmered covered in chicken broth.",
+  "category": "Main dish",
+  "tags": ["one-pan", "leftovers"],
+  "servings": 4,
+  "servingsLabel": "servings",
+  "prepMin": 15,
+  "cookMin": 45,
+  "equipment": ["Large skillet with lid"],
+  "ingredients": [
+    { "id": "sausage", "qty": 12, "unit": "oz", "name": "turkey sausage", "note": "sliced into small pieces", "group": "Protein" },
+    { "id": "thighs", "qty": 1, "unit": "lb", "name": "boneless skinless chicken thighs", "note": "cut into bite-sized pieces", "group": "Protein" },
+    { "id": "rice", "qty": 2, "unit": "cup", "name": "long-grain white rice", "note": "uncooked", "group": "Rice" },
+    { "id": "broth", "qty": 4, "unit": "cup", "name": "low-sodium chicken broth", "group": "Liquids" },
+    { "id": "cajun", "qty": 2, "unit": "tsp", "name": "Cajun seasoning", "group": "Seasonings" },
+    { "id": "paprika", "qty": 1, "unit": "tsp", "name": "smoked paprika", "group": "Seasonings" },
+    { "id": "grangarlic", "qty": 1, "unit": "tsp", "name": "granulated garlic", "group": "Seasonings" },
+    { "id": "granonion", "qty": 1, "unit": "tsp", "name": "granulated onion", "group": "Seasonings" },
+    { "id": "pepper", "qty": 0.5, "unit": "tsp", "name": "black pepper", "group": "Seasonings" },
+    { "id": "cayenne", "qty": 0.25, "unit": "tsp", "name": "cayenne pepper", "note": "optional", "group": "Seasonings" },
+    { "id": "garlic", "qty": 1, "unit": "tbsp", "name": "jarred minced garlic", "group": "Aromatics" },
+    { "id": "bellpepper", "qty": 0.5, "name": "bell pepper", "note": "optional flavor trick, cut into large chunks and removed before serving", "group": "Aromatics" }
+  ],
+  "steps": [
+    { "title": "Brown sausage", "text": "Heat a large skillet with a lid over medium-high heat. Add {sausage} and cook until browned. Remove and set aside." },
+    { "title": "Brown chicken", "text": "Add {thighs} to the same skillet and season with {cajun}, {paprika}, {grangarlic}, {granonion}, {pepper} and {cayenne}. Cook until lightly browned." },
+    { "title": "Add garlic", "text": "Add {garlic} and cook for 30 seconds." },
+    { "title": "Toast rice", "text": "Add {rice} and stir for 1 to 2 minutes to lightly toast it." },
+    { "title": "Add liquid", "text": "Return the sausage to the skillet and add {broth}. Add the large chunks of {bellpepper} now if using." },
+    { "title": "Boil", "text": "Bring to a gentle boil." },
+    { "title": "Simmer", "text": "Reduce the heat to low, cover, and cook for 20 to 25 minutes until the rice is tender and the liquid is absorbed. Do not stir while it cooks, so the rice does not turn gummy." },
+    { "title": "Rest", "text": "Remove from the heat and leave covered for 5 to 10 minutes." },
+    { "title": "Finish", "text": "Remove the bell pepper pieces if used, and fluff gently with a fork." }
+  ],
+  "notes": "Feeds 3 generously with leftovers. This is a separate, simpler recipe from the Creole Sausage Jambalaya.",
+  "source": "Glenn"
+}

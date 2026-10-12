@@ -1,0 +1,35 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "crispy-roasted-potatoes",
+  "title": "Crispy Roasted Potatoes",
+  "description": "Parboiled potato chunks tossed in oil and seasoning, then roasted at 425°F on a metal sheet pan until crisp.",
+  "category": "Sides",
+  "tags": ["weeknight", "vegetarian"],
+  "servings": 4,
+  "servingsLabel": "servings",
+  "prepMin": 25,
+  "cookMin": 40,
+  "equipment": ["Metal sheet pan"],
+  "ingredients": [
+    { "id": "potatoes", "qty": 1.5, "qtyMax": 2, "unit": "lb", "name": "potatoes", "note": "Yukon gold, red, or baby potatoes, cut into 1 to 1 1/4 inch chunks" },
+    { "id": "boilsalt", "name": "kosher salt", "note": "for the cold boiling water" },
+    { "id": "oil", "qty": 2, "qtyMax": 3, "unit": "tbsp", "name": "olive oil" },
+    { "id": "salt", "qty": 1, "unit": "tsp", "name": "kosher salt" },
+    { "id": "pepper", "qty": 0.5, "unit": "tsp", "name": "black pepper" },
+    { "id": "garlicpowder", "qty": 0.5, "unit": "tsp", "name": "garlic powder" },
+    { "id": "paprika", "qty": 0.5, "unit": "tsp", "name": "paprika", "note": "optional" },
+    { "id": "cornstarch", "qty": 1, "unit": "tsp", "name": "cornstarch", "note": "optional, for ultra crisp" }
+  ],
+  "steps": [
+    { "title": "Cut", "text": "Cut {potatoes} into 1 to 1 1/4 inch chunks." },
+    { "title": "Parboil", "text": "Place the potatoes in cold water salted with {boilsalt} and bring to a boil. Boil for 7 to 10 minutes until just barely tender." },
+    { "title": "Steam off", "text": "Drain well and let the potatoes steam off for 1 to 2 minutes so the surface dries." },
+    { "title": "Season", "text": "Toss the warm potatoes with {oil}, {salt}, {pepper}, {garlicpowder}, {paprika} and {cornstarch}." },
+    { "title": "Spread", "text": "Spread the potatoes on a metal sheet pan without crowding." },
+    { "title": "Roast", "text": "Roast at 425°F for 35 to 40 minutes, flipping once after about 20 minutes." },
+    { "title": "Finish", "text": "Toss with your choice of finish: melted butter and garlic powder, lemon and parsley, or parmesan." }
+  ],
+  "notes": "Parboiling roughens the outside of the potatoes so they crisp, and drying them before roasting matters as much as the oven. Timeline for a 5:40 PM dinner: 4:40 parboil, 4:55 season, 5:00 roast, 5:20 flip, 5:35 finish. Pairs with Chicken Smash Patties.",
+  "source": "Glenn"
+}

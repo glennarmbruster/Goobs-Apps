@@ -1,0 +1,40 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "creamy-spicy-garlic-chicken-rice-bake",
+  "title": "Creamy Spicy Garlic Chicken, Rice and Broccoli Bake",
+  "description": "A hands-off oven bake of chicken, rice, broth and half-and-half, finished with parmesan and broccoli added late so it stays tender.",
+  "category": "Main dish",
+  "tags": ["make-ahead", "leftovers", "one-pan"],
+  "servings": 6,
+  "servingsLabel": "servings",
+  "prepMin": 15,
+  "cookMin": 45,
+  "equipment": ["Large baking dish", "Foil"],
+  "ingredients": [
+    { "id": "chicken", "qty": 4, "name": "large boneless skinless chicken breasts", "note": "cut into bite-size pieces", "group": "Protein and Base" },
+    { "id": "rice", "qty": 2.5, "unit": "cup", "name": "white or jasmine rice", "note": "dry", "group": "Protein and Base" },
+    { "id": "broth", "qty": 5, "unit": "cup", "name": "chicken broth", "group": "Liquids" },
+    { "id": "halfhalf", "qty": 2.5, "unit": "cup", "name": "half-and-half", "group": "Liquids" },
+    { "id": "chilioil", "qty": 4, "unit": "tbsp", "name": "chili-infused olive oil", "group": "Flavor" },
+    { "id": "garlicpowder", "qty": 4, "unit": "tsp", "name": "garlic powder", "group": "Flavor" },
+    { "id": "paprika", "qty": 3, "unit": "tsp", "name": "paprika", "group": "Flavor" },
+    { "id": "cayenne", "qty": 1.25, "unit": "tsp", "name": "cayenne", "note": "medium heat", "group": "Flavor" },
+    { "id": "salt", "name": "kosher salt", "note": "to taste", "group": "Flavor" },
+    { "id": "pepper", "name": "black pepper", "note": "to taste", "group": "Flavor" },
+    { "id": "broccoli", "qty": 3, "qtyMax": 4, "unit": "cup", "name": "frozen broccoli florets", "note": "added late so they stay tender, not mushy", "group": "Finish" },
+    { "id": "parmesan", "qty": 1.33, "unit": "cup", "name": "grated parmesan", "group": "Finish" }
+  ],
+  "steps": [
+    { "title": "Preheat", "text": "Preheat the oven to 375°F." },
+    { "title": "Combine", "text": "In a large baking dish, combine {chicken}, {rice}, {broth}, {halfhalf}, {chilioil}, {garlicpowder}, {paprika}, {cayenne}, {salt} and {pepper}." },
+    { "title": "Mix", "text": "Mix well so the rice is fully submerged in the liquid." },
+    { "title": "Cover", "text": "Cover the dish tightly with foil." },
+    { "title": "Bake covered", "text": "Bake for 30 minutes." },
+    { "title": "Add finish", "text": "Remove the foil. Stir in {parmesan} and {broccoli} gently to distribute." },
+    { "title": "Bake uncovered", "text": "Bake uncovered for 5 to 10 more minutes until creamy, thickened and bubbling." },
+    { "title": "Rest", "text": "Rest for 2 to 3 minutes, then serve." }
+  ],
+  "notes": "Keep the base mild; add heat to your own bowl with chili crisp, cayenne, Valentina or sriracha. Timeline for a 5:35 to 5:40 PM dinner: 4:40 prep, 4:45 preheat, 4:50 assemble, 4:55 into the oven covered, 5:25 uncover and add parmesan and broccoli, 5:35 pull, stir and rest.",
+  "source": "Glenn"
+}

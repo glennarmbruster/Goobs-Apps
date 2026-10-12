@@ -1,0 +1,35 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "chicken-smash-patties",
+  "title": "Chicken Smash Patties",
+  "description": "Lean ground chicken balls smashed thin in a hot skillet for crispy edges, served with crispy roasted potatoes and garlic-lemon aioli.",
+  "category": "Main dish",
+  "tags": ["weeknight", "family-favorite"],
+  "servings": 3,
+  "servingsLabel": "servings",
+  "prepMin": 15,
+  "cookMin": 10,
+  "equipment": ["Cast iron skillet", "Spatula"],
+  "ingredients": [
+    { "id": "chicken", "qty": 1, "unit": "lb", "name": "lean ground chicken" },
+    { "id": "salt", "qty": 1, "unit": "tsp", "name": "kosher salt" },
+    { "id": "pepper", "qty": 0.5, "unit": "tsp", "name": "black pepper" },
+    { "id": "garlicpowder", "qty": 0.5, "unit": "tsp", "name": "garlic powder" },
+    { "id": "onionpowder", "qty": 0.5, "unit": "tsp", "name": "onion powder" },
+    { "id": "worcestershire", "qty": 1, "unit": "tsp", "name": "Worcestershire sauce" },
+    { "id": "breadcrumbs", "qty": 1, "qtyMax": 2, "unit": "tbsp", "name": "breadcrumbs", "note": "optional, helps structure" },
+    { "id": "oil", "qty": 1, "unit": "tbsp", "name": "olive oil", "note": "for cooking" }
+  ],
+  "steps": [
+    { "title": "Mix", "text": "Combine {chicken} with {salt}, {pepper}, {garlicpowder}, {onionpowder}, {worcestershire} and {breadcrumbs}." },
+    { "title": "Form", "text": "Form 6 loose balls. Do not pack them tightly, or the patties will turn dense." },
+    { "title": "Heat pan", "text": "Heat a cast iron skillet over medium-high heat with {oil}." },
+    { "title": "Smash", "text": "Place the chicken balls in the pan and smash each one flat with a spatula to 1/4 to 1/3 inch thick." },
+    { "title": "Cook first side", "text": "Cook for 4 to 5 minutes until the edges are crisp." },
+    { "title": "Flip", "text": "Flip and cook for another 3 to 4 minutes until cooked through." },
+    { "title": "Plate", "text": "Serve with crispy roasted potatoes on one side and the patties stacked or fanned, with a drizzle of lemon oil or parsley for color." }
+  ],
+  "notes": "Optional for the plates: cheese on Cindy's patties, spicy mayo, cayenne or chili crisp on yours. Serve with Crispy Roasted Potatoes and Garlic-Lemon Aioli. Timeline for a 5:40 PM dinner: 5:10 mix, 5:20 cook, 5:30 flip, 5:40 plate.",
+  "source": "Glenn"
+}

@@ -1,0 +1,30 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "garlic-lemon-aioli",
+  "title": "Garlic-Lemon Aioli",
+  "description": "A quick mayo-based aioli with grated garlic, lemon and Dijon, made in one bowl.",
+  "category": "Sauce & condiment",
+  "tags": ["no-cook", "quick"],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 5,
+  "cookMin": 0,
+  "equipment": ["Small bowl"],
+  "ingredients": [
+    { "id": "mayo", "qty": 0.5, "unit": "cup", "name": "mayonnaise" },
+    { "id": "garlic", "qty": 1, "unit": "clove", "name": "fresh garlic", "note": "small, finely grated, or 1/4 tsp garlic powder" },
+    { "id": "lemon", "qty": 1, "unit": "tsp", "name": "lemon juice", "note": "fresh is best" },
+    { "id": "dijon", "qty": 0.5, "unit": "tsp", "name": "Dijon mustard" },
+    { "id": "salt", "qty": 0.125, "unit": "tsp", "name": "salt" },
+    { "id": "sugar", "qty": 0.125, "unit": "tsp", "name": "sugar", "note": "optional, a tiny pinch to round the acidity" }
+  ],
+  "steps": [
+    { "title": "Combine", "text": "Add {mayo}, {garlic}, {lemon}, {dijon}, {salt} and optional {sugar} to a small bowl." },
+    { "title": "Stir", "text": "Stir until smooth and fully combined." },
+    { "title": "Adjust", "text": "Taste and adjust: more lemon for brighter, more salt if needed." },
+    { "title": "Chill", "text": "Refrigerate for 10 to 20 minutes until serving so it thickens slightly." }
+  ],
+  "notes": "Serves two generously. Pairs with Chicken Smash Patties.",
+  "source": "Glenn"
+}

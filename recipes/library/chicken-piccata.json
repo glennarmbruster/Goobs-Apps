@@ -1,0 +1,42 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "chicken-piccata",
+  "title": "Chicken Piccata",
+  "description": "Lightly floured chicken cutlets pan seared and simmered in a generous lemon, caper and garlic butter sauce.",
+  "category": "Main dish",
+  "tags": ["weeknight", "extra-sauce"],
+  "servings": 3,
+  "servingsLabel": "servings",
+  "prepMin": 15,
+  "cookMin": 25,
+  "equipment": ["Large skillet", "KitchenAid tenderizer attachment"],
+  "ingredients": [
+    { "id": "chicken", "qty": 22, "unit": "oz", "name": "boneless skinless chicken breast", "group": "Chicken" },
+    { "id": "salt", "qty": 1, "unit": "tsp", "name": "kosher salt", "group": "Chicken" },
+    { "id": "pepper", "qty": 0.5, "unit": "tsp", "name": "black pepper", "group": "Chicken" },
+    { "id": "flour", "qty": 0.5, "unit": "cup", "name": "all-purpose flour", "group": "Chicken" },
+    { "id": "oil", "qty": 2, "unit": "tbsp", "name": "olive oil", "group": "Chicken" },
+    { "id": "searbutter", "qty": 1, "unit": "tbsp", "name": "unsalted butter", "note": "for searing", "group": "Chicken" },
+    { "id": "saucebutter", "qty": 2, "unit": "tbsp", "name": "unsalted butter", "note": "for the sauce", "group": "Sauce" },
+    { "id": "garlic", "qty": 3, "unit": "clove", "name": "fresh garlic", "note": "minced", "group": "Sauce" },
+    { "id": "broth", "qty": 3, "unit": "cup", "name": "low-sodium chicken broth", "group": "Sauce" },
+    { "id": "lemons", "qty": 3, "name": "lemons", "note": "juiced", "group": "Sauce" },
+    { "id": "capers", "qty": 3, "unit": "tbsp", "name": "capers", "note": "drained", "group": "Sauce" },
+    { "id": "parsley", "qty": 2, "unit": "tbsp", "name": "chopped fresh parsley", "note": "optional", "group": "Sauce" }
+  ],
+  "steps": [
+    { "title": "Cut cutlets", "text": "Slice {chicken} into thinner cutlets with the KitchenAid tenderizer or by butterflying." },
+    { "title": "Season", "text": "Season the cutlets with {salt} and {pepper}." },
+    { "title": "Dredge", "text": "Lightly dredge the cutlets in {flour} and shake off the excess." },
+    { "title": "Heat pan", "text": "Heat a skillet over medium-high heat with {oil} and {searbutter}." },
+    { "title": "Sear", "text": "Cook the chicken for 3 to 4 minutes per side until golden. Transfer to a plate." },
+    { "title": "Start sauce", "text": "Reduce the heat to medium. Melt {saucebutter} and cook {garlic} for 30 seconds." },
+    { "title": "Simmer sauce", "text": "Add {broth}, the juice of {lemons} and {capers}. Simmer for 5 to 8 minutes until slightly reduced." },
+    { "text": "Taste and adjust the salt if needed." },
+    { "title": "Finish chicken", "text": "Return the chicken to the sauce and simmer for 2 to 3 minutes." },
+    { "title": "Serve", "text": "Spoon the sauce over the chicken and garnish with {parsley}." }
+  ],
+  "notes": "Target plating time 5:30 PM: cutlets at 5:00, sear at 5:05, sauce at 5:15, chicken back in at 5:22. Do not be shy with the sauce; serve with Cream Cheese Yukon Potatoes to catch every drop and APO Roasted Broccoli on the side. Still in development: the sauce is thin as written, so next time consider a small cornstarch slurry to make it cling.",
+  "source": "Glenn"
+}
