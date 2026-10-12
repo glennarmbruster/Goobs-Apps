@@ -139,6 +139,7 @@ dialog::backdrop{background:rgba(10,15,12,.55)}
 
 .syncbadge{border:1px solid var(--line,#d5dbe0);background:var(--card,#fff);color:inherit;border-radius:999px;padding:4px 10px;font:inherit;font-size:.82rem;cursor:pointer;white-space:nowrap}
 .syncbadge.ok{color:#15803d}.syncbadge.bad{color:#b91c1c}
+.seg{display:flex;gap:8px;margin-top:6px}.seg .chip{flex:1;text-align:center}
 
 :root{--bg:#f4f6f8;--accent:#0369a1;--accent-soft:#dbeefa;--line:#dde3e8;--soft:#e9eef2}
 @media (prefers-color-scheme:dark){:root{--bg:#0d1215;--card:#161e23;--line:#25323a;--soft:#1d272d;--accent:#38bdf8;--accent-ink:#04202f;--accent-soft:#0f2f42}}
@@ -168,6 +169,36 @@ textarea.notes{min-height:120px}
 .pinbtn{filter:grayscale(1);opacity:.55}
 .pinbtn[aria-pressed="true"]{filter:none;opacity:1;background:var(--accent-soft);border-color:var(--accent)}
 .row-sub a{color:var(--accent)}
+#printArea{display:none}
+@media print{
+  @page{margin:14mm}
+  html,body{background:#fff!important;color:#000!important}
+  body>*:not(#printArea){display:none!important}
+  #printArea{display:block!important;font:12pt/1.4 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:#000;background:#fff}
+  #printArea h1{font-size:20pt;margin:0 0 2pt}
+  #printArea h2{font-size:14pt;margin:14pt 0 6pt;border-bottom:1.5pt solid #000;padding-bottom:2pt;break-after:avoid}
+  #printArea h3{font-size:12pt;margin:10pt 0 3pt;break-after:avoid}
+  #printArea .pa-sub{color:#333;margin:0 0 6pt}
+  #printArea .pa-day{break-inside:avoid;margin:0 0 8pt}
+  #printArea .pa-day h3{background:#eee;padding:3pt 6pt;margin:8pt 0 3pt}
+  #printArea .pa-wx{font-weight:400;float:right}
+  #printArea .pa-it{display:flex;gap:8pt;margin:2pt 6pt;break-inside:avoid}
+  #printArea .pa-t{width:56pt;flex:none;font-variant-numeric:tabular-nums}
+  #printArea .pa-n{color:#333;font-size:10.5pt}
+  #printArea .pa-cats{columns:2;column-gap:20pt}
+  #printArea .pa-cat{break-inside:avoid;margin:0 0 8pt}
+  #printArea .pa-pk{display:flex;gap:6pt;align-items:flex-start;margin:2pt 0}
+  #printArea .pa-box{flex:none;width:10pt;height:10pt;border:1pt solid #000;margin-top:2pt;font-size:9pt;line-height:9pt;text-align:center}
+  #printArea .pa-pk.on .pa-box::after{content:"✓"}
+  #printArea .pa-pk.on span:last-child{color:#555}
+  #printArea .pa-blank{border-bottom:.5pt solid #999;height:15pt;margin:0 0 2pt 16pt}
+  #printArea .pa-page{break-before:page}
+  #printArea .pa-page:first-child{break-before:auto}
+  #printArea table{width:100%;border-collapse:collapse}
+  #printArea td{padding:2pt 4pt;border-bottom:.5pt solid #bbb}
+  #printArea td.r{text-align:right}
+  #printArea .pa-foot{margin-top:16pt;color:#555;font-size:9pt}
+}
 </style>
 </head>
 <body>
@@ -777,13 +808,18 @@ function normLoc(l) {
 }
 function normWeather(w) {
   if (!w || typeof w !== 'object' || !w.days || typeof w.days !== 'object') return null;
-  const days = {}, n = x => (isNum(x) ? x : null);
-  for (const [k, d] of Object.entries(w.days)) {
-    if (!isISO(k) || !d || typeof d !== 'object') continue;
-    days[k] = { tmax: n(d.tmax), tmin: n(d.tmin), pop: n(d.pop), precip: n(d.precip), code: n(d.code), kind: d.kind === 'typical' ? 'typical' : 'forecast', years: n(d.years), rainy: n(d.rainy) };
-  }
-  return { fetchedAt: isNum(w.fetchedAt) ? w.fetchedAt : 0, locKey: str(w.locKey), span: str(w.span), days };
+  const days = {}, avg = {}, n = x => (isNum(x) ? x : null);
+  const take = (src, forced) => {
+    for (const [k, d] of Object.entries(src && typeof src === 'object' ? src : {})) {
+      if (!isISO(k) || !d || typeof d !== 'object') continue;
+      const kind = forced || (d.kind === 'typical' ? 'typical' : 'forecast');
+      (kind === 'typical' ? avg : days)[k] = { tmax: n(d.tmax), tmin: n(d.tmin), pop: n(d.pop), precip: n(d.precip), code: n(d.code), kind, years: n(d.years), rainy: n(d.rainy) };
+    }
+  };
+  take(w.days); take(w.avg, 'typical');          // days = forecasts; avg = same-date averages (older saves mixed both in days)
+  return { fetchedAt: isNum(w.fetchedAt) ? w.fetchedAt : 0, locKey: str(w.locKey), span: str(w.span), days, avg };
 }
+const wxBest = (w, d) => (w ? w.days[d] || w.avg[d] || null : null);
 const DEFAULT_LIST = 'Main';
 const listName = v => str(v).trim().slice(0, 40) || DEFAULT_LIST;
 const normPack = i => { if (!i || typeof i !== 'object' || !str(i.text).trim()) return null; return { id: str(i.id) || uid(), text: str(i.text).trim().slice(0, 120), cat: oneOf(i.cat, PACK_CATS, 'Other'), qty: clampInt(i.qty, 1, 99, 1), packed: !!i.packed, list: listName(i.list) }; };
@@ -923,7 +959,7 @@ document.addEventListener('focusout', e => {
 });
 
 /* ---- trip helpers ---- */
-const ui = { packList: 'All', cruiseMonth: null, portWx: {}, hidePacked: false, ideaFilter: 'all', geo: null, wxBusy: false, wxError: '', wxTried: {}, focus: null, lastCat: 'Clothing' };
+const ui = { wxTab: {}, packList: 'All', cruiseMonth: null, portWx: {}, hidePacked: false, ideaFilter: 'all', geo: null, wxBusy: false, wxError: '', wxTried: {}, focus: null, lastCat: 'Clothing' };
 const tripById = id => state.trips.find(t => t.id === id);
 function tripDays(t) {
   if (!t.startDate || !t.endDate) return [];
@@ -1027,24 +1063,34 @@ async function fetchTypical(loc, days) {
   }
   return out;
 }
-async function fetchWeather(t) {
-  const loc = t.location, days = wxDays(t), today = todayISO(), lastFc = addDays(today, 15);
-  const fcDays = days.filter(d => d >= today && d <= lastFc), typDays = days.filter(d => d > lastFc), out = {};
-  if (fcDays.length) {
-    const j = await fetchJSON(`https://api.open-meteo.com/v1/forecast?latitude=${loc.latitude}&longitude=${loc.longitude}&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,precipitation_sum&timezone=auto&forecast_days=16`);
-    const dd = j && j.daily;
-    if (!dd || !Array.isArray(dd.time)) throw new Error('The weather service sent something unexpected.');
-    dd.time.forEach((date, i) => {
-      if (fcDays.includes(date)) out[date] = { tmax: num(dd.temperature_2m_max, i), tmin: num(dd.temperature_2m_min, i), pop: num(dd.precipitation_probability_max, i), precip: num(dd.precipitation_sum, i), code: num(dd.weather_code, i), kind: 'forecast', years: null, rainy: null };
-    });
-  }
-  if (typDays.length) Object.assign(out, await fetchTypical(loc, typDays));
-  return { fetchedAt: Date.now(), locKey: locKey(t), span: wxSpan(t), days: out };
+async function fetchForecast(loc, fcDays) {
+  const j = await fetchJSON(`https://api.open-meteo.com/v1/forecast?latitude=${loc.latitude}&longitude=${loc.longitude}&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,precipitation_sum&timezone=auto&forecast_days=16`);
+  const dd = j && j.daily, out = {};
+  if (!dd || !Array.isArray(dd.time)) throw new Error('The weather service sent something unexpected.');
+  dd.time.forEach((date, i) => {
+    if (fcDays.includes(date)) out[date] = { tmax: num(dd.temperature_2m_max, i), tmin: num(dd.temperature_2m_min, i), pop: num(dd.precipitation_probability_max, i), precip: num(dd.precipitation_sum, i), code: num(dd.weather_code, i), kind: 'forecast', years: null, rainy: null };
+  });
+  return out;
 }
-async function refreshWeather(t) {
+/* forecasts (16 days ahead at most) and same-date averages are fetched and kept separately */
+async function fetchWeather(t, force) {
+  const loc = t.location, days = wxDays(t), today = todayISO(), lastFc = addDays(today, 15), key = locKey(t), span = wxSpan(t);
+  const prev = t.weather && t.weather.locKey === key && t.weather.span === span ? t.weather : null;
+  const fcDays = days.filter(d => d >= today && d <= lastFc);
+  const [fc, av] = await Promise.allSettled([
+    fcDays.length ? fetchForecast(loc, fcDays) : Promise.resolve({}),
+    !force && prev && days.every(d => prev.avg[d]) ? Promise.resolve(prev.avg) : fetchTypical(loc, days)
+  ]);
+  if (fc.status === 'rejected' && av.status === 'rejected') throw fc.reason;
+  let warn = '';
+  if (fc.status === 'rejected') warn = 'Couldn’t update the forecast: ' + netMsg(fc.reason);
+  else if (av.status === 'rejected') warn = 'Couldn’t load the averages: ' + netMsg(av.reason);
+  return { warn, weather: { fetchedAt: Date.now(), locKey: key, span, days: fc.status === 'fulfilled' ? fc.value : (prev ? prev.days : {}), avg: av.status === 'fulfilled' ? av.value : (prev ? prev.avg : {}) } };
+}
+async function refreshWeather(t, force) {
   if (!t.location || ui.wxBusy) return;
   ui.wxBusy = true; ui.wxError = ''; render();
-  try { t.weather = await fetchWeather(t); persist(); }
+  try { const r = await fetchWeather(t, force); t.weather = r.weather; ui.wxError = r.warn; persist(); }
   catch (e) { ui.wxError = netMsg(e); }
   finally { ui.wxBusy = false; render(); }
 }
@@ -1057,13 +1103,13 @@ async function searchGeo(t, q) {
 function weatherOnShow(t) {
   if (ui.wxBusy) return;
   if (!t.location) { if (t.destination && (!ui.geo || ui.geo.tripId !== t.id)) searchGeo(t, t.destination); return; }
-  const stale = !t.weather || t.weather.locKey !== locKey(t) || t.weather.span !== wxSpan(t) || Date.now() - t.weather.fetchedAt > 6 * 3600e3;
+  const stale = !t.weather || t.weather.locKey !== locKey(t) || t.weather.span !== wxSpan(t) || Date.now() - t.weather.fetchedAt > 6 * 3600e3 || wxDays(t).some(d => !t.weather.avg[d]);
   const sig = `${locKey(t)}|${wxSpan(t)}|${Math.floor(Date.now() / (6 * 3600e3))}`;
   if (stale && ui.wxTried[t.id] !== sig) { ui.wxTried[t.id] = sig; refreshWeather(t); }
 }
 function weatherSummary(t) {
   const w = t.weather; if (!w) return null;
-  const ds = wxDays(t).map(d => w.days[d]).filter(Boolean);
+  const ds = wxDays(t).map(d => wxBest(w, d)).filter(Boolean);
   if (!ds.length) return null;
   const mins = ds.map(d => d.tmin).filter(isNum), maxs = ds.map(d => d.tmax).filter(isNum);
   if (!mins.length || !maxs.length) return null;
@@ -1389,8 +1435,8 @@ function homeScreen() {
 function overviewTab(t) {
   const st = tripStatus(t), pk = packStats(t), b = budgetStats(t), id = esc(t.id);
   const todosDone = t.todos.filter(x => x.done).length;
-  const w = t.weather, first = w ? wxDays(t).filter(d => w.days[d]).slice(0, 4) : [];
-  const wx = first.length ? `<div class="sec-h"><span>Weather outlook</span><a href="#/trip/${id}/weather">See all</a></div><section class="card pad"><div class="chips">${first.map(d => { const x = w.days[d]; return `<span class="chip" style="cursor:default">${wmo(x.code)[0]} ${esc(fmtDate(d, false))} · ${T(x.tmax)}/${T(x.tmin)}</span>`; }).join('')}</div></section>` : '';
+  const w = t.weather, first = w ? wxDays(t).filter(d => wxBest(w, d)).slice(0, 4) : [];
+  const wx = first.length ? `<div class="sec-h"><span>Weather outlook</span><a href="#/trip/${id}/weather">See all</a></div><section class="card pad"><div class="chips">${first.map(d => { const x = wxBest(w, d); return `<span class="chip" style="cursor:default">${wmo(x.code)[0]} ${esc(fmtDate(d, false))} · ${T(x.tmax)}/${T(x.tmin)}</span>`; }).join('')}</div></section>` : '';
   const todoRow = x => `<li class="row static"><div class="row-main"><label class="check-row"><input type="checkbox" data-action="todo-toggle" data-id="${esc(x.id)}" ${x.done ? 'checked' : ''}><span class="${x.done ? 'done' : ''}">${esc(x.text)}</span></label>${x.notes ? `<div class="row-sub">📝 ${esc(snip(x.notes))}</div>` : ''}</div>
     <button type="button" class="btn small pinbtn" data-action="todo-pin" data-id="${esc(x.id)}" aria-pressed="${x.pin}" aria-label="${x.pin ? 'Unpin from' : 'Pin to'} the Trips home screen" title="Show on the Trips home screen">📌</button>
     <button type="button" class="btn small ghost" data-action="todo-edit" data-id="${esc(x.id)}">Details</button></li>`;
@@ -1404,7 +1450,7 @@ function overviewTab(t) {
     ${t.todos.length ? '<p class="hint" style="margin:-2px 4px 8px">Tap Details to add notes. Tap 📌 to show a to-do on the Trips home screen.</p>' : ''}
     <div class="card">${t.todos.length ? `<ul class="list">${t.todos.map(todoRow).join('')}</ul>` : ''}
       <form data-form="todo-add" class="addrow pad"><input name="text" placeholder="Add a task (e.g. Book flights)" autocomplete="off" required><button class="btn primary">Add</button></form></div>
-    <div style="margin-top:10px"><button class="btn small" data-action="todo-starter">Add common tasks</button></div>
+    <div style="margin-top:10px"><button class="btn small" data-action="todo-starter">Add common tasks</button> <button class="btn small" data-action="print" data-preset="trip">🖨 Print trip</button></div>
     <div class="sec-h"><span>Notes</span></div>
     <textarea class="notes" id="tripNotes" placeholder="Confirmation numbers, addresses, reminders… (saved on this device)">${esc(t.notes)}</textarea>`;
 }
@@ -1428,7 +1474,7 @@ function packTab(t) {
       <form data-form="pack-add" class="addrow wrap"><input name="text" placeholder="Add an item${cur ? ' to ' + esc(cur) : ''} (e.g. 3 shirts)" autocomplete="off" required>
         ${multi && !cur ? `<select name="list" aria-label="Which list">${t.packLists.map(l => `<option>${esc(l)}</option>`).join('')}</select>` : ''}<select name="cat" aria-label="Category">${PACK_CATS.map(c => `<option${c === ui.lastCat ? ' selected' : ''}>${esc(c)}</option>`).join('')}</select><button class="btn primary">Add</button></form></section>
     <div class="chips" style="margin-top:12px"><button class="chip" data-action="pack-starter">✨ Starter list</button><button class="chip" data-action="pack-copy">Copy from a trip</button>
-      <button class="chip" data-action="pack-hide" aria-pressed="${ui.hidePacked}">Hide packed</button><button class="chip" data-action="pack-reset">Uncheck all</button>${cur ? '<button class="chip" data-action="pack-rename">Rename list</button><button class="chip" data-action="pack-dellist">Delete list</button>' : ''}</div>
+      <button class="chip" data-action="pack-hide" aria-pressed="${ui.hidePacked}">Hide packed</button><button class="chip" data-action="pack-reset">Uncheck all</button><button class="chip" data-action="print" data-preset="pack">🖨 Print</button>${cur ? '<button class="chip" data-action="pack-rename">Rename list</button><button class="chip" data-action="pack-dellist">Delete list</button>' : ''}</div>
     ${items.length ? lists : '<div class="empty"><div class="big">🧳</div><h2>Nothing on this list yet</h2><p>Add items above, or tap <b>Starter list</b> to get a list sized to your trip and the weather.</p></div>'}`;
 }
 function planTab(t) {
@@ -1437,10 +1483,10 @@ function planTab(t) {
   const sortT = (a, b) => (a.time || '99:99').localeCompare(b.time || '99:99');
   const item = it => `<li class="row" data-action="plan-edit" data-id="${esc(it.id)}"><div class="time num">${esc(it.time)}</div>
     <div class="row-main"><div class="row-title">${esc(it.title)}</div>${it.place ? `<div class="row-sub">📍 <a href="${esc(mapUrl(t, it.place))}" target="_blank" rel="noopener">${esc(it.place)}</a></div>` : ''}${it.notes ? `<div class="row-sub">${esc(it.notes)}</div>` : ''}</div></li>`;
-  let html = '';
+  let html = `<div class="chips" style="margin-bottom:4px"><button class="chip" data-action="print" data-preset="plan">🖨 Print itinerary</button></div>`;
   if (!days.length) html += `<div class="banner" style="background:var(--accent-soft);color:var(--accent)"><span>Set your trip dates to get a day-by-day plan.</span><button class="btn small" data-action="edit-trip">Set dates</button></div>`;
   days.forEach((d, i) => {
-    const w = t.weather && t.weather.days[d], list = (byDate[d] || []).slice().sort(sortT);
+    const w = wxBest(t.weather, d), list = (byDate[d] || []).slice().sort(sortT);
     html += `<div class="sec-h"><span>Day ${i + 1} · ${esc(fmtDate(d))}</span><span>${w ? `<span class="wx">${wmo(w.code)[0]} ${T(w.tmax)}/${T(w.tmin)}</span> ` : ''}<button class="btn small ghost" data-action="plan-add" data-date="${d}">+ Add</button></span></div>`
       + (list.length ? `<ul class="card list">${list.map(item).join('')}</ul>` : '<div class="card pad muted">Nothing planned yet.</div>');
   });
@@ -1526,23 +1572,113 @@ function weatherTabBase(t) {
   const L = t.location, w = t.weather, days = wxDays(t), ws = weatherSummary(t);
   const noDates = !t.startDate;
   const status = ui.wxBusy ? 'Updating…' : ui.wxError ? `<span class="bad">${esc(ui.wxError)}</span>${w ? ' Showing saved data from ' + esc(ago(w.fetchedAt)) + '.' : ''}` : w ? `Updated ${esc(ago(w.fetchedAt))}` : '';
+  const fcWin = d => d >= today && d <= addDays(today, 15);
+  const tab = ui.wxTab[t.id] || (days.some(fcWin) ? 'current' : 'avg');
+  const pastRow = d => `<li class="row static wxrow faded"><div class="emoji">·</div><div class="row-main"><div class="row-title">${esc(fmtDate(d))}</div><div class="row-sub">Past</div></div></li>`;
+  const plainRow = (d, msg) => `<li class="row static wxrow"><div class="emoji">·</div><div class="row-main"><div class="row-title">${esc(fmtDate(d))}</div><div class="row-sub">${msg}</div></div></li>`;
   const rows = days.map(d => {
+    if (d < today) return pastRow(d);
+    if (tab === 'avg') {
+      const x = w && w.avg[d];
+      if (!x) return plainRow(d, ui.wxBusy ? 'Loading…' : 'No data');
+      const [em, label] = wmo(x.code);
+      return `<li class="row static wxrow"><div class="emoji">${em}</div><div class="row-main"><div class="row-title">${esc(fmtDate(d))}</div><div class="row-sub">${esc([label, x.years ? `rain on this date in ${x.rainy} of ${x.years} past years` : ''].filter(Boolean).join(' · '))}</div></div><div class="row-amt num">${T(x.tmax)} / ${T(x.tmin)}</div></li>`;
+    }
     const x = w && w.days[d];
-    if (d < today) return `<li class="row static wxrow faded"><div class="emoji">·</div><div class="row-main"><div class="row-title">${esc(fmtDate(d))}</div><div class="row-sub">Past</div></div></li>`;
-    if (!x) return `<li class="row static wxrow"><div class="emoji">·</div><div class="row-main"><div class="row-title">${esc(fmtDate(d))}</div><div class="row-sub">${ui.wxBusy ? 'Loading…' : 'No data'}</div></div></li>`;
+    if (!x) return fcWin(d) ? plainRow(d, ui.wxBusy ? 'Loading…' : 'No forecast data') : plainRow(d, `Forecast not available yet — it appears on ${esc(fmtDate(addDays(d, -15), false))}`);
     const [em, label] = wmo(x.code);
-    const sub = x.kind === 'forecast' ? [label, x.pop != null ? `${Math.round(x.pop)}% chance of rain` : ''].filter(Boolean).join(' · ') : `Typical${x.years ? ` · rain on this date in ${x.rainy} of ${x.years} past years` : ''}`;
-    return `<li class="row static wxrow"><div class="emoji">${em}</div><div class="row-main"><div class="row-title">${esc(fmtDate(d))}${x.kind === 'typical' ? '<span class="badge">Typical</span>' : '<span class="badge acc">Forecast</span>'}</div><div class="row-sub">${esc(sub)}</div></div><div class="row-amt num">${T(x.tmax)} / ${T(x.tmin)}</div></li>`;
+    return `<li class="row static wxrow"><div class="emoji">${em}</div><div class="row-main"><div class="row-title">${esc(fmtDate(d))}</div><div class="row-sub">${esc([label, x.pop != null ? `${Math.round(x.pop)}% chance of rain` : ''].filter(Boolean).join(' · '))}</div></div><div class="row-amt num">${T(x.tmax)} / ${T(x.tmin)}</div></li>`;
   }).join('');
-  const anyTypical = w && days.some(d => w.days[d] && w.days[d].kind === 'typical');
+  const firstFc = days.find(d => d >= today && !fcWin(d)), anyFc = days.some(fcWin);
+  const seg = `<div class="seg" role="group" aria-label="Weather view"><button type="button" class="chip" data-action="wx-tab" data-tab="avg" aria-pressed="${tab === 'avg'}">Avg</button><button type="button" class="chip" data-action="wx-tab" data-tab="current" aria-pressed="${tab === 'current'}">Current</button></div>`;
+  const tabHint = tab === 'avg'
+    ? '<p class="hint" style="margin:10px 4px">Averages come from the same dates in the last three years. They show what’s typical, not a forecast.</p>'
+    : anyFc
+      ? `<p class="hint" style="margin:10px 4px">Forecasts reach 16 days ahead and the later days are less certain.${firstFc ? ` Days after ${esc(fmtDate(addDays(today, 15), false))} will fill in as your trip gets closer.` : ''}</p>`
+      : `<p class="hint" style="margin:10px 4px">Forecasts only reach 16 days ahead. ${t.startDate && t.startDate > today ? `Yours start showing on <b>${esc(fmtDate(addDays(t.startDate, -15)))}</b>. ` : ''}Until then the Avg tab shows what’s typical for your dates.</p>`;
   const hints = ws ? [ws.cold ? 'Cold mornings or nights ahead: pack warm layers.' : '', ws.hot ? 'Hot days ahead: sun protection and light clothing.' : '', ws.rain ? 'Rain looks likely on several days: rain jacket or umbrella.' : ''].filter(Boolean) : [];
   return `<div class="sec-h"><span>Weather</span>${unitBtn}</div>
     <section class="card pad"><div class="row-title">📍 ${esc(L.name)}${L.admin1 ? ', ' + esc(L.admin1) : ''}${L.country ? ' · ' + esc(L.country) : ''}</div><div class="row-sub" style="margin-top:2px">${status}</div>
       <div class="chips" style="margin-top:10px"><button class="btn small" data-action="wx-refresh" ${ui.wxBusy ? 'disabled' : ''}>Refresh</button><button class="btn small" data-action="wx-setloc">Change place</button></div></section>
     ${noDates ? '<p class="hint" style="margin:10px 4px 0">No trip dates yet, so this shows the next 7 days. Set dates in Edit to see your trip.</p>' : ''}
     ${ws ? `<section class="card pad" style="margin-top:12px"><h3>${esc(T(ws.lo))} to ${esc(T(ws.hi))} across your dates</h3>${hints.map(h => `<p style="margin:6px 0 0">${esc(h)}</p>`).join('')}<button class="btn small" style="margin-top:10px" data-action="pack-starter">Add matching items to packing</button></section>` : ''}
-    <div class="sec-h"><span>Day by day</span></div><ul class="card list">${rows}</ul>
-    ${anyTypical ? '<p class="hint" style="margin:10px 4px">“Typical” means averaged from the same dates in the last three years. It isn’t a forecast — real forecasts only reach 16 days ahead and replace these automatically as your trip gets closer.</p>' : ''}`;
+    <div class="sec-h"><span>Day by day</span><button class="btn small" data-action="print" data-preset="plan">🖨 Print</button></div>${seg}${tabHint}<ul class="card list" style="margin-top:8px">${rows}</ul>`;
+}
+/* ---- printing: builds a plain black-on-white sheet in #printArea; CSS @media print shows only that ---- */
+function doPrint(html, title) {
+  let pa = document.getElementById('printArea');
+  if (!pa) { pa = document.createElement('div'); pa.id = 'printArea'; document.body.appendChild(pa); }
+  pa.innerHTML = html;
+  const oldTitle = document.title; document.title = title || oldTitle;
+  const done = () => { window.removeEventListener('afterprint', done); document.title = oldTitle; const p = document.getElementById('printArea'); if (p) p.innerHTML = ''; };
+  window.addEventListener('afterprint', done);
+  setTimeout(() => window.print(), 60);
+}
+const time12 = s => { const m = /^(\d{1,2}):(\d{2})$/.exec(s || ''); if (!m) return s || ''; const h = +m[1]; return `${h % 12 || 12}:${m[2]} ${h < 12 ? 'AM' : 'PM'}`; };
+const paHead = (t, what) => `<h1>${esc(t.name)}</h1><p class="pa-sub">${esc([t.destination, rangeText(t), t.travelerNames && t.travelerNames.filter(Boolean).length ? t.travelerNames.filter(Boolean).join(' & ') : plural(t.travelers, 'traveler')].filter(Boolean).join(' · '))}${what ? ' — ' + esc(what) : ''}</p>`;
+function printPacking(t, lists, o) {
+  const multi = lists.length > 1;
+  return lists.map((ln, idx) => {
+    const items = t.packing.filter(i => i.list === ln && (o.packed || !i.packed));
+    const cats = PACK_CATS.map(c => [c, items.filter(i => i.cat === c)]).filter(([, a]) => a.length);
+    const body = cats.map(([c, a]) => `<div class="pa-cat"><h3>${esc(c)}</h3>${a.map(i => `<div class="pa-pk${i.packed ? ' on' : ''}"><span class="pa-box"></span><span>${i.qty > 1 ? `${i.qty}× ` : ''}${esc(i.text)}</span></div>`).join('')}</div>`).join('');
+    const blanks = '<div class="pa-cat"><h3>Extras</h3>' + '<div class="pa-blank"></div>'.repeat(4) + '</div>';
+    return `<section class="${o.pages && idx ? 'pa-page' : ''}"><h2>Packing · ${esc(ln)}${multi ? '' : ''}</h2><div class="pa-cats">${body || '<p>No items.</p>'}${blanks}</div></section>`;
+  }).join('');
+}
+function printItinerary(t, o) {
+  const days = tripDays(t), byDate = {}, other = [];
+  for (const it of t.plan) { if (it.date && days.includes(it.date)) (byDate[it.date] = byDate[it.date] || []).push(it); else other.push(it); }
+  const sortT = (a, b) => (a.time || '99:99').localeCompare(b.time || '99:99');
+  const line = it => `<div class="pa-it"><div class="pa-t">${esc(time12(it.time))}</div><div><b>${esc(it.title)}</b>${it.place ? ` — ${esc(it.place)}` : ''}${it.notes ? `<div class="pa-n">${esc(it.notes)}</div>` : ''}</div></div>`;
+  let h = '<h2>Itinerary</h2>';
+  if (!days.length) h += '<p>No trip dates set.</p>';
+  days.forEach((d, i) => {
+    const w = o.weather ? wxBest(t.weather, d) : null, list = (byDate[d] || []).slice().sort(sortT);
+    const wx = w ? `<span class="pa-wx">${esc(wmo(w.code)[1])} ${T(w.tmax)}/${T(w.tmin)}${w.kind === 'forecast' ? (w.pop != null ? ` · ${Math.round(w.pop)}% rain` : '') + ' (forecast)' : ' (typical)'}</span>` : '';
+    h += `<div class="pa-day"><h3>Day ${i + 1} · ${esc(fmtDate(d))}${wx}</h3>${list.length ? list.map(line).join('') : '<div class="pa-it pa-n">Nothing planned.</div>'}</div>`;
+  });
+  if (other.length) h += `<div class="pa-day"><h3>${days.length ? 'Unscheduled' : 'Plan'}</h3>${other.map(line).join('')}</div>`;
+  if (t.notes && t.notes.trim()) h += `<h2>Notes</h2><p style="white-space:pre-wrap">${esc(t.notes)}</p>`;
+  return h;
+}
+function printTodos(t) {
+  const open = t.todos.filter(x => !x.done);
+  return `<h2>To do before you go</h2>${open.length ? open.map(x => `<div class="pa-pk"><span class="pa-box"></span><span>${esc(x.text)}${x.notes ? `<div class="pa-n">${esc(x.notes)}</div>` : ''}</span></div>`).join('') : '<p>Everything is done.</p>'}`;
+}
+function printBudget(t) {
+  const b = budgetStats(t), m = x => money(x, t.currency);
+  return `<h2>Budget</h2><table>${t.budget.map(l => `<tr><td>${esc(l.desc || l.cat)}<div class="pa-n">${esc(l.cat)}${l.spent == null ? ' · not paid yet' : ''}</div></td><td class="r">${m(l.spent != null ? l.spent : l.planned || 0)}</td></tr>`).join('')}
+    <tr><td><b>Projected total</b></td><td class="r"><b>${m(b.projected)}</b></td></tr>${t.budgetTotal != null ? `<tr><td>Budget target</td><td class="r">${m(t.budgetTotal)}</td></tr>` : ''}</table>`;
+}
+function printDialog(t, preset) {
+  const P = { pack: { pack: true }, plan: { itin: true, weather: true }, trip: { itin: true, weather: true, pack: true, todos: true } }[preset] || { itin: true };
+  const cur = currentList(t);
+  const fields = [
+    { name: 'itin', label: 'Itinerary (day by day)', type: 'checkbox', value: !!P.itin },
+    { name: 'weather', label: 'Weather on each day (forecast if available, otherwise typical)', type: 'checkbox', value: !!P.weather },
+    { name: 'pack', label: 'Packing lists', type: 'checkbox', value: !!P.pack },
+    ...t.packLists.map((n, i) => ({ name: 'pl' + i, label: '   ' + n, type: 'checkbox', value: !cur || cur === n })),
+    { name: 'packed', label: 'Include items already packed (shown ticked)', type: 'checkbox', value: false },
+    { name: 'pages', label: 'Start each packing list on a new page', type: 'checkbox', value: t.packLists.length > 1 },
+    { name: 'todos', label: 'Open to-dos', type: 'checkbox', value: !!P.todos },
+    { name: 'budget', label: 'Budget', type: 'checkbox', value: false }
+  ];
+  formDialog({ title: 'Print', intro: 'Choose what goes on the page. Your phone’s print sheet can also save it as a PDF.', fields, submitLabel: 'Print', onSubmit: async v => {
+    const lists = t.packLists.filter((n, i) => v['pl' + i]);
+    if (!(v.itin || v.pack || v.todos || v.budget)) return 'Pick at least one thing to print.';
+    if (v.pack && !lists.length) return 'Pick at least one packing list.';
+    if (v.weather && v.itin && t.location && (!t.weather || Date.now() - t.weather.fetchedAt > 3 * 3600e3 || wxDays(t).some(d => !t.weather.avg[d]))) {
+      try { const r = await fetchWeather(t, false); t.weather = r.weather; persist(); } catch { /* print with whatever is saved */ }
+    }
+    const parts = [paHead(t, v.itin ? '' : v.pack ? 'Packing' : '')];
+    if (v.itin) parts.push(printItinerary(t, { weather: v.weather }));
+    if (v.pack) parts.push(printPacking(t, lists, { packed: v.packed, pages: v.pages }));
+    if (v.todos) parts.push(printTodos(t));
+    if (v.budget) parts.push(printBudget(t));
+    parts.push(`<p class="pa-foot">Printed ${esc(fmtDateTime(new Date().toISOString()))}</p>`);
+    doPrint(parts.join(''), t.name + (v.itin ? ' itinerary' : v.pack ? ' packing list' : ''));
+  } });
 }
 function tripScreen(t, tab) {
   const body = { overview: overviewTab, pack: packTab, plan: planTab, budget: budgetTab, ideas: ideasTab, weather: weatherTab }[tab](t);
@@ -1697,7 +1833,9 @@ function handleAction(a, el) {
     case 'idea-edit': return ideaDialog(t, id);
     case 'idea-filter': ui.ideaFilter = el.dataset.type; return render();
     case 'idea-plan': { const i = t.ideas.find(v => v.id === id); if (i) planDialog(t, null, { title: i.title, notes: [i.notes, i.url].filter(Boolean).join('\n'), ideaId: i.id }); return; }
-    case 'wx-refresh': ui.wxTried[t.id] = ''; return refreshWeather(t);
+    case 'print': return printDialog(t, el.dataset.preset);
+    case 'wx-tab': ui.wxTab[t.id] = el.dataset.tab === 'avg' ? 'avg' : 'current'; return render();
+    case 'wx-refresh': ui.wxTried[t.id] = ''; return refreshWeather(t, true);
     case 'wx-units': state.settings.units = state.settings.units === 'imperial' ? 'metric' : 'imperial'; return commit();
     case 'wx-setloc': t.location = null; t.weather = null; ui.geo = { tripId: t.id, query: t.destination, status: 'idle', results: [], error: '' }; persist(); return render();
     case 'wx-pick': {

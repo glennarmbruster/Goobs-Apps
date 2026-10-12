@@ -28,3 +28,4 @@ Everything lives in the device's browser storage. Use each app's Backup screen t
 Money is financial data: back it up with a passphrase and keep the file out of this repo. Its retirement results are a planning model, not a forecast.
 
 Weather uses the free Open-Meteo service (no account or key); only the destination coordinates are sent.
+Printing (Trips only): the Print buttons on Overview, Packing, Plan and Weather open a chooser (itinerary, weather, packing lists, to-dos, budget). On iPhone use the Share button in the print preview to save a PDF.
