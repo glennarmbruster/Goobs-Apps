@@ -474,19 +474,6 @@ function installCardHTML() {
 async function runInstall() { if (!deferredInstall) return; deferredInstall.prompt(); try { await deferredInstall.userChoice; } catch {} deferredInstall = null; if (typeof render === 'function') render(); }
 
 
-/* Exit: a web app can’t close itself on iPhone, so try, and if it’s still open show a plain "you can close it now" screen */
-function exitApp() {
-  try { window.close(); } catch { /* not allowed here */ }
-  setTimeout(() => {
-    if ($('#exitScreen')) return;
-    const d = document.createElement('div'); d.id = 'exitScreen'; d.setAttribute('role', 'dialog'); d.setAttribute('aria-label', 'Exit');
-    d.style.cssText = 'position:fixed;inset:0;z-index:99999;background:var(--bg,#fff);color:var(--ink,#111);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:24px';
-    d.innerHTML = '<div style="font-size:44px">👋</div><h2 style="margin:0">You can close this app now</h2><p style="margin:0;max-width:300px;opacity:.75">On iPhone, swipe up from the bottom edge of the screen and flick this app away.</p><button type="button" class="btn" id="exitBack" style="margin-top:8px">Back to the app</button>';
-    document.body.appendChild(d);
-    $('#exitBack', d).onclick = () => d.remove();
-  }, 250);
-}
-document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-exit]'); if (b) { e.preventDefault(); exitApp(); } });
 
 if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol))
   window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
@@ -912,7 +899,6 @@ function storageBannerHTML() {
 }
 /* backup reminders are off: backups are handled by the owner, not by whoever opens the app */
 const nagHTML = () => '';
-const EXIT_BTN = '<button type="button" class="btn small" data-exit>Exit</button>';
 const openCount = l => l.items.filter(i => !i.done).length;
 const openWord = n => (GROC ? `${n} to get` : `${n} open`);
 function homeScreen() {
@@ -921,7 +907,7 @@ function homeScreen() {
     return `<a class="card listcard" href="#/list/${esc(l.id)}"><div class="tc-top"><div class="row-title">${esc(l.name)}</div><span class="badge ${open ? 'acc' : 'ok'}">${esc(open ? openWord(open) : total ? 'All done' : 'Empty')}</span></div>
       ${total ? `<div class="bar" style="margin-top:10px"><i style="width:${pct}%"></i></div><div class="row-sub" style="margin-top:4px">${done} of ${total} ${GROC ? 'in the cart' : 'done'}</div>` : '<div class="row-sub">Nothing here yet</div>'}</a>`;
   };
-  return headerHTML({ title: `${CFG.emoji} ${CFG.title}`, sub: plural(state.lists.length, 'list'), right: syncBadgeHTML() + '<a class="btn small" href="#/backup">Backup</a>' + EXIT_BTN })
+  return headerHTML({ title: `${CFG.emoji} ${CFG.title}`, sub: plural(state.lists.length, 'list'), right: syncBadgeHTML() + '<a class="btn small" href="#/backup">Backup</a>' })
     + `<main class="wrap">${storageBannerHTML()}${nagHTML()}<div class="sec-h"><span>Your lists</span></div>${state.lists.map(card).join('')}
     <button type="button" class="btn block" data-action="new-list">+ New list</button></main>`;
 }
@@ -949,7 +935,7 @@ function listScreen(l) {
   else if (!open.length) body = `<div class="empty"><div class="big">🎉</div><h2>${GROC ? 'Everything is in the cart' : 'All done'}</h2></div>` + body;
   if (done.length) body += `<div class="sec-h"><button type="button" class="linkbtn" data-action="toggle-done" aria-expanded="${ui.doneOpen}">${ui.doneOpen ? '▾' : '▸'} ${GROC ? 'In the cart' : 'Done'} (${done.length})</button><button type="button" class="btn small danger" data-action="clear-done">${GROC ? 'Clear checked' : 'Clear done'}</button></div>${ui.doneOpen ? `<ul class="card list">${done.map(rowHTML).join('')}</ul>` : ''}`;
   const form = `<form class="card pad addform" data-form="add" autocomplete="off"><div class="addrow"><input name="text" aria-label="${GROC ? 'Add an item' : 'Add a task'}" placeholder="${GROC ? 'Add an item, e.g. 2 apples' : 'Add a task'}" maxlength="140" enterkeyhint="done" autocapitalize="sentences"><button type="submit" class="btn primary">Add</button></div></form>`;
-  if (GROC) return headerHTML({ title: `${CFG.emoji} ${CFG.title}`, sub: openWord(open.length), right: syncBadgeHTML() + '<a class="btn small" href="#/backup">Backup</a>' + EXIT_BTN })
+  if (GROC) return headerHTML({ title: `${CFG.emoji} ${CFG.title}`, sub: openWord(open.length), right: syncBadgeHTML() + '<a class="btn small" href="#/backup">Backup</a>' })
     + `<main class="wrap">${storageBannerHTML()}${nagHTML()}${form}${body}</main>`;
   return headerHTML({ back: '#/', title: l.name, sub: openWord(open.length), right: '<button type="button" class="btn small" data-action="edit-list">Edit</button>' })
     + `<main class="wrap">${storageBannerHTML()}${form}${body}</main>`;

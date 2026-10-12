@@ -498,19 +498,6 @@ function installCardHTML() {
 async function runInstall() { if (!deferredInstall) return; deferredInstall.prompt(); try { await deferredInstall.userChoice; } catch {} deferredInstall = null; if (typeof render === 'function') render(); }
 
 
-/* Exit: a web app can’t close itself on iPhone, so try, and if it’s still open show a plain "you can close it now" screen */
-function exitApp() {
-  try { window.close(); } catch { /* not allowed here */ }
-  setTimeout(() => {
-    if ($('#exitScreen')) return;
-    const d = document.createElement('div'); d.id = 'exitScreen'; d.setAttribute('role', 'dialog'); d.setAttribute('aria-label', 'Exit');
-    d.style.cssText = 'position:fixed;inset:0;z-index:99999;background:var(--bg,#fff);color:var(--ink,#111);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:24px';
-    d.innerHTML = '<div style="font-size:44px">👋</div><h2 style="margin:0">You can close this app now</h2><p style="margin:0;max-width:300px;opacity:.75">On iPhone, swipe up from the bottom edge of the screen and flick this app away.</p><button type="button" class="btn" id="exitBack" style="margin-top:8px">Back to the app</button>';
-    document.body.appendChild(d);
-    $('#exitBack', d).onclick = () => d.remove();
-  }, 250);
-}
-document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-exit]'); if (b) { e.preventDefault(); exitApp(); } });
 
 if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol))
   window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
@@ -1441,7 +1428,7 @@ function homeScreen() {
     ? `<div class="empty"><div class="big">🧳</div><h2>No trips yet</h2><p>Create a trip to build a packing list, day-by-day plan, budget and weather outlook.</p>
         <button class="btn primary" data-action="new-trip">Plan your first trip</button><br><button class="btn ghost" data-action="restore">Restore from a backup file</button></div>`
     : pinSection + (upcoming.length ? `<div class="sec-h"><span>Upcoming &amp; current</span></div>${upcoming.map(card).join('')}` : '') + (past.length ? `<div class="sec-h"><span>Past trips</span></div>${past.map(card).join('')}` : '');
-  return headerHTML({ title: 'Trips', sub: 'Open a trip or start a new one', right: syncBadgeHTML() + '<a class="btn small" href="#/backup">Backup</a>' + '<button type="button" class="btn small" data-exit>Exit</button>' })
+  return headerHTML({ title: 'Trips', sub: 'Open a trip or start a new one', right: syncBadgeHTML() + '<a class="btn small" href="#/backup">Backup</a>' })
     + `<main class="wrap">${storageBannerHTML()}${state.trips.length ? '<button type="button" class="btn primary block" style="margin-bottom:12px" data-action="new-trip">+ New trip</button>' : ''}${body}</main>`
     ;
 }
