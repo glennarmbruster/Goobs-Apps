@@ -831,14 +831,14 @@ function recipeJSON(r) {
   return o;
 }
 
-/* ---------- state: my recipes + personal marks (favourite, my notes, made-it log, hidden, servings, progress) ---------- */
+/* ---------- state: my recipes + personal marks (favourite, my notes, made-it log, hidden, category, servings, progress) ---------- */
 function normMark(m) {
   m = m && typeof m === 'object' ? m : {};
   const ints = a => [...new Set(arr(a).filter(n => Number.isInteger(n) && n >= 0 && n < 500))];
-  return { fav: m.fav === true, hidden: m.hidden === true, note: block(m.note, 4000), made: arr(m.made).filter(isISO).slice(-200),
+  return { fav: m.fav === true, hidden: m.hidden === true, cat: typeof m.cat === 'string' && CATS.includes(m.cat) ? m.cat : null, note: block(m.note, 4000), made: arr(m.made).filter(isISO).slice(-200),
     servings: isNum(m.servings) && m.servings > 0 && m.servings <= 1000 ? m.servings : null, prog: { i: ints(m.prog && m.prog.i), s: ints(m.prog && m.prog.s) } };
 }
-const markEmpty = m => !m.fav && !m.hidden && !m.note && !m.made.length && m.servings == null && !m.prog.i.length && !m.prog.s.length;
+const markEmpty = m => !m.fav && !m.hidden && !m.cat && !m.note && !m.made.length && m.servings == null && !m.prog.i.length && !m.prog.s.length;
 function normalizeData(raw) {
   raw = raw && typeof raw === 'object' ? raw : {};
   let dropped = 0; const recipes = [], ids = new Set();
@@ -873,6 +873,8 @@ function setMark(id, patch) {
   const m = Object.assign(normMark(state.marks[id]), patch);
   if (markEmpty(m)) delete state.marks[id]; else state.marks[id] = m;
 }
+/* a recipe as this phone sees it: a category picked on the recipe page wins over the one in the file */
+const withCat = r => { const c = state.marks[r.id] && state.marks[r.id].cat; return c && c !== r.category ? { ...r, category: c } : r; };
 
 /* ---------- the library: recipes.json in the repo, shared by everyone ---------- */
 let LIB = { recipes: [], at: null, error: '', loading: true };
@@ -957,10 +959,10 @@ async function loadLibrary() {
 const myIds = () => new Set(state.recipes.map(r => r.id));
 function allRecipes({ withHidden = false } = {}) {
   const mine = myIds();
-  const out = state.recipes.map(r => ({ r, src: 'mine' })).concat(LIB.recipes.filter(r => !mine.has(r.id)).map(r => ({ r, src: 'lib' })));
+  const out = state.recipes.map(r => ({ r: withCat(r), src: 'mine' })).concat(LIB.recipes.filter(r => !mine.has(r.id)).map(r => ({ r: withCat(r), src: 'lib' })));
   return withHidden ? out : out.filter(x => !mark(x.r.id).hidden);
 }
-const findRecipe = id => { const m = state.recipes.find(r => r.id === id); if (m) return { r: m, src: 'mine', shadows: LIB.recipes.some(x => x.id === id) }; const l = LIB.recipes.find(r => r.id === id); return l ? { r: l, src: 'lib', shadows: false } : null; };
+const findRecipe = id => { const m = state.recipes.find(r => r.id === id); if (m) return { r: withCat(m), src: 'mine', shadows: LIB.recipes.some(x => x.id === id) }; const l = LIB.recipes.find(r => r.id === id); return l ? { r: withCat(l), src: 'lib', shadows: false } : null; };
 const freeId = base => { const used = new Set([...state.recipes.map(r => r.id), ...LIB.recipes.map(r => r.id)]); let id = base || uid(), n = 2; while (used.has(id)) id = (base || 'recipe') + '-' + n++; return id; };
 
 /* ---------- the meal: a few recipes picked together (a main, some sides) ---------- */
@@ -1180,7 +1182,10 @@ function ingredientsTab(r) {
     ${r.steps.length ? '<button type="button" class="btn primary block" style="margin-top:14px" data-action="cook">Start cooking</button>' : ''}</section>
     ${r.ingredients.length ? list : '<div class="card empty"><div class="big">🧂</div><h2>No ingredients listed</h2></div>'}
     ${r.equipment.length ? `<div class="grp">Equipment</div><section class="card pad"><div class="eqchips">${r.equipment.map(e => `<span class="pill">${esc(e)}</span>`).join('')}</div></section>` : ''}
-    <div class="chips" style="margin-top:14px"><button type="button" class="chip" data-action="meal-add" aria-pressed="${inMeal(r.id)}">${inMeal(r.id) ? '✓ In meal' : '+ Add to meal'}</button><button type="button" class="chip" data-action="grocery-add">Add to Grocery</button><button type="button" class="chip" data-action="copy-list">Copy list</button><button type="button" class="chip" data-action="ing-reset">Uncheck all</button></div>`;
+    <div class="chips" style="margin-top:14px"><button type="button" class="chip" data-action="meal-add" aria-pressed="${inMeal(r.id)}">${inMeal(r.id) ? '✓ In meal' : '+ Add to meal'}</button><button type="button" class="chip" data-action="grocery-add">Add to Grocery</button><button type="button" class="chip" data-action="copy-list">Copy list</button><button type="button" class="chip" data-action="ing-reset">Uncheck all</button></div>
+    <div class="grp">Category</div>
+    <div class="seg" role="group" aria-label="Category">${FIXED_TABS.map(c => `<button type="button" class="chip" data-action="set-cat" data-cat="${esc(c)}" aria-pressed="${r.category === c}">${esc(c)}</button>`).join('')}</div>
+    <p class="hint" style="margin-top:6px">${FIXED_TABS.includes(r.category) ? '' : `Now: ${esc(r.category)}. `}Moves it between the Main dish, Sides and Baking tabs on this phone.</p>`;
 }
 function timerButtons(s, label) {
   const ts = s.timer ? [{ secs: s.timer, label: fmtClock(s.timer).replace(/^0?(\d+):00$/, '$1 min') }] : detectTimers(s.text);
@@ -1413,7 +1418,7 @@ function saveEdit() {
   ui.tokOk = false; ui.draft = null;
   const i = state.recipes.findIndex(x => x.id === id);
   if (i >= 0) state.recipes[i] = r; else state.recipes.push(r);
-  setMark(id, { prog: { i: [], s: [] } });
+  setMark(id, { prog: { i: [], s: [] }, cat: null });
   persist(); location.hash = '#/r/' + id; render(); toast('Saved');
 }
 
@@ -1508,6 +1513,11 @@ function handleAction(a, el) {
   const m = mark(id), togg = (list, i) => (list.includes(i) ? list.filter(x => x !== i) : [...list, i]);
   switch (a) {
     case 'fav': setMark(id, { fav: !m.fav }); return commit();
+    case 'set-cat': {
+      const c = el.dataset.cat; if (!CATS.includes(c)) return;
+      const raw = state.recipes.find(x => x.id === id) || LIB.recipes.find(x => x.id === id);
+      setMark(id, { cat: raw && raw.category === c ? null : c }); commit(); return toast('Moved to ' + c);
+    }
     case 'more': return moreMenu(r, rt.src);
     case 'srv+': case 'srv-': { const cur = servingsOf(r), next = a === 'srv+' ? cur + (cur >= 1 ? 1 : 0.5) : Math.max(0.5, cur - (cur > 1 ? 1 : 0.5)); setMark(id, { servings: Math.abs(next - r.servings) < 1e-9 ? null : next }); return commit(); }
     case 'srv-x': { const x = +el.dataset.x, s = r.servings * x; setMark(id, { servings: Math.abs(x - 1) < 1e-9 ? null : s }); return commit(); }
