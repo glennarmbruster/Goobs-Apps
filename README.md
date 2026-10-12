@@ -7,6 +7,7 @@ Personal installable web apps (PWAs). Plain HTML/CSS/JS, no build step, no depen
 - `travel/` – trip planner (packing, itinerary, budget, ideas, weather); can be shared between two phones
 - `grocery/` – shared grocery list grouped by aisle
 - `todo/` – shared to-do lists with due dates and notes
+- `recipes/` – recipe collection: ingredients, steps, notes, scaling, timers, cook mode. Shared recipes live in `recipes/library.json`; format in `recipes/FORMAT.md`
 - `sharing/` – setup notes and database rules for the shared apps
 
 ## Publish on GitHub Pages
@@ -23,7 +24,9 @@ Upload changed files to the repo. Installed apps pick up the new version the nex
 ## Data
 Bills and Money live only in the device's browser storage and never leave it. Trips, Grocery and To-do also work that way until you sign in; after sign-in they keep each phone's copy and share changes through a private Firebase database that only the two allowed accounts can read (see `sharing/SETUP.md`). Every app still has a Backup screen.
 
-Everything lives in the device's browser storage. Use each app's Backup screen to save a JSON file (optionally passphrase-encrypted) to Files or OneDrive.
+Recipes does not use Firebase. Its shared library is the file `recipes/library.json` in this repo (public, like the code); recipes added inside the app stay on that phone until you export them (Backup & library → Export library file) and upload the file here as `recipes/library.json`.
+
+Everything else lives in the device's browser storage. Use each app's Backup screen to save a JSON file (optionally passphrase-encrypted) to Files or OneDrive.
 
 Money is financial data: back it up with a passphrase and keep the file out of this repo. Its retirement results are a planning model, not a forecast.
 

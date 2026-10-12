@@ -1,0 +1,195 @@
+{
+  "format": "goobs-recipe-library",
+  "version": 1,
+  "recipes": [
+    {
+      "id": "sheet-pan-lemon-chicken",
+      "title": "Sheet-Pan Lemon Chicken & Potatoes",
+      "description": "One pan, about 15 minutes of work.",
+      "category": "Main dish",
+      "tags": [
+        "weeknight",
+        "one-pan"
+      ],
+      "servings": 4,
+      "prepMin": 15,
+      "cookMin": 40,
+      "equipment": [
+        "Large sheet pan"
+      ],
+      "ingredients": [
+        {
+          "id": "chicken",
+          "qty": 2,
+          "unit": "lb",
+          "name": "bone-in chicken thighs"
+        },
+        {
+          "id": "potatoes",
+          "qty": 1.5,
+          "unit": "lb",
+          "name": "baby potatoes",
+          "note": "halved"
+        },
+        {
+          "id": "oil",
+          "qty": 3,
+          "unit": "tbsp",
+          "name": "olive oil"
+        },
+        {
+          "id": "lemons",
+          "qty": 2,
+          "name": "lemons",
+          "note": "one zested and juiced, one sliced"
+        },
+        {
+          "id": "garlic",
+          "qty": 4,
+          "unit": "clove",
+          "name": "garlic",
+          "note": "minced"
+        },
+        {
+          "id": "oregano",
+          "qty": 1,
+          "unit": "tsp",
+          "name": "dried oregano"
+        },
+        {
+          "id": "salt",
+          "qty": 1,
+          "unit": "tsp",
+          "name": "salt"
+        },
+        {
+          "id": "pepper",
+          "qty": 0.5,
+          "unit": "tsp",
+          "name": "black pepper"
+        }
+      ],
+      "steps": [
+        {
+          "text": "Heat the oven to 425°F."
+        },
+        {
+          "text": "Whisk {oil}, the lemon zest and juice, {garlic}, {oregano}, {salt} and {pepper}."
+        },
+        {
+          "text": "Toss {chicken} and {potatoes} with the mixture on a sheet pan, skin side up. Tuck in the lemon slices."
+        },
+        {
+          "title": "Roast",
+          "text": "Roast 35-40 minutes until the chicken reaches 175°F and the potatoes are tender."
+        },
+        {
+          "text": "Rest 5 minutes before serving."
+        }
+      ],
+      "notes": "Sample recipe: delete or replace it any time."
+    },
+    {
+      "id": "chocolate-chip-cookies",
+      "title": "Chocolate Chip Cookies",
+      "description": "Classic soft-centered cookies with crisp edges.",
+      "category": "Baking",
+      "tags": [
+        "cookies",
+        "kid-friendly"
+      ],
+      "servings": 24,
+      "servingsLabel": "cookies",
+      "prepMin": 15,
+      "cookMin": 11,
+      "equipment": [
+        "Baking sheets",
+        "Parchment paper",
+        "Stand or hand mixer"
+      ],
+      "ingredients": [
+        {
+          "id": "flour",
+          "qty": 2.25,
+          "unit": "cup",
+          "name": "all-purpose flour"
+        },
+        {
+          "id": "baking-soda",
+          "qty": 1,
+          "unit": "tsp",
+          "name": "baking soda"
+        },
+        {
+          "id": "salt",
+          "qty": 1,
+          "unit": "tsp",
+          "name": "salt"
+        },
+        {
+          "id": "butter",
+          "qty": 1,
+          "unit": "cup",
+          "name": "butter",
+          "note": "softened"
+        },
+        {
+          "id": "brown-sugar",
+          "qty": 0.75,
+          "unit": "cup",
+          "name": "brown sugar",
+          "note": "packed"
+        },
+        {
+          "id": "sugar",
+          "qty": 0.75,
+          "unit": "cup",
+          "name": "granulated sugar"
+        },
+        {
+          "id": "eggs",
+          "qty": 2,
+          "name": "large eggs"
+        },
+        {
+          "id": "vanilla",
+          "qty": 2,
+          "unit": "tsp",
+          "name": "vanilla extract"
+        },
+        {
+          "id": "chips",
+          "qty": 12,
+          "unit": "oz",
+          "name": "semi-sweet chocolate chips"
+        }
+      ],
+      "steps": [
+        {
+          "title": "Prep",
+          "text": "Heat the oven to 375°F. Line two baking sheets with parchment."
+        },
+        {
+          "text": "Whisk {flour}, {baking-soda} and {salt} in a bowl."
+        },
+        {
+          "text": "Beat {butter}, {brown-sugar} and {sugar} until light and fluffy, about 3 minutes."
+        },
+        {
+          "text": "Beat in {eggs} one at a time, then {vanilla}."
+        },
+        {
+          "text": "Stir in the flour mixture until just combined, then fold in {chips}."
+        },
+        {
+          "title": "Bake",
+          "text": "Scoop rounded tablespoons onto the sheets, 2 inches apart. Bake 9-11 minutes until the edges are golden."
+        },
+        {
+          "text": "Cool on the sheet for 5 minutes, then move to a rack."
+        }
+      ],
+      "notes": "Chill the dough 30 minutes for thicker cookies. Sample recipe: delete or replace it any time."
+    }
+  ]
+}

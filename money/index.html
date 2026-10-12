@@ -696,11 +696,26 @@ function stepYear(p, ctx, i, bal) {
       if (ctx.mode === 'fixed') want = Math.min(ctx.convAmt, availP);
       else {
         const head = ctx.convTop + LAST.std - LAST.ordGross;
-        if (head > 0) want = Math.min(Tx - SOL.wT >= head * ctx.convRate ? head : head / (1 + ctx.convRate), availP);
+        /* first guess: convert `head`, minus the extra pre-tax withdrawals needed to pay its tax if the taxable account can't (those count as income too) */
+        if (head > 0) want = Math.min(head, head * (1 - ctx.convRate) + Math.max(0, Tx - SOL.wT), availP);
       }
     }
     if (want > 0) {
-      const t2 = solveYear(p, a, S, P, Rh, Tx, gf, ss, pen, free, rmd, want);
+      let t2 = solveYear(p, a, S, P, Rh, Tx, gf, ss, pen, free, rmd, want);
+      if (t2 >= 0 && ctx.mode === 'bracket') {
+        /* refine: the first guess ignores the cheaper lower brackets and the extra Social Security that becomes taxable; nudge until ordinary income lands on the top of the bracket */
+        let w0 = want, e0 = ctx.convTop - (LAST.ordGross - LAST.std), slope = 1 + ctx.convRate;
+        for (let k = 0; k < 4 && Math.abs(e0) > 1; k++) {
+          const w1 = Math.min(P - rmd, Math.max(0, w0 + e0 / slope));
+          if (w1 === w0) break;
+          const t1 = solveYear(p, a, S, P, Rh, Tx, gf, ss, pen, free, rmd, w1);
+          if (t1 < 0) { t2 = solveYear(p, a, S, P, Rh, Tx, gf, ss, pen, free, rmd, w0); break; }
+          const e1 = ctx.convTop - (LAST.ordGross - LAST.std), sl = (e0 - e1) / (w1 - w0);
+          if (sl > 0.3 && sl < 4) slope = sl;
+          w0 = w1; e0 = e1; t2 = t1;
+        }
+        want = w0;
+      }
       if (t2 >= 0) { conv = want; tax = t2; } else tax = solveYear(p, a, S, P, Rh, Tx, gf, ss, pen, free, rmd, 0);
     }
   }
