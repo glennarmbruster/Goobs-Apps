@@ -3,6 +3,7 @@
 Personal installable web apps (PWAs). Plain HTML/CSS/JS, no build step, no dependencies.
 
 - `bills/` – recurring bill reminders
+- `money/` – retirement Monte Carlo planner and monthly budget
 - `travel/` – trip planner (packing, itinerary, budget, ideas, weather)
 
 ## Publish on GitHub Pages
@@ -18,5 +19,7 @@ Upload changed files to the repo. Installed apps pick up the new version the nex
 
 ## Data
 Everything lives in the device's browser storage. Use each app's Backup screen to save a JSON file (optionally passphrase-encrypted) to Files or OneDrive.
+
+Money is financial data: back it up with a passphrase and keep the file out of this repo. Its retirement results are a planning model, not a forecast.
 
 Weather uses the free Open-Meteo service (no account or key); only the destination coordinates are sent.
