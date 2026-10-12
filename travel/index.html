@@ -142,6 +142,7 @@ dialog::backdrop{background:rgba(10,15,12,.55)}
 .addrow{display:flex;gap:8px;align-items:center}
 .addrow input{flex:1;min-width:0}
 .addrow select{width:auto;max-width:44%}
+.addrow.wrap{flex-wrap:wrap}.addrow.wrap .btn{flex:0 0 auto}.addrow.wrap input[name=text]{flex:1 1 100%}.addrow.wrap select{flex:1 1 40%;max-width:none}.addrow.wrap input[name=qty]{flex:0 0 64px}
 .tripcard{display:block;padding:14px 16px;text-decoration:none;color:inherit;margin-bottom:12px}
 .tc-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
 a.tile{display:block;text-decoration:none;color:inherit}
@@ -153,7 +154,7 @@ a.tile{display:block;text-decoration:none;color:inherit}
 .time{width:48px;flex:none;font-size:13px;font-weight:700;color:var(--muted)}
 .wx{font-size:13px;font-weight:600;color:var(--muted);text-transform:none;letter-spacing:0}
 .wxrow .emoji{font-size:26px;width:40px;text-align:center;flex:none}
-.checkgrid .field:first-child{grid-column:1/-1}
+.checkgrid .field:first-child,.checkgrid .field:has(select){grid-column:1/-1}
 .catline{margin:12px 0}
 .catline .top{display:flex;justify-content:space-between;font-size:14px;margin-bottom:4px}
 .linkrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
@@ -161,6 +162,9 @@ a.tile{display:block;text-decoration:none;color:inherit}
 .stack{display:flex;flex-direction:column;gap:14px;margin-top:14px}
 .row .btn{flex:none}
 textarea.notes{min-height:120px}
+.pinbtn{filter:grayscale(1);opacity:.55}
+.pinbtn[aria-pressed="true"]{filter:none;opacity:1;background:var(--accent-soft);border-color:var(--accent)}
+.row-sub a{color:var(--accent)}
 </style>
 </head>
 <body>
@@ -464,7 +468,45 @@ if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol))
 
 
 /* ===================== Trips app ===================== */
-const APP_ID = 'goobs-travel', DB_NAME = 'goobs-travel-db', SCHEMA = 1;
+const APP_ID = 'goobs-travel', DB_NAME = 'goobs-travel-db', SCHEMA = 2;
+/* ---- Caribbean cruise ports (from Galveston) ----
+   Monthly averages Jan..Dec in degrees C (mean daily high, mean daily low) and rain in mm, from published climate tables
+   (mostly 1991-2020 airport station normals). Ports with no table here (Costa Maya, Roatan) are looked up live instead. */
+const GALVESTON = { name: 'Galveston', admin1: 'Texas', country: 'United States', latitude: 29.3013, longitude: -94.7977 };
+const CRUISE_KIND = 'Caribbean cruise from Galveston';
+const CRUISE_PORTS = [
+  { id: 'galveston', name: 'Galveston (departure)', place: 'Galveston, Texas', lat: 29.3013, lon: -94.7977, src: 'Scholes Intl airport, 1991-2020',
+    hi: [17.3, 19.1, 22.2, 25.6, 28.9, 31.9, 32.9, 33.3, 31.5, 27.8, 22.4, 18.6], lo: [9.4, 11.3, 14.7, 18.3, 22.4, 25.6, 26.5, 26.6, 24.5, 20.3, 14.8, 10.9],
+    rain: [109, 54, 77, 52, 77, 107, 87, 120, 169, 131, 109, 107] },
+  { id: 'cozumel', name: 'Cozumel', place: 'Cozumel, Mexico', lat: 20.4229, lon: -86.9223, src: 'Cozumel, 1951-1980 (older record)',
+    hi: [28.6, 29.1, 30.9, 32.0, 32.7, 32.4, 32.6, 33.0, 31.9, 30.7, 29.7, 28.6], lo: [19.4, 19.4, 20.7, 21.8, 22.9, 23.8, 23.5, 23.5, 23.6, 23.1, 21.7, 20.3],
+    rain: [81, 60, 32, 45, 111, 192, 116, 142, 240, 243, 123, 107] },
+  { id: 'costamaya', name: 'Costa Maya (Mahahual)', place: 'Mahahual, Mexico', lat: 18.7117, lon: -87.7089, src: '', hi: null, lo: null, rain: null },
+  { id: 'progreso', name: 'Progreso (Yucatan)', place: 'Progreso, Mexico', lat: 21.2822, lon: -89.6644, src: 'Progreso, 1951-1980 (older record)',
+    hi: [25.5, 26.2, 28.6, 29.9, 30.2, 30.0, 29.5, 29.6, 29.6, 28.4, 27.1, 25.8], lo: [20.1, 20.0, 21.6, 22.9, 24.1, 24.7, 24.6, 24.8, 24.8, 24.2, 22.5, 20.9],
+    rain: [15, 20, 4, 7, 25, 65, 45, 49, 94, 64, 20, 17] },
+  { id: 'belize', name: 'Belize City', place: 'Belize City, Belize', lat: 17.4995, lon: -88.1976, src: 'Goldson Intl airport, 1991-2020',
+    hi: [27.9, 28.8, 29.8, 31.2, 31.9, 31.7, 31.5, 31.8, 31.8, 30.6, 29.2, 28.3], lo: [20.6, 21.5, 22.4, 24.2, 25.2, 25.7, 25.3, 25.3, 24.9, 23.9, 22.0, 21.2],
+    rain: [141, 65, 41, 58, 132, 236, 180, 195, 230, 306, 236, 151] },
+  { id: 'roatan', name: 'Roatan (Mahogany Bay)', place: 'Roatan, Honduras', lat: 16.3167, lon: -86.5333, src: '', hi: null, lo: null, rain: null },
+  { id: 'grandcayman', name: 'Grand Cayman (George Town)', place: 'George Town, Grand Cayman', lat: 19.2869, lon: -81.3674, src: 'Owen Roberts airport, 1991-2020',
+    hi: [28.4, 28.7, 29.2, 30.1, 31.0, 31.7, 32.3, 32.3, 31.9, 31.2, 29.6, 28.9], lo: [23.1, 22.9, 23.1, 24.3, 25.1, 25.8, 25.9, 26.0, 25.7, 25.2, 24.5, 23.6],
+    rain: [54, 31, 30, 34, 150, 161, 135, 147, 216, 244, 157, 65] },
+  { id: 'jamaica', name: 'Jamaica (Falmouth / Ocho Rios / Montego Bay)', place: 'Montego Bay, Jamaica', lat: 18.4762, lon: -77.8939, src: 'Montego Bay airport, 1991-2020 (nearby north-coast ports are similar)',
+    hi: [29.8, 30.0, 30.5, 31.4, 32.0, 33.0, 33.3, 33.4, 33.0, 32.2, 31.1, 30.2], lo: [22.2, 22.1, 22.5, 23.5, 24.0, 24.6, 24.9, 24.9, 24.6, 24.3, 23.9, 23.0],
+    rain: [77, 42, 59, 64, 150, 86, 66, 94, 135, 159, 107, 81] },
+  { id: 'nassau', name: 'Nassau (Bahamas)', place: 'Nassau, Bahamas', lat: 25.0443, lon: -77.3504, src: 'Nassau airport, 1991-2020',
+    hi: [26.1, 26.6, 27.2, 28.7, 30.2, 31.8, 32.7, 32.8, 32.2, 30.6, 28.3, 26.8], lo: [18.2, 18.5, 19.1, 21.0, 22.4, 24.2, 25.0, 25.0, 24.7, 23.6, 21.2, 19.6],
+    rain: [45, 48, 54, 74, 139, 220, 158, 211, 196, 151, 87, 43] },
+  { id: 'freeport', name: 'Freeport (Bahamas)', place: 'Freeport, Bahamas', lat: 26.5333, lon: -78.7000, src: 'Freeport, 1971-2000 (older record)',
+    hi: [24.3, 24.4, 25.8, 27.4, 29.7, 31.2, 32.2, 32.3, 31.7, 29.7, 27.3, 25.1], lo: [15.9, 15.6, 17.5, 19.2, 21.1, 23.2, 23.9, 23.9, 23.3, 21.4, 19.4, 17.0],
+    rain: [83, 73, 94, 67, 105, 176, 165, 208, 217, 143, 93, 74] },
+  { id: 'amber', name: 'Amber Cove (Puerto Plata)', place: 'Puerto Plata, Dominican Republic', lat: 19.7934, lon: -70.6884, src: 'Gregorio Luperon airport, 1991-2020',
+    hi: [28.1, 28.3, 28.5, 29.5, 30.6, 32.0, 32.2, 32.4, 32.3, 31.5, 29.8, 28.7], lo: [20.7, 20.8, 21.1, 22.3, 23.5, 24.4, 24.8, 24.8, 24.4, 24.0, 22.7, 21.6],
+    rain: [175, 140, 130, 115, 130, 50, 70, 70, 65, 110, 230, 230] }
+];
+const portById = id => CRUISE_PORTS.find(p => p.id === id);
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const PACK_CATS = ['Clothing', 'Toiletries', 'Electronics', 'Documents', 'Health', 'Gear', 'Other'];
 const BUDGET_CATS = ['Flights', 'Lodging', 'Food & drink', 'Transport', 'Activities', 'Shopping', 'Insurance', 'Other'];
 const IDEA_TYPES = [['do', 'Do'], ['eat', 'Eat'], ['see', 'See'], ['stay', 'Stay'], ['other', 'Other']];
@@ -493,7 +535,9 @@ function normWeather(w) {
   }
   return { fetchedAt: isNum(w.fetchedAt) ? w.fetchedAt : 0, locKey: str(w.locKey), span: str(w.span), days };
 }
-const normPack = i => { if (!i || typeof i !== 'object' || !str(i.text).trim()) return null; return { id: str(i.id) || uid(), text: str(i.text).trim().slice(0, 120), cat: oneOf(i.cat, PACK_CATS, 'Other'), qty: clampInt(i.qty, 1, 99, 1), packed: !!i.packed }; };
+const DEFAULT_LIST = 'Main';
+const listName = v => str(v).trim().slice(0, 40) || DEFAULT_LIST;
+const normPack = i => { if (!i || typeof i !== 'object' || !str(i.text).trim()) return null; return { id: str(i.id) || uid(), text: str(i.text).trim().slice(0, 120), cat: oneOf(i.cat, PACK_CATS, 'Other'), qty: clampInt(i.qty, 1, 99, 1), packed: !!i.packed, list: listName(i.list) }; };
 const normPlan = i => {
   if (!i || typeof i !== 'object' || !str(i.title).trim()) return null;
   return { id: str(i.id) || uid(), date: isISO(i.date) ? i.date : '', time: /^([01]\d|2[0-3]):[0-5]\d$/.test(str(i.time)) ? i.time : '', title: str(i.title).trim().slice(0, 140), place: str(i.place).trim().slice(0, 140), notes: str(i.notes).slice(0, 1000) };
@@ -508,7 +552,25 @@ const normIdea = i => {
   if (!i || typeof i !== 'object' || !str(i.title).trim()) return null;
   return { id: str(i.id) || uid(), type: oneOf(i.type, IDEA_TYPES.map(x => x[0]), 'other'), title: str(i.title).trim().slice(0, 140), url: safeUrl(i.url), notes: str(i.notes).slice(0, 1000), planned: !!i.planned };
 };
-const normTodo = i => { if (!i || typeof i !== 'object' || !str(i.text).trim()) return null; return { id: str(i.id) || uid(), text: str(i.text).trim().slice(0, 140), done: !!i.done }; };
+const normTodo = i => { if (!i || typeof i !== 'object' || !str(i.text).trim()) return null; return { id: str(i.id) || uid(), text: str(i.text).trim().slice(0, 140), done: !!i.done, pin: !!i.pin, notes: str(i.notes).slice(0, 3000) }; };
+const normCruise = c => { if (!c || typeof c !== 'object') return null; const seen = new Set(); return { ports: arr(c.ports).filter(id => typeof id === 'string' && portById(id) && !seen.has(id) && seen.add(id)) }; };
+const JOINT = 'Joint';
+const cap1 = x => x.charAt(0).toUpperCase() + x.slice(1);
+const parseNames = txt => str(txt).split(/,|&|\band\b|\n/i).map(x => cap1(x.trim().replace(/\s+/g, ' ').slice(0, 30))).filter(Boolean);
+/* one shared list plus one per traveler when several people travel */
+function syncPackLists(trip) {
+  const names = trip.travelerNames; let lists = trip.packLists.slice();
+  const renameList = (a, b) => { lists = lists.map(l => (l === a ? b : l)); trip.packing.forEach(i => { if (i.list === a) i.list = b; }); };
+  if (trip.travelers > 1 && names.length) {
+    if (!lists.includes(JOINT)) { if (lists.includes(DEFAULT_LIST) && trip.packing.some(i => i.list === DEFAULT_LIST)) renameList(DEFAULT_LIST, JOINT); else lists.unshift(JOINT); }
+    for (const n of names) if (!lists.includes(n)) lists.push(n);
+    if (lists.length > 1 && lists.includes(DEFAULT_LIST) && !trip.packing.some(i => i.list === DEFAULT_LIST)) lists = lists.filter(l => l !== DEFAULT_LIST);
+    const order = [JOINT, ...names]; lists = [...order.filter(l => lists.includes(l)), ...lists.filter(l => !order.includes(l))];
+  } else if (trip.travelers === 1 && names.length === 1 && lists.length === 1 && lists[0] === DEFAULT_LIST) renameList(DEFAULT_LIST, names[0]);
+  trip.packLists = lists.slice(0, 20);
+  trip.packing.forEach(i => { if (!trip.packLists.includes(i.list)) i.list = trip.packLists[0]; });
+}
+function normLists(t, packing) { const out = []; for (const n of [...arr(t.packLists).map(listName), ...packing.map(i => i.list)]) if (!out.includes(n) && out.length < 20) out.push(n); if (!out.length) out.push(DEFAULT_LIST); return out; }
 function normTrip(t, keepWeather) {
   if (!t || typeof t !== 'object' || !str(t.name).trim()) return null;
   const trip = {
@@ -518,9 +580,11 @@ function normTrip(t, keepWeather) {
     budgetTotal: numOrNull(t.budgetTotal), notes: str(t.notes).slice(0, 10000), location: normLoc(t.location),
     packing: arr(t.packing).map(normPack).filter(Boolean), plan: arr(t.plan).map(normPlan).filter(Boolean),
     budget: arr(t.budget).map(normBudget).filter(Boolean), ideas: arr(t.ideas).map(normIdea).filter(Boolean),
-    todos: arr(t.todos).map(normTodo).filter(Boolean), weather: keepWeather ? normWeather(t.weather) : null,
+    todos: arr(t.todos).map(normTodo).filter(Boolean), weather: keepWeather ? normWeather(t.weather) : null, cruise: normCruise(t.cruise), travelerNames: [...new Set(arr(t.travelerNames).map(x => cap1(str(x).trim().slice(0, 30))).filter(Boolean))].slice(0, 20),
     createdAt: isNum(t.createdAt) ? t.createdAt : Date.now()
   };
+  trip.packLists = normLists(t, trip.packing);
+  syncPackLists(trip);
   if (!trip.startDate || !trip.endDate) { if (trip.startDate || trip.endDate) trip.startDate = trip.endDate = trip.startDate || trip.endDate; }
   else if (trip.endDate < trip.startDate) trip.endDate = trip.startDate;
   for (const key of ['packing', 'plan', 'budget', 'ideas', 'todos']) { const s = new Set(); trip[key] = trip[key].filter(x => !s.has(x.id) && s.add(x.id)); }
@@ -555,7 +619,7 @@ const commit = () => { persist(); render(); };
 let noteTimer = null;
 
 /* ---- trip helpers ---- */
-const ui = { hidePacked: false, ideaFilter: 'all', geo: null, wxBusy: false, wxError: '', wxTried: {}, focus: null, lastCat: 'Clothing' };
+const ui = { packList: 'All', cruiseMonth: null, portWx: {}, hidePacked: false, ideaFilter: 'all', geo: null, wxBusy: false, wxError: '', wxTried: {}, focus: null, lastCat: 'Clothing' };
 const tripById = id => state.trips.find(t => t.id === id);
 function tripDays(t) {
   if (!t.startDate || !t.endDate) return [];
@@ -738,13 +802,18 @@ function buildStarter(t, opts) {
   for (const k of Object.keys(ACT)) if (opts[k]) ACT[k][1].forEach(([c, x, q]) => add(c, x, q || 1));
   return items;
 }
-function addPackItems(t, items) {
-  const have = new Set(t.packing.map(i => normText(i.text)));
+/* list: a list name forces every item into it; undefined = the list being viewed; null = keep each item's own list when it exists here */
+function addPackItems(t, items, list) {
+  const forced = list === undefined ? (currentList(t) || t.packLists[0]) : list;
+  const have = {}; for (const i of t.packing) (have[i.list] = have[i.list] || new Set()).add(normText(i.text));
   let added = 0;
-  for (const it of items) { if (have.has(normText(it.text))) continue; have.add(normText(it.text)); t.packing.push({ id: uid(), text: it.text, cat: it.cat, qty: it.qty || 1, packed: false }); added++; }
+  for (const it of items) {
+    const L = forced || (it.list && t.packLists.includes(it.list) ? it.list : t.packLists[0]), set = have[L] || (have[L] = new Set());
+    if (set.has(normText(it.text))) continue;
+    set.add(normText(it.text)); t.packing.push({ id: uid(), text: it.text, cat: it.cat, qty: it.qty || 1, packed: false, list: L }); added++;
+  }
   return added;
 }
-
 /* ---- dialogs ---- */
 function tripDialog(t) {
   const cur = t ? t.currency : state.trips.length ? state.trips[state.trips.length - 1].currency : 'USD';
@@ -753,10 +822,12 @@ function tripDialog(t) {
     title: t ? 'Edit trip' : 'New trip',
     fields: [
       { name: 'name', label: 'Trip name', required: true, value: t && t.name, placeholder: 'e.g. Alabama beach week' },
-      { name: 'destination', label: 'Destination', value: t && t.destination, placeholder: 'e.g. Gulf Shores, Alabama', hint: 'Used for weather and lookup links.' },
+      { name: 'kind', label: 'Destination type', type: 'select', value: t && t.cruise ? 'cruise' : 'place', options: [['place', 'A place (type it below)'], ['cruise', CRUISE_KIND]], hint: 'Choose the cruise to get typical temperatures for the common Galveston ports on the Weather tab.' },
+      { name: 'destination', label: 'Destination', value: t && t.destination, placeholder: 'e.g. Gulf Shores, Alabama, or leave blank for a cruise', hint: 'Used for weather and lookup links.' },
       { name: 'startDate', label: 'Start date', type: 'date', value: t && t.startDate },
       { name: 'endDate', label: 'End date', type: 'date', value: t && t.endDate },
       { name: 'travelers', label: 'Travelers', type: 'number', value: t ? t.travelers : 2, min: 1, step: '1' },
+      { name: 'names', label: 'Who’s traveling? (names)', value: t ? t.travelerNames.join(', ') : '', placeholder: 'e.g. Glenn and Cindy', hint: 'Needed when more than one person is traveling. Each person gets a packing list, plus a Joint list for shared items.' },
       { name: 'currency', label: 'Currency', type: 'select', options: currencies, value: cur },
       { name: 'budgetTotal', label: 'Budget target (optional)', type: 'number', value: t && t.budgetTotal != null ? t.budgetTotal : '', min: 0 }
     ],
@@ -770,15 +841,29 @@ function tripDialog(t) {
       if (s && !e) e = s;
       if (s && e < s) return 'The end date is before the start date.';
       if (s && daysBetween(s, e) > 119) return 'Trips can be up to 120 days.';
+      const nTrav = clampInt(v.travelers, 1, 99, 1), names = parseNames(v.names);
+      if (new Set(names.map(x => x.toLowerCase())).size !== names.length) return 'Each name should appear once.';
+      if (names.some(x => x.toLowerCase() === JOINT.toLowerCase())) return '“Joint” is used for the shared list. Use real names here.';
+      if (nTrav > 1 && !names.length) return `Who’s traveling? Enter ${nTrav} names, like “Glenn and Cindy”.`;
+      if (nTrav > 1 && names.length !== nTrav) return `You said ${nTrav} travelers but gave ${plural(names.length, 'name')}. Enter ${nTrav} names, or change the number.`;
+      if (nTrav === 1 && names.length > 1) return 'One traveler, but several names. Change the number of travelers or remove names.';
+      if (names.length > 20) return 'That’s too many names (20 at most).';
       const bt = v.budgetTotal === '' ? null : numOrNull(v.budgetTotal);
       if (v.budgetTotal !== '' && bt == null) return 'Enter a valid budget, or leave it blank.';
-      const rec = { name: v.name.trim(), destination: v.destination.trim(), startDate: s || '', endDate: e || '', travelers: clampInt(v.travelers, 1, 99, 1), currency: v.currency, budgetTotal: bt };
+      const rec = { name: v.name.trim(), destination: v.destination.trim(), startDate: s || '', endDate: e || '', travelers: clampInt(v.travelers, 1, 99, 1), currency: v.currency, budgetTotal: bt, travelerNames: names };
+      const cruise = v.kind === 'cruise';
+      if (cruise && !rec.destination) rec.destination = CRUISE_KIND;
+      if (!cruise && rec.destination === CRUISE_KIND) rec.destination = '';
       if (t) {
-        if (rec.destination !== t.destination) { t.location = null; t.weather = null; ui.geo = null; }
+        const wasCruise = !!t.cruise;
+        if (rec.destination !== t.destination || cruise !== wasCruise) { t.location = null; t.weather = null; ui.geo = null; }
         Object.assign(t, rec);
+        t.cruise = cruise ? (t.cruise || { ports: [] }) : null;
+        syncPackLists(t);
+        if (cruise && !t.location) t.location = { ...GALVESTON };
         commit();
       } else {
-        const nt = normTrip({ ...rec, id: uid() }, false);
+        const nt = normTrip({ ...rec, id: uid(), cruise: cruise ? { ports: [] } : null, location: cruise ? GALVESTON : null }, false);
         state.trips.push(nt); persist();
         location.hash = '#/trip/' + nt.id;
         render();
@@ -795,7 +880,7 @@ function duplicateTrip(t) {
   const c = JSON.parse(JSON.stringify(t));
   Object.assign(c, { id: uid(), name: t.name + ' (copy)', startDate: '', endDate: '', weather: null, createdAt: Date.now() });
   c.packing.forEach(i => { i.id = uid(); i.packed = false; });
-  c.todos.forEach(i => { i.id = uid(); i.done = false; });
+  c.todos.forEach(i => { i.id = uid(); i.done = false; i.pin = false; });
   c.budget.forEach(i => { i.id = uid(); i.spent = null; if (i.planned == null) i.planned = 0; });
   c.plan.forEach(i => { i.id = uid(); i.date = ''; i.time = ''; });
   c.ideas.forEach(i => { i.id = uid(); i.planned = false; });
@@ -808,19 +893,22 @@ function packDialog(t, id) {
   const it = id ? t.packing.find(x => x.id === id) : null; if (id && !it) return;
   formDialog({
     title: 'Edit item',
-    fields: [{ name: 'text', label: 'Item', required: true, value: it.text }, { name: 'qty', label: 'Quantity', type: 'number', value: it.qty, min: 1, step: '1' }, { name: 'cat', label: 'Category', type: 'select', options: PACK_CATS, value: it.cat }],
-    onSubmit: v => { it.text = v.text.trim().slice(0, 120); it.qty = clampInt(v.qty, 1, 99, 1); it.cat = v.cat; commit(); },
+    fields: [{ name: 'text', label: 'Item', required: true, value: it.text }, { name: 'qty', label: 'Quantity', type: 'number', value: it.qty, min: 1, step: '1' }, { name: 'cat', label: 'Category', type: 'select', options: PACK_CATS, value: it.cat },
+      ...(t.packLists.length > 1 ? [{ name: 'list', label: 'Packing list', type: 'select', options: t.packLists, value: it.list }] : [])],
+    onSubmit: v => { it.text = v.text.trim().slice(0, 120); it.qty = clampInt(v.qty, 1, 99, 1); it.cat = v.cat; if (v.list && t.packLists.includes(v.list)) it.list = v.list; commit(); },
     onDelete: async () => { t.packing = t.packing.filter(x => x.id !== it.id); commit(); return true; }
   });
 }
 function starterDialog(t) {
   const ws = weatherSummary(t);
-  const fields = [{ name: 'base', label: 'Essentials & clothing, sized to your trip length', type: 'checkbox', value: true }];
-  for (const k of Object.keys(ACT)) fields.push({ name: k, label: ACT[k][0], type: 'checkbox', value: !!(ws && ws[k]) });
+  const fields = [];
+  if (t.packLists.length > 1 && !currentList(t)) fields.push({ name: 'target', label: 'Add the items to which list?', type: 'select', options: t.packLists, value: t.packLists[0] });
+  fields.push({ name: 'base', label: 'Essentials & clothing, sized to your trip length', type: 'checkbox', value: true });
+  for (const k of Object.keys(ACT)) fields.push({ name: k, label: ACT[k][0], type: 'checkbox', value: !!(ws && ws[k]) || !!(t.cruise && (k === 'cruise' || k === 'beach')) });
   const hint = [!t.startDate ? 'No dates set, so quantities assume a 3-day trip.' : '', ws ? `Weather for your dates: ${T(ws.lo)} to ${T(ws.hi)}. Matching weather boxes are pre-checked.` : 'Tip: check the Weather tab first and it will pre-check the right boxes.'].filter(Boolean).join(' ');
   formDialog({
     title: 'Starter packing list', intro: hint, fields, grid: 'checkgrid', submitLabel: 'Add items',
-    onSubmit: v => { const n = addPackItems(t, buildStarter(t, v)); commit(); toast(n ? `Added ${plural(n, 'item')}` : 'Nothing new to add — you already have those'); }
+    onSubmit: v => { const n = addPackItems(t, buildStarter(t, v), v.target || undefined); commit(); toast(n ? `Added ${plural(n, 'item')}` : 'Nothing new to add — you already have those'); }
   });
 }
 function copyPackDialog(t) {
@@ -830,8 +918,67 @@ function copyPackDialog(t) {
     title: 'Copy packing list', intro: 'Items are added unchecked; anything you already have is skipped.',
     fields: [{ name: 'from', label: 'Copy from', type: 'select', options: others.map(o => [o.id, `${o.name} (${o.packing.length} items)`]), value: others[0].id }],
     submitLabel: 'Copy',
-    onSubmit: v => { const src = tripById(v.from); if (!src) return 'Pick a trip.'; const n = addPackItems(t, src.packing.map(i => ({ text: i.text, cat: i.cat, qty: i.qty }))); commit(); toast(n ? `Copied ${plural(n, 'item')}` : 'Nothing new to copy'); }
+    onSubmit: v => { const src = tripById(v.from); if (!src) return 'Pick a trip.'; const n = addPackItems(t, src.packing.map(i => ({ text: i.text, cat: i.cat, qty: i.qty, list: i.list })), currentList(t) || null); commit(); toast(n ? `Copied ${plural(n, 'item')}` : 'Nothing new to copy'); }
   });
+}
+const snip = (x, n = 80) => { const l = str(x).trim().split('\n')[0]; return l.length > n ? l.slice(0, n - 1) + '…' : l; };
+function todoDialog(t, x) {
+  formDialog({
+    title: 'To-do details', intro: t.name,
+    fields: [
+      { name: 'text', label: 'To-do', required: true, value: x.text },
+      { name: 'done', label: 'Done', type: 'checkbox', value: x.done },
+      { name: 'pin', label: 'Show on the Trips home screen', type: 'checkbox', value: x.pin },
+      { name: 'notes', label: 'Notes', type: 'textarea', value: x.notes, placeholder: 'Contact info, confirmation numbers, instructions. For a pet sitter: name, phone, address, feeding schedule, vet.' }
+    ],
+    submitLabel: 'Save',
+    onSubmit: v => { x.text = v.text.trim().slice(0, 140); x.done = v.done; x.pin = v.pin; x.notes = v.notes.slice(0, 3000); commit(); },
+    onDelete: async () => { t.todos = t.todos.filter(v => v.id !== x.id); commit(); toast('To-do removed'); return true; }
+  });
+}
+function listNameDialog(t, oldName) {
+  formDialog({
+    title: oldName ? 'Rename packing list' : 'New packing list',
+    fields: [{ name: 'name', label: 'List name', required: true, value: oldName || '', placeholder: 'e.g. Carry-on, Beach bag, Kids' }],
+    submitLabel: oldName ? 'Rename' : 'Create list',
+    onSubmit: v => {
+      const n = v.name.trim().slice(0, 40);
+      if (!n) return 'Give the list a name.';
+      if (t.packLists.some(l => l.toLowerCase() === n.toLowerCase() && l !== oldName)) return 'You already have a list with that name.';
+      if (oldName) { t.packLists = t.packLists.map(l => (l === oldName ? n : l)); t.packing.forEach(i => { if (i.list === oldName) i.list = n; }); }
+      else { if (t.packLists.length >= 20) return 'That’s the maximum number of lists.'; t.packLists.push(n); }
+      ui.packList = n; commit();
+    }
+  });
+}
+async function deleteList(t, name) {
+  if (t.packLists.length < 2) return toast('A trip needs at least one packing list.');
+  const n = t.packing.filter(i => i.list === name).length;
+  if (!(await confirmBox(`Delete the “${name}” list?`, n ? `Its ${plural(n, 'item')} will be removed too.` : '', 'Delete list'))) return;
+  t.packLists = t.packLists.filter(l => l !== name); t.packing = t.packing.filter(i => i.list !== name);
+  ui.packList = 'All'; commit();
+}
+function portsDialog(t) {
+  formDialog({
+    title: 'Cruise ports', intro: 'Tick the ports on your itinerary. Only those show on the Weather tab.',
+    fields: CRUISE_PORTS.map(p => ({ name: p.id, label: p.name, type: 'checkbox', value: t.cruise.ports.includes(p.id) })), grid: 'checkgrid',
+    submitLabel: 'Save ports',
+    onSubmit: v => { t.cruise.ports = CRUISE_PORTS.filter(p => v[p.id]).map(p => p.id); commit(); }
+  });
+}
+async function portLive(p, m) {
+  const key = `${p.id}|${m}`;
+  ui.portWx[key] = { status: 'loading' }; render();
+  try {
+    const y = new Date().getFullYear(), dim = new Date(y, m + 1, 0).getDate();
+    const days = Array.from({ length: dim }, (_, i) => `${y}-${pad(m + 1)}-${pad(i + 1)}`);
+    const out = Object.values(await fetchTypical({ latitude: p.lat, longitude: p.lon }, days));
+    const avg = k => { const v = out.map(d => d[k]).filter(isNum); return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null; };
+    const hi = avg('tmax'), lo = avg('tmin'), pr = avg('precip');
+    if (hi == null || lo == null) throw new Error('No data came back for that port.');
+    ui.portWx[key] = { status: 'done', hi, lo, rain: pr == null ? null : pr * dim, years: out[0] ? out[0].years : null };
+  } catch (e) { ui.portWx[key] = { status: 'error', error: netMsg(e) }; }
+  render();
 }
 function planDialog(t, id, pre = {}) {
   const it = id ? t.plan.find(x => x.id === id) : null; if (id && !it) return;
@@ -921,10 +1068,15 @@ function homeScreen() {
       <div class="row-sub">${t.destination ? '📍 ' + esc(t.destination) + ' · ' : ''}${esc(rangeText(t))}</div>
       ${pk.total ? `<div class="bar" style="margin-top:10px"><i style="width:${pk.pct}%"></i></div><div class="row-sub" style="margin-top:4px">Packed ${pk.done} of ${pk.total}</div>` : ''}</a>`;
   };
+  const pinned = state.trips.flatMap(t => t.todos.filter(x => x.pin).map(x => ({ t, x }))).sort((a, b) => (a.x.done - b.x.done) || (a.t.startDate || '9999').localeCompare(b.t.startDate || '9999'));
+  const pinRow = ({ t, x }) => `<li class="row static"><div class="row-main"><label class="check-row"><input type="checkbox" data-action="todo-toggle" data-id="${esc(x.id)}" data-trip="${esc(t.id)}" ${x.done ? 'checked' : ''}><span class="${x.done ? 'done' : ''}">${esc(x.text)}</span></label>
+    <div class="row-sub"><a href="#/trip/${esc(t.id)}">${esc(t.name)}</a>${x.notes ? ' · 📝 ' + esc(snip(x.notes, 60)) : ''}</div></div>
+    <button type="button" class="btn small ghost" data-action="todo-edit" data-id="${esc(x.id)}" data-trip="${esc(t.id)}">Details</button></li>`;
+  const pinSection = pinned.length ? `<div class="sec-h"><span>Pinned to-dos</span><span class="num">${pinned.filter(p => !p.x.done).length} open</span></div><ul class="card list">${pinned.map(pinRow).join('')}</ul>` : '';
   const body = !state.trips.length
     ? `<div class="empty"><div class="big">🧳</div><h2>No trips yet</h2><p>Create a trip to build a packing list, day-by-day plan, budget and weather outlook.</p>
         <button class="btn primary" data-action="new-trip">Plan your first trip</button><br><button class="btn ghost" data-action="restore">Restore from a backup file</button></div>`
-    : (upcoming.length ? `<div class="sec-h"><span>Upcoming &amp; current</span></div>${upcoming.map(card).join('')}` : '') + (past.length ? `<div class="sec-h"><span>Past trips</span></div>${past.map(card).join('')}` : '');
+    : pinSection + (upcoming.length ? `<div class="sec-h"><span>Upcoming &amp; current</span></div>${upcoming.map(card).join('')}` : '') + (past.length ? `<div class="sec-h"><span>Past trips</span></div>${past.map(card).join('')}` : '');
   return headerHTML({ title: 'Trips', sub: 'Open a trip or start a new one', right: (state.trips.length ? '<button class="btn small primary" data-action="new-trip">+ New trip</button>' : '') + '<a class="btn small" href="#/backup">Backup</a>' })
     + `<main class="wrap">${storageBannerHTML()}${nagHTML()}${body}</main>`
     ;
@@ -934,7 +1086,9 @@ function overviewTab(t) {
   const todosDone = t.todos.filter(x => x.done).length;
   const w = t.weather, first = w ? wxDays(t).filter(d => w.days[d]).slice(0, 4) : [];
   const wx = first.length ? `<div class="sec-h"><span>Weather outlook</span><a href="#/trip/${id}/weather">See all</a></div><section class="card pad"><div class="chips">${first.map(d => { const x = w.days[d]; return `<span class="chip" style="cursor:default">${wmo(x.code)[0]} ${esc(fmtDate(d, false))} · ${T(x.tmax)}/${T(x.tmin)}</span>`; }).join('')}</div></section>` : '';
-  const todoRow = x => `<li class="row static"><label class="check-row"><input type="checkbox" data-action="todo-toggle" data-id="${esc(x.id)}" ${x.done ? 'checked' : ''}><span class="${x.done ? 'done' : ''}">${esc(x.text)}</span></label><button type="button" class="btn small ghost" data-action="todo-del" data-id="${esc(x.id)}" aria-label="Remove task">✕</button></li>`;
+  const todoRow = x => `<li class="row static"><div class="row-main"><label class="check-row"><input type="checkbox" data-action="todo-toggle" data-id="${esc(x.id)}" ${x.done ? 'checked' : ''}><span class="${x.done ? 'done' : ''}">${esc(x.text)}</span></label>${x.notes ? `<div class="row-sub">📝 ${esc(snip(x.notes))}</div>` : ''}</div>
+    <button type="button" class="btn small pinbtn" data-action="todo-pin" data-id="${esc(x.id)}" aria-pressed="${x.pin}" aria-label="${x.pin ? 'Unpin from' : 'Pin to'} the Trips home screen" title="Show on the Trips home screen">📌</button>
+    <button type="button" class="btn small ghost" data-action="todo-edit" data-id="${esc(x.id)}">Details</button></li>`;
   return `<section class="card hero"><div class="big">${esc(st.big)}</div><div class="lbl">${esc(st.label)}</div>${t.startDate ? '' : '<button class="btn small" style="margin-top:12px" data-action="edit-trip">Set dates</button>'}</section>
     <div class="tiles">
       <a class="card tile" href="#/trip/${id}/pack"><div class="lbl">Packed</div><div class="val num">${pk.done}/${pk.total}</div></a>
@@ -942,30 +1096,35 @@ function overviewTab(t) {
       <a class="card tile" href="#/trip/${id}/plan"><div class="lbl">Plan items</div><div class="val num">${t.plan.length}</div></a>
     </div>${wx}
     <div class="sec-h"><span>Before you go</span><span class="num">${todosDone}/${t.todos.length}</span></div>
+    ${t.todos.length ? '<p class="hint" style="margin:-2px 4px 8px">Tap Details to add notes. Tap 📌 to show a to-do on the Trips home screen.</p>' : ''}
     <div class="card">${t.todos.length ? `<ul class="list">${t.todos.map(todoRow).join('')}</ul>` : ''}
       <form data-form="todo-add" class="addrow pad"><input name="text" placeholder="Add a task (e.g. Book flights)" autocomplete="off" required><button class="btn primary">Add</button></form></div>
     <div style="margin-top:10px"><button class="btn small" data-action="todo-starter">Add common tasks</button></div>
     <div class="sec-h"><span>Notes</span></div>
     <textarea class="notes" id="tripNotes" placeholder="Confirmation numbers, addresses, reminders… (saved on this device)">${esc(t.notes)}</textarea>`;
 }
+const currentList = t => (ui.packList !== 'All' && t.packLists.includes(ui.packList) ? ui.packList : null);
 function packTab(t) {
-  const pk = packStats(t);
-  const groups = PACK_CATS.map(c => [c, t.packing.filter(i => i.cat === c)]).filter(([, a]) => a.length);
-  const row = i => `<li class="row static"><label class="check-row"><input type="checkbox" data-action="pack-toggle" data-id="${esc(i.id)}" ${i.packed ? 'checked' : ''}><span class="${i.packed ? 'done' : ''}">${i.qty > 1 ? `<b>${i.qty}×</b> ` : ''}${esc(i.text)}</span></label><button type="button" class="btn small ghost" data-action="pack-edit" data-id="${esc(i.id)}">Edit</button></li>`;
+  const cur = currentList(t); if (!cur) ui.packList = 'All';
+  const items = cur ? t.packing.filter(i => i.list === cur) : t.packing, multi = t.packLists.length > 1;
+  const pk = { total: items.length, done: items.filter(i => i.packed).length }; pk.pct = pk.total ? Math.round(pk.done / pk.total * 100) : 0;
+  const groups = PACK_CATS.map(c => [c, items.filter(i => i.cat === c)]).filter(([, a]) => a.length);
+  const row = i => `<li class="row static"><label class="check-row"><input type="checkbox" data-action="pack-toggle" data-id="${esc(i.id)}" ${i.packed ? 'checked' : ''}><span class="${i.packed ? 'done' : ''}">${i.qty > 1 ? `<b>${i.qty}×</b> ` : ''}${esc(i.text)}${multi && !cur ? `<span class="badge">${esc(i.list)}</span>` : ''}</span></label><button type="button" class="btn small ghost" data-action="pack-edit" data-id="${esc(i.id)}">Edit</button></li>`;
   let lists = '';
-  for (const [c, items] of groups) {
-    const shown = ui.hidePacked ? items.filter(i => !i.packed) : items;
+  for (const [c, its] of groups) {
+    const shown = ui.hidePacked ? its.filter(i => !i.packed) : its;
     if (!shown.length) continue;
-    lists += `<div class="sec-h"><span>${esc(c)}</span><span class="num">${items.filter(i => i.packed).length}/${items.length}</span></div><ul class="card list">${shown.map(row).join('')}</ul>`;
+    lists += `<div class="sec-h"><span>${esc(c)}</span><span class="num">${its.filter(i => i.packed).length}/${its.length}</span></div><ul class="card list">${shown.map(row).join('')}</ul>`;
   }
-  if (t.packing.length && !lists) lists = '<div class="card empty"><div class="big">🎉</div><h2>Everything is packed</h2></div>';
-  return `<section class="card pad"><div style="display:flex;justify-content:space-between;align-items:baseline"><h3>Packing</h3><span class="num muted">${pk.done} of ${pk.total} packed</span></div>
+  if (items.length && !lists) lists = '<div class="card empty"><div class="big">🎉</div><h2>Everything is packed</h2></div>';
+  const chips = `<div class="chips" style="margin-bottom:12px"><button class="chip" data-action="pack-list" data-name="All" aria-pressed="${!cur}">All</button>${t.packLists.map(n => `<button class="chip" data-action="pack-list" data-name="${esc(n)}" aria-pressed="${cur === n}">${esc(n)}</button>`).join('')}<button class="chip" data-action="pack-newlist">+ New list</button></div>`;
+  return `${chips}<section class="card pad"><div style="display:flex;justify-content:space-between;align-items:baseline"><h3>Packing${cur ? ' · ' + esc(cur) : ''}</h3><span class="num muted">${pk.done} of ${pk.total} packed</span></div>
       <div class="bar" style="margin:10px 0"><i style="width:${pk.pct}%"></i></div>
-      <form data-form="pack-add" class="addrow"><input name="text" placeholder="Add an item (e.g. 3 shirts)" autocomplete="off" required>
-        <select name="cat" aria-label="Category">${PACK_CATS.map(c => `<option${c === ui.lastCat ? ' selected' : ''}>${esc(c)}</option>`).join('')}</select><button class="btn primary">Add</button></form></section>
+      <form data-form="pack-add" class="addrow wrap"><input name="text" placeholder="Add an item${cur ? ' to ' + esc(cur) : ''} (e.g. 3 shirts)" autocomplete="off" required>
+        ${multi && !cur ? `<select name="list" aria-label="Which list">${t.packLists.map(l => `<option>${esc(l)}</option>`).join('')}</select>` : ''}<select name="cat" aria-label="Category">${PACK_CATS.map(c => `<option${c === ui.lastCat ? ' selected' : ''}>${esc(c)}</option>`).join('')}</select><button class="btn primary">Add</button></form></section>
     <div class="chips" style="margin-top:12px"><button class="chip" data-action="pack-starter">✨ Starter list</button><button class="chip" data-action="pack-copy">Copy from a trip</button>
-      <button class="chip" data-action="pack-hide" aria-pressed="${ui.hidePacked}">Hide packed</button><button class="chip" data-action="pack-reset">Uncheck all</button></div>
-    ${t.packing.length ? lists : '<div class="empty"><div class="big">🧳</div><h2>Nothing on the list yet</h2><p>Add items above, or tap <b>Starter list</b> to get a list sized to your trip and the weather.</p></div>'}`;
+      <button class="chip" data-action="pack-hide" aria-pressed="${ui.hidePacked}">Hide packed</button><button class="chip" data-action="pack-reset">Uncheck all</button>${cur ? '<button class="chip" data-action="pack-rename">Rename list</button><button class="chip" data-action="pack-dellist">Delete list</button>' : ''}</div>
+    ${items.length ? lists : '<div class="empty"><div class="big">🧳</div><h2>Nothing on this list yet</h2><p>Add items above, or tap <b>Starter list</b> to get a list sized to your trip and the weather.</p></div>'}`;
 }
 function planTab(t) {
   const days = tripDays(t), byDate = {}, other = [];
@@ -1017,7 +1176,33 @@ function ideasTab(t) {
     <div class="chips" style="margin-top:14px">${[['all', 'All'], ...IDEA_TYPES].map(([k, l]) => `<button class="chip" data-action="idea-filter" data-type="${k}" aria-pressed="${f === k}">${l}</button>`).join('')}</div>
     <div style="margin-top:12px">${list.length ? `<ul class="card list">${list.map(row).join('')}</ul>` : `<div class="card empty"><div class="big">💡</div><h2>${t.ideas.length ? 'Nothing in this filter' : 'No ideas saved yet'}</h2><p>Tap + to save places to eat, things to see, and activities. Tap <b>Plan</b> to drop one onto a day.</p></div>`}</div>`;
 }
-function weatherTab(t) {
+function cruiseBlock(t) {
+  const m = ui.cruiseMonth != null ? ui.cruiseMonth : (t.startDate ? +t.startDate.slice(5, 7) - 1 : new Date().getMonth());
+  const imperial = state.settings.units === 'imperial', chosen = t.cruise.ports.map(portById).filter(Boolean), showAll = !chosen.length;
+  const list = showAll ? CRUISE_PORTS : CRUISE_PORTS.filter(p => t.cruise.ports.includes(p.id));
+  const rainTxt = mm => (mm == null ? '' : imperial ? `${(mm / 25.4).toFixed(1)} in rain` : `${Math.round(mm)} mm rain`);
+  const row = p => {
+    let right = '', sub = '';
+    if (p.hi) { right = `${T(p.hi[m])} / ${T(p.lo[m])}`; sub = [rainTxt(p.rain[m]), p.src].filter(Boolean).join(' · '); }
+    else {
+      const w = ui.portWx[`${p.id}|${m}`];
+      if (w && w.status === 'done') { right = `${T(w.hi)} / ${T(w.lo)}`; sub = [rainTxt(w.rain), `live: averaged from ${w.years || 'recent'} past years`].filter(Boolean).join(' · '); }
+      else if (w && w.status === 'loading') sub = 'Looking up…';
+      else if (w && w.status === 'error') { sub = w.error; right = `<button type="button" class="btn small" data-action="port-live" data-port="${esc(p.id)}">Retry</button>`; }
+      else { sub = 'No published monthly table here. Look it up live (needs internet).'; right = `<button type="button" class="btn small" data-action="port-live" data-port="${esc(p.id)}">Look up</button>`; }
+    }
+    return `<li class="row static"><div class="row-main"><div class="row-title">${esc(p.name)}</div><div class="row-sub">${esc(sub)}</div></div><div class="row-amt num">${right}</div></li>`;
+  };
+  const season = m >= 5 && m <= 10 ? `<p class="hint" style="margin:10px 4px 0">${MONTHS[m]} is inside the Atlantic hurricane season (June 1 to November 30, busiest from August through October). Itineraries can change, and travel insurance is worth a look.</p>` : '';
+  return `<div class="sec-h"><span>Cruise ports</span><button class="btn small" data-action="ports-edit">Choose ports</button></div>
+    <section class="card pad"><div class="row-sub" style="margin-bottom:8px">Typical daily high / low for the month you pick:</div>
+      <div class="chips">${MONTHS.map((n, i) => `<button class="chip" data-action="cruise-month" data-m="${i}" aria-pressed="${i === m}">${n}</button>`).join('')}</div></section>
+    ${showAll ? '<p class="hint" style="margin:10px 4px 0">Showing every port. Tap “Choose ports” to keep only the ones on your itinerary.</p>' : ''}
+    <ul class="card list" style="margin-top:10px">${list.map(row).join('')}</ul>${season}
+    <p class="hint" style="margin:10px 4px 0">These are monthly averages from published climate tables, not forecasts. Some ports use older records (Cozumel and Progreso 1951 to 1980, Freeport 1971 to 2000). Jamaica uses the Montego Bay airport station.</p>`;
+}
+function weatherTab(t) { return (t.cruise ? cruiseBlock(t) : '') + weatherTabBase(t); }
+function weatherTabBase(t) {
   const units = state.settings.units, today = todayISO();
   const unitBtn = `<button class="btn small" data-action="wx-units" aria-label="Switch units">Show °${units === 'imperial' ? 'C' : 'F'}</button>`;
   if (!t.location) {
@@ -1166,13 +1351,28 @@ function handleAction(a, el) {
     case 'wipe': return doWipe();
     case 'install': return runInstall();
   }
+  if (a === 'todo-toggle' || a === 'todo-pin' || a === 'todo-edit') {
+    const tr = el.dataset.trip ? tripById(el.dataset.trip) : t, x = tr && tr.todos.find(v => v.id === id);
+    if (!x) return;
+    if (a === 'todo-toggle') { x.done = el.checked; commit(); }
+    else if (a === 'todo-pin') { x.pin = !x.pin; commit(); toast(x.pin ? 'Pinned to the Trips home screen' : 'Unpinned'); }
+    else todoDialog(tr, x);
+    return;
+  }
   if (!t) return;
   switch (a) {
+    case 'pack-list': ui.packList = el.dataset.name; return render();
+    case 'pack-newlist': return listNameDialog(t, null);
+    case 'pack-rename': return currentList(t) && listNameDialog(t, currentList(t));
+    case 'pack-dellist': return currentList(t) && deleteList(t, currentList(t));
+    case 'cruise-month': ui.cruiseMonth = +el.dataset.m; return render();
+    case 'ports-edit': return t.cruise && portsDialog(t);
+    case 'port-live': { const p = portById(el.dataset.port); const mm = ui.cruiseMonth != null ? ui.cruiseMonth : (t.startDate ? +t.startDate.slice(5, 7) - 1 : new Date().getMonth()); return p && portLive(p, mm); }
     case 'todo-toggle': { const x = t.todos.find(v => v.id === id); if (x) { x.done = el.checked; commit(); } return; }
     case 'todo-del': t.todos = t.todos.filter(v => v.id !== id); return commit();
     case 'todo-starter': {
       const have = new Set(t.todos.map(v => normText(v.text))); let n = 0;
-      for (const s of TODO_STARTERS) if (!have.has(normText(s))) { t.todos.push({ id: uid(), text: s, done: false }); n++; }
+      for (const s of TODO_STARTERS) if (!have.has(normText(s))) { t.todos.push({ id: uid(), text: s, done: false, pin: false, notes: '' }); n++; }
       commit(); return toast(n ? `Added ${plural(n, 'task')}` : 'You already have all of those');
     }
     case 'pack-toggle': { const x = t.packing.find(v => v.id === id); if (x) { x.packed = el.checked; commit(); } return; }
@@ -1180,7 +1380,7 @@ function handleAction(a, el) {
     case 'pack-starter': return starterDialog(t);
     case 'pack-copy': return copyPackDialog(t);
     case 'pack-hide': ui.hidePacked = !ui.hidePacked; return render();
-    case 'pack-reset': t.packing.forEach(i => { i.packed = false; }); commit(); return toast('All items unchecked');
+    case 'pack-reset': t.packing.forEach(i => { if (!currentList(t) || i.list === currentList(t)) i.packed = false; }); commit(); return toast('All items unchecked');
     case 'plan-add': return planDialog(t, null, { date: el.dataset.date || '' });
     case 'plan-edit': return planDialog(t, id);
     case 'bud-add': return budgetDialog(t, null);
@@ -1216,11 +1416,11 @@ app.addEventListener('submit', e => {
   const t = curTrip(); if (!t) return;
   const fd = k => (f.elements[k] ? f.elements[k].value.trim() : '');
   switch (f.dataset.form) {
-    case 'todo-add': { const x = fd('text'); if (x) { t.todos.push({ id: uid(), text: x.slice(0, 140), done: false }); ui.focus = 'form[data-form="todo-add"] input'; commit(); } break; }
+    case 'todo-add': { const x = fd('text'); if (x) { t.todos.push({ id: uid(), text: x.slice(0, 140), done: false, pin: false, notes: '' }); ui.focus = 'form[data-form="todo-add"] input'; commit(); } break; }
     case 'pack-add': {
       let text = fd('text'), qty = 1; const m = text.match(/^(\d{1,2})\s*[x×]?\s+(.+)$/i);
       if (m) { qty = +m[1]; text = m[2]; }
-      if (text) { ui.lastCat = fd('cat'); t.packing.push({ id: uid(), text: text.slice(0, 120), cat: oneOf(ui.lastCat, PACK_CATS, 'Other'), qty: clampInt(qty, 1, 99, 1), packed: false }); ui.focus = 'form[data-form="pack-add"] input[name="text"]'; commit(); }
+      if (text) { ui.lastCat = fd('cat'); t.packing.push({ id: uid(), text: text.slice(0, 120), cat: oneOf(ui.lastCat, PACK_CATS, 'Other'), qty: clampInt(qty, 1, 99, 1), packed: false, list: currentList(t) || (f.elements.list && t.packLists.includes(f.elements.list.value) ? f.elements.list.value : t.packLists[0]) }); ui.focus = 'form[data-form="pack-add"] input[name="text"]'; commit(); }
       break;
     }
     case 'geo': { const q = fd('q'); if (q) searchGeo(t, q); break; }

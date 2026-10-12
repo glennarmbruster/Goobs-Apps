@@ -468,7 +468,7 @@ if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol))
 
 
 /* ===================== Money app ===================== */
-const APP_ID = 'goobs-money', DB_NAME = 'goobs-money-db', SCHEMA = 1;
+const APP_ID = 'goobs-money', DB_NAME = 'goobs-money-db', SCHEMA = 2;
 const SIM_PATHS = 4000, DEFAULT_SEED = 20261011, TARGET = 0.9;
 const STARTER_CATS = [['Housing', 'expense'], ['Groceries', 'expense'], ['Dining out', 'expense'], ['Gas & auto', 'expense'], ['Utilities', 'expense'],
   ['Health', 'expense'], ['Fun', 'expense'], ['Other', 'expense'], ['Paycheck', 'income']];
@@ -477,28 +477,48 @@ const STARTER_CATS = [['Housing', 'expense'], ['Groceries', 'expense'], ['Dining
 const clampNum = (v, lo, hi, dflt) => { const n = Number(v); return isNum(n) ? Math.min(hi, Math.max(lo, n)) : dflt; };
 const clampInt = (v, lo, hi, dflt) => Math.round(clampNum(v, lo, hi, dflt));
 const cents = n => Math.round(n * 100) / 100;
+const STREAM_KINDS = [['ss', 'Social Security'], ['pension', 'Pension'], ['disability', 'Disability (VA or other)'], ['other', 'Other income']];
+const KIND_LABEL = Object.fromEntries(STREAM_KINDS);
 function normStream(s) {
   if (!s || typeof s !== 'object') return null;
   const name = str(s.name).trim();
   if (!name) return null;
-  return { id: str(s.id) || uid(), name: name.slice(0, 80), startAge: clampInt(s.startAge, 18, 110, 65), amount: cents(clampNum(s.amount, 0, 1e8, 0)), cola: s.cola !== false, taxable: s.taxable !== false };
+  const kind = KIND_LABEL[s.kind] ? s.kind : (s.taxable === false ? 'disability' : 'pension');
+  const taxFree = kind === 'ss' ? false : (s.taxFree != null ? s.taxFree === true : s.taxable === false);
+  return { id: str(s.id) || uid(), name: name.slice(0, 80), kind, startAge: clampInt(s.startAge, 18, 110, 65), amount: cents(clampNum(s.amount, 0, 1e8, 0)), cola: s.cola !== false, taxFree };
 }
-const PLAN_DEFAULT = { configured: false, age: 40, retireAge: 65, endAge: 95, balance: 0, contrib: 0, spend: 60000, taxRate: 15, stocksPct: 60, feePct: 0, inflation: 2.5,
-  stockReal: 5.5, stockVol: 17, bondReal: 1.5, bondVol: 6, streams: [] };
+const BRACKET_RATES = [0.10, 0.12, 0.22, 0.24, 0.32, 0.35];
+const PLAN_DEFAULT = { configured: false, age: 40, retireAge: 65, endAge: 95, filing: 'mfj', spend: 60000, rmdAge: 75, heirTax: 22,
+  pretax: 0, roth: 0, taxable: 0, basisPct: 80, contribPre: 0, contribRoth: 0, contribTax: 0,
+  stocksPct: 60, feePct: 0, inflation: 2.5, stockReal: 5.5, stockVol: 17, bondReal: 1.5, bondVol: 6,
+  conv: { mode: 'none', amount: 0, bracket: 0.22, startAge: null, endAge: null }, streams: [] };
+function normConv(c) {
+  c = c && typeof c === 'object' ? c : {};
+  const ageOrNull = v => (v === null || v === undefined || v === '' ? null : clampInt(v, 18, 110, null));
+  return { mode: ['none', 'fixed', 'bracket'].includes(c.mode) ? c.mode : 'none', amount: cents(clampNum(c.amount, 0, 1e8, 0)),
+    bracket: BRACKET_RATES.includes(Number(c.bracket)) ? Number(c.bracket) : 0.22, startAge: ageOrNull(c.startAge), endAge: ageOrNull(c.endAge) };
+}
 function normPlan(p) {
   p = p && typeof p === 'object' ? p : {};
   const d = PLAN_DEFAULT;
+  // version 1 stored one flat balance and one yearly contribution; carry them into the pre-tax bucket
+  const legacy = p.pretax === undefined && p.roth === undefined && p.taxable === undefined;
   const age = clampInt(p.age, 18, 100, d.age);
   const retireAge = clampInt(p.retireAge, age, 100, Math.max(age, d.retireAge));
   const endAge = clampInt(p.endAge, retireAge + 1, 110, Math.max(retireAge + 1, d.endAge));
   const seen = new Set();
   const streams = (Array.isArray(p.streams) ? p.streams : []).slice(0, 20).map(normStream).filter(s => s && !seen.has(s.id) && seen.add(s.id));
-  return { configured: p.configured === true, age, retireAge, endAge,
-    balance: cents(clampNum(p.balance, 0, 1e10, 0)), contrib: cents(clampNum(p.contrib, 0, 1e8, 0)), spend: cents(clampNum(p.spend, 0, 1e8, d.spend)),
-    taxRate: clampNum(p.taxRate, 0, 60, d.taxRate), stocksPct: clampNum(p.stocksPct, 0, 100, d.stocksPct), feePct: clampNum(p.feePct, 0, 5, d.feePct),
-    inflation: clampNum(p.inflation, 0, 15, d.inflation), stockReal: clampNum(p.stockReal, -5, 15, d.stockReal), stockVol: clampNum(p.stockVol, 0, 50, d.stockVol),
-    bondReal: clampNum(p.bondReal, -5, 15, d.bondReal), bondVol: clampNum(p.bondVol, 0, 50, d.bondVol), streams };
+  return { configured: p.configured === true, age, retireAge, endAge, filing: p.filing === 'single' ? 'single' : 'mfj',
+    spend: cents(clampNum(p.spend, 0, 1e8, d.spend)), rmdAge: clampInt(p.rmdAge, 72, 80, d.rmdAge), heirTax: clampNum(p.heirTax, 0, 60, d.heirTax),
+    pretax: cents(clampNum(legacy ? p.balance : p.pretax, 0, 1e10, 0)), roth: cents(clampNum(p.roth, 0, 1e10, 0)), taxable: cents(clampNum(p.taxable, 0, 1e10, 0)),
+    basisPct: clampNum(p.basisPct, 0, 100, d.basisPct),
+    contribPre: cents(clampNum(legacy ? p.contrib : p.contribPre, 0, 1e8, 0)), contribRoth: cents(clampNum(p.contribRoth, 0, 1e8, 0)), contribTax: cents(clampNum(p.contribTax, 0, 1e8, 0)),
+    stocksPct: clampNum(p.stocksPct, 0, 100, d.stocksPct), feePct: clampNum(p.feePct, 0, 5, d.feePct), inflation: clampNum(p.inflation, 0, 15, d.inflation),
+    stockReal: clampNum(p.stockReal, -5, 15, d.stockReal), stockVol: clampNum(p.stockVol, 0, 50, d.stockVol),
+    bondReal: clampNum(p.bondReal, -5, 15, d.bondReal), bondVol: clampNum(p.bondVol, 0, 50, d.bondVol), conv: normConv(p.conv), streams };
 }
+const totalBalance = p => p.pretax + p.roth + p.taxable;
+
 function normCat(c) {
   if (!c || typeof c !== 'object') return null;
   const name = str(c.name).trim();
@@ -545,10 +565,42 @@ const hasData = () => state.plan.configured || state.budget.categories.length > 
 const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
 
 /* ===================== simulation engine =====================
-   Everything is in today's (inflation-adjusted) dollars. Annual steps from `age` to `endAge`.
-   Working years: balance = balance*(1+r) + contribution.  Retirement years: withdraw at the start of the year, then grow.
-   Income streams reduce the withdrawal; streams without a cost-of-living adjustment lose real value each year after they start.
-   Taxes are one flat effective rate applied to taxable streams and to portfolio withdrawals (treated as pre-tax money). */
+   Everything is in today's (inflation-adjusted) dollars, in yearly steps from `age` to `endAge`.
+   Working years: each account grows, then the yearly contributions are added.
+   Retirement years, in this order: required minimum distribution from pre-tax money; income streams; the rest of the
+   spending is funded from taxable accounts first, then pre-tax, then Roth; any Roth conversion moves pre-tax money to Roth.
+   Federal income tax is computed each year from the 2026 brackets (indexed, so constant in today's dollars), the Social
+   Security taxation formula (whose thresholds are NOT indexed, so they shrink in today's dollars), and the 0/15/20% capital
+   gains rates. Spending is after tax, so the tax bill is part of what the accounts must pay. Texas has no state income tax. */
+const TAX = {
+  mfj: { brackets: [[24800, 0.10], [100800, 0.12], [211400, 0.22], [403550, 0.24], [512450, 0.32], [768700, 0.35], [Infinity, 0.37]], std: 32200, extra: 1650, extraCount: 2, ssBase: 32000, ssUpper: 44000, ltcg0: 98900, ltcg15: 613700 },
+  single: { brackets: [[12400, 0.10], [50400, 0.12], [105700, 0.22], [201775, 0.24], [256225, 0.32], [640600, 0.35], [Infinity, 0.37]], std: 16100, extra: 2050, extraCount: 1, ssBase: 25000, ssUpper: 34000, ltcg0: 49450, ltcg15: 545500 }
+};
+/* IRS Uniform Lifetime Table (26 CFR 1.401(a)(9)-9), ages 72 to 120+ */
+const RMD_DIV = [27.4, 26.5, 25.5, 24.6, 23.7, 22.9, 22.0, 21.1, 20.2, 19.4, 18.5, 17.7, 16.8, 16.0, 15.2, 14.4, 13.7, 12.9, 12.2, 11.5, 10.8, 10.1, 9.5, 8.9, 8.4, 7.8, 7.3, 6.8, 6.4, 6.0,
+  5.6, 5.2, 4.9, 4.6, 4.3, 4.1, 3.9, 3.7, 3.5, 3.4, 3.3, 3.1, 3.0, 2.9, 2.8, 2.7, 2.5, 2.3, 2.0];
+const rmdDivisor = a => (a < 72 ? 0 : RMD_DIV[Math.min(a, 120) - 72]);
+let LAST = { std: 0, ordGross: 0, taxableSS: 0 };
+/* federal income tax for one year. ordinary = taxable income other than Social Security; ltcg = realized long-term gains */
+function fedTax(p, a, ordinary, ssGross, ltcg) {
+  const T = TAX[p.filing], d = Math.pow(1 + p.inflation / 100, -(a - p.age));
+  const sb = T.ssBase * d, su = T.ssUpper * d;
+  const pi = ordinary + ltcg + 0.5 * ssGross;
+  let tss = 0;
+  if (ssGross > 0 && pi > sb) tss = pi <= su ? Math.min(0.5 * ssGross, 0.5 * (pi - sb)) : Math.min(0.85 * ssGross, 0.85 * (pi - su) + Math.min(0.5 * ssGross, 0.5 * (su - sb)));
+  const std = T.std + (a >= 65 ? T.extra * T.extraCount : 0);
+  const ordGross = ordinary + tss;
+  LAST.std = std; LAST.ordGross = ordGross; LAST.taxableSS = tss;
+  const tOrd = Math.max(0, ordGross - std);
+  const lt = Math.max(0, ltcg - Math.max(0, std - ordGross));
+  let tax = 0, lo = 0;
+  for (const [hi, rate] of T.brackets) { if (tOrd > lo) tax += (Math.min(tOrd, hi) - lo) * rate; else break; lo = hi; }
+  if (lt > 0) {
+    const top = tOrd + lt, x0 = Math.max(0, Math.min(top, T.ltcg0) - tOrd), x15 = Math.max(0, Math.min(top, T.ltcg15) - Math.max(tOrd, T.ltcg0));
+    tax += 0.15 * x15 + 0.20 * (lt - x0 - x15);
+  }
+  return tax;
+}
 function mulberry32(a) {
   return function () { a |= 0; a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
 }
@@ -576,37 +628,109 @@ function makeReturns(p, Z) {
   for (let i = 0; i < Z.length; i++) R[i] = Math.exp(mu + sig * Z[i]) - 1;
   return R;
 }
-/* what the portfolio must pay (before growth) in a retirement year */
-function yearNeed(p, age, spend = p.spend) {
-  const t = p.taxRate / 100, infl = p.inflation / 100;
-  let net = 0;
-  for (const s of p.streams) {
-    if (age < s.startAge) continue;
-    let amt = s.amount;
-    if (!s.cola) amt = amt / Math.pow(1 + infl, age - s.startAge);
-    net += s.taxable ? amt * (1 - t) : amt;
-  }
-  return { streamNet: net, withdrawal: Math.max(0, (spend - net) / (1 - t)) };
+/* conversion window actually in force: from retirement (never before) to the year before RMDs by default */
+function convWindow(p, conv = p.conv) {
+  if (conv.mode === 'none') return null;
+  const s = Math.max(p.retireAge, conv.startAge == null ? p.retireAge : conv.startAge), e = Math.min(p.endAge - 1, conv.endAge == null ? p.rmdAge - 1 : conv.endAge);
+  return s <= e ? [s, e] : null;
 }
-function simulate(p, R, n, { spend = p.spend, retireAge = p.retireAge, collect = false } = {}) {
-  const Y = p.endAge - p.age, W = new Float64Array(Y);
-  for (let i = 0; i < Y; i++) { const a = p.age + i; W[i] = a >= retireAge ? yearNeed(p, a, spend).withdrawal : 0; }
-  const B = collect ? new Float64Array(n * (Y + 1)) : null, ruinAges = [];
+/* per-age tables for one run: income by type, RMD divisor, conversion switch */
+function makeCtx(p, { spend = p.spend, retireAge = p.retireAge, conv = p.conv } = {}) {
+  const Y = p.endAge - p.age, infl = p.inflation / 100;
+  const ctx = { Y, spend, retireAge, ss: new Float64Array(Y), pen: new Float64Array(Y), free: new Float64Array(Y), div: new Float64Array(Y), convOn: new Uint8Array(Y), mode: conv.mode, convAmt: conv.amount, convRate: conv.bracket, convTop: 0 };
+  const win = convWindow({ ...p, retireAge }, conv);
+  if (conv.mode === 'bracket') ctx.convTop = TAX[p.filing].brackets.find(b => b[1] === conv.bracket)[0];
+  for (let i = 0; i < Y; i++) {
+    const a = p.age + i;
+    if (a < retireAge) continue;
+    for (const s of p.streams) {
+      if (a < s.startAge) continue;
+      const amt = s.cola ? s.amount : s.amount / Math.pow(1 + infl, a - s.startAge);
+      if (s.kind === 'ss') ctx.ss[i] += amt; else if (s.taxFree) ctx.free[i] += amt; else ctx.pen[i] += amt;
+    }
+    if (a >= p.rmdAge) ctx.div[i] = rmdDivisor(a);
+    if (win && a >= win[0] && a <= win[1]) ctx.convOn[i] = 1;
+  }
+  return ctx;
+}
+/* one retirement year's cash flow for given balances. returns tax, or -1 if the accounts can't cover spending.
+   results are left in SOL for the caller */
+const SOL = { wT: 0, wP: 0, wR: 0, sur: 0 };
+function solveYear(p, a, S, P, Rh, Tx, gf, ss, pen, free, rmd, conv) {
+  let tax = 0;
+  for (let it = 0; it < 16; it++) {
+    const D = S + tax - free - pen - ss - rmd;
+    let wT = 0, wP = 0, wR = 0, sur = 0;
+    if (D > 0) {
+      wT = Math.min(D, Tx); let rem = D - wT;
+      const availP = Math.max(0, P - rmd - conv); wP = Math.min(rem, availP); rem -= wP;
+      wR = Math.min(rem, Rh); rem -= wR;
+      if (rem > 1e-6) return -1;
+    } else sur = -D;
+    SOL.wT = wT; SOL.wP = wP; SOL.wR = wR; SOL.sur = sur;
+    const t = fedTax(p, a, pen + rmd + wP + conv, ss, wT * gf);
+    if (Math.abs(t - tax) < 0.005) return t;
+    tax = t;
+  }
+  return tax;
+}
+const YR = { tax: 0, rmd: 0, conv: 0, wT: 0, wP: 0, wR: 0 }; // last year's details, for tests and display
+/* advance balances bal=[pretax, roth, taxable, taxableBasis] through one retirement year (before market growth) */
+function stepYear(p, ctx, i, bal) {
+  const a = p.age + i, P = bal[0], Rh = bal[1], Tx = bal[2], Bs = bal[3];
+  const ss = ctx.ss[i], pen = ctx.pen[i], free = ctx.free[i], S = ctx.spend;
+  const rmd = ctx.div[i] > 0 ? P / ctx.div[i] : 0;
+  const gf = Tx > 0 ? Math.max(0, 1 - Bs / Tx) : 0;
+  let conv = 0, tax = solveYear(p, a, S, P, Rh, Tx, gf, ss, pen, free, rmd, 0);
+  if (tax < 0) return -1;
+  if (ctx.convOn[i]) {
+    const availP = P - rmd - SOL.wP;
+    let want = 0;
+    if (availP > 0) {
+      if (ctx.mode === 'fixed') want = Math.min(ctx.convAmt, availP);
+      else {
+        const head = ctx.convTop + LAST.std - LAST.ordGross;
+        if (head > 0) want = Math.min(Tx - SOL.wT >= head * ctx.convRate ? head : head / (1 + ctx.convRate), availP);
+      }
+    }
+    if (want > 0) {
+      const t2 = solveYear(p, a, S, P, Rh, Tx, gf, ss, pen, free, rmd, want);
+      if (t2 >= 0) { conv = want; tax = t2; } else tax = solveYear(p, a, S, P, Rh, Tx, gf, ss, pen, free, rmd, 0);
+    }
+  }
+  YR.tax = tax; YR.rmd = rmd; YR.conv = conv; YR.wT = SOL.wT; YR.wP = SOL.wP; YR.wR = SOL.wR;
+  bal[0] = P - rmd - SOL.wP - conv;
+  bal[1] = Rh + conv - SOL.wR;
+  bal[2] = Tx - SOL.wT + SOL.sur;
+  bal[3] = (Tx > 0 ? Bs * (1 - SOL.wT / Tx) : 0) + SOL.sur;
+  return tax;
+}
+function simulate(p, R, n, opts = {}) {
+  const ctx = makeCtx(p, opts), Y = ctx.Y, retireAge = ctx.retireAge, collect = !!opts.collect;
+  const B = collect ? new Float64Array(n * (Y + 1)) : null, ruinAges = [], taxes = new Float64Array(n), estate = new Float64Array(n), bal = new Float64Array(4);
+  const keep = 1 - p.heirTax / 100;
   let ok = 0;
   for (let k = 0; k < n; k++) {
-    let bal = p.balance, ruin = -1;
+    bal[0] = p.pretax; bal[1] = p.roth; bal[2] = p.taxable; bal[3] = p.taxable * p.basisPct / 100;
+    let ruin = -1, life = 0;
     for (let i = 0; i < Y; i++) {
-      if (collect) B[k * (Y + 1) + i] = bal;
+      if (collect) B[k * (Y + 1) + i] = bal[0] + bal[1] + bal[2];
       const r = R[k * Y + i], a = p.age + i;
-      if (a < retireAge) bal = bal * (1 + r) + p.contrib;
-      else if (ruin >= 0) bal = 0;
-      else if (bal < W[i] - 1e-6) { ruin = a; bal = 0; }
-      else bal = (bal - W[i]) * (1 + r);
+      if (ruin >= 0) { bal[0] = bal[1] = bal[2] = bal[3] = 0; continue; }
+      if (a < retireAge) {
+        bal[0] = bal[0] * (1 + r) + p.contribPre; bal[1] = bal[1] * (1 + r) + p.contribRoth;
+        bal[2] = bal[2] * (1 + r) + p.contribTax; bal[3] += p.contribTax;
+      } else {
+        const t = stepYear(p, ctx, i, bal);
+        if (t < 0) { ruin = a; bal[0] = bal[1] = bal[2] = bal[3] = 0; continue; }
+        life += t; bal[0] *= 1 + r; bal[1] *= 1 + r; bal[2] *= 1 + r;
+      }
     }
-    if (collect) B[k * (Y + 1) + Y] = bal;
-    if (ruin < 0) ok++; else ruinAges.push(ruin);
+    if (collect) B[k * (Y + 1) + Y] = bal[0] + bal[1] + bal[2];
+    taxes[k] = life;
+    if (ruin < 0) { ok++; estate[k] = bal[1] + bal[2] + bal[0] * keep; } else ruinAges.push(ruin);
   }
-  return { success: ok / n, ruinAges, B, Y };
+  return { success: ok / n, ruinAges, B, Y, taxes, estate };
 }
 function percentileBands(B, n, Y, qs) {
   const out = qs.map(() => new Float64Array(Y + 1)), col = new Float64Array(n);
@@ -617,33 +741,50 @@ function percentileBands(B, n, Y, qs) {
   }
   return out;
 }
+const median = a => { if (!a.length) return null; const s = Array.from(a).sort((x, y) => x - y); return s[Math.floor((s.length - 1) / 2)]; };
 /* highest yearly spending that still reaches `target` success (common random numbers keep this monotonic) */
 function sustainableSpend(p, R, n, retireAge, target = TARGET) {
   let lo = 0, hi = Math.max(10000, p.spend);
   for (let i = 0; i < 40 && simulate(p, R, n, { spend: hi, retireAge }).success >= target; i++) { lo = hi; hi *= 2; }
-  for (let i = 0; i < 28; i++) {
+  for (let i = 0; i < 18; i++) {
     const mid = (lo + hi) / 2;
     if (simulate(p, R, n, { spend: mid, retireAge }).success >= target) lo = mid; else hi = mid;
   }
   return lo;
 }
-const median = a => { if (!a.length) return null; const s = [...a].sort((x, y) => x - y); return s[Math.floor((s.length - 1) / 2)]; };
 let simCache = { key: '', res: null }, simSeed = DEFAULT_SEED;
+/* fast part: the main simulation and the fan chart */
 function runPlan(p, seed = simSeed, n = SIM_PATHS) {
   const key = JSON.stringify([p, seed, n]);
   if (simCache.key === key) return simCache.res;
   const Y = p.endAge - p.age, Z = makeZ(n, Y, seed), R = makeReturns(p, Z);
   const main = simulate(p, R, n, { collect: true });
   const [p10, p25, p50, p75, p90] = percentileBands(main.B, n, Y, [0.1, 0.25, 0.5, 0.75, 0.9]);
-  const scen = [];
-  for (let ra = Math.max(p.age, p.retireAge - 3); ra <= Math.min(p.endAge - 1, p.retireAge + 3); ra++) {
-    scen.push({ retireAge: ra, success: simulate(p, R, n, { retireAge: ra }).success, sustainable: sustainableSpend(p, R, n, ra) });
-  }
-  const res = { p, n, Y, success: main.success, ruinMedian: median(main.ruinAges), bands: { p10, p25, p50, p75, p90 },
-    atRetire: { p10: p10[p.retireAge - p.age], p50: p50[p.retireAge - p.age], p90: p90[p.retireAge - p.age] }, atEnd: { p10: p10[Y], p50: p50[Y], p90: p90[Y] },
-    sustainable: sustainableSpend(p, R, n, p.retireAge), scen, stats: portfolioStats(p) };
+  const res = { p, n, Y, R, success: main.success, ruinMedian: median(main.ruinAges), lifeTax: median(main.taxes), estate: median(main.estate),
+    bands: { p10, p25, p50, p75, p90 }, atRetire: { p10: p10[p.retireAge - p.age], p50: p50[p.retireAge - p.age], p90: p90[p.retireAge - p.age] },
+    atEnd: { p10: p10[Y], p50: p50[Y], p90: p90[Y] }, stats: portfolioStats(p), extras: null };
   simCache = { key, res };
   return res;
+}
+/* slower comparisons, computed after the first paint */
+function computeExtras(res) {
+  if (res.extras) return res.extras;
+  const { p, R, n } = res, scen = [], strategies = [];
+  for (let ra = Math.max(p.age, p.retireAge - 3); ra <= Math.min(p.endAge - 1, p.retireAge + 3); ra++)
+    scen.push({ retireAge: ra, success: ra === p.retireAge ? res.success : simulate(p, R, n, { retireAge: ra }).success });
+  const row = (label, conv, key) => {
+    const r = key === 'cur' ? { success: res.success, taxes: null, estate: null } : simulate(p, R, n, { conv });
+    return { label, key, success: r.success, lifeTax: key === 'cur' ? res.lifeTax : median(r.taxes), estate: key === 'cur' ? res.estate : median(r.estate), window: convWindow(p, conv) };
+  };
+  const win = { startAge: p.conv.startAge, endAge: p.conv.endAge };
+  if (p.conv.mode === 'none') strategies.push(row('No conversions (your plan)', p.conv, 'cur'));
+  else { strategies.push(row('No conversions', { ...p.conv, mode: 'none' })); strategies.push(row('Your plan', p.conv, 'cur')); }
+  for (const rate of [0.12, 0.22, 0.24]) {
+    if (p.conv.mode === 'bracket' && p.conv.bracket === rate) continue;
+    strategies.push(row(`Fill the ${Math.round(rate * 100)}% bracket`, { mode: 'bracket', amount: 0, bracket: rate, ...win }));
+  }
+  res.extras = { scen, strategies, sustainable: sustainableSpend(p, R, n, p.retireAge) };
+  return res.extras;
 }
 
 /* ===================== formatting ===================== */
@@ -659,22 +800,24 @@ const money0 = n => money(Math.round(n)).replace(/\.00$/, '');
 const fnum = v => { const n = parseFloat(String(v).replace(/[$,\s]/g, '')); return Number.isFinite(n) ? n : NaN; };
 
 /* ===================== retirement UI ===================== */
+const FILING = [['mfj', 'Married filing jointly'], ['single', 'Single']];
+function numFields(v) { const n = {}; for (const k of Object.keys(v)) n[k] = fnum(v[k]); return n; }
 function planDialog() {
   const p = state.plan;
   formDialog({
     title: p.configured ? 'Edit retirement plan' : 'Set up your plan',
     intro: 'All dollar figures are in today’s dollars. Investment returns below are after inflation.',
     fields: [
+      { name: 'filing', label: 'Tax filing status in retirement', type: 'select', options: FILING, value: p.filing, hint: 'Married: enter household totals everywhere (both spouses’ accounts and income).' },
       { name: 'age', label: 'Your age now', type: 'number', value: p.age, required: true, step: 1 },
       { name: 'retireAge', label: 'Retire at age', type: 'number', value: p.retireAge, required: true, step: 1 },
       { name: 'endAge', label: 'Plan until age', type: 'number', value: p.endAge, required: true, step: 1, hint: 'Pick a long life. 95 is a common choice.' },
-      { name: 'balance', label: 'Invested portfolio today', type: 'number', value: p.configured ? p.balance : '', required: true, min: 0, placeholder: '0' },
-      { name: 'contrib', label: 'Saved per year until retirement', type: 'number', value: p.configured ? p.contrib : '', required: true, min: 0, placeholder: '0', hint: 'Total added to the portfolio per year, including employer match.' },
-      { name: 'spend', label: 'Spending per year in retirement (after tax)', type: 'number', value: p.spend, required: true, min: 0, hint: 'What you want to have available to spend, not counting income taxes.' },
-      { name: 'taxRate', label: 'Average tax rate on withdrawals and taxable income (%)', type: 'number', value: p.taxRate, required: true, min: 0, max: 60, hint: 'One flat rate. Portfolio withdrawals are treated as pre-tax money.' },
+      { name: 'spend', label: 'Spending per year in retirement (after tax)', type: 'number', value: p.spend, required: true, min: 0, hint: 'What you want to have available to spend. Income tax is calculated on top of this.' },
+      { name: 'rmdAge', label: 'Required withdrawals (RMDs) start at age', type: 'number', value: p.rmdAge, required: true, step: 1, hint: '75 if you were born in 1960 or later; 73 if born 1951 to 1959.' },
+      { name: 'heirTax', label: 'Tax rate on pre-tax money left at the end (%)', type: 'number', value: p.heirTax, required: true, min: 0, max: 60, hint: 'Only used to value what’s left over after tax when comparing Roth conversion strategies.' },
       { name: 'stocksPct', label: 'Stocks in portfolio (%)', type: 'number', value: p.stocksPct, required: true, min: 0, max: 100, hint: 'The rest is bonds or cash.' },
       { name: 'feePct', label: 'Yearly fees (%)', type: 'number', value: p.feePct, required: true, min: 0, max: 5, hint: 'Advisory plus fund fees, as a percent of the portfolio.' },
-      { name: 'inflation', label: 'Inflation (%)', type: 'number', value: p.inflation, required: true, min: 0, max: 15, hint: 'Only used to shrink income that has no cost-of-living adjustment.' },
+      { name: 'inflation', label: 'Inflation (%)', type: 'number', value: p.inflation, required: true, min: 0, max: 15, hint: 'Shrinks income with no cost-of-living adjustment and the Social Security tax thresholds, which aren’t indexed.' },
       { name: 'stockReal', label: 'Stocks: expected return after inflation (%)', type: 'number', value: p.stockReal, required: true, min: -5, max: 15 },
       { name: 'stockVol', label: 'Stocks: volatility (%)', type: 'number', value: p.stockVol, required: true, min: 0, max: 50 },
       { name: 'bondReal', label: 'Bonds: expected return after inflation (%)', type: 'number', value: p.bondReal, required: true, min: -5, max: 15 },
@@ -682,21 +825,68 @@ function planDialog() {
     ],
     submitLabel: 'Save plan',
     onSubmit: v => {
-      const n = {}; for (const k of Object.keys(v)) n[k] = fnum(v[k]);
-      for (const k of Object.keys(n)) if (!Number.isFinite(n[k])) return 'Check that every field is a number.';
-      for (const k of ['age', 'retireAge', 'endAge']) if (!Number.isInteger(n[k])) return 'Ages must be whole numbers.';
+      const n = numFields({ ...v, filing: 0 });
+      for (const k of Object.keys(n)) if (k !== 'filing' && !Number.isFinite(n[k])) return 'Check that every field is a number.';
+      for (const k of ['age', 'retireAge', 'endAge', 'rmdAge']) if (!Number.isInteger(n[k])) return 'Ages must be whole numbers.';
       if (n.age < 18 || n.age > 100) return 'Your age must be between 18 and 100.';
       if (n.retireAge < n.age) return 'Retirement age can’t be before your age now.';
       if (n.endAge <= n.retireAge) return 'Plan until an age after your retirement age.';
       if (n.endAge > 110) return 'Plan-until age can be at most 110.';
-      if (n.balance < 0 || n.contrib < 0 || n.spend < 0) return 'Dollar amounts can’t be negative.';
-      if (n.taxRate < 0 || n.taxRate > 60) return 'Tax rate must be between 0 and 60.';
+      if (n.rmdAge < 72 || n.rmdAge > 80) return 'RMD age should be between 72 and 80.';
+      if (n.spend < 0) return 'Spending can’t be negative.';
+      if (n.heirTax < 0 || n.heirTax > 60) return 'That tax rate must be between 0 and 60 percent.';
       if (n.stocksPct < 0 || n.stocksPct > 100) return 'Stocks must be between 0 and 100 percent.';
       if (n.feePct < 0 || n.feePct > 5) return 'Fees must be between 0 and 5 percent.';
       if (n.inflation < 0 || n.inflation > 15) return 'Inflation must be between 0 and 15 percent.';
       for (const k of ['stockReal', 'bondReal']) if (n[k] < -5 || n[k] > 15) return 'Expected returns must be between -5 and 15 percent.';
       for (const k of ['stockVol', 'bondVol']) if (n[k] < 0 || n[k] > 50) return 'Volatility must be between 0 and 50 percent.';
-      state.plan = normPlan({ ...n, configured: true, streams: state.plan.streams });
+      state.plan = normPlan({ ...state.plan, ...n, filing: v.filing, configured: true });
+      commit();
+    }
+  });
+}
+function accountsDialog() {
+  const p = state.plan, z = v => (p.configured || v ? v : '');
+  formDialog({
+    title: 'Accounts and savings', intro: 'Household totals, in today’s dollars.',
+    fields: [
+      { name: 'pretax', label: 'Pre-tax balance (401(k), 403(b), traditional IRA)', type: 'number', value: z(p.pretax), required: true, min: 0, placeholder: '0', hint: 'Withdrawals are taxed as ordinary income and are subject to RMDs.' },
+      { name: 'roth', label: 'Roth balance (Roth 401(k), Roth IRA)', type: 'number', value: z(p.roth), required: true, min: 0, placeholder: '0', hint: 'Tax-free to withdraw, no RMDs.' },
+      { name: 'taxable', label: 'Taxable balance (brokerage, savings)', type: 'number', value: z(p.taxable), required: true, min: 0, placeholder: '0', hint: 'Only the gains are taxed when you sell.' },
+      { name: 'basisPct', label: 'Taxable account: cost basis as % of its value', type: 'number', value: p.basisPct, required: true, min: 0, max: 100, hint: '100 means no gains yet. Cash and savings count as 100.' },
+      { name: 'contribPre', label: 'Pre-tax savings per year until retirement', type: 'number', value: z(p.contribPre), required: true, min: 0, placeholder: '0', hint: 'Include employer match. 2026 limit: $24,500 of your own money, plus $8,000 if you are 50 or older ($11,250 at ages 60 to 63). Traditional IRA limit: $7,500, plus $1,100 at 50+.' },
+      { name: 'contribRoth', label: 'Roth savings per year until retirement', type: 'number', value: z(p.contribRoth), required: true, min: 0, placeholder: '0', hint: 'Roth 401(k) deferrals share the same $24,500 limit as pre-tax ones.' },
+      { name: 'contribTax', label: 'Taxable savings per year until retirement', type: 'number', value: z(p.contribTax), required: true, min: 0, placeholder: '0' }
+    ],
+    submitLabel: 'Save',
+    onSubmit: v => {
+      const n = numFields(v);
+      for (const k of Object.keys(n)) if (!Number.isFinite(n[k])) return 'Check that every field is a number.';
+      for (const k of ['pretax', 'roth', 'taxable', 'contribPre', 'contribRoth', 'contribTax']) if (n[k] < 0) return 'Dollar amounts can’t be negative.';
+      if (n.basisPct < 0 || n.basisPct > 100) return 'Cost basis must be between 0 and 100 percent.';
+      state.plan = normPlan({ ...state.plan, ...n });
+      commit();
+    }
+  });
+}
+function convDialog() {
+  const c = state.plan.conv, p = state.plan;
+  formDialog({
+    title: 'Roth conversions', intro: 'Move pre-tax money to Roth during low-income years. You pay income tax on the amount converted, from your other accounts. Conversions only happen after you retire.',
+    fields: [
+      { name: 'mode', label: 'Strategy', type: 'select', value: c.mode, options: [['none', 'No conversions'], ['fixed', 'Convert a fixed amount each year'], ['bracket', 'Convert up to the top of a tax bracket']] },
+      { name: 'amount', label: 'Fixed amount per year', type: 'number', value: c.amount, min: 0, hint: 'Used by the fixed strategy. Limited to what’s left in pre-tax accounts.' },
+      { name: 'bracket', label: 'Bracket to fill', type: 'select', value: c.bracket, options: BRACKET_RATES.map(r => [r, `${Math.round(r * 100)}% bracket`]), hint: 'Used by the bracket strategy. Each year it converts enough to just reach the top of this bracket.' },
+      { name: 'startAge', label: 'First conversion age', type: 'number', value: c.startAge == null ? '' : c.startAge, step: 1, placeholder: `Blank = retirement age (${p.retireAge})` },
+      { name: 'endAge', label: 'Last conversion age', type: 'number', value: c.endAge == null ? '' : c.endAge, step: 1, placeholder: `Blank = the year before RMDs (${p.rmdAge - 1})` }
+    ],
+    submitLabel: 'Save',
+    onSubmit: v => {
+      const amount = v.amount === '' ? 0 : fnum(v.amount);
+      if (!(amount >= 0)) return 'Enter a valid yearly amount.';
+      if (v.mode === 'fixed' && !(amount > 0)) return 'Enter an amount above zero for the fixed strategy.';
+      for (const k of ['startAge', 'endAge']) if (v[k] !== '' && !(Number.isInteger(fnum(v[k])) && fnum(v[k]) >= 18 && fnum(v[k]) <= 110)) return 'Ages must be whole numbers from 18 to 110.';
+      state.plan = normPlan({ ...state.plan, conv: { mode: v.mode, amount, bracket: Number(v.bracket), startAge: v.startAge === '' ? null : fnum(v.startAge), endAge: v.endAge === '' ? null : fnum(v.endAge) } });
       commit();
     }
   });
@@ -704,15 +894,17 @@ function planDialog() {
 function streamDialog(id) {
   const s = id ? state.plan.streams.find(x => x.id === id) : null;
   if (id && !s) return;
+  const hasSS = state.plan.streams.some(x => x.kind === 'ss' && (!s || x.id !== s.id));
   formDialog({
     title: s ? 'Edit income' : 'Add retirement income',
-    intro: 'Pension, Social Security, VA benefits, annuity, part-time work and so on.',
+    intro: 'Use household totals. Amounts are per year, in today’s dollars at the age the income starts.',
     fields: [
-      { name: 'name', label: 'Name', required: true, value: s && s.name, placeholder: 'e.g. Social Security' },
+      { name: 'kind', label: 'Type', type: 'select', options: STREAM_KINDS, value: s ? s.kind : (hasSS ? 'pension' : 'ss'), hint: 'Social Security is taxed by the IRS formula: up to 85% of it counts as income, depending on your other income.' },
+      { name: 'name', label: 'Name', required: true, value: s && s.name, placeholder: 'e.g. Social Security (both of us)' },
       { name: 'startAge', label: 'Starts at age', type: 'number', required: true, step: 1, value: s ? s.startAge : state.plan.retireAge },
-      { name: 'amount', label: 'Per year when it starts (before tax)', type: 'number', required: true, min: 0, value: s ? s.amount : '', hint: 'In today’s dollars at the age it starts.' },
+      { name: 'amount', label: 'Per year when it starts', type: 'number', required: true, min: 0, value: s ? s.amount : '' },
       { name: 'cola', label: 'Rises with inflation (cost-of-living adjustment)', type: 'checkbox', value: s ? s.cola : true },
-      { name: 'taxable', label: 'Taxable', type: 'checkbox', value: s ? s.taxable : true }
+      { name: 'taxFree', label: 'Tax-free (pension, disability and other income only)', type: 'checkbox', value: s ? s.taxFree : false }
     ],
     submitLabel: s ? 'Save' : 'Add income',
     onSubmit: v => {
@@ -720,7 +912,7 @@ function streamDialog(id) {
       if (!(amount >= 0)) return 'Enter a valid yearly amount.';
       if (!Number.isInteger(startAge) || startAge < 18 || startAge > 110) return 'Start age must be a whole number from 18 to 110.';
       if (!s && state.plan.streams.length >= 20) return 'That’s the maximum number of income sources.';
-      const rec = { name: v.name.trim(), startAge, amount: cents(amount), cola: v.cola, taxable: v.taxable };
+      const rec = { kind: v.kind, name: v.name.trim(), startAge, amount: cents(amount), cola: v.cola, taxFree: v.kind === 'ss' ? false : v.taxFree };
       if (s) Object.assign(s, rec); else state.plan.streams.push({ id: uid(), ...rec });
       commit();
     },
@@ -762,48 +954,72 @@ function wireChart(res) {
   };
   svg.addEventListener('pointerdown', at); svg.addEventListener('pointermove', at);
 }
+const convSummary = p => {
+  const c = p.conv, w = convWindow(p);
+  if (!w) return c.mode === 'none' ? 'No conversions' : 'No conversion years (check the ages)';
+  const what = c.mode === 'fixed' ? `${money0(c.amount)} per year` : `fill the ${Math.round(c.bracket * 100)}% bracket each year`;
+  return `${what}, ages ${w[0]} to ${w[1]}`;
+};
 function renderRetire() {
   const p = state.plan;
   if (!p.configured) return storageBannerHTML() + `<div class="empty"><div class="big">🎯</div><h2>Will the money last?</h2>
-    <p>Enter your portfolio, savings, spending and retirement income. The app runs ${SIM_PATHS.toLocaleString()} market scenarios and shows how often the money lasts.</p>
+    <p>Enter your accounts, savings, spending and retirement income. The app runs ${SIM_PATHS.toLocaleString()} market scenarios with real federal tax rules, required withdrawals and optional Roth conversions.</p>
     <button class="btn primary" data-action="plan">Set up your plan</button><br><button class="btn ghost" data-action="restore">Restore from a backup file</button></div>`;
-  const res = runPlan(p);
+  const res = runPlan(p), ex = res.extras;
   const cls = res.success >= 0.85 ? 'ok' : res.success >= 0.7 ? 'warn' : 'bad';
   const verdict = res.success >= 0.85 ? 'Strong' : res.success >= 0.7 ? 'Borderline' : 'At risk';
-  const diff = res.sustainable - p.spend;
   const streams = [...p.streams].sort((a, b) => a.startAge - b.startAge);
-  const streamRow = s => `<li class="row" data-action="edit-stream" data-id="${esc(s.id)}"><div class="row-main"><div class="row-title">${esc(s.name)}</div>
-    <div class="row-sub">From age ${s.startAge} · ${s.cola ? 'rises with inflation' : 'fixed, loses buying power'} · ${s.taxable ? 'taxable' : 'tax-free'}</div></div><div class="row-amt num">${money0(s.amount)}/yr</div></li>`;
-  const scenRow = s => `<li class="row static"><div class="row-main"><div class="row-title">Retire at ${s.retireAge}${s.retireAge === p.retireAge ? '<span class="badge acc">Your plan</span>' : ''}</div>
-    <div class="row-sub">Spend up to ${money0(s.sustainable)}/yr at ${pct0(TARGET)} confidence</div></div><div class="row-amt num ${s.success >= 0.85 ? 'ok' : s.success >= 0.7 ? 'warn' : 'bad'}">${pctS(s.success)}</div></li>`;
-  const sensible = p.spend > 0 || p.streams.length ? '' : '<div class="banner">Spending is $0, so this plan trivially succeeds.</div>';
-  return storageBannerHTML() + nagHTML() + sensible + `
+  const wait = '<span class="muted">Calculating…</span>';
+  const streamRow = s => `<li class="row" data-action="edit-stream" data-id="${esc(s.id)}"><div class="row-main"><div class="row-title">${esc(s.name)}<span class="badge">${esc(KIND_LABEL[s.kind])}</span></div>
+    <div class="row-sub">From age ${s.startAge} · ${s.cola ? 'rises with inflation' : 'fixed, loses buying power'} · ${s.kind === 'ss' ? 'taxed by IRS formula' : s.taxFree ? 'tax-free' : 'taxable'}</div></div><div class="row-amt num">${money0(s.amount)}/yr</div></li>`;
+  const scol = x => (x >= 0.85 ? 'ok' : x >= 0.7 ? 'warn' : 'bad');
+  const scenRow = s => `<li class="row static"><div class="row-main"><div class="row-title">Retire at ${s.retireAge}${s.retireAge === p.retireAge ? '<span class="badge acc">Your plan</span>' : ''}</div></div><div class="row-amt num ${scol(s.success)}">${pctS(s.success)}</div></li>`;
+  const bestEstate = ex ? Math.max(...ex.strategies.filter(s => s.success >= res.success - 0.01).map(s => s.estate)) : 0;
+  const stratRow = s => `<li class="row static"><div class="row-main"><div class="row-title">${esc(s.label)}${ex && s.estate === bestEstate && ex.strategies.length > 1 ? '<span class="badge ok">Most left</span>' : ''}</div>
+    <div class="row-sub">Lifetime federal tax ${compact(s.lifeTax)} · left at ${p.endAge}: ${compact(s.estate)} after tax</div></div><div class="row-amt num ${scol(s.success)}">${pctS(s.success)}</div></li>`;
+  const noMoney = totalBalance(p) <= 0 ? '<div class="banner">No account balances entered yet. Tap “Edit” under Accounts to add them.</div>' : '';
+  const susHTML = ex ? `${money0(ex.sustainable)} per year` : wait;
+  const diff = ex ? ex.sustainable - p.spend : 0;
+  return storageBannerHTML() + nagHTML() + noMoney + `
     <section class="card pad" style="margin-top:14px"><div class="lbl muted" style="font-size:12px;font-weight:600">Chance your money lasts to age ${p.endAge}</div>
       <div class="big-pct num ${cls}">${pctS(res.success)} <span style="font-size:16px;font-weight:700">${verdict}</span></div>
       <p class="hint">${res.ruinMedian != null ? `In the scenarios that fail, the money typically runs out around age ${res.ruinMedian}.` : 'No scenario ran out of money.'}</p></section>
     <div class="tiles2">
       <div class="card tile"><div class="lbl">Portfolio at ${p.retireAge} (typical)</div><div class="val num">${compact(res.atRetire.p50)}</div><div class="hint">Weak markets ${compact(res.atRetire.p10)} · strong ${compact(res.atRetire.p90)}</div></div>
       <div class="card tile"><div class="lbl">Left at ${p.endAge} (typical)</div><div class="val num">${compact(res.atEnd.p50)}</div><div class="hint">Weak markets ${compact(res.atEnd.p10)} · strong ${compact(res.atEnd.p90)}</div></div>
-      <div class="card tile" style="grid-column:1/-1"><div class="lbl">Spending with ${pct0(TARGET)} confidence</div><div class="val num">${money0(res.sustainable)} per year</div>
-        <div class="hint">${diff >= 0 ? `${money0(diff)} more than you plan to spend (${money0(p.spend)}).` : `${money0(-diff)} less than you plan to spend (${money0(p.spend)}).`} After tax, today’s dollars.</div></div>
+      <div class="card tile"><div class="lbl">Federal tax, lifetime (typical)</div><div class="val num">${compact(res.lifeTax)}</div><div class="hint">Retirement years only</div></div>
+      <div class="card tile"><div class="lbl">After-tax value left (typical)</div><div class="val num">${compact(res.estate)}</div><div class="hint">Pre-tax money valued at ${100 - p.heirTax}%</div></div>
+      <div class="card tile" style="grid-column:1/-1"><div class="lbl">Spending with ${pct0(TARGET)} confidence</div><div class="val num">${susHTML}</div>
+        <div class="hint">${ex ? (diff >= 0 ? `${money0(diff)} more than you plan to spend (${money0(p.spend)}).` : `${money0(-diff)} less than you plan to spend (${money0(p.spend)}).`) + ' After tax, today’s dollars.' : 'After tax, today’s dollars.'}</div></div>
     </div>
     <div class="sec-h"><span>Portfolio over time</span><button class="btn small" data-action="rerun">New draws</button></div>
     <section class="card pad">${fanChartHTML(res)}</section>
+    <div class="sec-h"><span>Accounts</span><button class="btn small" data-action="accounts">Edit</button></div>
+    <section class="card pad">
+      <div class="kv"><span>Pre-tax (401(k), IRA)</span><span class="num">${money0(p.pretax)}</span></div>
+      <div class="kv"><span>Roth</span><span class="num">${money0(p.roth)}</span></div>
+      <div class="kv"><span>Taxable</span><span class="num">${money0(p.taxable)}</span></div>
+      <div class="kv"><span>Saved per year until ${p.retireAge}: pre-tax / Roth / taxable</span><span class="num">${money0(p.contribPre)} / ${money0(p.contribRoth)} / ${money0(p.contribTax)}</span></div>
+    </section>
     <div class="sec-h"><span>Retirement income</span><button class="btn small" data-action="add-stream">+ Add</button></div>
-    ${streams.length ? `<ul class="card list">${streams.map(streamRow).join('')}</ul>` : '<div class="card pad"><p class="muted">Nothing added. Add a pension, Social Security or other income so the portfolio doesn’t carry it all.</p></div>'}
+    ${streams.length ? `<ul class="card list">${streams.map(streamRow).join('')}</ul>` : '<div class="card pad"><p class="muted">Nothing added. Add Social Security, a pension or disability income so the accounts don’t carry it all.</p></div>'}
+    <div class="sec-h"><span>Roth conversions</span><button class="btn small" data-action="conv">Edit</button></div>
+    <section class="card pad"><p style="margin:0 0 6px"><b>${esc(convSummary(p))}</b></p>
+      <p class="hint" style="margin:0 0 8px">Compared on the same ${SIM_PATHS.toLocaleString()} market scenarios. “Most left” is the highest typical after-tax value among strategies that don’t lower the success chance by more than a point.</p>
+      ${ex ? `<ul class="list" style="border-top:1px solid var(--line)">${ex.strategies.map(stratRow).join('')}</ul>` : `<p>${wait}</p>`}</section>
     <div class="sec-h"><span>What if you retire earlier or later?</span></div>
-    <ul class="card list">${res.scen.map(scenRow).join('')}</ul>
-    <p class="hint" style="margin:6px 4px 0">Income start ages and amounts stay as entered; only the portfolio withdrawals change.</p>
+    ${ex ? `<ul class="card list">${ex.scen.map(scenRow).join('')}</ul>` : `<div class="card pad">${wait}</div>`}
+    <p class="hint" style="margin:6px 4px 0">Income start ages and amounts stay as entered; only the account withdrawals change.</p>
     <div class="sec-h"><span>Assumptions</span><button class="btn small" data-action="plan">Edit</button></div>
     <section class="card pad">
-      <div class="kv"><span>Portfolio now / saving per year</span><span class="num">${money0(p.balance)} / ${money0(p.contrib)}</span></div>
-      <div class="kv"><span>Ages: now / retire / plan until</span><span class="num">${p.age} / ${p.retireAge} / ${p.endAge}</span></div>
+      <div class="kv"><span>Filing status</span><span class="num">${p.filing === 'mfj' ? 'Married filing jointly' : 'Single'}</span></div>
+      <div class="kv"><span>Ages: now / retire / RMDs / plan until</span><span class="num">${p.age} / ${p.retireAge} / ${p.rmdAge} / ${p.endAge}</span></div>
       <div class="kv"><span>Spending after tax</span><span class="num">${money0(p.spend)}</span></div>
       <div class="kv"><span>Stocks / bonds</span><span class="num">${Math.round(p.stocksPct)}% / ${Math.round(100 - p.stocksPct)}%</span></div>
       <div class="kv"><span>Portfolio return after inflation and fees</span><span class="num">${(res.stats.mean * 100).toFixed(2)}% (volatility ${(res.stats.sd * 100).toFixed(1)}%)</span></div>
-      <div class="kv"><span>Tax rate / inflation</span><span class="num">${p.taxRate}% / ${p.inflation}%</span></div>
+      <div class="kv"><span>Inflation</span><span class="num">${p.inflation}%</span></div>
     </section>
-    <p class="hint" style="margin:10px 4px 0">A planning model, not a forecast. It uses one flat tax rate, steady yearly contributions and spending, no Roth conversions, required distributions, Medicare costs or one-time expenses, and a fixed ${SIM_PATHS.toLocaleString()} scenarios (the same ones each time, so numbers don’t jump around). Real markets can be worse than the model.</p>`;
+    <p class="hint" style="margin:10px 4px 0">A planning model, not tax advice or a forecast. Taxes use 2026 federal rules for ${p.filing === 'mfj' ? 'married filing jointly' : 'single filers'} with brackets and the standard deduction rising with inflation, no state income tax (Texas), and the Social Security thresholds left unindexed. It assumes both spouses are 65 or older for the extra standard deduction once you are, and ignores the temporary senior deduction, Medicare IRMAA surcharges, ACA subsidies, the net investment income tax, and tax on investment income inside taxable accounts. With bracket-fill conversions, the tax on the conversion can push income a little past the bracket top when it is paid from pre-tax money. Earnings before retirement and one-time expenses aren’t modeled. Real markets can be worse than the model.</p>`;
 }
 
 /* ===================== budget ===================== */
@@ -956,7 +1172,15 @@ function render() {
   add.textContent = tab === 'retire' ? 'Edit plan' : '+ Add';
   $('#title').textContent = { retire: 'Retirement', budget: 'Budget', backup: 'Backup & restore' }[tab];
   $('#sub').textContent = tab === 'retire' ? 'Monte Carlo plan · today’s dollars' : tab === 'budget' ? monthLabel(bMonth) : 'Your data stays on this device';
-  if (tab === 'retire' && state.plan.configured) wireChart(runPlan(state.plan));
+  if (tab === 'retire' && state.plan.configured) {
+    const res = runPlan(state.plan);
+    wireChart(res);
+    if (!res.extras) setTimeout(() => { // the comparison tables take a moment, so paint the main results first
+      if (tab !== 'retire' || simCache.res !== res || $('dialog[open]')) return;
+      try { computeExtras(res); } catch (e) { console.error(e); res.extras = { scen: [], strategies: [], sustainable: 0 }; }
+      if (tab === 'retire' && simCache.res === res && !$('dialog[open]')) render();
+    }, 30);
+  }
   window.scrollTo(0, y);
 }
 function go(t) { tab = t; render(); window.scrollTo(0, 0); }
@@ -1046,6 +1270,8 @@ view.addEventListener('click', e => {
   const id = el.dataset.id;
   switch (el.dataset.action) {
     case 'plan': planDialog(); break;
+    case 'accounts': accountsDialog(); break;
+    case 'conv': convDialog(); break;
     case 'add-stream': streamDialog(); break;
     case 'edit-stream': streamDialog(id); break;
     case 'rerun': simSeed = (simSeed * 1664525 + 1013904223) >>> 0; render(); toast('Ran a fresh set of scenarios'); break;
