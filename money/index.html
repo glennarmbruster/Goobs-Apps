@@ -166,7 +166,7 @@ dialog::backdrop{background:rgba(10,15,12,.55)}
 </style>
 </head>
 <body>
-<header class="top"><div class="wrap"><div class="grow"><h1 id="title">Retirement</h1><div class="sub" id="sub"></div></div><a class="btn small" href="../" data-exit>Exit</a><button type="button" class="btn small primary hide" id="addBtn">Edit plan</button></div></header>
+<header class="top"><div class="wrap"><div class="grow"><h1 id="title">Retirement</h1><div class="sub" id="sub"></div></div><button type="button" class="btn small" data-exit>Exit</button><button type="button" class="btn small primary hide" id="addBtn">Edit plan</button></div></header>
 <main class="wrap" id="view"></main>
 <nav class="tabs" aria-label="Sections"><div class="wrap">
   <button type="button" data-tab="retire"><span class="ico">🎯</span>Retirement</button>
@@ -466,6 +466,21 @@ function installCardHTML() {
   return `<section class="card pad"><h3>Install on this device</h3>${msg}</section>`;
 }
 async function runInstall() { if (!deferredInstall) return; deferredInstall.prompt(); try { await deferredInstall.userChoice; } catch {} deferredInstall = null; if (typeof render === 'function') render(); }
+
+
+/* Exit: a web app can’t close itself on iPhone, so try, and if it’s still open show a plain "you can close it now" screen */
+function exitApp() {
+  try { window.close(); } catch { /* not allowed here */ }
+  setTimeout(() => {
+    if ($('#exitScreen')) return;
+    const d = document.createElement('div'); d.id = 'exitScreen'; d.setAttribute('role', 'dialog'); d.setAttribute('aria-label', 'Exit');
+    d.style.cssText = 'position:fixed;inset:0;z-index:99999;background:var(--bg,#fff);color:var(--ink,#111);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:24px';
+    d.innerHTML = '<div style="font-size:44px">👋</div><h2 style="margin:0">You can close this app now</h2><p style="margin:0;max-width:300px;opacity:.75">On iPhone, swipe up from the bottom edge of the screen and flick this app away.</p><button type="button" class="btn" id="exitBack" style="margin-top:8px">Back to the app</button>';
+    document.body.appendChild(d);
+    $('#exitBack', d).onclick = () => d.remove();
+  }, 250);
+}
+document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-exit]'); if (b) { e.preventDefault(); exitApp(); } });
 
 if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol))
   window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
