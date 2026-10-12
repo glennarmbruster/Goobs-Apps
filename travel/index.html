@@ -807,7 +807,7 @@ const CRUISE_PORTS = [
 ];
 const portById = id => CRUISE_PORTS.find(p => p.id === id);
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-const PACK_CATS = ['Clothing', 'Toiletries', 'Electronics', 'Documents', 'Health', 'Gear', 'Other'];
+const PACK_CATS = ['Clothing', 'Personal', 'Toiletries', 'Electronics', 'Documents', 'Essentials', 'Health', 'Gear', 'Entertainment', 'Cash', 'Other'];
 const BUDGET_CATS = ['Flights', 'Lodging', 'Food & drink', 'Transport', 'Activities', 'Shopping', 'Insurance', 'Other'];
 const IDEA_TYPES = [['do', 'Do'], ['eat', 'Eat'], ['see', 'See'], ['stay', 'Stay'], ['other', 'Other']];
 const IDEA_ICON = { do: '🎟️', eat: '🍽️', see: '📸', stay: '🛏️', other: '📌' };
@@ -1426,6 +1426,43 @@ function addPackItems(t, items, list) {
     set.add(normText(it.text)); t.packing.push({ id: uid(), text: it.text, cat: it.cat, qty: it.qty || 1, packed: false, list: L }); added++;
   }
   return added;
+}
+
+/* ---- Cruise packing list: a ready-made set of items per traveler list (Glenn, Cindy) plus the Joint list.
+   qty 'd' = about 1.75 per trip day (the 1.5-2 per day rule), sized to the trip length. */
+const CRUISE_TPL = {
+  Glenn: [
+    ['Clothing', 'Outfits (1.5–2 per day)', 'd'], ['Clothing', 'Underwear (1.5–2 per day)', 'd'], ['Clothing', 'Socks, pairs (1.5–2 per day)', 'd'],
+    ['Clothing', 'Hat'], ['Clothing', 'Jacket'], ['Clothing', 'Swimsuits'], ['Clothing', 'Pool shirts'], ['Clothing', 'Flip-flops'], ['Clothing', 'Shoes'],
+    ['Clothing', 'Nice outfit (at least 1)'], ['Clothing', 'Sleepwear'],
+    ['Electronics', 'White noise machine'], ['Electronics', 'Portable battery'], ['Electronics', 'iPad'], ['Electronics', 'AirPods'],
+    ['Personal', 'Sleep mask'], ['Personal', 'Extra reading glasses'], ['Personal', 'Towel'], ['Personal', 'Prescription meds'], ['Personal', 'Sunglasses'],
+    ['Personal', 'Deodorant'], ['Personal', 'Electric razor (fully charged)'], ['Personal', 'Toothbrush'],
+    ['Documents', 'Printed reservations'], ['Documents', 'Port arrival forms'], ['Documents', 'Luggage tags'], ['Documents', 'Parking pass'], ['Documents', 'Passport / ID'], ['Documents', 'Credit card']],
+  Cindy: [
+    ['Clothing', 'Outfits (1.5–2 per day)', 'd'], ['Clothing', 'Underwear (1.5–2 per day)', 'd'], ['Clothing', 'Socks, pairs (1.5–2 per day)', 'd'],
+    ['Clothing', 'Hat'], ['Clothing', 'Jacket'], ['Clothing', 'Swimsuits'], ['Clothing', 'Pool shirts'], ['Clothing', 'Flip-flops'], ['Clothing', 'Shoes'],
+    ['Clothing', 'Nice outfit (at least 1)'], ['Clothing', 'Sleepwear'],
+    ['Electronics', 'Portable battery'], ['Electronics', 'iPad'], ['Electronics', 'iPad charger'], ['Electronics', 'AirPods'],
+    ['Personal', 'Cooling blanket'], ['Personal', 'Fan'], ['Personal', 'Sunglasses'], ['Personal', 'Deodorant'], ['Personal', 'Brush'], ['Personal', 'Bag for port days'], ['Personal', 'Toothbrush'],
+    ['Documents', 'Printed reservations'], ['Documents', 'Port arrival forms'], ['Documents', 'Luggage tags'], ['Documents', 'Passport / ID'], ['Documents', 'Credit card']],
+  [JOINT]: [
+    ...['Toothpaste', 'Laundry bag', 'Ziplock bags', 'Mugs', 'Straws', 'Toilet paper', 'Paper towels', 'Disposable silverware', 'Small trash bags', 'Sunscreen', 'Sea sickness meds',
+      'Aloe', 'Melatonin', 'Tylenol', 'Tums', 'Other meds', 'Bath sponge', 'Eye drops', 'Nail clippers', 'Q-tips', 'Tweezers', 'Liquid hand soap', 'Lip balm', 'Band-aids', 'Blister patches'].map(x => ['Essentials', x]),
+    ['Electronics', 'Phone chargers'], ['Electronics', 'Watch chargers'],
+    ...['Playing cards / UNO', 'Books', 'Trivia notebook', 'Pens'].map(x => ['Entertainment', x]),
+    ['Cash', 'Tips: $2 bills'], ['Cash', 'Tips: $5 bills'], ['Cash', 'Extra cash ($300)']]
+};
+const cruiseTplCount = () => Object.values(CRUISE_TPL).reduce((n, a) => n + a.length, 0);
+function addCruiseTemplate(t) {
+  const days = tripDays(t).length || 7, per = Math.min(99, Math.ceil(days * 1.75));
+  const items = [];
+  for (const [who, list] of Object.entries(CRUISE_TPL)) {
+    let L = t.packLists.find(l => l.toLowerCase() === who.toLowerCase());
+    if (!L) { if (t.packLists.length >= 20) L = t.packLists[0]; else { L = who; t.packLists.push(L); } }
+    for (const [cat, text, q] of list) items.push({ cat, text, qty: q === 'd' ? per : 1, list: L });
+  }
+  return addPackItems(t, items, null);
 }
 /* ---- dialogs ---- */
 function tripDialog(t) {
@@ -2100,9 +2137,9 @@ function packTab(t) {
       <div class="bar" style="margin:10px 0"><i style="width:${pk.pct}%"></i></div>
       <form data-form="pack-add" class="addrow wrap"><input name="text" placeholder="Add an item${cur ? ' to ' + esc(cur) : ''} (e.g. 3 shirts)" autocomplete="off" required>
         ${multi && !cur ? `<select name="list" aria-label="Which list">${t.packLists.map(l => `<option>${esc(l)}</option>`).join('')}</select>` : ''}<select name="cat" aria-label="Category">${PACK_CATS.map(c => `<option${c === ui.lastCat ? ' selected' : ''}>${esc(c)}</option>`).join('')}</select><button class="btn primary">Add</button></form></section>
-    <div class="chips" style="margin-top:12px"><button class="chip" data-action="pack-starter">✨ Starter list</button><button class="chip" data-action="pack-copy">Copy from a trip</button>
+    <div class="chips" style="margin-top:12px"><button class="chip" data-action="pack-cruise">🛳 Cruise packing list</button><button class="chip" data-action="pack-starter">✨ Starter list</button><button class="chip" data-action="pack-copy">Copy from a trip</button>
       <button class="chip" data-action="pack-hide" aria-pressed="${ui.hidePacked}">Hide packed</button><button class="chip" data-action="pack-reset">Uncheck all</button><button class="chip" data-action="print" data-preset="pack">🖨 Print</button>${cur ? '<button class="chip" data-action="pack-rename">Rename list</button><button class="chip" data-action="pack-dellist">Delete list</button>' : ''}</div>
-    ${items.length ? lists : '<div class="empty"><div class="big">🧳</div><h2>Nothing on this list yet</h2><p>Add items above, or tap <b>Starter list</b> to get a list sized to your trip and the weather.</p></div>'}`;
+    ${items.length ? lists : '<div class="empty"><div class="big">🧳</div><h2>Nothing on this list yet</h2><p>Add items above, tap <b>Cruise packing list</b> for your standard cruise lists, or <b>Starter list</b> for one sized to your trip and the weather.</p></div>'}`;
 }
 function planTab(t) {
   const days = tripDays(t), byDate = {}, other = [];
@@ -2485,6 +2522,14 @@ function handleAction(a, el) {
     }
     case 'pack-toggle': { const x = t.packing.find(v => v.id === id); if (x) { x.packed = el.checked; commit(); } return; }
     case 'pack-edit': return packDialog(t, id);
+    case 'pack-cruise': {
+      const days = tripDays(t).length || 7;
+      confirmBox('Cruise packing list', `Adds about ${cruiseTplCount()} items to the Glenn, Cindy and Joint lists, with clothing sized to ${plural(days, 'day')} (about 1.75 per day). Items you already have are skipped.`, 'Add items', false).then(ok => {
+        if (!ok) return;
+        const n = addCruiseTemplate(t); commit(); toast(n ? `Added ${plural(n, 'item')}` : 'Nothing new to add — you already have those');
+      });
+      return;
+    }
     case 'pack-starter': return starterDialog(t);
     case 'pack-copy': return copyPackDialog(t);
     case 'pack-hide': ui.hidePacked = !ui.hidePacked; return render();
