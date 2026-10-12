@@ -807,7 +807,7 @@ const CRUISE_PORTS = [
 ];
 const portById = id => CRUISE_PORTS.find(p => p.id === id);
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-const PACK_CATS = ['Clothing', 'Personal', 'Toiletries', 'Electronics', 'Documents', 'Essentials', 'Health', 'Gear', 'Entertainment', 'Cash', 'Other'];
+const PACK_CATS = ['Clothing', 'Personal', 'Toiletries', 'Electronics', 'Documents', 'Essentials', 'Health', 'Gear', 'Entertainment', 'Pets', 'Cash', 'Other'];
 const BUDGET_CATS = ['Flights', 'Lodging', 'Food & drink', 'Transport', 'Activities', 'Shopping', 'Insurance', 'Other'];
 const IDEA_TYPES = [['do', 'Do'], ['eat', 'Eat'], ['see', 'See'], ['stay', 'Stay'], ['other', 'Other']];
 const IDEA_ICON = { do: '🎟️', eat: '🍽️', see: '📸', stay: '🛏️', other: '📌' };
@@ -1451,6 +1451,7 @@ const CRUISE_TPL = {
       'Aloe', 'Melatonin', 'Tylenol', 'Tums', 'Other meds', 'Bath sponge', 'Eye drops', 'Nail clippers', 'Q-tips', 'Tweezers', 'Liquid hand soap', 'Lip balm', 'Band-aids', 'Blister patches'].map(x => ['Essentials', x]),
     ['Electronics', 'Phone chargers'], ['Electronics', 'Watch chargers'],
     ...['Playing cards / UNO', 'Books', 'Trivia notebook', 'Pens'].map(x => ['Entertainment', x]),
+    ...['Food portioned', 'Water bowls cleaned and filled', 'Food bowls cleaned', 'Litter box emptied', 'Vet information on counter'].map(x => ['Pets', x]),
     ['Cash', 'Tips: $2 bills'], ['Cash', 'Tips: $5 bills'], ['Cash', 'Extra cash ($300)']]
 };
 const cruiseTplCount = () => Object.values(CRUISE_TPL).reduce((n, a) => n + a.length, 0);
