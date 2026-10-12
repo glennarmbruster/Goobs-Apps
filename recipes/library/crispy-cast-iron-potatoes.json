@@ -1,0 +1,41 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "crispy-cast-iron-potatoes",
+  "title": "Crispy Cast Iron Stovetop Baby Potatoes",
+  "description": "Halved baby potatoes parboiled in baking soda water, then seared cut-side down in a 12-inch cast iron skillet for a craggy crust and creamy middle, finished with garlic butter.",
+  "category": "Sides",
+  "tags": ["potatoes", "stovetop", "cast iron", "make-ahead"],
+  "servings": 4,
+  "servingsLabel": "servings",
+  "prepMin": 15,
+  "cookMin": 35,
+  "equipment": ["12-inch cast iron skillet", "Large pot", "Colander"],
+  "ingredients": [
+    { "id": "potatoes", "qty": 2, "unit": "lb", "name": "baby potatoes", "note": "halved; quarter any larger than 2 inches" },
+    { "id": "water", "qty": 2, "unit": "l", "name": "water", "note": "for boiling" },
+    { "id": "boilsalt", "qty": 1, "unit": "tbsp", "name": "kosher salt", "note": "for the boiling water" },
+    { "id": "soda", "qty": 0.5, "unit": "tsp", "name": "baking soda" },
+    { "id": "salt", "qty": 1, "unit": "tsp", "name": "kosher salt", "note": "for seasoning" },
+    { "id": "paprika", "qty": 1, "unit": "tsp", "name": "smoked paprika" },
+    { "id": "granugarlic", "qty": 0.5, "unit": "tsp", "name": "granulated garlic" },
+    { "id": "granuonion", "qty": 0.5, "unit": "tsp", "name": "granulated onion" },
+    { "id": "umami", "qty": 0.5, "unit": "tsp", "name": "Trader Joe's Umami seasoning" },
+    { "id": "pepper", "qty": 0.5, "unit": "tsp", "name": "black pepper" },
+    { "id": "oil", "qty": 3, "unit": "tbsp", "name": "avocado oil", "note": "or other high-heat oil" },
+    { "id": "butter", "qty": 2, "unit": "tbsp", "name": "unsalted butter" },
+    { "id": "jarredgarlic", "qty": 1, "unit": "tsp", "name": "jarred minced garlic" },
+    { "id": "parsley", "qty": 1, "unit": "tbsp", "name": "fresh parsley", "note": "chopped" }
+  ],
+  "steps": [
+    { "title": "Boil", "text": "Add {water} and {boilsalt} to a large pot and bring to a boil. Pull the pot off the heat briefly and stir in {soda} (it foams up), then return to the burner and add {potatoes}. Return to a boil and cook 7-9 minutes, until a fork slides in easily and the cut edges look slightly fuzzy. Start checking at 7 minutes." },
+    { "title": "Drain and steam-dry", "text": "Drain {potatoes} in a colander and let them steam-dry for 5 minutes. Do not rinse." },
+    { "title": "Rough up and season", "text": "Return {potatoes} to the dry pot. Add {salt}, {paprika}, {granugarlic}, {granuonion}, {umami}, and {pepper}. Cover and shake gently for 10 seconds to scuff up the cut edges." },
+    { "title": "Heat the skillet", "text": "Heat a 12-inch cast iron skillet over medium-high heat for 3 minutes. Add {oil} and heat until it shimmers." },
+    { "title": "Sear cut-side down", "text": "Carefully place {potatoes} cut-side down in a single layer. Lower heat to medium. Do not touch for 6-7 minutes." },
+    { "title": "Flip and finish", "text": "Flip {potatoes} with a thin spatula, scraping up any stuck crust. Cook 8-10 more minutes, turning occasionally, until the skins are crisp and golden on most sides. Lower the heat slightly if the paprika smells scorched." },
+    { "title": "Garlic butter finish", "text": "Turn heat to low. Push {potatoes} to the sides, melt {butter} in the center, and stir in {jarredgarlic} for 30 seconds. Toss to coat." },
+    { "title": "Serve", "text": "Remove from heat, toss with {parsley}, and serve immediately." }
+  ],
+  "notes": "Make-ahead: parboil, steam-dry, and season the potatoes the day before, then refrigerate uncovered. Pan-fry straight from the fridge, adding 2-3 minutes. Reheat leftovers in the skillet or in the Anova Precision Oven at 400°F, 0% steam, about 10 minutes. Do not crowd the pan; if the skillet is smaller than 12 inches, fry in two batches. Very small potatoes (under 1.5 inches) can stay whole: boil 6-8 minutes and flatten each one slightly with a spatula after the first sear for more crust."
+}
