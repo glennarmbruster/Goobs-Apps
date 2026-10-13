@@ -1,0 +1,40 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "black-garlic-crushed-potatoes",
+  "title": "Black Garlic Crushed Potatoes",
+  "description": "APO-steamed baby potatoes crushed with skins on and folded with black garlic, sour cream, and umami into a moist, rustic mash.",
+  "category": "Sides",
+  "tags": ["steak night", "make-ahead friendly", "APO"],
+  "servings": 3,
+  "servingsLabel": "servings",
+  "prepMin": 10,
+  "cookMin": 35,
+  "equipment": ["Anova Precision Oven", "Thermapen"],
+  "ingredients": [
+    { "id": "potatoes", "qty": 1.5, "unit": "lb", "name": "baby potatoes", "note": "halve any larger than 1.5 inches" },
+    { "id": "butter", "qty": 3, "unit": "tbsp", "name": "unsalted butter", "note": "cut into pieces" },
+    { "id": "cream", "qty": 0.25, "unit": "cup", "name": "heavy cream", "note": "Option A - use this OR the milk and cream cheese" },
+    { "id": "milk", "qty": 0.25, "unit": "cup", "name": "milk", "note": "Option B - use with cream cheese instead of heavy cream" },
+    { "id": "creamcheese", "qty": 2, "unit": "tbsp", "name": "cream cheese", "note": "Option B - use with milk instead of heavy cream" },
+    { "id": "blackgarlic", "qty": 1, "unit": "tbsp", "name": "black garlic purée" },
+    { "id": "sourcream", "qty": 0.33, "unit": "cup", "name": "sour cream", "note": "or regular yogurt, full-fat if you have it" },
+    { "id": "umami", "qty": 0.5, "unit": "tsp", "name": "Trader Joe's Umami seasoning" },
+    { "id": "onion", "qty": 0.5, "unit": "tsp", "name": "granulated onion" },
+    { "id": "salt", "qty": 0.75, "unit": "tsp", "name": "kosher salt", "note": "start with 1/2 tsp if using the cream cheese option, then adjust to taste" },
+    { "id": "pepper", "qty": 0.25, "unit": "tsp", "name": "black pepper" },
+    { "id": "paprika", "qty": 0.25, "unit": "tsp", "name": "smoked paprika", "note": "for finishing" },
+    { "id": "chives", "qty": 1, "unit": "tbsp", "name": "fresh chives", "note": "thinly sliced, optional" }
+  ],
+  "steps": [
+    { "title": "Prep", "text": "Scrub {potatoes} and halve any larger than 1.5 inches so they cook evenly. Leave the skins on." },
+    { "title": "Steam", "text": "Set the Anova Precision Oven to steam mode at 212°F and 100% steam with the bottom drip pan installed. Spread {potatoes} in a single layer on a perforated tray or rack and steam 30 to 35 minutes, until a Thermapen slides in with no resistance." },
+    { "title": "Make the garlic cream", "text": "While the potatoes steam, make the garlic cream one of two ways and use only one. Option A with heavy cream: warm {cream} and {butter} in a small saucepan over low heat until the butter melts. Option B without heavy cream: warm {milk} and {butter} over low heat until the butter melts, then whisk in {creamcheese} until smooth. Either way, whisk in {blackgarlic} until fully dissolved with no lumps. Keep it below a simmer and hold warm on the lowest heat." },
+    { "title": "Crush", "text": "Move the hot potatoes to a large bowl. Crush with a fork or sturdy masher until about half are broken down and the rest are rough chunks with skin. Do this while they are hot so they absorb the liquid." },
+    { "title": "Fold", "text": "Pour the warm garlic cream over the potatoes. Add {sourcream}, {umami}, {onion}, {salt}, and {pepper}. Fold gently just until combined. Overmixing turns them gummy." },
+    { "title": "Taste and loosen", "text": "Taste and add more {salt} if needed. If the potatoes look dry, fold in a splash of extra heavy cream or milk. They should be moist and slightly loose, since they firm up as they sit." },
+    { "title": "Serve", "text": "Spoon into a warm bowl and dust with {paprika}. Top with {chives} if using. Serve alongside the steaks." }
+  ],
+  "notes": "Garlic cream is your choice: heavy cream (Option A) or milk plus cream cheese (Option B). Use only one set and skip the other ingredients. The cream cheese version is a little tangier, so start the salt at 1/2 tsp. Start the potatoes about 45 minutes before you want to eat. They hold covered in the bowl for 20 minutes; loosen with a splash of cream or milk before serving. Reheat in the APO at 325°F, 30% steam, 15 minutes, covered. Make-ahead: steam the potatoes earlier in the day, then crush and fold when the steaks go on. Black garlic purée is sweet and earthy, so start with the full amount and adjust after tasting.",
+  "source": "Glenn and Claude"
+}
