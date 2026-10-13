@@ -1,7 +1,7 @@
 {
-  "name": "Trips",
-  "short_name": "Trips",
-  "description": "Plan trips: packing lists, itinerary, budget, ideas and weather.",
+  "name": "Planner",
+  "short_name": "Planner",
+  "description": "Trips with packing, itinerary, budget and weather, plus appointments and important dates.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

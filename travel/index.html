@@ -148,6 +148,11 @@ dialog::backdrop{background:rgba(10,15,12,.55)}
 .addrow select{width:auto;max-width:44%}
 .addrow.wrap{flex-wrap:wrap}.addrow.wrap .btn{flex:0 0 auto}.addrow.wrap input[name=text]{flex:1 1 100%}.addrow.wrap select{flex:1 1 40%;max-width:none}.addrow.wrap input[name=qty]{flex:0 0 64px}
 .tripcard{display:block;padding:14px 16px;text-decoration:none;color:inherit;margin-bottom:12px}
+.evrow{display:flex;gap:12px;align-items:center;padding:10px 14px;text-decoration:none;color:inherit;margin-bottom:10px}
+.evrow .evd{flex:none;width:48px;text-align:center;line-height:1.1}.evrow .evd b{display:block;font-size:20px}.evrow .evd span{font-size:11px;text-transform:uppercase;color:var(--muted)}
+.evrow .evm{flex:1;min-width:0}
+.tc-facts{display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:8px;font-size:13px;color:var(--muted)}
+.pastbox{margin-top:14px}.pastbox>summary{cursor:pointer;font-weight:600;padding:8px 2px}
 .tc-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
 a.tile{display:block;text-decoration:none;color:inherit}
 .check-row{display:flex;align-items:center;gap:12px;flex:1;min-width:0;cursor:pointer;min-height:44px;overflow-wrap:anywhere}
@@ -867,7 +872,7 @@ function normWeather(w) {
   const labels = o => { const r = {}; for (const [k, v] of Object.entries(o && typeof o === 'object' ? o : {})) if (isISO(k) && typeof v === 'string') r[k] = v.slice(0, 120); return r; };
   return { fetchedAt: isNum(w.fetchedAt) ? w.fetchedAt : 0, locKey: str(w.locKey), span: str(w.span), days, avg, places: labels(w.places), unres: labels(w.unres) };
 }
-const wxBest = (w, d) => (w ? w.days[d] || w.avg[d] || null : null);
+const wxBest = (w, d) => (w && w.days && w.avg ? w.days[d] || w.avg[d] || null : null);
 const DEFAULT_LIST = 'Main';
 const listName = v => str(v).trim().slice(0, 40) || DEFAULT_LIST;
 const normPack = i => { if (!i || typeof i !== 'object' || !str(i.text).trim()) return null; return { id: str(i.id) || uid(), text: str(i.text).trim().slice(0, 120), cat: oneOf(i.cat, PACK_CATS, 'Other'), qty: clampInt(i.qty, 1, 99, 1), packed: !!i.packed, list: listName(i.list) }; };
@@ -1042,7 +1047,7 @@ function normLists(t, packing) { const out = []; for (const n of [...arr(t.packL
 function normTrip(t, keepWeather) {
   if (!t || typeof t !== 'object' || !str(t.name).trim()) return null;
   const trip = {
-    id: str(t.id) || uid(), name: str(t.name).trim().slice(0, 100), destination: str(t.destination).trim().slice(0, 120),
+    id: str(t.id) || uid(), kind: t.kind === 'event' ? 'event' : 'trip', time: /^([01]\d|2[0-3]):[0-5]\d$/.test(str(t.time)) ? t.time : '', privNotes: str(t.privNotes).slice(0, 5000), name: str(t.name).trim().slice(0, 100), destination: str(t.destination).trim().slice(0, 120),
     startDate: isISO(t.startDate) ? t.startDate : '', endDate: isISO(t.endDate) ? t.endDate : '',
     travelers: clampInt(t.travelers, 1, 99, 1), currency: /^[A-Z]{3}$/.test(str(t.currency)) ? t.currency : 'USD',
     budgetTotal: numOrNull(t.budgetTotal), notes: str(t.notes).slice(0, 10000), location: normLoc(t.location),
@@ -1092,7 +1097,7 @@ let noteTimer = null;
 
 /* ---- sharing between two phones (sync.js): trips and their items are stored as separate records ---- */
 const KINDS = [['packing', normPack], ['plan', normPlan], ['budget', normBudget], ['ideas', normIdea], ['todos', normTodo], ['people', normPerson], ['expenses', normExpense], ['payments', normPayment]];
-const TRIP_FIELDS = ['name', 'destination', 'startDate', 'endDate', 'travelers', 'currency', 'budgetTotal', 'notes', 'location', 'cruise', 'travelerNames', 'packLists', 'splitFam', 'createdAt'];
+const TRIP_FIELDS = ['kind', 'time', 'name', 'destination', 'startDate', 'endDate', 'travelers', 'currency', 'budgetTotal', 'notes', 'location', 'cruise', 'travelerNames', 'packLists', 'splitFam', 'createdAt'];
 function uniqueItemIds() {            // item ids must be unique across all trips, since each item is its own shared record
   const seen = new Set(); let fixed = false;
   for (const t of state.trips) for (const [k] of KINDS) for (const i of t[k]) { if (seen.has(i.id)) { i.id = uid(); fixed = true; } seen.add(i.id); }
@@ -1493,6 +1498,38 @@ function addCruiseTemplate(t) {
   return addPackItems(t, items, null);
 }
 /* ---- dialogs ---- */
+function eventDialog(t) {
+  formDialog({
+    title: t ? 'Edit event' : 'New event',
+    intro: 'For appointments and important dates. Keep the title general: events are shared with the other phone. Notes stay on this phone only.',
+    fields: [
+      { name: 'name', label: 'What', required: true, value: t && t.name, placeholder: 'e.g. Dr. appointment' },
+      { name: 'startDate', label: 'Date', type: 'date', required: true, value: t && t.startDate },
+      { name: 'time', label: 'Time (optional)', type: 'time', value: t ? t.time : '' },
+      { name: 'destination', label: 'Place (optional)', value: t && t.destination, placeholder: 'e.g. 123 Main St, Friendswood' },
+      { name: 'type', label: 'Type', type: 'select', value: 'event', options: [['event', 'Event (appointment or date)'], ['trip', 'Trip (packing, plan, budget…)']], hint: t ? 'Changing to Trip opens the trip form.' : '' }
+    ],
+    submitLabel: t ? 'Save' : 'Add event',
+    onSubmit: v => {
+      if (!isISO(v.startDate)) return 'Pick a date.';
+      const rec = { name: v.name.trim(), startDate: v.startDate, endDate: v.startDate, time: v.time || '', destination: v.destination.trim() };
+      if (!rec.name) return 'Give the event a name.';
+      if (t) {
+        Object.assign(t, rec);
+        if (v.type === 'trip') { t.kind = 'trip'; t.time = ''; commit(); setTimeout(() => tripDialog(t), 80); return; }
+        commit(); return;
+      }
+      if (v.type === 'trip') { setTimeout(() => tripDialog(null), 80); return; }
+      const nt = normTrip({ ...rec, kind: 'event', id: uid() }, false);
+      state.trips.push(nt); commit(); toast('Event added');
+    },
+    onDelete: t ? async () => {
+      if (!(await confirmBox(`Delete “${t.name}”?`, 'The event and its notes on this phone will be removed.', 'Delete event'))) return false;
+      state.trips = state.trips.filter(x => x.id !== t.id); persist();
+      location.hash = '#/'; render(); toast('Event deleted'); return true;
+    } : null
+  });
+}
 function tripDialog(t) {
   const cur = t ? t.currency : state.trips.length ? state.trips[state.trips.length - 1].currency : 'USD';
   const currencies = CURRENCIES.includes(cur) ? CURRENCIES : [cur, ...CURRENCIES];
@@ -1500,6 +1537,7 @@ function tripDialog(t) {
     title: t ? 'Edit trip' : 'New trip',
     fields: [
       { name: 'name', label: 'Trip name', required: true, value: t && t.name, placeholder: 'e.g. Alabama beach week' },
+      { name: 'type', label: 'Type', type: 'select', value: 'trip', options: [['trip', 'Trip'], ['event', 'Event (appointment or date)']], hint: 'Event hides packing, budget and plan. Anything already entered is kept if you switch back.' },
       { name: 'kind', label: 'Destination type', type: 'select', value: t && t.cruise ? 'cruise' : 'place', options: [['place', 'A place (type it below)'], ['cruise', CRUISE_KIND]], hint: 'Choose the cruise to get typical temperatures for the common Galveston ports on the Weather tab.' },
       { name: 'destination', label: 'Destination', value: t && t.destination, placeholder: 'e.g. Gulf Shores, Alabama, or leave blank for a cruise', hint: 'Used for weather and lookup links.' },
       { name: 'startDate', label: 'Start date', type: 'date', value: t && t.startDate },
@@ -1519,6 +1557,12 @@ function tripDialog(t) {
       if (s && !e) e = s;
       if (s && e < s) return 'The end date is before the start date.';
       if (s && daysBetween(s, e) > 119) return 'Trips can be up to 120 days.';
+      if (v.type === 'event') {
+        if (!s) return 'An event needs a date. Fill in the start date.';
+        const er = { name: v.name.trim(), startDate: s, endDate: s, destination: v.destination.trim() === CRUISE_KIND ? '' : v.destination.trim() };
+        if (t) { Object.assign(t, er, { kind: 'event' }); commit(); } else { state.trips.push(normTrip({ ...er, kind: 'event', id: uid() }, false)); commit(); toast('Event added'); }
+        return;
+      }
       const nTrav = clampInt(v.travelers, 1, 99, 1), names = parseNames(v.names);
       if (new Set(names.map(x => x.toLowerCase())).size !== names.length) return 'Each name should appear once.';
       if (names.some(x => x.toLowerCase() === JOINT.toLowerCase())) return '“Joint” is used for the shared list. Use real names here.';
@@ -1528,7 +1572,7 @@ function tripDialog(t) {
       if (names.length > 20) return 'That’s too many names (20 at most).';
       const bt = v.budgetTotal === '' ? null : numOrNull(v.budgetTotal);
       if (v.budgetTotal !== '' && bt == null) return 'Enter a valid budget, or leave it blank.';
-      const rec = { name: v.name.trim(), destination: v.destination.trim(), startDate: s || '', endDate: e || '', travelers: clampInt(v.travelers, 1, 99, 1), currency: v.currency, budgetTotal: bt, travelerNames: names };
+      const rec = { kind: 'trip', name: v.name.trim(), destination: v.destination.trim(), startDate: s || '', endDate: e || '', travelers: clampInt(v.travelers, 1, 99, 1), currency: v.currency, budgetTotal: bt, travelerNames: names };
       const cruise = v.kind === 'cruise';
       if (cruise && !rec.destination) rec.destination = CRUISE_KIND;
       if (!cruise && rec.destination === CRUISE_KIND) rec.destination = '';
@@ -2092,7 +2136,7 @@ function splitTab(t) {
 
 /* ---- views ---- */
 const app = $('#app');
-const headerHTML = ({ back, title, sub, right = '' }) => `<header class="top"><div class="wrap">${back ? `<a class="back" href="${back}">‹ Trips</a>` : ''}<div class="grow"><h1>${esc(title)}</h1>${sub ? `<div class="sub">${esc(sub)}</div>` : ''}</div>${right}</div></header>`;
+const headerHTML = ({ back, title, sub, right = '' }) => `<header class="top"><div class="wrap">${back ? `<a class="back" href="${back}">‹ Planner</a>` : ''}<div class="grow"><h1>${esc(title)}</h1>${sub ? `<div class="sub">${esc(sub)}</div>` : ''}</div>${right}</div></header>`;
 function storageBannerHTML() {
   if (saveFailed) return '<div class="banner bad">Couldn’t save to this device’s storage. Back up now so nothing is lost.</div>';
   if (!db) return '<div class="banner bad">This browser isn’t allowing storage (private mode?). Changes won’t survive closing the app — use Backup often.</div>';
@@ -2101,15 +2145,34 @@ function storageBannerHTML() {
 /* backup reminders are off: backups are handled by the owner, not by whoever opens the app */
 const nagHTML = () => '';
 const syncLineHTML = () => { const b = syncBadgeHTML(); return b ? `<div style="margin:0 0 10px;text-align:right">${b}</div>` : ''; };
+const isEv = t => t.kind === 'event';
+function evStatus(t) {
+  const d = t.startDate ? daysBetween(todayISO(), t.startDate) : null;
+  if (d == null) return { short: 'No date', cls: '', big: '—', label: 'Set a date' };
+  if (d > 1) return { short: `in ${d} days`, cls: 'acc', big: String(d), label: 'days to go' };
+  if (d === 1) return { short: 'Tomorrow', cls: 'acc', big: '1', label: 'day to go' };
+  if (d === 0) return { short: 'Today', cls: 'ok', big: 'Today', label: t.time ? time12(t.time) : '' };
+  return { short: 'Past', cls: '', big: '✓', label: 'Past' };
+}
+const evWhen = t => (t.startDate ? fmtDate(t.startDate) : 'No date yet') + (t.time ? ' · ' + time12(t.time) : '');
 function homeScreen() {
   const today = todayISO();
-  const upcoming = state.trips.filter(t => !t.endDate || t.endDate >= today).sort((a, b) => (a.startDate || '9999').localeCompare(b.startDate || '9999') || a.name.localeCompare(b.name));
+  const sortUp = (a, b) => (a.startDate || '9999').localeCompare(b.startDate || '9999') || (a.time || '').localeCompare(b.time || '') || a.name.localeCompare(b.name);
+  const upcoming = state.trips.filter(t => !t.endDate || t.endDate >= today).sort(sortUp);
   const past = state.trips.filter(t => t.endDate && t.endDate < today).sort((a, b) => b.endDate.localeCompare(a.endDate));
+  const evRow = t => {
+    const st = evStatus(t), dt = t.startDate ? new Date(t.startDate + 'T12:00:00') : null;
+    return `<a class="card evrow" href="#/trip/${esc(t.id)}"><div class="evd">${dt ? `<b>${dt.getDate()}</b><span>${dt.toLocaleString('en-US', { month: 'short' })}</span>` : '<b>—</b>'}</div>
+      <div class="evm"><div class="row-title">${esc(t.name)}</div><div class="row-sub">${esc([dt ? dt.toLocaleString('en-US', { weekday: 'short' }) : '', t.time ? time12(t.time) : '', t.destination].filter(Boolean).join(' · ') || 'Event')}</div></div><span class="badge ${st.cls}">${esc(st.short)}</span></a>`;
+  };
   const card = t => {
-    const st = tripStatus(t), pk = packStats(t);
+    if (isEv(t)) return evRow(t);
+    const st = tripStatus(t), pk = packStats(t), b = budgetStats(t), openTodos = t.todos.filter(x => !x.done).length;
+    const d0 = tripDays(t)[0], w0 = d0 && t.weather ? wxBest(t.weather, d0) : null;
+    const facts = [pk.total ? `🧳 ${pk.done}/${pk.total} packed` : '', b.projected ? `💵 ${money(b.projected, t.currency)}` : '', openTodos ? `✅ ${openTodos} to-do${openTodos === 1 ? '' : 's'} open` : '', w0 ? `${wmo(w0.code)[0]} ${T(w0.tmax)}/${T(w0.tmin)}${w0.kind === 'forecast' ? '' : ' typical'}` : '', t.plan.length ? `🗓️ ${plural(t.plan.length, 'plan item')}` : ''].filter(Boolean);
     return `<a class="card tripcard" href="#/trip/${esc(t.id)}"><div class="tc-top"><div class="row-title">${esc(t.name)}</div><span class="badge ${st.cls}">${esc(st.short)}</span></div>
       <div class="row-sub">${t.destination ? '📍 ' + esc(t.destination) + ' · ' : ''}${esc(rangeText(t))}</div>
-      ${pk.total ? `<div class="bar" style="margin-top:10px"><i style="width:${pk.pct}%"></i></div><div class="row-sub" style="margin-top:4px">Packed ${pk.done} of ${pk.total}</div>` : ''}</a>`;
+      ${pk.total ? `<div class="bar" style="margin-top:10px"><i style="width:${pk.pct}%"></i></div>` : ''}${facts.length ? `<div class="tc-facts">${facts.map(f => `<span>${esc(f)}</span>`).join('')}</div>` : ''}</a>`;
   };
   const pinned = state.trips.flatMap(t => t.todos.filter(x => x.pin).map(x => ({ t, x }))).sort((a, b) => (a.x.done - b.x.done) || (a.t.startDate || '9999').localeCompare(b.t.startDate || '9999'));
   const pinRow = ({ t, x }) => `<li class="row static"><div class="row-main"><label class="check-row"><input type="checkbox" data-action="todo-toggle" data-id="${esc(x.id)}" data-trip="${esc(t.id)}" ${x.done ? 'checked' : ''}><span class="${x.done ? 'done' : ''}">${esc(x.text)}</span></label>
@@ -2117,12 +2180,22 @@ function homeScreen() {
     <button type="button" class="btn small ghost" data-action="todo-edit" data-id="${esc(x.id)}" data-trip="${esc(t.id)}">Details</button></li>`;
   const pinSection = pinned.length ? `<div class="sec-h"><span>Pinned to-dos</span><span class="num">${pinned.filter(p => !p.x.done).length} open</span></div><ul class="card list">${pinned.map(pinRow).join('')}</ul>` : '';
   const body = !state.trips.length
-    ? `<div class="empty"><div class="big">🧳</div><h2>No trips yet</h2><p>Create a trip to build a packing list, day-by-day plan, budget and weather outlook.</p>
-        <button class="btn primary" data-action="new-trip">Plan your first trip</button><br><button class="btn ghost" data-action="restore">Restore from a backup file</button></div>`
-    : pinSection + (upcoming.length ? `<div class="sec-h"><span>Upcoming &amp; current</span></div>${upcoming.map(card).join('')}` : '') + (past.length ? `<div class="sec-h"><span>Past trips</span></div>${past.map(card).join('')}` : '');
-  return headerHTML({ title: 'Trips', sub: 'Open a trip or start a new one', right: syncBadgeHTML() + '<a class="btn small" href="#/backup">Backup</a>' })
-    + `<main class="wrap">${storageBannerHTML()}${state.trips.length ? '<button type="button" class="btn primary block" style="margin-bottom:12px" data-action="new-trip">+ New trip</button>' : ''}${body}</main>`
+    ? `<div class="empty"><div class="big">🗓️</div><h2>Nothing planned yet</h2><p>Add a trip to build a packing list, day-by-day plan, budget and weather outlook, or an event for an appointment or important date.</p>
+        <button class="btn primary" data-action="new-trip">Plan a trip</button> <button class="btn" data-action="new-event">Add an event</button><br><button class="btn ghost" data-action="restore">Restore from a backup file</button></div>`
+    : pinSection + (upcoming.length ? `<div class="sec-h"><span>Coming up</span></div>${upcoming.map(card).join('')}` : '<p class="hint">Nothing coming up.</p>') + (past.length ? `<details class="pastbox"><summary>Past (${past.length})</summary>${past.map(card).join('')}</details>` : '');
+  return headerHTML({ title: 'Planner', sub: 'What’s coming up', right: syncBadgeHTML() + '<a class="btn small" href="#/backup">Backup</a>' })
+    + `<main class="wrap">${storageBannerHTML()}${state.trips.length ? '<div style="display:flex;gap:8px;margin-bottom:12px"><button type="button" class="btn primary" style="flex:1" data-action="new-trip">+ New trip</button><button type="button" class="btn" style="flex:1" data-action="new-event">+ New event</button></div>' : ''}${body}</main>`
     ;
+}
+function eventScreen(t) {
+  const st = evStatus(t), id = esc(t.id);
+  const map = t.destination ? `<a class="btn small" target="_blank" rel="noopener" href="${esc('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(t.destination))}">Open in Maps</a>` : '';
+  return headerHTML({ back: '#/', title: t.name, sub: evWhen(t), right: '<button class="btn small" data-action="edit-trip">Edit</button>' })
+    + `<main class="wrap"><section class="card hero"><div class="big">${esc(st.big)}</div><div class="lbl">${esc(st.label)}</div>${t.startDate ? '' : '<button class="btn small" style="margin-top:12px" data-action="edit-trip">Set the date</button>'}</section>
+    <section class="card pad"><div class="row-title">${esc(t.name)}</div><div class="row-sub">${esc(evWhen(t))}</div>${t.destination ? `<div class="row-sub" style="margin:6px 0">📍 ${esc(t.destination)}</div>${map}` : ''}</section>
+    <div class="sec-h"><span>Notes</span></div>
+    <textarea class="notes" id="evNotes" placeholder="Questions to ask, what to bring, directions…">${esc(t.privNotes)}</textarea>
+    <p class="hint">🔒 Notes stay on this phone. They are not shared with the other phone. The event itself (title, date, time, place) is shared.</p></main>`;
 }
 function overviewTab(t) {
   const st = tripStatus(t), pk = packStats(t), b = budgetStats(t), id = esc(t.id);
@@ -2130,7 +2203,7 @@ function overviewTab(t) {
   const w = t.weather, first = w ? wxDays(t).filter(d => wxBest(w, d)).slice(0, 4) : [];
   const wx = first.length ? `<div class="sec-h"><span>Weather outlook</span><a href="#/trip/${id}/weather">See all</a></div><section class="card pad"><div class="chips">${first.map(d => { const x = wxBest(w, d); return `<span class="chip" style="cursor:default">${wmo(x.code)[0]} ${esc(fmtDate(d, false))} · ${T(x.tmax)}/${T(x.tmin)}</span>`; }).join('')}</div></section>` : '';
   const todoRow = x => `<li class="row static"><div class="row-main"><label class="check-row"><input type="checkbox" data-action="todo-toggle" data-id="${esc(x.id)}" ${x.done ? 'checked' : ''}><span class="${x.done ? 'done' : ''}">${esc(x.text)}</span></label>${x.notes ? `<div class="row-sub">📝 ${esc(snip(x.notes))}</div>` : ''}</div>
-    <button type="button" class="btn small pinbtn" data-action="todo-pin" data-id="${esc(x.id)}" aria-pressed="${x.pin}" aria-label="${x.pin ? 'Unpin from' : 'Pin to'} the Trips home screen" title="Show on the Trips home screen">📌</button>
+    <button type="button" class="btn small pinbtn" data-action="todo-pin" data-id="${esc(x.id)}" aria-pressed="${x.pin}" aria-label="${x.pin ? 'Unpin from' : 'Pin to'} the Trips home screen" title="Show on the Planner home screen">📌</button>
     <button type="button" class="btn small ghost" data-action="todo-edit" data-id="${esc(x.id)}">Details</button></li>`;
   return `<section class="card hero"><div class="big">${esc(st.big)}</div><div class="lbl">${esc(st.label)}</div>${t.startDate ? '' : '<button class="btn small" style="margin-top:12px" data-action="edit-trip">Set dates</button>'}</section>
     <div class="tiles">
@@ -2139,7 +2212,7 @@ function overviewTab(t) {
       <a class="card tile" href="#/trip/${id}/plan"><div class="lbl">Plan items</div><div class="val num">${t.plan.length}</div></a>
     </div>${wx}
     <div class="sec-h"><span>Before you go</span><span class="num">${todosDone}/${t.todos.length}</span></div>
-    ${t.todos.length ? '<p class="hint" style="margin:-2px 4px 8px">Tap Details to add notes. Tap 📌 to show a to-do on the Trips home screen.</p>' : ''}
+    ${t.todos.length ? '<p class="hint" style="margin:-2px 4px 8px">Tap Details to add notes. Tap 📌 to show a to-do on the Planner home screen.</p>' : ''}
     <div class="card">${t.todos.length ? `<ul class="list">${t.todos.map(todoRow).join('')}</ul>` : ''}
       <form data-form="todo-add" class="addrow pad"><input name="text" placeholder="Add a task (e.g. Book flights)" autocomplete="off" required><button class="btn primary">Add</button></form></div>
     <div style="margin-top:10px"><button class="btn small" data-action="todo-starter">Add common tasks</button> <button class="btn small" data-action="print" data-preset="trip">🖨 Print trip</button></div>
@@ -2419,6 +2492,7 @@ function printDialog(t, preset) {
   } });
 }
 function tripScreen(t, tab) {
+  if (isEv(t)) return eventScreen(t);
   const body = { overview: overviewTab, pack: packTab, plan: planTab, budget: budgetTab, split: splitTab, ideas: ideasTab, weather: weatherTab }[tab](t);
   const nav = `<nav class="tabs" aria-label="Trip sections"><div class="wrap">${TABS.map(([k, l, ic]) => `<a href="#/trip/${esc(t.id)}/${k}"${k === (tab === 'split' ? 'budget' : tab) ? ' aria-current="page"' : ''}><span class="ico">${ic}</span>${l}</a>`).join('')}</div></nav>`;
   return headerHTML({ back: '#/', title: t.name, sub: [t.destination, rangeText(t)].filter(Boolean).join(' · '), right: (FAB_FOR[tab] ? `<button class="btn small primary" data-action="${FAB_FOR[tab]}">+ Add</button>` : '') + '<button class="btn small" data-action="edit-trip">Edit</button>' })
@@ -2448,10 +2522,10 @@ let lastKey = '';
 function render() {
   const r = route(), key = r.name + (r.trip ? r.trip.id + r.tab : ''), y = window.scrollY;
   app.innerHTML = r.name === 'trip' ? tripScreen(r.trip, r.tab) : r.name === 'backup' ? backupScreen() : homeScreen();
-  document.title = r.name === 'trip' ? r.trip.name : r.name === 'backup' ? 'Backup' : 'Trips';
+  document.title = r.name === 'trip' ? r.trip.name : r.name === 'backup' ? 'Backup' : 'Planner';
   window.scrollTo(0, key === lastKey ? y : 0); lastKey = key;
   if (ui.focus) { const el = $(ui.focus, app); if (el) el.focus(); ui.focus = null; }
-  if (r.name === 'trip' && r.tab === 'weather') weatherOnShow(r.trip);
+  if (r.name === 'trip' && r.tab === 'weather' && !isEv(r.trip)) weatherOnShow(r.trip);
 }
 
 /* ---- backup / restore ---- */
@@ -2527,7 +2601,8 @@ function handleAction(a, el) {
   const t = curTrip(), id = el.dataset.id;
   switch (a) {
     case 'new-trip': return tripDialog(null);
-    case 'edit-trip': return t && tripDialog(t);
+    case 'new-event': return eventDialog(null);
+    case 'edit-trip': return t && (isEv(t) ? eventDialog(t) : tripDialog(t));
     case 'export': return doExport();
     case 'restore': return doRestore();
     case 'wipe': return doWipe();
@@ -2615,6 +2690,7 @@ app.addEventListener('click', e => {
 });
 app.addEventListener('change', e => { if (e.target.matches('input[type=checkbox][data-action]')) handleAction(e.target.dataset.action, e.target); });
 app.addEventListener('input', e => {
+  if (e.target.id === 'evNotes') { const t = curTrip(); if (!t) return; t.privNotes = e.target.value.slice(0, 5000); clearTimeout(noteTimer); noteTimer = setTimeout(() => persist({ sync: false }), 400); return; }
   if (e.target.id !== 'tripNotes') return;
   const t = curTrip(); if (!t) return;
   t.notes = e.target.value; clearTimeout(noteTimer); noteTimer = setTimeout(() => persist(), 400);

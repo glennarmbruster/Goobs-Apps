@@ -1,4 +1,4 @@
-/* Service worker for Trips — offline app shell.
+/* Service worker for Planner — offline app shell.
    The page itself (index.html) is fetched from the network first, so a new version shows up the
    next time the app opens; if the network is slow or offline it falls back to the saved copy after 4 s.
    Icons and the manifest are served from the cache and refreshed quietly. */
