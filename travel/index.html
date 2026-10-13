@@ -188,7 +188,15 @@ a.chip{text-decoration:none;display:inline-flex;align-items:center;justify-conte
 .row-sub a{color:var(--accent)}
 #printArea{display:none}
 @media print{
-  @page{margin:14mm}
+  @page{margin:0}
+  /* the half-inch border is part of the content, so it holds whatever margin setting the print dialog or browser applies: padding at the sides, a spacer repeated at the top and bottom of every page */
+  #printArea .pa-frame{display:table;width:100%;box-sizing:border-box}
+  #printArea .pa-sp{display:table-header-group}
+  #printArea .pa-sp i{display:block;height:.5in}
+  #printArea .pa-sp.f{display:table-footer-group}
+  #printArea .pa-bd{display:table-row-group}
+  #printArea .pa-bd>div{display:table-row}
+  #printArea .pa-bd>div>div{display:table-cell;padding:0 .5in;vertical-align:top}
   html,body{background:#fff!important;color:#000!important}
   body>*:not(#printArea){display:none!important}
   #printArea{display:block!important;font:12pt/1.4 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:#000;background:#fff}
@@ -209,8 +217,13 @@ a.chip{text-decoration:none;display:inline-flex;align-items:center;justify-conte
   #printArea .pa-pk.on .pa-box::after{content:"✓"}
   #printArea .pa-pk.on span:last-child{color:#555}
   #printArea .pa-blank{border-bottom:.5pt solid #999;height:15pt;margin:0 0 2pt 16pt}
-  #printArea .pa-page{break-before:page}
-  #printArea .pa-page:first-child{break-before:auto}
+  #printArea .pa-frame+.pa-frame{break-before:page}
+  html,body{height:auto!important;min-height:0!important;margin:0!important;padding:0!important}
+  #printArea .pa-wxs{margin-top:12pt;border-top:.5pt solid #000;padding-top:5pt;break-inside:avoid}
+  #printArea .pa-wxs h3{margin:0 0 3pt}
+  #printArea .pa-wxg{display:flex;flex-wrap:wrap;gap:3pt 12pt;font-size:9.5pt}
+  #printArea .pa-wxg span{white-space:nowrap}
+  #printArea .pa-wxg em{font-style:normal;font-weight:700}
   #printArea table{width:100%;border-collapse:collapse}
   #printArea td{padding:2pt 4pt;border-bottom:.5pt solid #bbb}
   #printArea td.r{text-align:right}
@@ -2310,7 +2323,8 @@ function weatherTabBase(t) {
 function doPrint(html, title) {
   let pa = document.getElementById('printArea');
   if (!pa) { pa = document.createElement('div'); pa.id = 'printArea'; document.body.appendChild(pa); }
-  pa.innerHTML = html;
+  /* each forced page break gets its own frame, so every page starts with the top spacer */
+  pa.innerHTML = html.split(/(?=<section class="pa-page">)/).filter(x => x.trim()).map(c => `<div class="pa-frame"><div class="pa-sp"><i></i></div><div class="pa-sp f"><i></i></div><div class="pa-bd"><div><div>${c}</div></div></div></div>`).join('');
   const oldTitle = document.title; document.title = title || oldTitle;
   const done = () => { window.removeEventListener('afterprint', done); document.title = oldTitle; const p = document.getElementById('printArea'); if (p) p.innerHTML = ''; };
   window.addEventListener('afterprint', done);
@@ -2318,14 +2332,21 @@ function doPrint(html, title) {
 }
 const time12 = s => { const m = /^(\d{1,2}):(\d{2})$/.exec(s || ''); if (!m) return s || ''; const h = +m[1]; return `${h % 12 || 12}:${m[2]} ${h < 12 ? 'AM' : 'PM'}`; };
 const paHead = (t, what) => `<h1>${esc(t.name)}</h1><p class="pa-sub">${esc([t.destination, rangeText(t), t.travelerNames && t.travelerNames.filter(Boolean).length ? t.travelerNames.filter(Boolean).join(' & ') : plural(t.travelers, 'traveler')].filter(Boolean).join(' · '))}${what ? ' — ' + esc(what) : ''}</p>`;
+function printWxStrip(t) {
+  const days = tripDays(t).filter(d => wxBest(t.weather, d));
+  if (!days.length) return '';
+  const cells = days.map(d => { const w = wxBest(t.weather, d); return `<span><em>${esc(fmtDate(d, false))}</em> ${esc(wmo(w.code)[1])} ${T(w.tmax)}/${T(w.tmin)}${w.kind === 'forecast' && w.pop != null ? ` · ${Math.round(w.pop)}%` : ''}${w.kind === 'forecast' ? '' : ' (typ.)'}</span>`; });
+  return `<div class="pa-wxs"><h3>Weather${esc(t.destination ? ' · ' + t.destination : '')}</h3><div class="pa-wxg">${cells.join('')}</div></div>`;
+}
 function printPacking(t, lists, o) {
+  const wxs = o.weather ? printWxStrip(t) : '';
   const multi = lists.length > 1;
   return lists.map((ln, idx) => {
     const items = t.packing.filter(i => i.list === ln && (o.packed || !i.packed));
     const cats = PACK_CATS.map(c => [c, items.filter(i => i.cat === c)]).filter(([, a]) => a.length);
     const body = cats.map(([c, a]) => `<div class="pa-cat"><h3>${esc(c)}</h3>${a.map(i => `<div class="pa-pk${i.packed ? ' on' : ''}"><span class="pa-box"></span><span>${i.qty > 1 ? `${i.qty}× ` : ''}${esc(i.text)}</span></div>`).join('')}</div>`).join('');
     const blanks = '<div class="pa-cat"><h3>Extras</h3>' + '<div class="pa-blank"></div>'.repeat(4) + '</div>';
-    return `<section class="${o.pages && idx ? 'pa-page' : ''}"><h2>Packing · ${esc(ln)}${multi ? '' : ''}</h2><div class="pa-cats">${body || '<p>No items.</p>'}${blanks}</div></section>`;
+    return `<section class="${o.pages && idx ? 'pa-page' : ''}"><h2>Packing · ${esc(ln)}${multi ? '' : ''}</h2><div class="pa-cats">${body || '<p>No items.</p>'}${blanks}</div>${wxs}</section>`;
   }).join('');
 }
 function printItinerary(t, o) {
@@ -2361,6 +2382,7 @@ function printDialog(t, preset) {
     { name: 'weather', label: 'Weather on each day (forecast if available, otherwise typical)', type: 'checkbox', value: !!P.weather },
     { name: 'pack', label: 'Packing lists', type: 'checkbox', value: !!P.pack },
     ...t.packLists.map((n, i) => ({ name: 'pl' + i, label: '   ' + n, type: 'checkbox', value: !cur || cur === n })),
+    { name: 'wxpack', label: 'Weather for the trip at the bottom of each packing list', type: 'checkbox', value: !!(P.pack && weatherSource(t)) },
     { name: 'packed', label: 'Include items already packed (shown ticked)', type: 'checkbox', value: false },
     { name: 'pages', label: 'Start each packing list on a new page', type: 'checkbox', value: t.packLists.length > 1 },
     { name: 'todos', label: 'Open to-dos', type: 'checkbox', value: !!P.todos },
@@ -2370,12 +2392,12 @@ function printDialog(t, preset) {
     const lists = t.packLists.filter((n, i) => v['pl' + i]);
     if (!(v.itin || v.pack || v.todos || v.budget)) return 'Pick at least one thing to print.';
     if (v.pack && !lists.length) return 'Pick at least one packing list.';
-    if (v.weather && v.itin && weatherSource(t) && (!t.weather || (hasDayPlaces(t) && t.weather.locKey !== placesSig(t, dayPlaces(t))) || Date.now() - t.weather.fetchedAt > 3 * 3600e3 || (!hasDayPlaces(t) && wxDays(t).some(d => !t.weather.avg[d])))) {
+    if (((v.weather && v.itin) || (v.wxpack && v.pack)) && weatherSource(t) && (!t.weather || (hasDayPlaces(t) && t.weather.locKey !== placesSig(t, dayPlaces(t))) || Date.now() - t.weather.fetchedAt > 3 * 3600e3 || (!hasDayPlaces(t) && wxDays(t).some(d => !t.weather.avg[d])))) {
       try { const r = await loadWeather(t, false); t.weather = r.weather; persist(); } catch { /* print with whatever is saved */ }
     }
     const parts = [paHead(t, v.itin ? '' : v.pack ? 'Packing' : '')];
     if (v.itin) parts.push(printItinerary(t, { weather: v.weather }));
-    if (v.pack) parts.push(printPacking(t, lists, { packed: v.packed, pages: v.pages }));
+    if (v.pack) parts.push(printPacking(t, lists, { packed: v.packed, pages: v.pages, weather: v.wxpack }));
     if (v.todos) parts.push(printTodos(t));
     if (v.budget) parts.push(printBudget(t));
     parts.push(`<p class="pa-foot">Printed ${esc(fmtDateTime(new Date().toISOString()))}</p>`);
