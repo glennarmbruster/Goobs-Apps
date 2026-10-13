@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Goobs Apps</title>
 <meta name="robots" content="noindex">
-<link rel="icon" href="bills/icon-192.png">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <style>
 :root{--bg:#f5f4ef;--card:#fff;--ink:#1b2420;--muted:#66736d;--line:#e2e0d6;color-scheme:light dark}
 @media (prefers-color-scheme:dark){:root{--bg:#0e1311;--card:#171f1c;--ink:#e7eeeb;--muted:#97a69f;--line:#27332e}}
@@ -30,6 +31,7 @@ a.app span{color:var(--muted);font-size:13px;line-height:1.35;display:block}
 </head>
 <body>
 <main>
+  <img src="icon-192.png" alt="" style="width:72px;height:72px;display:block">
   <h1>Goobs Apps</h1>
   <p>Pick an app. Each one installs separately to your home screen and works offline.</p>
   <div id="apps">
@@ -49,7 +51,6 @@ a.app span{color:var(--muted);font-size:13px;line-height:1.35;display:block}
   </div>
   <div class="bar"><button id="cust" type="button">Choose which apps to show</button><button id="all" type="button" hidden>Show all apps</button></div>
   <div id="pick"></div>
-  <p class="tip">Bills, Money, Health, VA Claim, House, Inventory, Household, Occasions and Work Log keep their data only on the device you enter it on; use their Backup screen to move it. Recipes keep your own additions on the device and read the shared collection from the site. Trips, Grocery and To-do work on their own too, and can be shared between two phones if you sign in.</p>
 </main>
 <script>
 (function(){
