@@ -532,6 +532,19 @@ async function runInstall() { if (!deferredInstall) return; deferredInstall.prom
 if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol))
   window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
 
+/* Exit link: every app's top bar gets "‹ Apps" (back to the main apps page) unless that screen already has its own back link. */
+(function () {
+  const add = () => {
+    const w = document.querySelector('header.top .wrap');
+    if (!w || w.querySelector('a.back')) return;
+    const a = document.createElement('a');
+    a.className = 'back exit'; a.href = '../'; a.textContent = '‹ Apps'; a.setAttribute('aria-label', 'Exit to all apps');
+    w.insertBefore(a, w.firstChild);
+  };
+  const start = () => { add(); new MutationObserver(add).observe(document.body, { childList: true, subtree: true }); };
+  if (document.body) start(); else document.addEventListener('DOMContentLoaded', start);
+})();
+
 /* ---- Sync: optional shared database for two people (Firebase Auth + Firestore) ----
    The app always works from its own on-device copy. This layer pushes local changes
    (per item, last write wins) and merges in changes made on the other phone.
@@ -771,8 +784,9 @@ async function syncAction(a) {
     return true;
   }
   if (a === 'sync-info') {
+    if (Sync.status() === 'signed-out') { syncSignInDialog(); return true; }   // the "Sign in" badge opens the sign-in form directly
     const t = syncText();
-    await msgBox('Sharing', t.text + (Sync.status() === 'signed-out' ? ' Open Backup & sharing to sign in.' : ''));
+    await msgBox('Sharing', t.text);
     return true;
   }
   return false;

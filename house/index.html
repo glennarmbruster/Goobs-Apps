@@ -512,6 +512,19 @@ async function runInstall() { if (!deferredInstall) return; deferredInstall.prom
 if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol))
   window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
 
+/* Exit link: every app's top bar gets "‹ Apps" (back to the main apps page) unless that screen already has its own back link. */
+(function () {
+  const add = () => {
+    const w = document.querySelector('header.top .wrap');
+    if (!w || w.querySelector('a.back')) return;
+    const a = document.createElement('a');
+    a.className = 'back exit'; a.href = '../'; a.textContent = '‹ Apps'; a.setAttribute('aria-label', 'Exit to all apps');
+    w.insertBefore(a, w.firstChild);
+  };
+  const start = () => { add(); new MutationObserver(add).observe(document.body, { childList: true, subtree: true }); };
+  if (document.body) start(); else document.addEventListener('DOMContentLoaded', start);
+})();
+
 
 /* ===================== House app ===================== */
 const APP_ID = 'goobs-house', DB_NAME = 'goobs-house-db', SCHEMA = 2; // 2 = pets (Thing kind 'pet', vaccine tasks, sitter sheet text). Backups without any pet data are still written as 1.
