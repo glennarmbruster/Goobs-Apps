@@ -41,3 +41,10 @@ Printing (Trips only): the Print buttons on Overview, Packing, Plan and Weather 
 - `inventory/` home inventory with photos for insurance, plus an opt-in storm checklist. On-device only.
 - Trips: Budget now has a Split view (people, expenses, who-pays-whom) that syncs like the rest of the trip.
 None of the new apps use Firebase; each has its own encrypted Backup screen.
+
+## Added: Household, Occasions, Work Log (+ pet care in House)
+- `household/` how the house runs: contacts, accounts, vendors, a printable sheet. Blocks passwords/SSNs/long numbers. On-device only.
+- `occasions/` birthdays and events with countdowns, gift ideas and history. On-device only.
+- `worklog/` what you did on each job, tickets, time, weekly status report. On-device only.
+- `house/` now has pets: vet, vaccines/preventives in Due, and a printable sitter sheet.
+- Recipes read one file per recipe from `recipes/library/`; Change category is in a recipe's More menu.

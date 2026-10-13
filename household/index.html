@@ -1,0 +1,1278 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Household</title>
+<meta name="description" content="How the house runs: contacts, accounts, policies, vendors and what to do when. A printable sheet. No passwords. Data stays on your device.">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#faf7ef" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1311" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Household">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<style>
+:root{
+  --bg:#f5f4ef; --card:#ffffff; --ink:#1b2420; --muted:#66736d; --line:#e2e0d6; --soft:#efede5;
+  --accent:#0f766e; --accent-ink:#ffffff; --accent-soft:#d9f0ec;
+  --bad:#b42318; --bad-soft:#fde8e6; --warn:#9a5b00; --warn-soft:#fdf0d5; --ok:#166534; --ok-soft:#dcf5e3;
+  --radius:14px; --shadow:0 1px 2px rgba(16,24,20,.06),0 6px 18px rgba(16,24,20,.06);
+  color-scheme:light dark;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0e1311; --card:#171f1c; --ink:#e7eeeb; --muted:#97a69f; --line:#27332e; --soft:#1e2824;
+    --accent:#2dd4bf; --accent-ink:#06211d; --accent-soft:#12332e;
+    --bad:#ff8a80; --bad-soft:#3a1a18; --warn:#f6c26b; --warn-soft:#3a2c12; --ok:#7ee2a0; --ok-soft:#14301f;
+    --shadow:none;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation;
+  padding-bottom:calc(92px + env(safe-area-inset-bottom));
+}
+a{color:var(--accent)}
+h1,h2,h3{margin:0;line-height:1.2}
+h3{font-size:16px}
+p{margin:0 0 8px}
+.wrap{max-width:720px;margin:0 auto;padding:0 16px}
+.muted{color:var(--muted)} .bad{color:var(--bad)} .warn{color:var(--warn)} .ok{color:var(--ok)}
+.num{font-variant-numeric:tabular-nums}
+.hide{display:none!important}
+.pad{padding:14px 16px}
+.hint{font-size:13px;color:var(--muted);margin-top:4px}
+
+/* header */
+header.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top)}
+header.top .wrap{display:flex;align-items:center;gap:12px;min-height:58px}
+header.top .grow{flex:1;min-width:0}
+header.top h1{font-size:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+header.top .sub{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.back{display:inline-flex;align-items:center;min-height:44px;padding-right:6px;text-decoration:none;font-weight:600}
+
+/* cards, tiles, lists */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+.tile{padding:12px}
+.tile .lbl{font-size:12px;color:var(--muted);font-weight:600}
+.tile .val{font-size:20px;font-weight:700;margin-top:2px}
+.sec-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin:22px 4px 8px;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700}
+.sec-h .btn{text-transform:none;letter-spacing:0}
+.list{list-style:none;margin:0;padding:0}
+.row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-top:1px solid var(--line);cursor:pointer}
+.row:first-child{border-top:0}
+.row.static{cursor:default}
+.row-main{flex:1;min-width:0}
+.row-title{font-weight:600;overflow-wrap:anywhere}
+.row-sub{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.row-amt{font-weight:700;white-space:nowrap}
+.row.faded{opacity:.6}
+.badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 7px;border-radius:999px;background:var(--soft);color:var(--muted);vertical-align:middle;margin-left:6px}
+.badge.ok{background:var(--ok-soft);color:var(--ok)} .badge.warn{background:var(--warn-soft);color:var(--warn)} .badge.bad{background:var(--bad-soft);color:var(--bad)} .badge.acc{background:var(--accent-soft);color:var(--accent)}
+.empty{text-align:center;padding:40px 20px;color:var(--muted)}
+.empty .big{font-size:40px;line-height:1;margin-bottom:10px}
+.empty h2{color:var(--ink);font-size:18px;margin-bottom:6px}
+.empty .btn{margin-top:14px}
+.banner{padding:12px 14px;border-radius:12px;background:var(--warn-soft);color:var(--warn);font-size:14px;margin:14px 0;display:flex;gap:10px;justify-content:space-between;align-items:center}
+.banner.bad{background:var(--bad-soft);color:var(--bad)}
+.bar{height:8px;border-radius:99px;background:var(--soft);overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--accent);border-radius:99px}
+.bar.over>i{background:var(--bad)}
+
+/* buttons */
+.btn{white-space:nowrap;appearance:none;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-weight:600;min-height:44px;padding:0 16px;border-radius:12px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.danger{color:var(--bad)}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--accent)}
+.btn.small{min-height:36px;padding:0 12px;font-size:14px;border-radius:10px}
+.btn.block{width:100%}
+.btn:active{transform:translateY(1px)}
+.btn:disabled{opacity:.5;cursor:default}
+.btn:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible,.chip:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 14px;min-height:36px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+
+/* bottom nav + fab */
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+nav.tabs .wrap{display:flex;padding:0}
+nav.tabs a,nav.tabs button{flex:1;min-height:58px;border:0;background:none;color:var(--muted);font:inherit;font-size:11px;font-weight:600;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;text-decoration:none}
+nav.tabs .ico{font-size:20px;line-height:1}
+nav.tabs [aria-current="page"]{color:var(--accent)}
+.fab{position:fixed;right:max(16px,calc(50vw - 344px));bottom:calc(74px + env(safe-area-inset-bottom));z-index:7;width:56px;height:56px;border-radius:50%;border:0;background:var(--accent);color:var(--accent-ink);font-size:30px;line-height:1;box-shadow:0 6px 18px rgba(0,0,0,.28);cursor:pointer}
+.fab:active{transform:scale(.96)}
+
+/* forms + dialogs */
+input,select,textarea{width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-height:44px}
+textarea{min-height:92px;resize:vertical}
+input[type=checkbox]{width:22px;height:22px;min-height:0;padding:0;accent-color:var(--accent);flex:none}
+.field label{display:block;font-size:13px;font-weight:600;color:var(--muted);margin-bottom:4px}
+.field.check{display:flex;align-items:center;gap:10px}
+.field.check label{margin:0;color:var(--ink);font-size:16px;font-weight:500}
+.fields2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+dialog{border:0;border-radius:18px;padding:0;width:calc(100vw - 24px);max-width:520px;background:var(--card);color:var(--ink);box-shadow:0 20px 60px rgba(0,0,0,.35)}
+dialog::backdrop{background:rgba(10,15,12,.55)}
+.dlg-form{padding:20px;display:flex;flex-direction:column;gap:12px;max-height:85vh;max-height:85dvh;overflow:auto}
+.dlg-form h2{font-size:19px}
+.dlg-actions{display:flex;gap:8px;align-items:center;margin-top:6px;flex-wrap:wrap}
+.dlg-actions .spacer{flex:1}
+.ask-actions{justify-content:flex-end}
+.dlg-err{color:var(--bad);font-size:14px}
+.dlg-err:empty{display:none}
+.ask-body{font-size:15px;color:var(--ink)}
+.ask-body p{margin:0 0 8px}
+.checkgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px}
+.checkgrid .field.check label{font-size:15px}
+
+/* toast */
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom));background:#1b2420;color:#fff;padding:12px 16px;border-radius:12px;display:flex;gap:14px;align-items:center;z-index:60;max-width:calc(100vw - 24px);box-shadow:0 8px 24px rgba(0,0,0,.35);font-size:15px}
+.toast button{background:none;border:0;color:#7dd3c8;font:inherit;font-weight:700;cursor:pointer;min-height:36px}
+
+@media (prefers-reduced-motion:no-preference){.btn,.fab{transition:transform .08s}}
+
+.syncbadge{flex:none;white-space:nowrap;border:1px solid var(--line,#d5dbe0);background:var(--card,#fff);color:inherit;border-radius:999px;padding:4px 10px;font:inherit;font-size:.82rem;cursor:pointer;white-space:nowrap}
+.syncbadge.ok{color:#15803d}.syncbadge.bad{color:#b91c1c}
+.seg{display:flex;gap:8px;margin-top:6px}.seg .chip{flex:1;text-align:center}
+
+:root{--accent:#a16207;--accent-soft:#f6ebd0;--bg:#faf7ef}
+@media (prefers-color-scheme:dark){:root{--accent:#f0b84a;--accent-ink:#2a1c02;--accent-soft:#3a2c12;--bg:#0e1311}}
+.stack{display:flex;flex-direction:column;gap:14px;margin-top:14px}
+.row .btn{flex:none}
+.safety{font-size:13px;line-height:1.4;padding:10px 12px;border-radius:10px;background:var(--warn-soft);color:var(--warn);margin:12px 0}
+.safety b{font-weight:700}
+.ico-btn{min-width:44px;padding:0 10px;font-size:18px}
+.ico-btn.on{color:var(--accent)}
+.secico{font-size:22px;width:30px;text-align:center;flex:none}
+.tools{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 4px}
+.tools .btn{flex:1 1 auto}
+.tools.top{align-items:center}
+.search{margin:12px 0 4px}
+.crumb{margin:10px 0 0}
+.chip.big{min-height:44px}
+.pill{display:inline-block;font-size:11px;font-weight:700;padding:1px 7px;border-radius:999px;border:1px solid var(--line);color:var(--muted);margin-left:6px;vertical-align:middle}
+.pill.rv{border-color:var(--warn);color:var(--warn)}
+.pill.pv{border-color:var(--accent);color:var(--accent)}
+.rowact{display:flex;gap:6px;flex:none}
+.stepn{font-weight:700;color:var(--accent);width:24px;flex:none;text-align:right}
+.previewbox{max-height:200px;overflow:auto;font-size:13px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+.previewbox table{width:100%;border-collapse:collapse}
+.previewbox td,.previewbox th{padding:2px 6px;text-align:left;white-space:nowrap}
+/* the sheet (screen + print) */
+.sheet{margin-top:10px}
+.sheet h1.st{font-size:24px;margin:6px 0 2px}
+.sheet .meta{font-size:13px;color:var(--muted);margin-bottom:6px}
+.sheet h2.sh{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:22px 0 8px;padding-bottom:4px;border-bottom:2px solid var(--line);break-after:avoid}
+.ent{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin:0 0 10px;break-inside:avoid;page-break-inside:avoid}
+.ent h3{font-size:16px;display:flex;gap:6px;align-items:baseline;overflow-wrap:anywhere}
+.ent h3 .n{color:var(--accent);font-weight:700;flex:none;white-space:nowrap}
+.ent .notes{margin:4px 0 0;white-space:pre-wrap;overflow-wrap:anywhere;font-size:15px}
+.lines{display:grid;grid-template-columns:minmax(0,34%) minmax(0,1fr);gap:3px 12px;margin:6px 0 0;font-size:14px}
+.lines dt{color:var(--muted);font-weight:600}
+.lines dd{margin:0;overflow-wrap:anywhere;white-space:pre-wrap}
+.stamp{font-size:12px;color:var(--muted);margin-top:6px}
+.sheetfoot{font-size:12px;color:var(--muted);margin:18px 0 0;text-align:center}
+@page{margin:14mm}
+@media print{
+  :root{--bg:#fff;--card:#fff;--ink:#000;--muted:#444;--line:#bbb;--accent:#000;--warn:#000;--warn-soft:#fff;--shadow:none}
+  header.top,nav.tabs,.toast,dialog,.noprint{display:none!important}
+  html,body{background:#fff!important;color:#000!important;padding:0!important}
+  .wrap{max-width:none;padding:0}
+  .ent{border:1px solid #999;border-radius:4px;box-shadow:none}
+  .pill.rv{border-color:#000;color:#000}
+  a{color:#000;text-decoration:none}
+  .sheet h1.st{font-size:20pt}
+}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap"><div class="grow"><h1 id="title">Household</h1><div class="sub" id="sub"></div></div><button type="button" class="btn small primary hide" id="addBtn">+ Add</button></div></header>
+<main class="wrap" id="view"></main>
+<nav class="tabs" aria-label="Sections"><div class="wrap">
+  <button type="button" data-tab="sheet"><span class="ico">📋</span>Sheet</button>
+  <button type="button" data-tab="sections"><span class="ico">🗂️</span>Sections</button>
+  <button type="button" data-tab="contacts"><span class="ico">📞</span>Contacts</button>
+  <button type="button" data-tab="backup"><span class="ico">💾</span>Backup</button>
+</div></nav>
+<script>
+'use strict';
+/* ===================== shared helpers (identical in every Goobs app) ===================== */
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => Array.from(el.querySelectorAll(s));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const isNum = v => typeof v === 'number' && Number.isFinite(v);
+const str = v => (typeof v === 'string' ? v : v == null ? '' : String(v));
+
+/* ---- dates: always local calendar dates stored as 'YYYY-MM-DD' ---- */
+const pad = n => String(n).padStart(2, '0');
+const fmtISO = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const parseISO = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+const isISO = s => typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s) && fmtISO(parseISO(s)) === s;
+const todayISO = () => fmtISO(new Date());
+const daysBetween = (a, b) => Math.round((parseISO(b) - parseISO(a)) / 86400000);
+const addDays = (s, n) => { const d = parseISO(s); d.setDate(d.getDate() + n); return fmtISO(d); };
+function addMonths(s, n, anchorDay) {
+  const d = parseISO(s);
+  const day = anchorDay || d.getDate();
+  const first = new Date(d.getFullYear(), d.getMonth() + n, 1);
+  const last = new Date(first.getFullYear(), first.getMonth() + 1, 0).getDate();
+  first.setDate(Math.min(day, last));
+  return fmtISO(first);
+}
+const monthEndISO = s => { const d = parseISO(s); return fmtISO(new Date(d.getFullYear(), d.getMonth() + 1, 0)); };
+
+function fmtDate(s, withWeekday = true) {
+  const d = parseISO(s);
+  const o = { month: 'short', day: 'numeric' };
+  if (withWeekday) o.weekday = 'short';
+  if (d.getFullYear() !== new Date().getFullYear()) o.year = 'numeric';
+  return d.toLocaleDateString(undefined, o);
+}
+function fmtDateTime(iso) {
+  const d = new Date(iso);
+  return isNaN(d) ? 'unknown date' : d.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+}
+const _mf = {};
+function money(n, cur = 'USD') {
+  if (!_mf[cur]) {
+    try { _mf[cur] = new Intl.NumberFormat(undefined, { style: 'currency', currency: cur }); }
+    catch { _mf[cur] = new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }); }
+  }
+  return _mf[cur].format(n);
+}
+const csvCell = v => {
+  let s = String(v ?? '');
+  if (/^[=+\-@\t\r]/.test(s)) s = "'" + s; // neutralise spreadsheet formula injection
+  return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+};
+function safeUrl(u) {
+  let s = String(u ?? '').trim();
+  if (!s) return '';
+  if (!/^[a-z][a-z0-9+.-]*:/i.test(s)) s = 'https://' + s;
+  try { const x = new URL(s); return /^https?:$/.test(x.protocol) ? x.href : ''; } catch { return ''; }
+}
+
+/* ---- storage: one JSON string under one key in IndexedDB ---- */
+function openDB(name) {
+  return new Promise((res, rej) => {
+    if (!window.indexedDB) return rej(new Error('IndexedDB unavailable'));
+    const r = indexedDB.open(name, 1);
+    r.onupgradeneeded = () => { r.result.createObjectStore('kv'); };
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+    r.onblocked = () => rej(new Error('Database blocked'));
+  });
+}
+function idbGet(db, key) {
+  return new Promise((res, rej) => {
+    const q = db.transaction('kv').objectStore('kv').get(key);
+    q.onsuccess = () => res(q.result);
+    q.onerror = () => rej(q.error);
+  });
+}
+function idbPut(db, key, val) {
+  return new Promise((res, rej) => {
+    const tx = db.transaction('kv', 'readwrite');
+    tx.objectStore('kv').put(val, key);
+    tx.oncomplete = () => res();
+    tx.onerror = () => rej(tx.error);
+    tx.onabort = () => rej(tx.error || new Error('Write aborted'));
+  });
+}
+
+/* ---- toast ---- */
+function toast(msg, action) {
+  const old = $('.toast'); if (old) old.remove();
+  const t = document.createElement('div');
+  t.className = 'toast'; t.setAttribute('role', 'status');
+  t.innerHTML = `<span>${esc(msg)}</span>` + (action ? `<button type="button">${esc(action.label)}</button>` : '');
+  if (action) t.querySelector('button').onclick = () => { t.remove(); action.fn(); };
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), action ? 8000 : 3200);
+}
+
+/* ---- dialogs ---- */
+if (!$('#dlg')) document.body.insertAdjacentHTML('beforeend', '<dialog id="dlg"></dialog><dialog id="ask"></dialog>');
+{
+  const dlg = $('#dlg'); let down = false;
+  dlg.addEventListener('pointerdown', e => { down = e.target === dlg; });
+  dlg.addEventListener('click', e => { if (e.target === dlg && down) dlg.close(); });
+}
+
+function fieldHTML(f) {
+  const id = 'f_' + f.name, v = f.value ?? '';
+  if (f.type === 'checkbox')
+    return `<div class="field check"><input type="checkbox" id="${id}" name="${f.name}"${f.value ? ' checked' : ''}><label for="${id}">${esc(f.label)}</label></div>`;
+  let ctl;
+  if (f.type === 'select') {
+    ctl = `<select id="${id}" name="${f.name}">${f.options.map(o => {
+      const [val, label] = Array.isArray(o) ? o : [o, o];
+      return `<option value="${esc(val)}"${String(val) === String(v) ? ' selected' : ''}>${esc(label)}</option>`;
+    }).join('')}</select>`;
+  } else if (f.type === 'textarea') {
+    ctl = `<textarea id="${id}" name="${f.name}" placeholder="${esc(f.placeholder || '')}">${esc(v)}</textarea>`;
+  } else {
+    const t = f.type || 'text';
+    const extra = t === 'number' ? ` inputmode="decimal" step="${f.step || 'any'}"` : '';
+    ctl = `<input id="${id}" name="${f.name}" type="${t}" value="${esc(v)}" placeholder="${esc(f.placeholder || '')}"${extra}${f.min != null ? ` min="${f.min}"` : ''}${f.max != null ? ` max="${f.max}"` : ''} autocomplete="${f.autocomplete || 'off'}" autocapitalize="${f.capitalize || (t === 'email' || t === 'password' ? 'none' : 'sentences')}">`;
+  }
+  return `<div class="field"><label for="${id}">${esc(f.label)}${f.required ? ' *' : ''}</label>${ctl}${f.hint ? `<div class="hint">${esc(f.hint)}</div>` : ''}</div>`;
+}
+
+/* formDialog: fields -> values. onSubmit(values) may return an error string (keeps dialog open).
+   onDelete() may return true to close. extra: [{label, kind, onClick}] extra buttons. */
+function formDialog({ title, intro = '', fields, submitLabel = 'Save', onSubmit, onDelete, deleteLabel = 'Delete', extra = [], onClose, grid = '' }) {
+  const dlg = $('#dlg');
+  const body = grid ? `<div class="${grid}">${fields.map(fieldHTML).join('')}</div>` : fields.map(fieldHTML).join('');
+  dlg.innerHTML = `<form class="dlg-form" novalidate>
+    <h2>${esc(title)}</h2>${intro ? `<p class="muted">${esc(intro)}</p>` : ''}${body}
+    <div class="dlg-err" role="alert"></div>
+    <div class="dlg-actions">
+      ${onDelete ? `<button type="button" class="btn danger" data-k="del">${esc(deleteLabel)}</button>` : ''}
+      ${extra.map((x, i) => `<button type="button" class="btn ${x.kind || ''}" data-x="${i}">${esc(x.label)}</button>`).join('')}
+      <span class="spacer"></span>
+      <button type="button" class="btn ghost" data-k="cancel">Cancel</button>
+      <button type="submit" class="btn primary">${esc(submitLabel)}</button>
+    </div></form>`;
+  const form = $('form', dlg), err = $('.dlg-err', dlg);
+  const collect = () => {
+    const vals = {};
+    for (const f of fields) { const el = form.elements[f.name]; vals[f.name] = f.type === 'checkbox' ? el.checked : el.value; }
+    return vals;
+  };
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const vals = collect();
+    for (const f of fields) if (f.required && !String(vals[f.name]).trim()) { err.textContent = `${f.label} is required.`; return; }
+    err.textContent = '';
+    let msg;
+    try { msg = await onSubmit(vals); } catch (ex) { msg = ex.message || 'Something went wrong.'; }
+    if (msg) err.textContent = msg; else dlg.close();
+  });
+  $('[data-k="cancel"]', dlg).onclick = () => dlg.close();
+  if (onDelete) $('[data-k="del"]', dlg).onclick = async () => { if (await onDelete()) dlg.close(); };
+  $$('[data-x]', dlg).forEach(b => { b.onclick = () => extra[+b.dataset.x].onClick(collect()); });
+  dlg.onclose = () => { dlg.onclose = null; if (onClose) onClose(); };
+  dlg.showModal();
+  const first = form.querySelector('input:not([type=checkbox]),textarea');
+  if (first && !first.value) first.focus(); // new-item forms open ready to type; edit forms don't pop the keyboard
+}
+
+function askDialog({ title, body = '', buttons }) {
+  return new Promise(resolve => {
+    const d = $('#ask'); let done = false;
+    d.innerHTML = `<div class="dlg-form"><h2>${esc(title)}</h2>${body ? `<div class="ask-body">${body}</div>` : ''}
+      <div class="dlg-actions ask-actions">${buttons.map((b, i) => `<button type="button" class="btn ${b.kind || ''}" data-i="${i}">${esc(b.label)}</button>`).join('')}</div></div>`;
+    const finish = v => { if (done) return; done = true; d.close(); resolve(v); };
+    $$('button', d).forEach(btn => { btn.onclick = () => finish(buttons[+btn.dataset.i].value); });
+    d.oncancel = () => { done = true; resolve(undefined); };
+    d.showModal();
+  });
+}
+const confirmBox = async (title, bodyText, okLabel = 'Delete', danger = true) =>
+  (await askDialog({ title, body: bodyText ? `<p>${esc(bodyText)}</p>` : '', buttons: [{ label: 'Cancel', value: false }, { label: okLabel, value: true, kind: danger ? 'danger' : 'primary' }] })) === true;
+const msgBox = (title, bodyText) =>
+  askDialog({ title, body: `<p>${esc(bodyText)}</p>`, buttons: [{ label: 'OK', value: true, kind: 'primary' }] });
+
+/* ---- backup: optional AES-GCM passphrase encryption (Web Crypto, PBKDF2-SHA256) ---- */
+const b64 = buf => { let s = ''; const b = new Uint8Array(buf); for (let i = 0; i < b.length; i += 0x8000) s += String.fromCharCode.apply(null, b.subarray(i, i + 0x8000)); return btoa(s); };
+const unb64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+async function deriveKey(pass, salt, iterations) {
+  const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(pass), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey({ name: 'PBKDF2', salt, iterations, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+}
+async function encryptPayload(obj, pass) {
+  const salt = crypto.getRandomValues(new Uint8Array(16)), iv = crypto.getRandomValues(new Uint8Array(12));
+  const iterations = 250000;
+  const key = await deriveKey(pass, salt, iterations);
+  const ct = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, new TextEncoder().encode(JSON.stringify(obj)));
+  return { encrypted: true, kdf: 'PBKDF2-SHA256', iterations, salt: b64(salt), iv: b64(iv), data: b64(ct) };
+}
+async function decryptPayload(env, pass) {
+  const key = await deriveKey(pass, unb64(env.salt), env.iterations);
+  try {
+    const pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: unb64(env.iv) }, key, unb64(env.data));
+    return JSON.parse(new TextDecoder().decode(pt));
+  } catch { throw new Error('Wrong passphrase, or the file is damaged.'); }
+}
+function promptDecrypt(env) {
+  return new Promise(resolve => {
+    let result = null;
+    formDialog({
+      title: 'Encrypted backup', intro: 'Enter the passphrase you chose when you made this backup.',
+      fields: [{ name: 'pass', label: 'Passphrase', type: 'password', required: true }], submitLabel: 'Unlock',
+      onSubmit: async v => { try { result = await decryptPayload(env, v.pass); } catch (e) { return e.message; } },
+      onClose: () => resolve(result)
+    });
+  });
+}
+const Backup = {
+  async build({ appId, schema, data, passphrase }) {
+    const head = { app: appId, schemaVersion: schema, exportedAt: new Date().toISOString() };
+    if (passphrase) return JSON.stringify({ ...head, ...(await encryptPayload(data, passphrase)) });
+    return JSON.stringify({ ...head, encrypted: false, data }, null, 2);
+  },
+  /* returns {data, exportedAt, schemaVersion}, or null if the user cancelled the passphrase prompt; throws Error with a friendly message */
+  async parse(text, { appId, schema }) {
+    let env;
+    try { env = JSON.parse(text); } catch { throw new Error('That file isn’t a valid backup (it isn’t JSON).'); }
+    if (!env || typeof env !== 'object' || env.app !== appId)
+      throw new Error(env && typeof env === 'object' && env.app ? `That backup belongs to a different app (${String(env.app).slice(0, 40)}).` : 'That file isn’t a backup from this app.');
+    if (!Number.isInteger(env.schemaVersion) || env.schemaVersion < 1) throw new Error('The backup is missing its version number.');
+    if (env.schemaVersion > schema) throw new Error('That backup was made by a newer version of the app. Close and reopen this app to update it, then try again.');
+    let data;
+    if (env.encrypted) {
+      if (!(window.crypto && crypto.subtle)) throw new Error('Encrypted backups need a secure (https) connection.');
+      if (!(env.iterations >= 1000 && env.iterations <= 2000000) || typeof env.salt !== 'string' || typeof env.iv !== 'string' || typeof env.data !== 'string')
+        throw new Error('The encrypted backup is damaged.');
+      data = await promptDecrypt(env);
+      if (data === null) return null;
+    } else data = env.data;
+    if (!data || typeof data !== 'object') throw new Error('The backup contains no data.');
+    return { data, exportedAt: typeof env.exportedAt === 'string' ? env.exportedAt : null, schemaVersion: env.schemaVersion };
+  }
+};
+
+/* share sheet when the platform supports sharing files (iPhone), otherwise a normal download */
+async function deliverFile(filename, text, mime = 'application/json') {
+  const file = new File([text], filename, { type: mime });
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try { await navigator.share({ files: [file], title: filename }); return 'shared'; }
+    catch (e) { if (e && e.name === 'AbortError') return 'cancelled'; /* otherwise fall back to a download */ }
+  }
+  const url = URL.createObjectURL(file);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.style.display = 'none';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 15000);
+  return 'downloaded';
+}
+function pickFile(accept = '.json,application/json') {
+  return new Promise(resolve => {
+    const i = document.createElement('input');
+    i.type = 'file'; i.accept = accept; i.style.display = 'none';
+    document.body.appendChild(i);
+    let done = false;
+    const fin = f => { if (done) return; done = true; i.remove(); resolve(f); };
+    i.addEventListener('change', () => fin((i.files && i.files[0]) || null));
+    i.addEventListener('cancel', () => fin(null));
+    i.click();
+  });
+}
+const readFileText = f => (f.text ? f.text() : new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = () => rej(r.error); r.readAsText(f); }));
+
+/* nag banner: only when there is data and no recent backup */
+function backupNag(meta, hasData) {
+  if (!hasData) return null;
+  if (!meta.lastBackup) return 'You have data but no backup yet. Make one so you can restore it if this device loses it.';
+  const age = (Date.now() - Date.parse(meta.lastBackup)) / 86400000;
+  const changed = meta.lastChange && Date.parse(meta.lastChange) > Date.parse(meta.lastBackup) + 1000;
+  if (changed && age >= 7) return `Your last backup was ${Math.floor(age)} days ago and you’ve made changes since.`;
+  return null;
+}
+
+/* ---- install helper ---- */
+let deferredInstall = null;
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferredInstall = e; if (typeof render === 'function') render(); });
+const isStandalone = () => (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+function installCardHTML() {
+  if (isStandalone()) return '';
+  const ios = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const msg = deferredInstall
+    ? '<p>Install it for its own window and full offline use.</p><button class="btn primary" data-action="install">Install app</button>'
+    : ios
+      ? '<p>In Safari tap <b>Share</b> → <b>Add to Home Screen</b>. <b>Do this before entering data</b> — the home-screen app keeps its own separate storage from the Safari tab. Then open it from the new icon.</p>'
+      : '<p>Use your browser’s menu → <b>Install app</b> (or <b>Add to Home Screen</b>).</p>';
+  return `<section class="card pad"><h3>Install on this device</h3>${msg}</section>`;
+}
+async function runInstall() { if (!deferredInstall) return; deferredInstall.prompt(); try { await deferredInstall.userChoice; } catch {} deferredInstall = null; if (typeof render === 'function') render(); }
+
+
+
+if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol))
+  window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
+
+
+/* ===================== Household app ===================== */
+const APP_ID = 'goobs-household', DB_NAME = 'goobs-household-db', SCHEMA = 1;
+const MAX_SECTIONS = 40, MAX_ENTRIES = 1500, MAX_CONTACTS = 1000, MAX_EXTRAS = 12, MAX_FIELDS = 8, REVIEW_DAYS = 365;
+const SAFETY_TEXT = 'Never store passwords, PINs, full account or card numbers, or Social Security numbers here. Saving is blocked when something looks like one.';
+const DLG_INTRO = 'Never enter passwords, PINs, full account or card numbers, or SSNs. Saving is blocked if it looks like one.';
+
+const STARTERS = [
+  { key: 'emergency', name: 'Emergency contacts', icon: '🚨', hint: 'Who to call first: family, neighbors, doctor, the person who has a key.', fields: [{ l: 'Relationship' }] },
+  { key: 'home', name: 'Home systems', icon: '🏠', hint: 'Generator, pool equipment, internet / Starlink, security cameras, lighting. Where the shutoffs and panels are, who services each.', fields: [{ l: 'Make / model' }, { l: 'Serviced by' }, { l: 'Shutoff / panel location' }] },
+  { key: 'utilities', name: 'Utilities & accounts', icon: '💡', hint: 'Company, what it pays and how, where the bill arrives, contact number. Last 4 of an account number at most.', fields: [{ l: 'What it pays / how paid' }, { l: 'Bill arrives' }, { l: 'Account (last 4 only)', max: 4 }] },
+  { key: 'insurance', name: 'Insurance', icon: '🛡️', hint: 'Home, auto, umbrella, life, health. Policy number text is limited to 8 characters.', fields: [{ l: 'Type' }, { l: 'Company' }, { l: 'Agent' }, { l: 'Policy # (8 chars max)', max: 8 }] },
+  { key: 'vehicles', name: 'Vehicles', icon: '🚗', hint: 'Make / model, where the title is, who insures it, who services it.', fields: [{ l: 'Title is kept' }, { l: 'Insurer' }, { l: 'Serviced by' }] },
+  { key: 'money', name: 'Money', icon: '🏦', hint: 'Which bank pays which bill, where statements are, who the advisor is. No balances.', fields: [{ l: 'Pays which bills' }, { l: 'Statements are' }, { l: 'Advisor' }] },
+  { key: 'documents', name: 'Documents', icon: '📄', hint: 'Where the will, titles, deeds, military / VA papers are kept, on paper or digital.', fields: [] },
+  { key: 'medical', name: 'Medical contacts', icon: '🩺', hint: 'Doctors, dentist, pharmacy.', fields: [{ l: 'For' }] },
+  { key: 'pets', name: 'Pets', icon: '🐾', hint: 'Vet, feeding, medications.', fields: [{ l: 'Pet' }] },
+  { key: 'family', name: 'Kids & family contacts', icon: '👪', hint: 'Kids, parents, siblings, schools.', fields: [{ l: 'Relationship' }] },
+  { key: 'notavailable', name: 'If I’m not available', icon: '🧭', steps: true, hint: 'An ordered checklist: first calls, who knows what, where the important folder is.', fields: [] }
+];
+const STARTER_BY_KEY = Object.fromEntries(STARTERS.map(s => [s.key, s]));
+
+/* ---- safety scanner: passwords / PINs / SSNs block the save; long digit runs ask first ---- */
+const PW_WORD = /\b(?:password|passcode|passwd|passphrase)s?\b(?![\s-]+(?:manager|vault|book|safe|protected|reset|app)\b)/i;
+const PW_SHORT = /\b(?:pin|pw|pwd)\b\s*(?:[:=#]|is\b|\d|number\b|code\b)/i;
+const SSN_RE = /(?<!\d)\d{3}[ -]\d{2}[ -]\d{4}(?!\d)/g;
+const PHONE_RE = /(?<!\d)(?:\+?1[ .-]?)?(?:\(\d{3}\)[ .-]?|\d{3}[ .-])\d{3}[ .-]\d{4}(?!\d)/g;
+const RUN_RE = /(?<!\d)\d(?:[ -]?\d){8,}(?!\d)/;
+function scanValue(label, v, { phone = false } = {}) {
+  const out = { hard: [], soft: [] };
+  let s = str(v);
+  if (!s.trim()) return out;
+  if (PW_WORD.test(s) || PW_SHORT.test(s)) out.hard.push(`${label} looks like a password or PIN`);
+  if (s.match(SSN_RE)) { out.hard.push(`${label} looks like a Social Security number`); s = s.replace(SSN_RE, ' '); }
+  if (phone && /^[+\d()\s.\-xX#,]*$/.test(s) && s.replace(/\D/g, '').length <= 12) return out; // a phone field holding a phone number
+  s = s.replace(/(?<!\d)\d{4}-\d{2}-\d{2}(?!\d)/g, ' ')   // ISO dates
+    .replace(/(?<!\d)\d{5}-\d{4}(?!\d)/g, ' ')            // ZIP+4
+    .replace(/\$\s?\d[\d,]*(?:\.\d+)?/g, ' ')             // dollar amounts
+    .replace(/\d[\d,]*\.\d+/g, ' ')                        // decimals
+    .replace(PHONE_RE, ' ');                               // phone numbers with separators
+  if (RUN_RE.test(s)) out.soft.push(`${label} contains a run of 9 or more digits`);
+  return out;
+}
+function scanFields(list) {
+  const r = { hard: [], soft: [] };
+  for (const f of list) { const o = scanValue(f.label, f.value, { phone: !!f.phone }); r.hard.push(...o.hard); r.soft.push(...o.soft); }
+  return r;
+}
+function entryScanList(r) {
+  return [{ label: 'Title', value: r.title }, { label: 'Notes', value: r.notes }, { label: 'Phone', value: r.phone, phone: true }, { label: 'Email', value: r.email },
+    { label: 'Website', value: r.website }, { label: 'Address', value: r.address }, { label: 'Where to find', value: r.where }, { label: 'Tags', value: (r.tags || []).join(' ') },
+    ...(r.extras || []).map(x => ({ label: x.l, value: x.v })), ...(r.extras || []).map(x => ({ label: 'Field name', value: x.l }))];
+}
+function contactScanList(r) {
+  return [{ label: 'Name', value: r.name }, { label: 'Role', value: r.role }, { label: 'Phone', value: r.phone, phone: true }, { label: 'Email', value: r.email }, { label: 'Notes', value: r.notes }];
+}
+/* returns null when the save may go ahead, else an error string for the dialog */
+async function safetyGate(list) {
+  const r = scanFields(list);
+  if (r.hard.length) return `Not saved: ${[...new Set(r.hard)].slice(0, 3).join('; ')}. This app doesn’t store passwords, PINs or SSNs. Remove it, or reword (for example “password manager, see the safe”).`;
+  if (r.soft.length) {
+    const msgs = [...new Set(r.soft)];
+    const go = await askDialog({
+      title: 'Long number found',
+      body: `<p>${esc(msgs.join('; '))}.</p><p class="muted">Full account, card and ID numbers don’t belong here. Phone numbers and policy numbers up to 8 digits are fine.</p>`,
+      buttons: [{ label: 'Go back and edit', value: false }, { label: 'Save anyway (I checked it’s not sensitive)', value: true, kind: 'primary' }]
+    });
+    if (go !== true) return 'Not saved yet. Edit the number, or choose Save anyway.';
+  }
+  return null;
+}
+function countFlagged() {
+  let n = 0;
+  for (const e of state.entries) { const r = scanFields(entryScanList(e)); if (r.hard.length || r.soft.length) n++; }
+  for (const c of state.contacts) { const r = scanFields(contactScanList(c)); if (r.hard.length || r.soft.length) n++; }
+  return n;
+}
+
+/* ---- model ---- */
+const clip = (v, n) => str(v).trim().slice(0, n);
+function normFields(arr) {
+  const out = [];
+  for (const f of Array.isArray(arr) ? arr : []) {
+    if (!f || typeof f !== 'object') continue;
+    const l = clip(f.l, 60); if (!l || out.some(x => x.l.toLowerCase() === l.toLowerCase())) continue;
+    const m = Number(f.max);
+    out.push(Number.isInteger(m) && m >= 1 && m <= 200 ? { l, max: m } : { l });
+    if (out.length >= MAX_FIELDS) break;
+  }
+  return out;
+}
+function normSection(s) {
+  if (!s || typeof s !== 'object') return null;
+  const name = clip(s.name, 80); if (!name) return null;
+  const st = STARTER_BY_KEY[s.kind];
+  return { id: str(s.id) || uid(), name, kind: st ? st.key : 'custom', icon: clip(s.icon, 4) || (st ? st.icon : '📁'), hint: clip(s.hint, 300), fields: normFields(s.fields), steps: !!s.steps };
+}
+function normTags(t) {
+  const arr = Array.isArray(t) ? t : typeof t === 'string' ? t.split(',') : [];
+  const out = [];
+  for (const x of arr) { const v = str(x).trim().toLowerCase().replace(/\s+/g, ' ').slice(0, 24); if (v && !out.includes(v)) out.push(v); if (out.length >= 10) break; }
+  return out;
+}
+function normExtras(a) {
+  const out = [];
+  for (const x of Array.isArray(a) ? a : []) {
+    if (!x || typeof x !== 'object') continue;
+    const l = clip(x.l, 60), v = clip(x.v, 300);
+    if (l && v) out.push({ l, v });
+    if (out.length >= MAX_EXTRAS) break;
+  }
+  return out;
+}
+function normEntry(e) {
+  if (!e || typeof e !== 'object') return null;
+  const title = clip(e.title, 120), sectionId = str(e.sectionId);
+  if (!title || !sectionId) return null;
+  const created = isNum(e.createdAt) ? e.createdAt : Date.now();
+  return {
+    id: str(e.id) || uid(), sectionId, title, notes: str(e.notes).trim().slice(0, 4000), phone: clip(e.phone, 60), email: clip(e.email, 120),
+    website: clip(e.website, 300), address: clip(e.address, 200), where: clip(e.where, 300), tags: normTags(e.tags), pinned: !!e.pinned,
+    extras: normExtras(e.extras), createdAt: created, updatedAt: isNum(e.updatedAt) ? e.updatedAt : created
+  };
+}
+function normContact(c) {
+  if (!c || typeof c !== 'object') return null;
+  const name = clip(c.name, 120); if (!name) return null;
+  const created = isNum(c.createdAt) ? c.createdAt : Date.now();
+  return { id: str(c.id) || uid(), name, role: clip(c.role, 60), phone: clip(c.phone, 60), email: clip(c.email, 120), notes: str(c.notes).trim().slice(0, 1000), private: !!c.private, createdAt: created, updatedAt: isNum(c.updatedAt) ? c.updatedAt : created };
+}
+function normalizeData(raw) {
+  let dropped = 0;
+  const take = (arr, fn, cap, seen) => {
+    const out = [];
+    for (const x of Array.isArray(arr) ? arr : []) {
+      const n = fn(x);
+      if (!n || seen.has(n.id) || out.length >= cap) { dropped++; continue; }
+      seen.add(n.id); out.push(n);
+    }
+    return out;
+  };
+  const sections = take(raw && raw.sections, normSection, MAX_SECTIONS, new Set());
+  const sids = new Set(sections.map(s => s.id));
+  const entries = take(raw && raw.entries, e => { const n = normEntry(e); return n && sids.has(n.sectionId) ? n : null; }, MAX_ENTRIES, new Set());
+  const contacts = take(raw && raw.contacts, normContact, MAX_CONTACTS, new Set());
+  return { data: { sections, entries, contacts }, dropped };
+}
+const defaultState = () => ({ schemaVersion: SCHEMA, meta: { lastBackup: null, lastChange: null }, settings: { cindy: false }, sections: [], entries: [], contacts: [] });
+function loadState(parsed) {
+  const { data } = normalizeData(parsed);
+  return {
+    schemaVersion: SCHEMA, meta: { lastBackup: str(parsed && parsed.meta && parsed.meta.lastBackup) || null, lastChange: str(parsed && parsed.meta && parsed.meta.lastChange) || null },
+    settings: { cindy: !!(parsed && parsed.settings && parsed.settings.cindy === true) }, sections: data.sections, entries: data.entries, contacts: data.contacts
+  };
+}
+const exportData = () => ({ sections: state.sections, entries: state.entries, contacts: state.contacts });
+
+/* ---- persistence ---- */
+let state = defaultState(), db = null, saveFailed = false, persistAsked = false, saveChain = Promise.resolve();
+function persist({ touch = true } = {}) {
+  if (touch) state.meta.lastChange = new Date().toISOString();
+  if (!db) return Promise.resolve();
+  const snap = JSON.stringify(state);
+  saveChain = saveChain.then(() => idbPut(db, 'state', snap)).then(() => { saveFailed = false; }).catch(err => { console.error(err); saveFailed = true; });
+  if (!persistAsked && navigator.storage && navigator.storage.persist) { persistAsked = true; navigator.storage.persist().catch(() => {}); }
+  return saveChain;
+}
+const commit = () => { persist(); render(); };
+
+/* ---- helpers ---- */
+const plural = (n, w) => `${n} ${n === 1 ? w : /y$/.test(w) ? w.slice(0, -1) + 'ies' : w + 's'}`;
+const secById = id => state.sections.find(s => s.id === id);
+const entById = id => state.entries.find(e => e.id === id);
+const conById = id => state.contacts.find(c => c.id === id);
+const entriesOf = sid => state.entries.filter(e => e.sectionId === sid);
+const longDate = ms => new Date(ms).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+const reviewDue = e => (Date.now() - e.updatedAt) / 86400000 >= REVIEW_DAYS;
+function telHref(p) {
+  const head = str(p).split(/[\/;|,]|[a-z#]/i)[0];
+  const digits = head.replace(/[^\d+]/g, '');
+  return digits.replace(/\D/g, '').length >= 7 ? 'tel:' + digits : '';
+}
+const EMAIL_RE = /^[^@\s<>"',;]+@[^@\s<>"',;]+\.[^@\s<>"',;]+$/;
+const mailHref = m => EMAIL_RE.test(str(m).trim()) ? 'mailto:' + encodeURI(str(m).trim()) : '';
+function hostOf(u) { try { return new URL(u).host.replace(/^www\./, '') + (new URL(u).pathname.length > 1 ? new URL(u).pathname : ''); } catch { return u; } }
+
+/* one entry -> lines used by both the HTML sheet and the copied text */
+function entryLines(e) {
+  const L = [];
+  if (e.phone) { const h = telHref(e.phone); L.push({ label: 'Phone', text: e.phone, html: h ? `<a href="${esc(h)}">${esc(e.phone)}</a>` : esc(e.phone) }); }
+  if (e.email) { const h = mailHref(e.email); L.push({ label: 'Email', text: e.email, html: h ? `<a href="${esc(h)}">${esc(e.email)}</a>` : esc(e.email) }); }
+  if (e.website) { const u = safeUrl(e.website); L.push({ label: 'Website', text: u || e.website, html: u ? `<a href="${esc(u)}" target="_blank" rel="noopener noreferrer">${esc(hostOf(u))}</a>` : esc(e.website) }); }
+  if (e.address) L.push({ label: 'Address', text: e.address, html: esc(e.address) });
+  if (e.where) L.push({ label: 'Where to find', text: e.where, html: esc(e.where) });
+  for (const x of e.extras) L.push({ label: x.l, text: x.v, html: esc(x.v) });
+  return L;
+}
+
+/* ---- actions ---- */
+const takeSnap = () => JSON.stringify(exportData());
+function offerUndo(msg, snap) {
+  toast(msg, { label: 'Undo', fn: () => {
+    const { data } = normalizeData(JSON.parse(snap));
+    state.sections = data.sections; state.entries = data.entries; state.contacts = data.contacts;
+    commit(); toast('Undone');
+  } });
+}
+function addStarters(keys) {
+  let n = 0;
+  for (const k of keys) {
+    const st = STARTER_BY_KEY[k];
+    if (!st || state.sections.length >= MAX_SECTIONS || state.sections.some(s => s.kind === k)) continue;
+    state.sections.push(normSection({ id: uid(), name: st.name, kind: st.key, icon: st.icon, hint: st.hint, fields: st.fields, steps: !!st.steps })); n++;
+  }
+  return n;
+}
+function moveSection(id, dir) {
+  const i = state.sections.findIndex(s => s.id === id), j = i + dir;
+  if (i < 0 || j < 0 || j >= state.sections.length) return;
+  [state.sections[i], state.sections[j]] = [state.sections[j], state.sections[i]];
+  commit();
+}
+function moveEntry(id, dir) {
+  const e = entById(id); if (!e) return;
+  const idxs = []; state.entries.forEach((x, i) => { if (x.sectionId === e.sectionId) idxs.push(i); });
+  const p = idxs.indexOf(state.entries.indexOf(e)), q = p + dir;
+  if (q < 0 || q >= idxs.length) return;
+  const a = idxs[p], b = idxs[q];
+  [state.entries[a], state.entries[b]] = [state.entries[b], state.entries[a]];
+  commit();
+}
+function togglePin(id) { const e = entById(id); if (!e) return; e.pinned = !e.pinned; commit(); }
+
+/* ---- dialogs ---- */
+function starterDialog() {
+  const avail = STARTERS.filter(s => !state.sections.some(x => x.kind === s.key));
+  if (!avail.length) return toast('All starter sections are already added.');
+  formDialog({
+    title: 'Add starter sections', intro: 'Tick the ones you want. Nothing is added until you tap Add. Rename, reorder or delete any of them later.',
+    fields: avail.map(s => ({ name: 's_' + s.key, label: `${s.icon} ${s.name}`, type: 'checkbox', value: false })),
+    submitLabel: 'Add selected',
+    onSubmit: v => {
+      const keys = avail.filter(s => v['s_' + s.key]).map(s => s.key);
+      if (!keys.length) return 'Tick at least one.';
+      if (state.sections.length + keys.length > MAX_SECTIONS) return `You can have at most ${MAX_SECTIONS} sections.`;
+      const n = addStarters(keys); commit(); toast(`Added ${plural(n, 'section')}`);
+    }
+  });
+}
+function parseFieldLines(text) {
+  const out = [];
+  for (const line of str(text).split('\n')) {
+    const [l, m] = line.split('|'); const label = clip(l, 60); if (!label) continue;
+    const max = parseInt(m, 10);
+    out.push(Number.isInteger(max) && max >= 1 && max <= 200 ? { l: label, max } : { l: label });
+  }
+  return normFields(out);
+}
+function sectionDialog(id) {
+  const s = id ? secById(id) : null;
+  if (id && !s) return;
+  formDialog({
+    title: s ? 'Edit section' : 'Add section', intro: DLG_INTRO,
+    fields: [
+      { name: 'name', label: 'Name', required: true, value: s && s.name, placeholder: 'e.g. Pool equipment' },
+      { name: 'fields', label: 'Extra fields (one per line)', type: 'textarea', value: s ? s.fields.map(f => f.l + (f.max ? '|' + f.max : '')).join('\n') : '', placeholder: 'Serviced by\nPolicy number|8', hint: 'Add |N after a name to cap its length, e.g. Policy number|8.' },
+      { name: 'steps', label: 'Numbered checklist (entries are steps, in order)', type: 'checkbox', value: s && s.steps }
+    ],
+    submitLabel: s ? 'Save' : 'Add section',
+    onSubmit: async v => {
+      const name = v.name.trim();
+      if (!s && state.sections.length >= MAX_SECTIONS) return `You can have at most ${MAX_SECTIONS} sections.`;
+      const fields = parseFieldLines(v.fields);
+      const bad = await safetyGate([{ label: 'Name', value: name }, ...fields.map(f => ({ label: 'Field name', value: f.l }))]);
+      if (bad) return bad;
+      if (s) { s.name = name.slice(0, 80); s.fields = fields; s.steps = !!v.steps; }
+      else state.sections.push(normSection({ id: uid(), name, kind: 'custom', fields, steps: !!v.steps }));
+      commit();
+    },
+    onDelete: s ? async () => {
+      const n = entriesOf(s.id).length;
+      if (!(await confirmBox(`Delete “${s.name}”?`, n ? `Its ${plural(n, 'entry')} will be deleted too.` : '', 'Delete section'))) return false;
+      const snap = takeSnap();
+      state.sections = state.sections.filter(x => x.id !== s.id);
+      state.entries = state.entries.filter(e => e.sectionId !== s.id);
+      if (secView === s.id) secView = null;
+      commit(); offerUndo('Section deleted', snap); return true;
+    } : null
+  });
+}
+function entryDialog(id, secId) {
+  const e = id ? entById(id) : null;
+  if (id && !e) return;
+  if (!state.sections.length) return toast('Add a section first.');
+  const sid = e ? e.sectionId : (secById(secId) ? secId : state.sections[0].id), sec = secById(sid);
+  const tmpl = sec.fields;
+  const cur = lbl => (e ? e.extras.find(x => x.l.toLowerCase() === lbl.toLowerCase()) : null);
+  const fields = [{ name: 'title', label: 'Title', required: true, value: e && e.title, placeholder: sec.steps ? 'e.g. Call Jeff' : 'e.g. State Farm home policy' }];
+  if (state.sections.length > 1) fields.push({ name: 'sectionId', label: 'Section', type: 'select', options: state.sections.map(s => [s.id, s.name]), value: sid });
+  tmpl.forEach((f, i) => fields.push({ name: 'x' + i, label: f.l + (f.max ? ` (max ${f.max} characters)` : ''), value: cur(f.l) ? cur(f.l).v : '' }));
+  fields.push(
+    { name: 'notes', label: 'Notes', type: 'textarea', value: e && e.notes },
+    { name: 'phone', label: 'Phone', type: 'tel', value: e && e.phone, placeholder: '713-555-0100' },
+    { name: 'email', label: 'Email', type: 'email', value: e && e.email },
+    { name: 'website', label: 'Website', value: e && e.website, placeholder: 'example.com' },
+    { name: 'address', label: 'Address', value: e && e.address },
+    { name: 'where', label: 'Where to find it', value: e && e.where, placeholder: 'e.g. Fireproof safe, top shelf / OneDrive > Household' },
+    { name: 'tags', label: 'Tags (comma separated)', value: e && e.tags.join(', '), capitalize: 'none', hint: 'Tag “private” to hide it from the Sheet for Cindy.' },
+    { name: 'pinned', label: 'Pin to the top of its section on the Sheet', type: 'checkbox', value: e && e.pinned }
+  );
+  formDialog({
+    title: e ? 'Edit entry' : 'Add entry', intro: DLG_INTRO, fields, submitLabel: e ? 'Save' : 'Add entry',
+    extra: e ? [{ label: 'Still correct', onClick: () => { e.updatedAt = Date.now(); commit(); $('#dlg').close(); toast('Marked as reviewed'); } }] : [],
+    onSubmit: async v => {
+      if (!e && state.entries.length >= MAX_ENTRIES) return `You can have at most ${MAX_ENTRIES} entries.`;
+      const extras = [];
+      for (let i = 0; i < tmpl.length; i++) {
+        const val = v['x' + i].trim();
+        if (tmpl[i].max && val.length > tmpl[i].max) return `${tmpl[i].l}: ${tmpl[i].max} characters at most (you have ${val.length}). Use just the last few characters.`;
+        if (val) extras.push({ l: tmpl[i].l, v: val });
+      }
+      if (e) for (const x of e.extras) if (!tmpl.some(f => f.l.toLowerCase() === x.l.toLowerCase())) extras.push(x);
+      const rec = normEntry({ id: e ? e.id : uid(), sectionId: v.sectionId || sid, title: v.title, notes: v.notes, phone: v.phone, email: v.email, website: v.website, address: v.address, where: v.where, tags: v.tags, pinned: v.pinned, extras, createdAt: e ? e.createdAt : Date.now(), updatedAt: Date.now() });
+      if (!rec) return 'Title is required.';
+      const bad = await safetyGate(entryScanList(rec));
+      if (bad) return bad;
+      if (e) {
+        if (rec.sectionId !== e.sectionId) { state.entries = state.entries.filter(x => x.id !== e.id); state.entries.push(rec); }
+        else Object.assign(e, rec);
+      } else state.entries.push(rec);
+      commit();
+    },
+    onDelete: e ? async () => {
+      if (!(await confirmBox(`Delete “${e.title}”?`, '', 'Delete entry'))) return false;
+      const snap = takeSnap();
+      state.entries = state.entries.filter(x => x.id !== e.id);
+      commit(); offerUndo('Entry deleted', snap); return true;
+    } : null
+  });
+}
+function contactDialog(id) {
+  const c = id ? conById(id) : null;
+  if (id && !c) return;
+  formDialog({
+    title: c ? 'Edit contact' : 'Add contact', intro: DLG_INTRO,
+    fields: [
+      { name: 'name', label: 'Name', required: true, value: c && c.name },
+      { name: 'role', label: 'Role / relationship', value: c && c.role, placeholder: 'e.g. Plumber, Neighbor, Dentist' },
+      { name: 'phone', label: 'Phone', type: 'tel', value: c && c.phone, placeholder: '713-555-0100' },
+      { name: 'email', label: 'Email', type: 'email', value: c && c.email },
+      { name: 'notes', label: 'Notes', type: 'textarea', value: c && c.notes },
+      { name: 'private', label: 'Private (hide from the Sheet for Cindy)', type: 'checkbox', value: c && c.private }
+    ],
+    submitLabel: c ? 'Save' : 'Add contact',
+    onSubmit: async v => {
+      if (!c && state.contacts.length >= MAX_CONTACTS) return `You can have at most ${MAX_CONTACTS} contacts.`;
+      const rec = normContact({ id: c ? c.id : uid(), name: v.name, role: v.role, phone: v.phone, email: v.email, notes: v.notes, private: v.private, createdAt: c ? c.createdAt : Date.now(), updatedAt: Date.now() });
+      if (!rec) return 'Name is required.';
+      const bad = await safetyGate(contactScanList(rec));
+      if (bad) return bad;
+      if (c) Object.assign(c, rec); else state.contacts.push(rec);
+      commit();
+    },
+    onDelete: c ? async () => {
+      if (!(await confirmBox(`Delete “${c.name}”?`, '', 'Delete contact'))) return false;
+      const snap = takeSnap();
+      state.contacts = state.contacts.filter(x => x.id !== c.id);
+      commit(); offerUndo('Contact deleted', snap); return true;
+    } : null
+  });
+}
+
+/* ---- contacts: derived list ---- */
+function allContacts() {
+  const out = [];
+  for (const e of state.entries) {
+    if (!e.phone && !e.email) continue;
+    const s = secById(e.sectionId);
+    out.push({ kind: 'entry', id: e.id, name: e.title, role: s ? s.name : 'Other', phone: e.phone, email: e.email, note: e.where || e.notes.split('\n')[0], private: e.tags.includes('private') });
+  }
+  for (const c of state.contacts) out.push({ kind: 'contact', id: c.id, name: c.name, role: c.role || 'Other', phone: c.phone, email: c.email, note: c.notes.split('\n')[0], private: c.private });
+  return out;
+}
+function groupByRole(list) {
+  const g = new Map();
+  for (const c of list) { if (!g.has(c.role)) g.set(c.role, []); g.get(c.role).push(c); }
+  return [...g.entries()].sort((a, b) => (a[0] === 'Other') - (b[0] === 'Other') || a[0].localeCompare(b[0])).map(([role, items]) => [role, items.sort((x, y) => x.name.localeCompare(y.name))]);
+}
+function parseCsvLine(line) {
+  const delim = line.includes('\t') ? '\t' : ',', out = []; let cur = '', q = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (q) { if (ch === '"') { if (line[i + 1] === '"') { cur += '"'; i++; } else q = false; } else cur += ch; }
+    else if (ch === '"' && !cur.trim()) { q = true; cur = ''; }
+    else if (ch === delim) { out.push(cur.trim()); cur = ''; }
+    else cur += ch;
+  }
+  out.push(cur.trim());
+  return out;
+}
+function parseContactLines(text) {
+  const rows = [], errors = []; let truncated = false;
+  const have = new Set(state.contacts.map(c => c.name.toLowerCase() + '|' + c.phone.replace(/\D/g, '')));
+  const lines = str(text).split(/\r?\n/);
+  let first = true;
+  lines.forEach((raw, i) => {
+    const line = raw.trim(); if (!line || line.startsWith('#')) return;
+    const c = parseCsvLine(line);
+    if (first) { first = false; if (/^name$/i.test(c[0]) && /phone|role|email/i.test(c.slice(1).join(' '))) return; }
+    let [name = '', role = '', phone = '', email = ''] = c; const notes = c.slice(4).join(', ');
+    if (phone.includes('@') && !email) { email = phone; phone = ''; }
+    const ln = `Line ${i + 1}`;
+    if (!name) { errors.push(`${ln}: no name, skipped`); return; }
+    if (email && !EMAIL_RE.test(email)) { errors.push(`${ln}: “${email.slice(0, 30)}” isn’t an email, left blank`); email = ''; }
+    const rec = { name: name.slice(0, 120), role: role.slice(0, 60), phone: phone.slice(0, 60), email: email.slice(0, 120), notes: notes.slice(0, 1000) };
+    const sc = scanFields(contactScanList(rec));
+    if (sc.hard.length || sc.soft.length) { errors.push(`${ln}: ${(sc.hard[0] || sc.soft[0])}, skipped`); return; }
+    const key = rec.name.toLowerCase() + '|' + rec.phone.replace(/\D/g, '');
+    if (have.has(key)) { errors.push(`${ln}: ${rec.name} is already in your contacts, skipped`); return; }
+    if (rows.length + state.contacts.length >= MAX_CONTACTS) { truncated = true; return; }
+    have.add(key); rows.push(rec);
+  });
+  return { rows, errors, truncated };
+}
+function importDialog() {
+  const dlg = $('#dlg');
+  dlg.innerHTML = `<form class="dlg-form" novalidate><h2>Import contacts</h2>
+    <p class="muted">One contact per line: <b>name, role, phone, email</b>. Paste from a spreadsheet or notes. Lines that look like they hold a password, SSN or long number are skipped.</p>
+    <div class="field"><label for="impText">Contacts</label><textarea id="impText" name="txt" style="min-height:130px;font-size:14px" placeholder="Maria Lopez, Insurance agent, 281-555-0142, maria@example.com"></textarea></div>
+    <div id="impPrev" class="previewbox hide"></div><div class="dlg-err" role="alert"></div>
+    <div class="dlg-actions"><button type="button" class="btn" data-k="prev">Preview</button><span class="spacer"></span><button type="button" class="btn ghost" data-k="cancel">Cancel</button><button type="submit" class="btn primary">Import</button></div></form>`;
+  const form = $('form', dlg), err = $('.dlg-err', dlg), prev = $('#impPrev', dlg);
+  const preview = () => {
+    const p = parseContactLines(form.elements.txt.value);
+    err.textContent = ''; prev.classList.remove('hide');
+    const notes = p.errors.length ? `<div class="warn" style="margin-top:6px">${p.errors.slice(0, 6).map(esc).join('<br>')}${p.errors.length > 6 ? `<br>and ${p.errors.length - 6} more notes` : ''}</div>` : '';
+    if (!p.rows.length) { prev.innerHTML = `<b>Nothing to import.</b>${notes}`; return p; }
+    prev.innerHTML = `<b>${plural(p.rows.length, 'contact')} ready</b>${p.truncated ? ` (limit ${MAX_CONTACTS}; the rest are skipped)` : ''}
+      <table><thead><tr><th>Name</th><th>Role</th><th>Phone</th><th>Email</th></tr></thead><tbody>${p.rows.slice(0, 8).map(r => `<tr><td>${esc(r.name.slice(0, 28))}</td><td>${esc(r.role.slice(0, 18))}</td><td>${esc(r.phone)}</td><td>${esc(r.email.slice(0, 26))}</td></tr>`).join('')}</tbody></table>
+      ${p.rows.length > 8 ? `<div class="muted">…and ${p.rows.length - 8} more</div>` : ''}${notes}`;
+    return p;
+  };
+  $('[data-k="prev"]', dlg).onclick = preview;
+  $('[data-k="cancel"]', dlg).onclick = () => dlg.close();
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const p = preview();
+    if (!p.rows.length) { err.textContent = 'No valid lines found.'; return; }
+    const now = Date.now();
+    for (const r of p.rows) state.contacts.push(normContact({ id: uid(), ...r, createdAt: now, updatedAt: now }));
+    commit(); dlg.close(); toast(`Imported ${plural(p.rows.length, 'contact')}`);
+  });
+  dlg.onclose = null;
+  dlg.showModal();
+  form.elements.txt.focus();
+}
+
+/* ---- sheet model / text ---- */
+function sheetModel(cindy) {
+  const hide = e => cindy && e.tags.includes('private');
+  const secs = [];
+  for (const s of state.sections) {
+    let list = entriesOf(s.id).filter(e => !hide(e));
+    if (!s.steps) list = [...list.filter(e => e.pinned), ...list.filter(e => !e.pinned)];
+    if (list.length) secs.push({ s, list });
+  }
+  return { secs, cons: state.contacts.filter(c => !(cindy && c.private)) };
+}
+function sheetText(cindy) {
+  const { secs, cons } = sheetModel(cindy), L = [];
+  L.push('HOUSEHOLD SHEET' + (cindy ? ' (for Cindy)' : ''), 'As of ' + longDate(Date.now()), '');
+  for (const { s, list } of secs) {
+    L.push(s.name.toUpperCase());
+    list.forEach((e, i) => {
+      L.push((s.steps ? `${i + 1}. ` : '- ') + e.title + (reviewDue(e) ? ' [review]' : ''));
+      if (e.notes) L.push('   ' + e.notes.replace(/\n/g, '\n   '));
+      for (const ln of entryLines(e)) L.push('   ' + ln.label + ': ' + ln.text.replace(/\n/g, '\n   '));
+      L.push('   Updated ' + longDate(e.updatedAt));
+    });
+    L.push('');
+  }
+  if (cons.length) {
+    L.push('OTHER CONTACTS');
+    for (const [role, items] of groupByRole(cons.map(c => ({ ...c, role: c.role || 'Other' })))) {
+      L.push(role);
+      for (const c of items) L.push('- ' + [c.name, c.phone, c.email].filter(Boolean).join(' | ') + (c.notes ? ' (' + c.notes.split('\n')[0] + ')' : ''));
+    }
+    L.push('');
+  }
+  L.push('This sheet holds no passwords or full account numbers.');
+  return L.join('\n');
+}
+
+/* ---- views ---- */
+const view = $('#view');
+let tab = 'sheet', secView = null, reorder = false, cq = '';
+const empty = (icon, h, p, btns) => `<div class="empty"><div class="big">${icon}</div><h2>${h}</h2><p>${p}</p>${btns}</div>`;
+function storageBannerHTML() {
+  if (saveFailed) return '<div class="banner bad">Couldn’t save to this device’s storage. Back up now so nothing is lost.</div>';
+  if (!db) return '<div class="banner bad">This browser isn’t allowing storage (private mode?). Changes won’t survive closing the app. Use Backup often.</div>';
+  return '';
+}
+const safetyHTML = () => `<div class="safety"><b>Not a password vault.</b> ${esc(SAFETY_TEXT)}</div>`;
+const emptyHTML = () => empty('🏡', 'Nothing here yet', 'Set up the sections that matter, then fill in who to call and where things are. Cindy can read it on one printed page.',
+  `<button class="btn primary" data-action="starters">Add starter sections</button><br><button class="btn ghost" data-action="add-section">Add my own section</button><br><button class="btn ghost" data-action="restore">Restore from a backup file</button>${safetyHTML()}`);
+
+function entryHTML(e, s, i) {
+  const lines = entryLines(e);
+  return `<article class="ent"><h3>${s.steps ? `<span class="n">${i + 1}.</span>` : ''}<span>${esc(e.title)}${e.pinned ? ' <span aria-label="pinned">★</span>' : ''}</span></h3>
+    ${e.notes ? `<p class="notes">${esc(e.notes)}</p>` : ''}
+    ${lines.length ? `<dl class="lines">${lines.map(l => `<dt>${esc(l.label)}</dt><dd>${l.html}</dd>`).join('')}</dl>` : ''}
+    <div class="stamp">Updated ${esc(longDate(e.updatedAt))}${reviewDue(e) ? ' <span class="pill rv" title="Not updated in 12 months">review</span>' : ''}${e.tags.includes('private') ? ' <span class="pill pv noprint">private</span>' : ''}</div></article>`;
+}
+function renderSheet() {
+  if (!state.sections.length && !state.contacts.length) return storageBannerHTML() + emptyHTML();
+  const cindy = state.settings.cindy;
+  const { secs, cons } = sheetModel(cindy);
+  const shown = secs.reduce((n, x) => n + x.list.length, 0);
+  const all = secs.flatMap(x => x.list);
+  const stale = all.filter(reviewDue).length;
+  const latest = Math.max(0, ...all.map(e => e.updatedAt), ...cons.map(c => c.updatedAt));
+  const tools = `<div class="tools top noprint">
+    <button type="button" class="chip big" aria-pressed="${cindy}" data-action="cindy">Sheet for Cindy</button>
+    <button type="button" class="btn small" data-action="print">Print / Save PDF</button>
+    <button type="button" class="btn small" data-action="copy">Copy as text</button>
+    <button type="button" class="btn small" data-action="share">Share text</button></div>
+    <p class="hint noprint">${cindy ? 'Entries tagged “private” are hidden.' : 'Turn on Sheet for Cindy to hide entries tagged “private”.'}</p>`;
+  let body = '';
+  for (const { s, list } of secs) body += `<h2 class="sh">${esc(s.icon)} ${esc(s.name)}</h2>${list.map((e, i) => entryHTML(e, s, i)).join('')}`;
+  if (cons.length) {
+    body += '<h2 class="sh">👥 Other contacts</h2>';
+    for (const [role, items] of groupByRole(cons.map(c => ({ ...c, role: c.role || 'Other' })))) {
+      body += `<article class="ent"><h3>${esc(role)}</h3><dl class="lines">${items.map(c => {
+        const t = telHref(c.phone), m = mailHref(c.email);
+        const v = [c.phone ? (t ? `<a href="${esc(t)}">${esc(c.phone)}</a>` : esc(c.phone)) : '', c.email ? (m ? `<a href="${esc(m)}">${esc(c.email)}</a>` : esc(c.email)) : '', c.notes ? esc(c.notes.split('\n')[0]) : ''].filter(Boolean).join(' · ');
+        return `<dt>${esc(c.name)}</dt><dd>${v}</dd>`;
+      }).join('')}</dl></article>`;
+    }
+  }
+  if (!body) body = '<div class="card empty"><h2>Nothing to show</h2><p>' + (cindy ? 'Every entry is tagged private.' : 'Add entries in Sections.') + '</p></div>';
+  return storageBannerHTML() + tools + `<div class="sheet"><h1 class="st">Household sheet${cindy ? ' <span class="muted" style="font-size:14px;font-weight:600">for Cindy</span>' : ''}</h1>
+    <div class="meta">${plural(shown, 'entry')} · ${latest ? 'last updated ' + esc(longDate(latest)) : ''}${stale ? ` · ${stale} to review` : ''}</div>${body}
+    <p class="sheetfoot">No passwords or full account numbers are kept in this sheet.</p></div>`;
+}
+
+function renderSections() {
+  if (!state.sections.length) return storageBannerHTML() + emptyHTML();
+  if (secView && secById(secView)) return renderSectionDetail(secById(secView));
+  const row = (s, i) => `<li class="row" data-action="open-sec" data-id="${esc(s.id)}"><span class="secico">${esc(s.icon)}</span>
+    <div class="row-main"><div class="row-title">${esc(s.name)}</div><div class="row-sub">${plural(entriesOf(s.id).length, 'entry')}${s.steps ? ' · checklist' : ''}</div></div>
+    ${reorder ? `<div class="rowact"><button type="button" class="btn ico-btn" data-action="sec-up" data-id="${esc(s.id)}" aria-label="Move ${esc(s.name)} up" ${i === 0 ? 'disabled' : ''}>▲</button><button type="button" class="btn ico-btn" data-action="sec-down" data-id="${esc(s.id)}" aria-label="Move ${esc(s.name)} down" ${i === state.sections.length - 1 ? 'disabled' : ''}>▼</button></div>` : '<span class="muted">›</span>'}</li>`;
+  return storageBannerHTML() + safetyHTML() + `<div class="tools"><button type="button" class="btn small" data-action="starters">Add starter sections</button>
+    <button type="button" class="btn small" data-action="reorder" aria-pressed="${reorder}">${reorder ? 'Done reordering' : 'Reorder'}</button></div>
+    <ul class="card list" style="margin-top:10px">${state.sections.map(row).join('')}</ul>`;
+}
+function renderSectionDetail(s) {
+  const list = entriesOf(s.id);
+  const row = (e, i) => {
+    const sub = [e.phone, e.where ? '📍 ' + e.where : '', e.notes.split('\n')[0]].filter(Boolean).join(' · ');
+    return `<li class="row" data-action="edit-entry" data-id="${esc(e.id)}">${s.steps ? `<span class="stepn">${i + 1}.</span>` : ''}
+      <div class="row-main"><div class="row-title">${esc(e.title)}${e.tags.includes('private') ? '<span class="pill pv">private</span>' : ''}${reviewDue(e) ? '<span class="pill rv">review</span>' : ''}</div>${sub ? `<div class="row-sub">${esc(sub.slice(0, 120))}</div>` : ''}</div>
+      ${reorder ? `<div class="rowact"><button type="button" class="btn ico-btn" data-action="ent-up" data-id="${esc(e.id)}" aria-label="Move ${esc(e.title)} up" ${i === 0 ? 'disabled' : ''}>▲</button><button type="button" class="btn ico-btn" data-action="ent-down" data-id="${esc(e.id)}" aria-label="Move ${esc(e.title)} down" ${i === list.length - 1 ? 'disabled' : ''}>▼</button></div>`
+        : `<button type="button" class="btn ico-btn ${e.pinned ? 'on' : ''}" data-action="pin" data-id="${esc(e.id)}" aria-pressed="${e.pinned}" aria-label="${e.pinned ? 'Unpin' : 'Pin'} ${esc(e.title)}">${e.pinned ? '★' : '☆'}</button>`}</li>`;
+  };
+  return storageBannerHTML() + `<div class="crumb"><button type="button" class="btn small ghost" data-action="back-sec">‹ All sections</button></div>
+    <div class="tools"><button type="button" class="btn small primary" data-action="add-entry" data-id="${esc(s.id)}">+ Add entry</button>
+    <button type="button" class="btn small" data-action="edit-sec" data-id="${esc(s.id)}">Edit section</button>
+    ${list.length > 1 ? `<button type="button" class="btn small" data-action="reorder" aria-pressed="${reorder}">${reorder ? 'Done reordering' : 'Reorder'}</button>` : ''}</div>
+    ${list.length ? `<ul class="card list" style="margin-top:10px">${list.map(row).join('')}</ul>` : `<div class="card empty"><h2>No entries yet</h2><p>${esc(s.hint || 'Add the first one.')}</p></div>`}
+    ${s.steps && list.length ? '<p class="hint">Order matters here: the Sheet numbers these in the order shown.</p>' : '<p class="hint">Starred entries come first in this section on the Sheet.</p>'}`;
+}
+
+function contactRowsHTML() {
+  const q = cq.trim().toLowerCase();
+  const list = allContacts().filter(c => !q || [c.name, c.role, c.phone, c.email, c.note].join(' ').toLowerCase().includes(q));
+  if (!list.length) return `<div class="empty"><p>${q ? 'No contacts match that search.' : 'No contacts yet.'}</p></div>`;
+  return groupByRole(list).map(([role, items]) => `<div class="sec-h"><span>${esc(role)}</span><span class="num">${items.length}</span></div><ul class="card list">${items.map(c => {
+    const t = telHref(c.phone), m = mailHref(c.email);
+    return `<li class="row" data-action="edit-contact" data-kind="${c.kind}" data-id="${esc(c.id)}"><div class="row-main"><div class="row-title">${esc(c.name)}${c.private ? '<span class="pill pv">private</span>' : ''}</div>
+      <div class="row-sub">${esc([c.phone, c.email].filter(Boolean).join(' · ') || c.note)}</div></div>
+      ${t ? `<a class="btn small primary" href="${esc(t)}" aria-label="Call ${esc(c.name)}">Call</a>` : ''}${m ? `<a class="btn small" href="${esc(m)}" aria-label="Email ${esc(c.name)}">Email</a>` : ''}</li>`;
+  }).join('')}</ul>`).join('');
+}
+function renderContacts() {
+  if (!state.sections.length && !state.contacts.length) return storageBannerHTML() + empty('📞', 'No contacts yet', 'Anything with a phone number in a section shows up here, plus contacts you add directly.', `<button class="btn primary" data-action="add-contact">Add a contact</button><br><button class="btn ghost" data-action="import">Import from pasted lines</button>`);
+  return storageBannerHTML() + `<div class="search"><input id="cq" type="search" placeholder="Search name, role, phone" aria-label="Search contacts" value="${esc(cq)}" autocomplete="off" autocapitalize="none"></div><div id="clist">${contactRowsHTML()}</div>`;
+}
+
+function renderBackup() {
+  const last = state.meta.lastBackup ? `Last backup: ${esc(fmtDateTime(state.meta.lastBackup))}.` : 'No backup made yet.';
+  const canEncrypt = !!(window.crypto && crypto.subtle);
+  return storageBannerHTML() + safetyHTML() + installCardHTML() + `<div class="stack">
+    <section class="card pad"><h3>Back up</h3>
+      <p class="muted">${last}</p>
+      <p>Saves one file with all sections, entries and contacts. On iPhone it opens the share sheet: save it to Files or OneDrive. <b>Never put this file in your GitHub repo.</b></p>
+      ${canEncrypt ? `<div class="field"><label for="bkPass">Passphrase (optional, encrypts the file)</label><input id="bkPass" type="password" autocomplete="new-password"></div>
+      <div class="field" style="margin-top:8px"><label for="bkPass2">Repeat passphrase</label><input id="bkPass2" type="password" autocomplete="new-password"></div>
+      <p class="hint">With a passphrase the file can’t be opened without it. Leave it empty for a plain JSON export.</p>` : ''}
+      <button type="button" class="btn primary block" style="margin-top:12px" data-action="export">Back up now</button></section>
+    <section class="card pad"><h3>Restore</h3><p>Pick a backup file made by this app. You’ll choose whether to replace what’s here or merge it in.</p>
+      <button type="button" class="btn block" data-action="restore">Choose backup file…</button></section>
+    <section class="card pad"><h3>Contacts</h3><p>Export every contact as CSV, or paste lines of <b>name, role, phone, email</b> to add several at once.</p>
+      <button type="button" class="btn block" data-action="csv">Export contacts (CSV)</button>
+      <button type="button" class="btn block" style="margin-top:8px" data-action="import">Import contacts from pasted lines…</button></section>
+    <section class="card pad"><h3>Danger zone</h3><p>Erases everything in this app on this device.</p>
+      <button type="button" class="btn danger block" data-action="wipe">Erase everything on this device</button></section>
+    <p class="hint" style="text-align:center">Your data lives only on this device. Nothing is sent anywhere.</p></div>`;
+}
+
+const TITLES = { sheet: 'Household', sections: 'Sections', contacts: 'Contacts', backup: 'Backup & restore' };
+function render() {
+  const y = window.scrollY;
+  const active = document.activeElement;
+  view.innerHTML = { sheet: renderSheet, sections: renderSections, contacts: renderContacts, backup: renderBackup }[tab]();
+  $$('nav.tabs button').forEach(b => b.setAttribute('aria-current', b.dataset.tab === tab ? 'page' : 'false'));
+  const inSec = tab === 'sections' && secView && secById(secView);
+  const add = $('#addBtn');
+  add.classList.toggle('hide', !(tab === 'sections' || tab === 'contacts'));
+  add.textContent = tab === 'contacts' ? '+ Contact' : inSec ? '+ Entry' : '+ Section';
+  $('#title').textContent = inSec ? secById(secView).name : TITLES[tab];
+  $('#sub').textContent = tab === 'sheet' ? 'How the house runs' : new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+  void active;
+  window.scrollTo(0, y);
+}
+function go(t) { tab = t; secView = null; reorder = false; render(); window.scrollTo(0, 0); }
+
+/* ---- sheet actions ---- */
+async function copyText(t) {
+  try { await navigator.clipboard.writeText(t); return true; } catch {}
+  try {
+    const ta = document.createElement('textarea'); ta.value = t; ta.style.cssText = 'position:fixed;opacity:0'; document.body.appendChild(ta); ta.select();
+    const ok = document.execCommand && document.execCommand('copy'); ta.remove(); return !!ok;
+  } catch { return false; }
+}
+
+/* ---- backup / restore ---- */
+async function doExport() {
+  const pass = ($('#bkPass') || {}).value || '', pass2 = ($('#bkPass2') || {}).value || '';
+  if (pass) {
+    if (pass.length < 8) return toast('Use at least 8 characters for the passphrase.');
+    if (pass !== pass2) return toast('The two passphrases don’t match.');
+  }
+  const btn = $('[data-action="export"]'); if (btn) btn.disabled = true;
+  try {
+    const text = await Backup.build({ appId: APP_ID, schema: SCHEMA, data: exportData(), passphrase: pass || null });
+    const r = await deliverFile(`goobs-household-backup-${todayISO()}${pass ? '-encrypted' : ''}.json`, text, 'application/json');
+    if (r !== 'cancelled') {
+      state.meta.lastBackup = new Date().toISOString();
+      await persist({ touch: false });
+      render();
+      toast(r === 'shared' ? 'Backup shared' : 'Backup saved to your downloads');
+    }
+  } catch (e) { toast('Backup failed: ' + e.message); }
+  finally { const b2 = $('[data-action="export"]'); if (b2) b2.disabled = false; }
+}
+async function restoreFromText(text) {
+  let parsed;
+  try { parsed = await Backup.parse(text, { appId: APP_ID, schema: SCHEMA }); }
+  catch (e) { await msgBox('Can’t restore that file', e.message); return false; }
+  if (!parsed) return false;
+  const { data, dropped } = normalizeData(parsed.data);
+  if (!data.sections.length && !data.entries.length && !data.contacts.length) { await msgBox('Nothing to restore', 'That backup has no sections, entries or contacts in it.'); return false; }
+  const hasLocal = state.sections.length > 0 || state.entries.length > 0 || state.contacts.length > 0;
+  const sum = `${plural(data.sections.length, 'section')}, ${plural(data.entries.length, 'entry')} and ${plural(data.contacts.length, 'contact')}`;
+  const when = parsed.exportedAt ? ` Backup made ${fmtDateTime(parsed.exportedAt)}.` : '';
+  const skipped = dropped ? ` ${plural(dropped, 'unreadable item')} will be skipped.` : '';
+  const body = `<p>${esc(sum + '.' + when + skipped)}</p>` + (hasLocal ? '<p class="muted"><b>Replace all</b> swaps everything here for the backup. <b>Merge</b> adds what isn’t here yet and keeps the rest.</p>' : '');
+  const choice = await askDialog({
+    title: 'Restore this backup?', body,
+    buttons: hasLocal
+      ? [{ label: 'Cancel', value: 'cancel' }, { label: 'Merge', value: 'merge' }, { label: 'Replace all', value: 'replace', kind: 'danger' }]
+      : [{ label: 'Cancel', value: 'cancel' }, { label: 'Restore', value: 'replace', kind: 'primary' }]
+  });
+  const flagNote = () => { const n = countFlagged(); if (n) setTimeout(() => toast(`${plural(n, 'item')} may contain sensitive numbers. Review them.`), 3400); };
+  if (choice === 'replace') {
+    const ts = parsed.exportedAt && !isNaN(Date.parse(parsed.exportedAt)) ? parsed.exportedAt : new Date().toISOString();
+    state.sections = data.sections; state.entries = data.entries; state.contacts = data.contacts;
+    secView = null; state.meta.lastBackup = ts; state.meta.lastChange = ts;
+    await persist({ touch: false });
+    render(); toast(`Restored ${sum}`); flagNote(); return true;
+  }
+  if (choice === 'merge') {
+    const sids = new Set(state.sections.map(s => s.id)), eids = new Set(state.entries.map(e => e.id)), cids = new Set(state.contacts.map(c => c.id));
+    let ns = 0, ne = 0, nc = 0;
+    for (const s of data.sections) if (!sids.has(s.id) && state.sections.length < MAX_SECTIONS) { state.sections.push(s); sids.add(s.id); ns++; }
+    for (const e of data.entries) if (!eids.has(e.id) && sids.has(e.sectionId) && state.entries.length < MAX_ENTRIES) { state.entries.push(e); ne++; }
+    for (const c of data.contacts) if (!cids.has(c.id) && state.contacts.length < MAX_CONTACTS) { state.contacts.push(c); nc++; }
+    await persist(); render(); toast(`Merged in ${plural(ns, 'section')}, ${plural(ne, 'entry')} and ${plural(nc, 'contact')}`); flagNote(); return true;
+  }
+  return false;
+}
+async function doRestore() {
+  const f = await pickFile(); if (!f) return;
+  let text;
+  try { text = await readFileText(f); } catch { await msgBox('Couldn’t read that file', 'Try choosing it again.'); return; }
+  await restoreFromText(text);
+}
+function contactsCsv() {
+  const rows = [['Name', 'Role', 'Phone', 'Email', 'Notes', 'Source', 'Private']];
+  for (const e of state.entries) if (e.phone || e.email) { const s = secById(e.sectionId); rows.push([e.title, s ? s.name : '', e.phone, e.email, e.where || e.notes, 'Section entry', e.tags.includes('private') ? 'yes' : '']); }
+  for (const c of state.contacts) rows.push([c.name, c.role, c.phone, c.email, c.notes, 'Contact', c.private ? 'yes' : '']);
+  return '﻿' + rows.map(r => r.map(csvCell).join(',')).join('\r\n');
+}
+async function doCsv() {
+  if (rows0() === 0) return toast('No contacts to export yet.');
+  const r = await deliverFile(`household-contacts-${todayISO()}.csv`, contactsCsv(), 'text/csv');
+  if (r !== 'cancelled') toast(r === 'shared' ? 'CSV shared' : 'CSV saved to your downloads');
+}
+const rows0 = () => allContacts().length;
+async function doWipe() {
+  if (!(await confirmBox('Erase everything?', 'This permanently deletes all sections, entries and contacts on this device. Make a backup first if you might want them.', 'Erase everything'))) return;
+  state = defaultState(); secView = null; reorder = false;
+  await persist({ touch: false });
+  render(); toast('Everything erased');
+}
+
+/* ---- wiring ---- */
+view.addEventListener('click', async e => {
+  if (e.target.closest('a')) return; // tel:, mailto: and website links just open
+  const el = e.target.closest('[data-action]');
+  if (!el) return;
+  const id = el.dataset.id;
+  switch (el.dataset.action) {
+    case 'starters': starterDialog(); break;
+    case 'add-section': sectionDialog(); break;
+    case 'open-sec': secView = id; reorder = false; render(); window.scrollTo(0, 0); break;
+    case 'back-sec': secView = null; reorder = false; render(); break;
+    case 'edit-sec': sectionDialog(id); break;
+    case 'sec-up': moveSection(id, -1); break;
+    case 'sec-down': moveSection(id, 1); break;
+    case 'reorder': reorder = !reorder; render(); break;
+    case 'add-entry': entryDialog(null, id); break;
+    case 'edit-entry': entryDialog(id); break;
+    case 'ent-up': moveEntry(id, -1); break;
+    case 'ent-down': moveEntry(id, 1); break;
+    case 'pin': togglePin(id); break;
+    case 'add-contact': contactDialog(); break;
+    case 'edit-contact': if (el.dataset.kind === 'entry') entryDialog(id); else contactDialog(id); break;
+    case 'import': importDialog(); break;
+    case 'cindy': state.settings.cindy = !state.settings.cindy; commit(); break;
+    case 'print': try { window.print(); } catch { toast('Printing isn’t available here.'); } break;
+    case 'copy': toast((await copyText(sheetText(state.settings.cindy))) ? 'Sheet copied as text' : 'Couldn’t copy. Use Share text instead.'); break;
+    case 'share': { const r = await deliverFile(`household-sheet-${todayISO()}.txt`, sheetText(state.settings.cindy), 'text/plain'); if (r !== 'cancelled') toast(r === 'shared' ? 'Sheet shared' : 'Sheet saved to your downloads'); break; }
+    case 'export': doExport(); break;
+    case 'restore': doRestore(); break;
+    case 'csv': doCsv(); break;
+    case 'wipe': doWipe(); break;
+    case 'install': runInstall(); break;
+  }
+});
+view.addEventListener('input', e => {
+  if (e.target.id !== 'cq') return;
+  cq = e.target.value; const l = $('#clist'); if (l) l.innerHTML = contactRowsHTML();
+});
+$('#addBtn').onclick = () => {
+  if (tab === 'contacts') contactDialog();
+  else if (tab === 'sections') { if (secView && secById(secView)) entryDialog(null, secView); else sectionDialog(); }
+};
+$$('nav.tabs button').forEach(b => { b.onclick = () => go(b.dataset.tab); });
+document.addEventListener('visibilitychange', () => { if (!document.hidden && !$('dialog[open]')) render(); });
+
+(async function init() {
+  try { db = await openDB(DB_NAME); } catch (e) { console.error(e); db = null; }
+  if (db) {
+    try {
+      const raw = await idbGet(db, 'state');
+      if (raw) {
+        try { state = loadState(JSON.parse(raw)); }
+        catch (e) { console.error(e); await idbPut(db, 'state-damaged-' + Date.now(), raw); toast('Saved data looked damaged. A copy was kept aside.'); }
+      }
+    } catch (e) { console.error(e); db = null; }
+  }
+  render();
+})();
+</script>
+</body>
+</html>

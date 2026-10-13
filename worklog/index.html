@@ -1,0 +1,1448 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Work Log</title>
+<meta name="description" content="A quick log of what you did on each job, with ticket numbers, time and notes, and a weekly summary. Data stays on your device.">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#f4f5f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1311" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Work Log">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<style>
+:root{
+  --bg:#f5f4ef; --card:#ffffff; --ink:#1b2420; --muted:#66736d; --line:#e2e0d6; --soft:#efede5;
+  --accent:#0f766e; --accent-ink:#ffffff; --accent-soft:#d9f0ec;
+  --bad:#b42318; --bad-soft:#fde8e6; --warn:#9a5b00; --warn-soft:#fdf0d5; --ok:#166534; --ok-soft:#dcf5e3;
+  --radius:14px; --shadow:0 1px 2px rgba(16,24,20,.06),0 6px 18px rgba(16,24,20,.06);
+  color-scheme:light dark;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0e1311; --card:#171f1c; --ink:#e7eeeb; --muted:#97a69f; --line:#27332e; --soft:#1e2824;
+    --accent:#2dd4bf; --accent-ink:#06211d; --accent-soft:#12332e;
+    --bad:#ff8a80; --bad-soft:#3a1a18; --warn:#f6c26b; --warn-soft:#3a2c12; --ok:#7ee2a0; --ok-soft:#14301f;
+    --shadow:none;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation;
+  padding-bottom:calc(92px + env(safe-area-inset-bottom));
+}
+a{color:var(--accent)}
+h1,h2,h3{margin:0;line-height:1.2}
+h3{font-size:16px}
+p{margin:0 0 8px}
+.wrap{max-width:720px;margin:0 auto;padding:0 16px}
+.muted{color:var(--muted)} .bad{color:var(--bad)} .warn{color:var(--warn)} .ok{color:var(--ok)}
+.num{font-variant-numeric:tabular-nums}
+.hide{display:none!important}
+.pad{padding:14px 16px}
+.hint{font-size:13px;color:var(--muted);margin-top:4px}
+
+/* header */
+header.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top)}
+header.top .wrap{display:flex;align-items:center;gap:12px;min-height:58px}
+header.top .grow{flex:1;min-width:0}
+header.top h1{font-size:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+header.top .sub{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.back{display:inline-flex;align-items:center;min-height:44px;padding-right:6px;text-decoration:none;font-weight:600}
+
+/* cards, tiles, lists */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+.tile{padding:12px}
+.tile .lbl{font-size:12px;color:var(--muted);font-weight:600}
+.tile .val{font-size:20px;font-weight:700;margin-top:2px}
+.sec-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin:22px 4px 8px;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700}
+.sec-h .btn{text-transform:none;letter-spacing:0}
+.list{list-style:none;margin:0;padding:0}
+.row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-top:1px solid var(--line);cursor:pointer}
+.row:first-child{border-top:0}
+.row.static{cursor:default}
+.row-main{flex:1;min-width:0}
+.row-title{font-weight:600;overflow-wrap:anywhere}
+.row-sub{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.row-amt{font-weight:700;white-space:nowrap}
+.row.faded{opacity:.6}
+.badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 7px;border-radius:999px;background:var(--soft);color:var(--muted);vertical-align:middle;margin-left:6px}
+.badge.ok{background:var(--ok-soft);color:var(--ok)} .badge.warn{background:var(--warn-soft);color:var(--warn)} .badge.bad{background:var(--bad-soft);color:var(--bad)} .badge.acc{background:var(--accent-soft);color:var(--accent)}
+.empty{text-align:center;padding:40px 20px;color:var(--muted)}
+.empty .big{font-size:40px;line-height:1;margin-bottom:10px}
+.empty h2{color:var(--ink);font-size:18px;margin-bottom:6px}
+.empty .btn{margin-top:14px}
+.banner{padding:12px 14px;border-radius:12px;background:var(--warn-soft);color:var(--warn);font-size:14px;margin:14px 0;display:flex;gap:10px;justify-content:space-between;align-items:center}
+.banner.bad{background:var(--bad-soft);color:var(--bad)}
+.bar{height:8px;border-radius:99px;background:var(--soft);overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--accent);border-radius:99px}
+.bar.over>i{background:var(--bad)}
+
+/* buttons */
+.btn{white-space:nowrap;appearance:none;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-weight:600;min-height:44px;padding:0 16px;border-radius:12px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.danger{color:var(--bad)}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--accent)}
+.btn.small{min-height:36px;padding:0 12px;font-size:14px;border-radius:10px}
+.btn.block{width:100%}
+.btn:active{transform:translateY(1px)}
+.btn:disabled{opacity:.5;cursor:default}
+.btn:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible,.chip:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 14px;min-height:36px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+
+/* bottom nav + fab */
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+nav.tabs .wrap{display:flex;padding:0}
+nav.tabs a,nav.tabs button{flex:1;min-height:58px;border:0;background:none;color:var(--muted);font:inherit;font-size:11px;font-weight:600;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;text-decoration:none}
+nav.tabs .ico{font-size:20px;line-height:1}
+nav.tabs [aria-current="page"]{color:var(--accent)}
+.fab{position:fixed;right:max(16px,calc(50vw - 344px));bottom:calc(74px + env(safe-area-inset-bottom));z-index:7;width:56px;height:56px;border-radius:50%;border:0;background:var(--accent);color:var(--accent-ink);font-size:30px;line-height:1;box-shadow:0 6px 18px rgba(0,0,0,.28);cursor:pointer}
+.fab:active{transform:scale(.96)}
+
+/* forms + dialogs */
+input,select,textarea{width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-height:44px}
+textarea{min-height:92px;resize:vertical}
+input[type=checkbox]{width:22px;height:22px;min-height:0;padding:0;accent-color:var(--accent);flex:none}
+.field label{display:block;font-size:13px;font-weight:600;color:var(--muted);margin-bottom:4px}
+.field.check{display:flex;align-items:center;gap:10px}
+.field.check label{margin:0;color:var(--ink);font-size:16px;font-weight:500}
+.fields2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+dialog{border:0;border-radius:18px;padding:0;width:calc(100vw - 24px);max-width:520px;background:var(--card);color:var(--ink);box-shadow:0 20px 60px rgba(0,0,0,.35)}
+dialog::backdrop{background:rgba(10,15,12,.55)}
+.dlg-form{padding:20px;display:flex;flex-direction:column;gap:12px;max-height:85vh;max-height:85dvh;overflow:auto}
+.dlg-form h2{font-size:19px}
+.dlg-actions{display:flex;gap:8px;align-items:center;margin-top:6px;flex-wrap:wrap}
+.dlg-actions .spacer{flex:1}
+.ask-actions{justify-content:flex-end}
+.dlg-err{color:var(--bad);font-size:14px}
+.dlg-err:empty{display:none}
+.ask-body{font-size:15px;color:var(--ink)}
+.ask-body p{margin:0 0 8px}
+.checkgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px}
+.checkgrid .field.check label{font-size:15px}
+
+/* toast */
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom));background:#1b2420;color:#fff;padding:12px 16px;border-radius:12px;display:flex;gap:14px;align-items:center;z-index:60;max-width:calc(100vw - 24px);box-shadow:0 8px 24px rgba(0,0,0,.35);font-size:15px}
+.toast button{background:none;border:0;color:#7dd3c8;font:inherit;font-weight:700;cursor:pointer;min-height:36px}
+
+@media (prefers-reduced-motion:no-preference){.btn,.fab{transition:transform .08s}}
+
+.syncbadge{flex:none;white-space:nowrap;border:1px solid var(--line,#d5dbe0);background:var(--card,#fff);color:inherit;border-radius:999px;padding:4px 10px;font:inherit;font-size:.82rem;cursor:pointer;white-space:nowrap}
+.syncbadge.ok{color:#15803d}.syncbadge.bad{color:#b91c1c}
+.seg{display:flex;gap:8px;margin-top:6px}.seg .chip{flex:1;text-align:center}
+
+.stack{display:flex;flex-direction:column;gap:14px;margin-top:14px}
+.row .btn{flex:none}
+.dot{display:inline-block;width:12px;height:12px;border-radius:50%;flex:none;vertical-align:middle}
+.row>.dot{margin-top:0}
+.quick{margin-top:14px;display:flex;flex-direction:column;gap:10px}
+.quick .chip{display:inline-flex;align-items:center;gap:6px}
+.qbtns{display:flex;gap:8px;flex-wrap:wrap}
+.qbtns .primary{flex:1}
+.run{margin-top:14px;padding:12px 14px;background:var(--accent-soft);border-color:transparent;display:flex;align-items:center;gap:12px}
+.run .clock{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--accent);white-space:nowrap}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700}
+.note{padding:10px 12px;border-radius:12px;background:var(--soft);font-size:14px;margin:10px 0}
+.hb{display:block;width:100%;height:12px}
+.hbrow{padding:8px 14px}
+.hbrow .top{display:flex;justify-content:space-between;gap:8px;font-size:14px;margin-bottom:4px}
+.hbrow .top b{overflow-wrap:anywhere}
+.dayc{display:block;width:100%;height:auto;padding:6px 8px}
+.seg2{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-top:14px}
+.seg2 .mid{flex:1;text-align:center;font-weight:700;min-width:0}
+.seg2 .mid small{display:block;font-weight:500;color:var(--muted);font-size:12px}
+.filters{display:flex;flex-direction:column;gap:10px;margin-top:14px}
+textarea.big{min-height:180px;font-family:ui-monospace,Menlo,monospace;font-size:14px}
+.pv{max-height:220px;overflow:auto;border:1px solid var(--line);border-radius:10px;font-size:13px}
+.pv div{padding:6px 10px;border-top:1px solid var(--line);overflow-wrap:anywhere}
+.pv div:first-child{border-top:0}
+.pv .e{color:var(--bad)} .pv .o{color:var(--ok)} .pv .d{color:var(--muted)}
+.chiprow{display:flex;gap:6px;flex-wrap:wrap}
+.chiprow .chip{min-height:30px;padding:3px 10px;font-size:13px}
+#printArea{display:none}
+@media print{
+  @page{margin:14mm}
+  html,body{background:#fff!important;color:#000!important}
+  body>*:not(#printArea){display:none!important}
+  #printArea{display:block!important;font:11pt/1.35 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:#000;background:#fff}
+  #printArea h1{font-size:18pt;margin:0 0 2pt}
+  #printArea h2{font-size:13pt;margin:12pt 0 4pt;border-bottom:1.5pt solid #000;padding-bottom:2pt;break-after:avoid}
+  #printArea h3{font-size:11pt;margin:8pt 0 2pt;break-after:avoid}
+  #printArea .pa-sub{color:#333;margin:0 0 6pt}
+  #printArea ul{margin:0 0 4pt;padding-left:16pt}
+  #printArea li{break-inside:avoid;margin:1pt 0}
+  #printArea .pa-n{color:#333;font-size:10pt}
+}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap"><div class="grow"><h1 id="title">Today</h1><div class="sub" id="sub"></div></div><button type="button" class="btn small primary hide" id="addBtn">+ Entry</button></div></header>
+<main class="wrap" id="view"></main>
+<nav class="tabs" aria-label="Sections"><div class="wrap">
+  <button type="button" data-tab="today"><span class="ico">📝</span>Today</button>
+  <button type="button" data-tab="log"><span class="ico">🗂️</span>Log</button>
+  <button type="button" data-tab="summary"><span class="ico">📊</span>Summary</button>
+  <button type="button" data-tab="jobs"><span class="ico">💼</span>Jobs</button>
+  <button type="button" data-tab="backup"><span class="ico">💾</span>Backup</button>
+</div></nav>
+<script>
+'use strict';
+/* ===================== shared helpers (identical in every Goobs app) ===================== */
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => Array.from(el.querySelectorAll(s));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const isNum = v => typeof v === 'number' && Number.isFinite(v);
+const str = v => (typeof v === 'string' ? v : v == null ? '' : String(v));
+
+/* ---- dates: always local calendar dates stored as 'YYYY-MM-DD' ---- */
+const pad = n => String(n).padStart(2, '0');
+const fmtISO = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const parseISO = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+const isISO = s => typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s) && fmtISO(parseISO(s)) === s;
+const todayISO = () => fmtISO(new Date());
+const daysBetween = (a, b) => Math.round((parseISO(b) - parseISO(a)) / 86400000);
+const addDays = (s, n) => { const d = parseISO(s); d.setDate(d.getDate() + n); return fmtISO(d); };
+function addMonths(s, n, anchorDay) {
+  const d = parseISO(s);
+  const day = anchorDay || d.getDate();
+  const first = new Date(d.getFullYear(), d.getMonth() + n, 1);
+  const last = new Date(first.getFullYear(), first.getMonth() + 1, 0).getDate();
+  first.setDate(Math.min(day, last));
+  return fmtISO(first);
+}
+const monthEndISO = s => { const d = parseISO(s); return fmtISO(new Date(d.getFullYear(), d.getMonth() + 1, 0)); };
+
+function fmtDate(s, withWeekday = true) {
+  const d = parseISO(s);
+  const o = { month: 'short', day: 'numeric' };
+  if (withWeekday) o.weekday = 'short';
+  if (d.getFullYear() !== new Date().getFullYear()) o.year = 'numeric';
+  return d.toLocaleDateString(undefined, o);
+}
+function fmtDateTime(iso) {
+  const d = new Date(iso);
+  return isNaN(d) ? 'unknown date' : d.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+}
+const _mf = {};
+function money(n, cur = 'USD') {
+  if (!_mf[cur]) {
+    try { _mf[cur] = new Intl.NumberFormat(undefined, { style: 'currency', currency: cur }); }
+    catch { _mf[cur] = new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }); }
+  }
+  return _mf[cur].format(n);
+}
+const csvCell = v => {
+  let s = String(v ?? '');
+  if (/^[=+\-@\t\r]/.test(s)) s = "'" + s; // neutralise spreadsheet formula injection
+  return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+};
+function safeUrl(u) {
+  let s = String(u ?? '').trim();
+  if (!s) return '';
+  if (!/^[a-z][a-z0-9+.-]*:/i.test(s)) s = 'https://' + s;
+  try { const x = new URL(s); return /^https?:$/.test(x.protocol) ? x.href : ''; } catch { return ''; }
+}
+
+/* ---- storage: one JSON string under one key in IndexedDB ---- */
+function openDB(name) {
+  return new Promise((res, rej) => {
+    if (!window.indexedDB) return rej(new Error('IndexedDB unavailable'));
+    const r = indexedDB.open(name, 1);
+    r.onupgradeneeded = () => { r.result.createObjectStore('kv'); };
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+    r.onblocked = () => rej(new Error('Database blocked'));
+  });
+}
+function idbGet(db, key) {
+  return new Promise((res, rej) => {
+    const q = db.transaction('kv').objectStore('kv').get(key);
+    q.onsuccess = () => res(q.result);
+    q.onerror = () => rej(q.error);
+  });
+}
+function idbPut(db, key, val) {
+  return new Promise((res, rej) => {
+    const tx = db.transaction('kv', 'readwrite');
+    tx.objectStore('kv').put(val, key);
+    tx.oncomplete = () => res();
+    tx.onerror = () => rej(tx.error);
+    tx.onabort = () => rej(tx.error || new Error('Write aborted'));
+  });
+}
+
+/* ---- toast ---- */
+function toast(msg, action) {
+  const old = $('.toast'); if (old) old.remove();
+  const t = document.createElement('div');
+  t.className = 'toast'; t.setAttribute('role', 'status');
+  t.innerHTML = `<span>${esc(msg)}</span>` + (action ? `<button type="button">${esc(action.label)}</button>` : '');
+  if (action) t.querySelector('button').onclick = () => { t.remove(); action.fn(); };
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), action ? 8000 : 3200);
+}
+
+/* ---- dialogs ---- */
+if (!$('#dlg')) document.body.insertAdjacentHTML('beforeend', '<dialog id="dlg"></dialog><dialog id="ask"></dialog>');
+{
+  const dlg = $('#dlg'); let down = false;
+  dlg.addEventListener('pointerdown', e => { down = e.target === dlg; });
+  dlg.addEventListener('click', e => { if (e.target === dlg && down) dlg.close(); });
+}
+
+function fieldHTML(f) {
+  const id = 'f_' + f.name, v = f.value ?? '';
+  if (f.type === 'checkbox')
+    return `<div class="field check"><input type="checkbox" id="${id}" name="${f.name}"${f.value ? ' checked' : ''}><label for="${id}">${esc(f.label)}</label></div>`;
+  let ctl;
+  if (f.type === 'select') {
+    ctl = `<select id="${id}" name="${f.name}">${f.options.map(o => {
+      const [val, label] = Array.isArray(o) ? o : [o, o];
+      return `<option value="${esc(val)}"${String(val) === String(v) ? ' selected' : ''}>${esc(label)}</option>`;
+    }).join('')}</select>`;
+  } else if (f.type === 'textarea') {
+    ctl = `<textarea id="${id}" name="${f.name}" placeholder="${esc(f.placeholder || '')}">${esc(v)}</textarea>`;
+  } else {
+    const t = f.type || 'text';
+    const extra = t === 'number' ? ` inputmode="decimal" step="${f.step || 'any'}"` : '';
+    ctl = `<input id="${id}" name="${f.name}" type="${t}" value="${esc(v)}" placeholder="${esc(f.placeholder || '')}"${extra}${f.min != null ? ` min="${f.min}"` : ''}${f.max != null ? ` max="${f.max}"` : ''} autocomplete="${f.autocomplete || 'off'}" autocapitalize="${f.capitalize || (t === 'email' || t === 'password' ? 'none' : 'sentences')}">`;
+  }
+  return `<div class="field"><label for="${id}">${esc(f.label)}${f.required ? ' *' : ''}</label>${ctl}${f.hint ? `<div class="hint">${esc(f.hint)}</div>` : ''}</div>`;
+}
+
+/* formDialog: fields -> values. onSubmit(values) may return an error string (keeps dialog open).
+   onDelete() may return true to close. extra: [{label, kind, onClick}] extra buttons. */
+function formDialog({ title, intro = '', fields, submitLabel = 'Save', onSubmit, onDelete, deleteLabel = 'Delete', extra = [], onClose, grid = '' }) {
+  const dlg = $('#dlg');
+  const body = grid ? `<div class="${grid}">${fields.map(fieldHTML).join('')}</div>` : fields.map(fieldHTML).join('');
+  dlg.innerHTML = `<form class="dlg-form" novalidate>
+    <h2>${esc(title)}</h2>${intro ? `<p class="muted">${esc(intro)}</p>` : ''}${body}
+    <div class="dlg-err" role="alert"></div>
+    <div class="dlg-actions">
+      ${onDelete ? `<button type="button" class="btn danger" data-k="del">${esc(deleteLabel)}</button>` : ''}
+      ${extra.map((x, i) => `<button type="button" class="btn ${x.kind || ''}" data-x="${i}">${esc(x.label)}</button>`).join('')}
+      <span class="spacer"></span>
+      <button type="button" class="btn ghost" data-k="cancel">Cancel</button>
+      <button type="submit" class="btn primary">${esc(submitLabel)}</button>
+    </div></form>`;
+  const form = $('form', dlg), err = $('.dlg-err', dlg);
+  const collect = () => {
+    const vals = {};
+    for (const f of fields) { const el = form.elements[f.name]; vals[f.name] = f.type === 'checkbox' ? el.checked : el.value; }
+    return vals;
+  };
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const vals = collect();
+    for (const f of fields) if (f.required && !String(vals[f.name]).trim()) { err.textContent = `${f.label} is required.`; return; }
+    err.textContent = '';
+    let msg;
+    try { msg = await onSubmit(vals); } catch (ex) { msg = ex.message || 'Something went wrong.'; }
+    if (msg) err.textContent = msg; else dlg.close();
+  });
+  $('[data-k="cancel"]', dlg).onclick = () => dlg.close();
+  if (onDelete) $('[data-k="del"]', dlg).onclick = async () => { if (await onDelete()) dlg.close(); };
+  $$('[data-x]', dlg).forEach(b => { b.onclick = () => extra[+b.dataset.x].onClick(collect()); });
+  dlg.onclose = () => { dlg.onclose = null; if (onClose) onClose(); };
+  dlg.showModal();
+  const first = form.querySelector('input:not([type=checkbox]),textarea');
+  if (first && !first.value) first.focus(); // new-item forms open ready to type; edit forms don't pop the keyboard
+}
+
+function askDialog({ title, body = '', buttons }) {
+  return new Promise(resolve => {
+    const d = $('#ask'); let done = false;
+    d.innerHTML = `<div class="dlg-form"><h2>${esc(title)}</h2>${body ? `<div class="ask-body">${body}</div>` : ''}
+      <div class="dlg-actions ask-actions">${buttons.map((b, i) => `<button type="button" class="btn ${b.kind || ''}" data-i="${i}">${esc(b.label)}</button>`).join('')}</div></div>`;
+    const finish = v => { if (done) return; done = true; d.close(); resolve(v); };
+    $$('button', d).forEach(btn => { btn.onclick = () => finish(buttons[+btn.dataset.i].value); });
+    d.oncancel = () => { done = true; resolve(undefined); };
+    d.showModal();
+  });
+}
+const confirmBox = async (title, bodyText, okLabel = 'Delete', danger = true) =>
+  (await askDialog({ title, body: bodyText ? `<p>${esc(bodyText)}</p>` : '', buttons: [{ label: 'Cancel', value: false }, { label: okLabel, value: true, kind: danger ? 'danger' : 'primary' }] })) === true;
+const msgBox = (title, bodyText) =>
+  askDialog({ title, body: `<p>${esc(bodyText)}</p>`, buttons: [{ label: 'OK', value: true, kind: 'primary' }] });
+
+/* ---- backup: optional AES-GCM passphrase encryption (Web Crypto, PBKDF2-SHA256) ---- */
+const b64 = buf => { let s = ''; const b = new Uint8Array(buf); for (let i = 0; i < b.length; i += 0x8000) s += String.fromCharCode.apply(null, b.subarray(i, i + 0x8000)); return btoa(s); };
+const unb64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+async function deriveKey(pass, salt, iterations) {
+  const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(pass), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey({ name: 'PBKDF2', salt, iterations, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+}
+async function encryptPayload(obj, pass) {
+  const salt = crypto.getRandomValues(new Uint8Array(16)), iv = crypto.getRandomValues(new Uint8Array(12));
+  const iterations = 250000;
+  const key = await deriveKey(pass, salt, iterations);
+  const ct = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, new TextEncoder().encode(JSON.stringify(obj)));
+  return { encrypted: true, kdf: 'PBKDF2-SHA256', iterations, salt: b64(salt), iv: b64(iv), data: b64(ct) };
+}
+async function decryptPayload(env, pass) {
+  const key = await deriveKey(pass, unb64(env.salt), env.iterations);
+  try {
+    const pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: unb64(env.iv) }, key, unb64(env.data));
+    return JSON.parse(new TextDecoder().decode(pt));
+  } catch { throw new Error('Wrong passphrase, or the file is damaged.'); }
+}
+function promptDecrypt(env) {
+  return new Promise(resolve => {
+    let result = null;
+    formDialog({
+      title: 'Encrypted backup', intro: 'Enter the passphrase you chose when you made this backup.',
+      fields: [{ name: 'pass', label: 'Passphrase', type: 'password', required: true }], submitLabel: 'Unlock',
+      onSubmit: async v => { try { result = await decryptPayload(env, v.pass); } catch (e) { return e.message; } },
+      onClose: () => resolve(result)
+    });
+  });
+}
+const Backup = {
+  async build({ appId, schema, data, passphrase }) {
+    const head = { app: appId, schemaVersion: schema, exportedAt: new Date().toISOString() };
+    if (passphrase) return JSON.stringify({ ...head, ...(await encryptPayload(data, passphrase)) });
+    return JSON.stringify({ ...head, encrypted: false, data }, null, 2);
+  },
+  /* returns {data, exportedAt, schemaVersion}, or null if the user cancelled the passphrase prompt; throws Error with a friendly message */
+  async parse(text, { appId, schema }) {
+    let env;
+    try { env = JSON.parse(text); } catch { throw new Error('That file isn’t a valid backup (it isn’t JSON).'); }
+    if (!env || typeof env !== 'object' || env.app !== appId)
+      throw new Error(env && typeof env === 'object' && env.app ? `That backup belongs to a different app (${String(env.app).slice(0, 40)}).` : 'That file isn’t a backup from this app.');
+    if (!Number.isInteger(env.schemaVersion) || env.schemaVersion < 1) throw new Error('The backup is missing its version number.');
+    if (env.schemaVersion > schema) throw new Error('That backup was made by a newer version of the app. Close and reopen this app to update it, then try again.');
+    let data;
+    if (env.encrypted) {
+      if (!(window.crypto && crypto.subtle)) throw new Error('Encrypted backups need a secure (https) connection.');
+      if (!(env.iterations >= 1000 && env.iterations <= 2000000) || typeof env.salt !== 'string' || typeof env.iv !== 'string' || typeof env.data !== 'string')
+        throw new Error('The encrypted backup is damaged.');
+      data = await promptDecrypt(env);
+      if (data === null) return null;
+    } else data = env.data;
+    if (!data || typeof data !== 'object') throw new Error('The backup contains no data.');
+    return { data, exportedAt: typeof env.exportedAt === 'string' ? env.exportedAt : null, schemaVersion: env.schemaVersion };
+  }
+};
+
+/* share sheet when the platform supports sharing files (iPhone), otherwise a normal download */
+async function deliverFile(filename, text, mime = 'application/json') {
+  const file = new File([text], filename, { type: mime });
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try { await navigator.share({ files: [file], title: filename }); return 'shared'; }
+    catch (e) { if (e && e.name === 'AbortError') return 'cancelled'; /* otherwise fall back to a download */ }
+  }
+  const url = URL.createObjectURL(file);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.style.display = 'none';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 15000);
+  return 'downloaded';
+}
+function pickFile(accept = '.json,application/json') {
+  return new Promise(resolve => {
+    const i = document.createElement('input');
+    i.type = 'file'; i.accept = accept; i.style.display = 'none';
+    document.body.appendChild(i);
+    let done = false;
+    const fin = f => { if (done) return; done = true; i.remove(); resolve(f); };
+    i.addEventListener('change', () => fin((i.files && i.files[0]) || null));
+    i.addEventListener('cancel', () => fin(null));
+    i.click();
+  });
+}
+const readFileText = f => (f.text ? f.text() : new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = () => rej(r.error); r.readAsText(f); }));
+
+/* nag banner: only when there is data and no recent backup */
+function backupNag(meta, hasData) {
+  if (!hasData) return null;
+  if (!meta.lastBackup) return 'You have data but no backup yet. Make one so you can restore it if this device loses it.';
+  const age = (Date.now() - Date.parse(meta.lastBackup)) / 86400000;
+  const changed = meta.lastChange && Date.parse(meta.lastChange) > Date.parse(meta.lastBackup) + 1000;
+  if (changed && age >= 7) return `Your last backup was ${Math.floor(age)} days ago and you’ve made changes since.`;
+  return null;
+}
+
+/* ---- install helper ---- */
+let deferredInstall = null;
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferredInstall = e; if (typeof render === 'function') render(); });
+const isStandalone = () => (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+function installCardHTML() {
+  if (isStandalone()) return '';
+  const ios = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const msg = deferredInstall
+    ? '<p>Install it for its own window and full offline use.</p><button class="btn primary" data-action="install">Install app</button>'
+    : ios
+      ? '<p>In Safari tap <b>Share</b> → <b>Add to Home Screen</b>. <b>Do this before entering data</b> — the home-screen app keeps its own separate storage from the Safari tab. Then open it from the new icon.</p>'
+      : '<p>Use your browser’s menu → <b>Install app</b> (or <b>Add to Home Screen</b>).</p>';
+  return `<section class="card pad"><h3>Install on this device</h3>${msg}</section>`;
+}
+async function runInstall() { if (!deferredInstall) return; deferredInstall.prompt(); try { await deferredInstall.userChoice; } catch {} deferredInstall = null; if (typeof render === 'function') render(); }
+
+
+
+if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol))
+  window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
+
+
+/* ===================== Work Log app ===================== */
+const APP_ID = 'goobs-worklog', DB_NAME = 'goobs-worklog-db', SCHEMA = 1;
+const MAX_ENTRIES = 50000, MAX_JOBS = 50, MAX_MIN = 1440, TIMER_CAP_MS = 12 * 3600000;
+const STATUSES = [['done', 'Done'], ['progress', 'In progress'], ['blocked', 'Blocked'], ['followup', 'Follow-up needed']];
+const STATUS_LABEL = Object.fromEntries(STATUSES);
+const STATUS_CLS = { done: '', progress: 'acc', blocked: 'bad', followup: 'warn' };
+const CAT_SUGGEST = ['change', 'incident', 'project', 'meeting', 'admin', 'learning'];
+const PALETTE = [['#2563eb', 'Blue'], ['#0d9488', 'Teal'], ['#ea580c', 'Orange'], ['#9333ea', 'Purple'], ['#e11d48', 'Rose'], ['#16a34a', 'Green'], ['#ca8a04', 'Gold'], ['#64748b', 'Slate']];
+const CONF = 'Keep client or employer confidential details out of here if your employer\'s policy requires it; this app is for your own notes.';
+
+/* ---- time parsing / formatting ---- */
+/* returns {min:null} for empty, {min:int} when valid, {err} otherwise. Bare number = minutes. */
+function parseMinutes(input) {
+  let s = str(input).trim().toLowerCase().replace(/(\d),(\d)/g, '$1.$2');
+  if (!s) return { min: null };
+  const fin = x => (x < 0 || !isFinite(x) ? { err: 'Enter a valid time.' } : x > MAX_MIN ? { err: 'That is more than 24 hours.' } : { min: Math.round(x) });
+  let m;
+  if ((m = s.match(/^(\d+):(\d{1,2})$/))) return +m[2] > 59 ? { err: 'Enter a valid time.' } : fin(+m[1] * 60 + +m[2]);
+  if ((m = s.match(/^(\d+(?:\.\d+)?)$/))) return fin(+m[1]);
+  m = s.match(/^(?:(\d+(?:\.\d+)?)\s*(?:h|hr|hrs|hour|hours))?\s*(?:(\d+(?:\.\d+)?)\s*(?:m|min|mins|minute|minutes)?)?$/);
+  if (!m || (m[1] == null && m[2] == null)) return { err: 'Time looks like 1h30, 90m or 1.5h.' };
+  return fin((m[1] ? +m[1] * 60 : 0) + (m[2] ? +m[2] : 0));
+}
+function fmtMin(m) {
+  m = Math.max(0, Math.round(m || 0));
+  const h = Math.floor(m / 60), r = m % 60;
+  return h && r ? `${h}h ${r}m` : h ? `${h}h` : `${r}m`;
+}
+const fmtHrs = m => (Math.round((m || 0) / 6) / 10).toString() + 'h';
+function fmtClock(ms) {
+  const t = Math.max(0, Math.floor(ms / 1000)), h = Math.floor(t / 3600), m = Math.floor((t % 3600) / 60), s = t % 60;
+  return `${h}:${pad(m)}:${pad(s)}`;
+}
+const nEntries = n => `${n} ${n === 1 ? 'entry' : 'entries'}`;
+const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
+const weekStart = iso => { const d = parseISO(iso); return addDays(iso, -((d.getDay() + 6) % 7)); };
+
+/* ---- model ---- */
+const hexOK = c => typeof c === 'string' && /^#[0-9a-fA-F]{6}$/.test(c);
+function normJob(j, i) {
+  if (!j || typeof j !== 'object') return null;
+  const name = str(j.name).trim().slice(0, 60);
+  if (!name) return null;
+  const t = Number(j.targetHours);
+  return {
+    id: str(j.id).slice(0, 40) || uid(), name,
+    color: hexOK(j.color) ? j.color.toLowerCase() : PALETTE[(i || 0) % PALETTE.length][0],
+    prefix: str(j.prefix).trim().slice(0, 12),
+    targetHours: isNum(t) && t > 0 && t <= 168 ? Math.round(t * 4) / 4 : 0,
+    archived: !!j.archived, createdAt: isNum(j.createdAt) ? j.createdAt : Date.now()
+  };
+}
+function normEntry(e, jobIds) {
+  if (!e || typeof e !== 'object' || !isISO(e.date)) return null;
+  const jobId = str(e.jobId);
+  if (jobIds && !jobIds.has(jobId)) return null;
+  const title = str(e.title).replace(/\s+/g, ' ').trim().slice(0, 300);
+  if (!title) return null;
+  const mn = Number(e.minutes);
+  return {
+    id: str(e.id).slice(0, 40) || uid(), date: e.date, jobId, title,
+    ticket: str(e.ticket).trim().slice(0, 60),
+    minutes: e.minutes != null && e.minutes !== '' && isNum(mn) && mn > 0 ? Math.min(MAX_MIN, Math.round(mn)) : null,
+    category: str(e.category).replace(/\s+/g, ' ').trim().slice(0, 40),
+    status: STATUS_LABEL[e.status] ? e.status : 'done',
+    notes: str(e.notes).slice(0, 4000),
+    followUp: isISO(e.followUp) ? e.followUp : '',
+    carried: !!e.carried, carriedFrom: str(e.carriedFrom).slice(0, 40),
+    createdAt: isNum(e.createdAt) ? e.createdAt : Date.parse(e.date) || Date.now(),
+    updatedAt: isNum(e.updatedAt) ? e.updatedAt : 0
+  };
+}
+function normalizeData(raw) {
+  let dropped = 0;
+  const jobs = [], jids = new Set();
+  const rj = Array.isArray(raw && raw.jobs) ? raw.jobs : [];
+  rj.forEach((j, i) => {
+    const n = normJob(j, i);
+    if (!n || jids.has(n.id) || jobs.length >= MAX_JOBS) { dropped++; return; }
+    jids.add(n.id); jobs.push(n);
+  });
+  let entries = [];
+  const seen = new Set();
+  for (const e of Array.isArray(raw && raw.entries) ? raw.entries : []) {
+    const n = normEntry(e, jids);
+    if (!n || seen.has(n.id)) { dropped++; continue; }
+    seen.add(n.id); entries.push(n);
+  }
+  if (entries.length > MAX_ENTRIES) {
+    entries.sort((a, b) => b.date.localeCompare(a.date) || b.createdAt - a.createdAt);
+    dropped += entries.length - MAX_ENTRIES; entries = entries.slice(0, MAX_ENTRIES);
+  }
+  return { data: { jobs, entries }, dropped };
+}
+const defaultState = () => ({ schemaVersion: SCHEMA, meta: { lastBackup: null, lastChange: null }, settings: { lastJob: '' }, jobs: [], entries: [], timer: null });
+function loadState(parsed) {
+  const { data } = normalizeData(parsed);
+  const st = defaultState();
+  st.meta.lastBackup = str(parsed && parsed.meta && parsed.meta.lastBackup) || null;
+  st.meta.lastChange = str(parsed && parsed.meta && parsed.meta.lastChange) || null;
+  st.jobs = data.jobs; st.entries = data.entries;
+  const lj = str(parsed && parsed.settings && parsed.settings.lastJob);
+  st.settings.lastJob = data.jobs.some(j => j.id === lj) ? lj : '';
+  const t = parsed && parsed.timer;
+  if (t && typeof t === 'object' && isNum(t.startedAt) && data.entries.some(e => e.id === t.entryId))
+    st.timer = { entryId: t.entryId, startedAt: Math.min(t.startedAt, Date.now()) };
+  return st;
+}
+const exportData = () => ({ jobs: state.jobs, entries: state.entries });
+
+/* ---- persistence ---- */
+let state = defaultState(), db = null, saveFailed = false, persistAsked = false, saveChain = Promise.resolve();
+function persist({ touch = true } = {}) {
+  if (touch) state.meta.lastChange = new Date().toISOString();
+  if (!db) return Promise.resolve();
+  const snap = JSON.stringify(state);
+  saveChain = saveChain.then(() => idbPut(db, 'state', snap)).then(() => { saveFailed = false; }).catch(err => { console.error(err); saveFailed = true; });
+  if (!persistAsked && navigator.storage && navigator.storage.persist) { persistAsked = true; navigator.storage.persist().catch(() => {}); }
+  return saveChain;
+}
+const commit = () => { persist(); render(); };
+
+/* ---- lookups ---- */
+const ui = { quickText: '', quickJob: '', f: { q: '', job: '', cat: '', status: '', from: '', to: '', open: false }, logLimit: 150, sumMode: 'week', weekOff: 0, monthOff: 0 };
+const jobById = id => state.jobs.find(j => j.id === id);
+const byId = id => state.entries.find(e => e.id === id);
+const jobName = id => { const j = jobById(id); return j ? j.name : '(deleted job)'; };
+const dotHTML = id => { const j = jobById(id); return `<span class="dot" style="background:${esc(j ? j.color : '#64748b')}"></span>`; };
+const activeJobs = () => state.jobs.filter(j => !j.archived);
+const sumMin = arr => arr.reduce((s, e) => s + (e.minutes || 0), 0);
+const inRange = (from, to) => state.entries.filter(e => e.date >= from && e.date <= to);
+const byNewest = (a, b) => b.date.localeCompare(a.date) || b.createdAt - a.createdAt;
+const byOldest = (a, b) => a.date.localeCompare(b.date) || a.createdAt - b.createdAt;
+function defaultJobId() {
+  const act = activeJobs();
+  if (ui.quickJob && act.some(j => j.id === ui.quickJob)) return ui.quickJob;
+  if (act.some(j => j.id === state.settings.lastJob)) return state.settings.lastJob;
+  return act.length ? act[0].id : (state.jobs[0] ? state.jobs[0].id : '');
+}
+const isOpenFU = e => !e.carried && e.status !== 'done' && (e.status === 'followup' || !!e.followUp);
+const catKey = c => c.trim().toLowerCase();
+const catLabel = c => c ? c.charAt(0).toUpperCase() + c.slice(1) : 'Uncategorized';
+function normTicket(t, job) {
+  t = str(t).trim();
+  return job && job.prefix && /^\d+$/.test(t) ? job.prefix + t : t;
+}
+const escRe = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const looksTicket = (tok, job) => /^[A-Z]{2,8}-?\d{3,}$/.test(tok) || !!(job && job.prefix && new RegExp('^' + escRe(job.prefix) + '\\d+$', 'i').test(tok));
+
+/* quick-add text: "Fixed mail flow CHG0012345 @1h30" -> title, ticket (only at start/end), minutes */
+function parseQuick(text, job) {
+  const toks = str(text).trim().split(/\s+/).filter(Boolean);
+  let minutes = null; const keep = [];
+  for (const tok of toks) {
+    if (minutes === null && tok.length > 1 && tok[0] === '@') { const r = parseMinutes(tok.slice(1)); if (r.min != null) { minutes = r.min; continue; } }
+    keep.push(tok);
+  }
+  let ticket = '';
+  const clean = t => t.replace(/[.,;:)]+$/, '').replace(/^\(/, '');
+  if (keep.length > 1 && looksTicket(clean(keep[0]), job)) ticket = clean(keep.shift());
+  else if (keep.length > 1 && looksTicket(clean(keep[keep.length - 1]), job)) ticket = clean(keep.pop());
+  else if (keep.length === 1 && looksTicket(clean(keep[0]), job)) ticket = clean(keep[0]);
+  return { title: keep.join(' '), ticket, minutes };
+}
+
+/* ---- actions ---- */
+function addEntry(f) {
+  if (state.entries.length >= MAX_ENTRIES) { toast(`Entry limit reached (${MAX_ENTRIES.toLocaleString()}). Export and delete old entries.`); return null; }
+  const e = normEntry({ id: uid(), createdAt: Date.now(), ...f }, new Set(state.jobs.map(j => j.id)));
+  if (!e) return null;
+  state.entries.push(e);
+  state.settings.lastJob = e.jobId; ui.quickJob = e.jobId;
+  return e;
+}
+async function stopTimer() {
+  const tm = state.timer; if (!tm) return true;
+  const e = byId(tm.entryId);
+  const ms = Math.max(0, Date.now() - tm.startedAt);
+  const credit = mins => {
+    if (e && mins > 0) e.minutes = Math.min(MAX_MIN, (e.minutes || 0) + mins);
+    state.timer = null; commit();
+    toast(e ? (mins > 0 ? `Timer stopped: +${fmtMin(mins)} on “${e.title}”` : 'Timer stopped (under a minute)') : 'Timer cleared');
+  };
+  if (ms <= TIMER_CAP_MS || !e) { credit(Math.round(ms / 60000)); return true; }
+  return new Promise(resolve => {
+    let done = false;
+    formDialog({
+      title: 'Timer ran a long time', intro: `It has been running ${fmtClock(ms)} (since ${fmtDateTime(new Date(tm.startedAt).toISOString())}). How much should be added to this entry?`,
+      fields: [{ name: 'mins', label: 'Time to add (1h30, 90m, 1.5h)', value: '0', required: true }], submitLabel: 'Add time and stop',
+      onSubmit: v => { const r = parseMinutes(v.mins); if (r.err) return r.err; done = true; credit(r.min || 0); },
+      onClose: () => resolve(done)
+    });
+  });
+}
+async function startTimer(id) {
+  const e = byId(id); if (!e) return;
+  if (state.timer && state.timer.entryId === id) return;
+  if (!(await stopTimer())) return;
+  state.timer = { entryId: id, startedAt: Date.now() };
+  commit(); toast(`Timer started on “${e.title}”`);
+}
+function removeEntry(id) {
+  if (state.timer && state.timer.entryId === id) state.timer = null;
+  state.entries = state.entries.filter(e => e.id !== id);
+}
+function duplicateEntry(id) {
+  const e = byId(id); if (!e) return null;
+  const n = addEntry({ ...e, id: uid(), date: todayISO(), carried: false, carriedFrom: '', createdAt: Date.now(), updatedAt: 0 });
+  if (n) { commit(); toast('Duplicated to today', { label: 'Undo', fn: () => { removeEntry(n.id); commit(); } }); }
+  return n;
+}
+function carryForward(id) {
+  const e = byId(id); if (!e) return null;
+  const today = todayISO();
+  if (e.date >= today || e.status === 'done' || e.carried) { toast('Nothing to carry forward.'); return null; }
+  const n = addEntry({ ...e, id: uid(), date: today, minutes: null, status: e.status === 'followup' ? 'followup' : e.status, carried: false, carriedFrom: e.id, createdAt: Date.now(), updatedAt: 0 });
+  if (!n) return null;
+  e.carried = true;
+  commit();
+  toast('Carried forward to today', { label: 'Undo', fn: () => { removeEntry(n.id); const o = byId(id); if (o) o.carried = false; commit(); } });
+  return n;
+}
+function markDone(id) {
+  const e = byId(id); if (!e) return;
+  const prev = { status: e.status, followUp: e.followUp };
+  e.status = 'done'; e.updatedAt = Date.now();
+  commit();
+  toast('Marked done', { label: 'Undo', fn: () => { const x = byId(id); if (x) { x.status = prev.status; x.followUp = prev.followUp; commit(); } } });
+}
+
+/* ---- dialogs ---- */
+function attachCatList() {
+  const inp = $('#f_category'); if (!inp) return;
+  const used = [...new Set(state.entries.map(e => catKey(e.category)).filter(Boolean))];
+  const all = [...new Set([...CAT_SUGGEST, ...used])];
+  inp.setAttribute('list', 'catlist');
+  inp.insertAdjacentHTML('afterend', `<datalist id="catlist">${all.map(c => `<option value="${esc(c)}">`).join('')}</datalist>`);
+  inp.autocapitalize = 'none';
+}
+function entryDialog(id, preset = {}) {
+  const e = id ? byId(id) : null;
+  if (id && !e) return;
+  if (!state.jobs.length) { toast('Add a job first.'); return go('today'); }
+  const jobs = state.jobs.filter(j => !j.archived || (e && e.jobId === j.id));
+  const b = e || { date: preset.date || todayISO(), jobId: preset.jobId || defaultJobId(), title: preset.title || '', ticket: preset.ticket || '', minutes: preset.minutes != null ? preset.minutes : null, category: '', status: preset.status || 'done', notes: '', followUp: '' };
+  const canCarry = e && e.date < todayISO() && e.status !== 'done' && !e.carried;
+  const extra = [];
+  if (e) extra.push({ label: 'Duplicate', onClick: () => { $('#dlg').close(); duplicateEntry(e.id); } });
+  if (canCarry) extra.push({ label: 'Carry to today', onClick: () => { $('#dlg').close(); carryForward(e.id); } });
+  formDialog({
+    title: e ? 'Edit entry' : 'New entry',
+    fields: [
+      { name: 'title', label: 'What I did', required: true, value: b.title, capitalize: 'sentences' },
+      { name: 'jobId', label: 'Job', type: 'select', options: jobs.map(j => [j.id, j.name + (j.archived ? ' (archived)' : '')]), value: b.jobId },
+      { name: 'date', label: 'Date', type: 'date', required: true, value: b.date },
+      { name: 'ticket', label: 'Ticket / ref', value: b.ticket, capitalize: 'characters', hint: 'Free text. Digits only get the job’s prefix added.' },
+      { name: 'minutes', label: 'Time spent', value: b.minutes ? fmtMin(b.minutes).replace(/ /g, '') : '', placeholder: '1h30, 90m, 1.5h', hint: 'Optional. A bare number means minutes.' },
+      { name: 'category', label: 'Category', value: b.category, placeholder: 'change, incident, project…' },
+      { name: 'status', label: 'Status', type: 'select', options: STATUSES, value: b.status },
+      { name: 'followUp', label: 'Follow-up date (optional)', type: 'date', value: b.followUp },
+      { name: 'notes', label: 'Notes', type: 'textarea', value: b.notes }
+    ],
+    submitLabel: e ? 'Save' : 'Add entry', extra,
+    onSubmit: v => {
+      const r = parseMinutes(v.minutes); if (r.err) return r.err;
+      if (!isISO(v.date)) return 'Pick a valid date.';
+      if (v.followUp && !isISO(v.followUp)) return 'Pick a valid follow-up date.';
+      const job = jobById(v.jobId); if (!job) return 'Pick a job.';
+      const rec = { title: v.title, jobId: v.jobId, date: v.date, ticket: normTicket(v.ticket, job), minutes: r.min || null, category: v.category, status: v.status, followUp: v.followUp, notes: v.notes };
+      if (e) {
+        const n = normEntry({ ...e, ...rec, updatedAt: Date.now() }, new Set(state.jobs.map(j => j.id)));
+        if (!n) return 'Enter what you did.';
+        Object.assign(e, n);
+        state.settings.lastJob = e.jobId;
+      } else if (!addEntry(rec)) return state.entries.length >= MAX_ENTRIES ? 'Entry limit reached.' : 'Enter what you did.';
+      commit();
+    },
+    onDelete: e ? async () => {
+      if (!(await confirmBox('Delete this entry?', e.title, 'Delete'))) return false;
+      const copy = { ...e };
+      removeEntry(e.id); commit();
+      toast('Entry deleted', { label: 'Undo', fn: () => { state.entries.push(copy); commit(); } });
+      return true;
+    } : null
+  });
+  attachCatList();
+}
+function jobDialog(id) {
+  const j = id ? jobById(id) : null;
+  if (id && !j) return;
+  if (!j && state.jobs.length >= MAX_JOBS) return toast(`Job limit reached (${MAX_JOBS}).`);
+  const used = state.entries.filter(e => j && e.jobId === j.id).length;
+  formDialog({
+    title: j ? 'Edit job' : 'Add job',
+    fields: [
+      { name: 'name', label: 'Job name', required: true, value: j && j.name, placeholder: 'e.g. Day job' },
+      { name: 'color', label: 'Color', type: 'select', options: PALETTE.map(([c, n]) => [c, n]), value: j ? j.color : PALETTE[state.jobs.length % PALETTE.length][0] },
+      { name: 'prefix', label: 'Default ticket prefix (optional)', value: j && j.prefix, placeholder: 'CHG, INC…', capitalize: 'characters', hint: 'Digits-only tickets get this prefix; typed tickets like CHG0012345 are picked up from quick add.' },
+      { name: 'targetHours', label: 'Weekly hours target (optional)', type: 'number', value: j && j.targetHours ? j.targetHours : '', min: 0, max: 168, placeholder: '40' },
+      ...(j ? [{ name: 'archived', label: 'Archived (hide from quick add)', type: 'checkbox', value: j.archived }] : [])
+    ],
+    submitLabel: j ? 'Save' : 'Add job',
+    onSubmit: v => {
+      const name = v.name.trim().slice(0, 60);
+      if (state.jobs.some(x => x.id !== (j && j.id) && x.name.toLowerCase() === name.toLowerCase())) return 'You already have a job with that name.';
+      const t = v.targetHours === '' ? 0 : parseFloat(v.targetHours);
+      if (!(t >= 0 && t <= 168)) return 'Target must be between 0 and 168 hours.';
+      const rec = { name, color: v.color, prefix: v.prefix.trim(), targetHours: t };
+      if (j) { const n = normJob({ ...j, ...rec, archived: !!v.archived }, 0); Object.assign(j, n); }
+      else { const n = normJob({ id: uid(), ...rec }, state.jobs.length); state.jobs.push(n); state.settings.lastJob = n.id; ui.quickJob = n.id; }
+      commit();
+    },
+    onDelete: j ? async () => {
+      const msg = used ? `This also deletes its ${nEntries(used)}. Archive it instead to keep them.` : 'No entries use it.';
+      if (!(await confirmBox(`Delete “${j.name}”?`, msg, 'Delete job'))) return false;
+      if (state.timer && byId(state.timer.entryId) && byId(state.timer.entryId).jobId === j.id) state.timer = null;
+      state.entries = state.entries.filter(e => e.jobId !== j.id);
+      state.jobs = state.jobs.filter(x => x.id !== j.id);
+      if (ui.quickJob === j.id) ui.quickJob = '';
+      commit(); toast('Job deleted'); return true;
+    } : null
+  });
+}
+
+/* ---- views ---- */
+const view = $('#view');
+let tab = 'today', renderedDay = '';
+function storageBannerHTML() {
+  if (saveFailed) return '<div class="banner bad">Couldn’t save to this device’s storage. Back up now so nothing is lost.</div>';
+  if (!db) return '<div class="banner bad">This browser isn’t allowing storage (private mode?). Changes won’t survive closing the app. Use Backup often.</div>';
+  return '';
+}
+function statusBadge(e) {
+  if (e.carried) return '<span class="badge">Carried on</span>';
+  return e.status === 'done' ? '' : `<span class="badge ${STATUS_CLS[e.status]}">${esc(STATUS_LABEL[e.status])}</span>`;
+}
+function entryRow(e, o = {}) {
+  const running = state.timer && state.timer.entryId === e.id, id = esc(e.id);
+  const sub = [o.noJob ? '' : esc(jobName(e.jobId)), e.ticket ? esc(e.ticket) : '', e.category ? esc(e.category) : '', o.date ? esc(fmtDate(e.date)) : '', o.fu && e.followUp ? esc(fuLabel(e)) : ''].filter(Boolean).join(' · ');
+  const time = running ? `<span class="pill warn num" data-since="${state.timer.startedAt}">${fmtClock(Date.now() - state.timer.startedAt)}</span>` : e.minutes ? fmtMin(e.minutes) : '';
+  return `<li class="row" data-action="edit" data-id="${id}">
+    ${o.noJob ? '' : dotHTML(e.jobId)}
+    <div class="row-main"><div class="row-title">${esc(e.title)}${statusBadge(e)}</div>${sub ? `<div class="row-sub">${sub}</div>` : ''}</div>
+    <div class="row-amt num">${time}</div>
+    ${o.btn || `<button type="button" class="btn small ${running ? 'primary' : ''}" data-action="timer" data-id="${id}" aria-label="${running ? 'Stop timer' : 'Start timer'}">${running ? '■ Stop' : '▶'}</button>`}</li>`;
+}
+function fuLabel(e) {
+  if (!e.followUp) return 'No follow-up date';
+  const d = daysBetween(todayISO(), e.followUp);
+  return d < 0 ? `Follow-up ${plural(-d, 'day')} overdue` : d === 0 ? 'Follow-up today' : `Follow-up ${fmtDate(e.followUp)}`;
+}
+function firstRunHTML() {
+  return storageBannerHTML() + `<section class="card pad stack" style="margin-top:14px"><h2>Welcome to Work Log</h2>
+    <p>Log what you did in two seconds, then turn the week into a status report. Everything stays on this device.</p>
+    <div class="note">${esc(CONF)}</div>
+    <div class="field"><label for="frName">Name your first job</label><input id="frName" maxlength="60" placeholder="e.g. Day job" autocapitalize="words"></div>
+    <button type="button" class="btn primary block" data-action="frcreate">Create job</button>
+    <button type="button" class="btn ghost block" data-action="restore">Restore from a backup file</button></section>`;
+}
+function renderToday() {
+  if (!state.jobs.length) return firstRunHTML();
+  const today = todayISO();
+  const act = activeJobs();
+  if (!act.length) return storageBannerHTML() + '<div class="empty"><div class="big">💼</div><h2>All jobs are archived</h2><p>Unarchive a job on the Jobs tab to log against it.</p><button type="button" class="btn primary" data-action="tab-jobs">Open Jobs</button></div>';
+  const sel = defaultJobId();
+  const es = state.entries.filter(e => e.date === today).sort(byNewest);
+  const wk = weekStart(today), weekEs = inRange(wk, addDays(wk, 6));
+  let html = storageBannerHTML() + `<section class="card pad quick">
+    <input id="qText" type="text" maxlength="300" enterkeyhint="done" autocomplete="off" autocapitalize="sentences" placeholder="What did you do?" aria-label="What did you do?" value="${esc(ui.quickText)}">
+    <div class="chips" role="group" aria-label="Job">${act.map(j => `<button type="button" class="chip" data-action="qjob" data-id="${esc(j.id)}" aria-pressed="${j.id === sel}"${j.id === sel ? ` style="background:${esc(j.color)};border-color:${esc(j.color)};color:#fff"` : ''}>${dotHTML(j.id).replace('class="dot"', 'class="dot" aria-hidden="true"')}${esc(j.name)}</button>`).join('')}</div>
+    <div class="qbtns"><button type="button" class="btn primary" data-action="qadd">Log it</button><button type="button" class="btn" data-action="qstart">▶ Start timer</button><button type="button" class="btn ghost" data-action="qmore">Details…</button></div>
+    <div class="hint">Enter saves. Add <b>@1h30</b> for time; a ticket like CHG0012345 at the start or end is picked up.</div></section>`;
+  if (state.timer && byId(state.timer.entryId)) {
+    const e = byId(state.timer.entryId);
+    html += `<section class="card run" aria-label="Running timer"><div class="row-main"><div class="pill" style="color:var(--accent)">● Timer running${e.date !== today ? ' · entry from ' + esc(fmtDate(e.date)) : ''}</div><div class="row-title">${esc(e.title)}</div><div class="row-sub">${esc(jobName(e.jobId))} · adds to this entry when you stop</div></div>
+      <div class="clock" data-since="${state.timer.startedAt}">${fmtClock(Date.now() - state.timer.startedAt)}</div><button type="button" class="btn primary" data-action="timer" data-id="${esc(e.id)}">■ Stop</button></section>`;
+  }
+  const tiles = state.jobs.filter(j => !j.archived || es.some(e => e.jobId === j.id)).map(j => {
+    const tm = sumMin(es.filter(e => e.jobId === j.id)), wm = sumMin(weekEs.filter(e => e.jobId === j.id));
+    return `<li class="row static">${dotHTML(j.id)}<div class="row-main"><div class="row-title">${esc(j.name)}</div><div class="row-sub">${nEntries(es.filter(e => e.jobId === j.id).length)} today · ${esc(fmtMin(wm))}${j.targetHours ? ' of ' + esc(fmtHrs(j.targetHours * 60)) : ''} this week</div></div><div class="row-amt num">${esc(fmtMin(tm))}</div></li>`;
+  }).join('');
+  html += `<div class="sec-h"><span>Today</span><span class="num">${esc(fmtMin(sumMin(es)))}</span></div><ul class="card list">${tiles}</ul>`;
+  const due = state.entries.filter(e => isOpenFU(e) && e.followUp && e.followUp <= today).sort((a, b) => a.followUp.localeCompare(b.followUp));
+  const dueIds = new Set(due.map(e => e.id));
+  if (due.length) html += `<div class="sec-h"><span>Follow-ups due</span><span>${due.length}</span></div><ul class="card list">${due.slice(0, 20).map(e => entryRow(e, { date: true, fu: true, btn: `<button type="button" class="btn small" data-action="done" data-id="${esc(e.id)}">Done</button>` })).join('')}</ul>`;
+  const cutoff = addDays(today, -14);
+  const earlier = state.entries.filter(e => !e.carried && e.status !== 'done' && e.date < today && e.date >= cutoff && !dueIds.has(e.id)).sort(byNewest).slice(0, 8);
+  if (earlier.length) html += `<div class="sec-h"><span>Still open from earlier</span><span>${earlier.length}</span></div><ul class="card list">${earlier.map(e => entryRow(e, { date: true, btn: `<button type="button" class="btn small" data-action="carry" data-id="${esc(e.id)}">Carry</button>` })).join('')}</ul>`;
+  for (const j of state.jobs) {
+    const arr = es.filter(e => e.jobId === j.id);
+    if (!arr.length) continue;
+    html += `<div class="sec-h"><span>${dotHTML(j.id)} ${esc(j.name)}</span><span class="num">${esc(fmtMin(sumMin(arr)))}</span></div><ul class="card list">${arr.map(e => entryRow(e, { noJob: true })).join('')}</ul>`;
+  }
+  if (!es.length) html += '<p class="hint" style="text-align:center;margin-top:16px">Nothing logged yet today.</p>';
+  return html;
+}
+
+/* ---- log ---- */
+function filterEntries(f) {
+  const q = f.q.trim().toLowerCase();
+  return state.entries.filter(e => {
+    if (f.job && e.jobId !== f.job) return false;
+    if (f.status && e.status !== f.status) return false;
+    if (f.cat && catKey(e.category) !== f.cat) return false;
+    if (f.from && e.date < f.from) return false;
+    if (f.to && e.date > f.to) return false;
+    if (q && !(`${e.title}\n${e.ticket}\n${e.notes}\n${e.category}\n${jobName(e.jobId)}`.toLowerCase().includes(q))) return false;
+    return true;
+  }).sort(byNewest);
+}
+function logListHTML() {
+  const list = filterEntries(ui.f);
+  if (!state.entries.length) return '<div class="empty"><div class="big">🗂️</div><h2>No entries yet</h2><p>Log something from the Today tab.</p></div>';
+  if (!list.length) return '<div class="empty"><h2>No matches</h2><p>Try fewer filters.</p></div>';
+  const shown = list.slice(0, ui.logLimit);
+  let html = `<div class="sec-h"><span>${nEntries(list.length)}</span><span class="num">${esc(fmtMin(sumMin(list)))}</span></div>`;
+  let cur = '', open = false;
+  for (const e of shown) {
+    if (e.date !== cur) {
+      if (open) html += '</ul>';
+      cur = e.date; open = true;
+      const dayTot = sumMin(list.filter(x => x.date === cur));
+      html += `<div class="sec-h"><span>${esc(fmtDate(cur))}</span><span class="num">${dayTot ? esc(fmtMin(dayTot)) : ''}</span></div><ul class="card list">`;
+    }
+    html += entryRow(e, { fu: true });
+  }
+  if (open) html += '</ul>';
+  if (list.length > shown.length) html += `<button type="button" class="btn block" style="margin-top:12px" data-action="more">Show more (${list.length - shown.length} left)</button>`;
+  return html;
+}
+function renderLog() {
+  const f = ui.f, cats = [...new Set(state.entries.map(e => catKey(e.category)).filter(Boolean))].sort();
+  const nfil = [f.job, f.cat, f.status, f.from, f.to].filter(Boolean).length;
+  return storageBannerHTML() + `<div class="filters">
+    <input id="fq" data-f="q" type="search" placeholder="Search title, ticket, notes…" aria-label="Search" value="${esc(f.q)}">
+    <div><button type="button" class="btn small" data-action="togglefilters" aria-expanded="${f.open}">Filters${nfil ? ' (' + nfil + ')' : ''} ${f.open ? '▴' : '▾'}</button>${nfil ? ' <button type="button" class="btn small ghost" data-action="clearfilters">Clear</button>' : ''}</div>
+    <div id="fpanel" style="display:${f.open ? 'flex' : 'none'};flex-direction:column;gap:10px">
+      <div class="fields2">
+        <div class="field"><label for="fjob">Job</label><select id="fjob" data-f="job"><option value="">All jobs</option>${state.jobs.map(j => `<option value="${esc(j.id)}"${f.job === j.id ? ' selected' : ''}>${esc(j.name)}</option>`).join('')}</select></div>
+        <div class="field"><label for="fst">Status</label><select id="fst" data-f="status"><option value="">Any status</option>${STATUSES.map(([v, l]) => `<option value="${v}"${f.status === v ? ' selected' : ''}>${esc(l)}</option>`).join('')}</select></div>
+      </div>
+      <div class="field"><label for="fcat">Category</label><select id="fcat" data-f="cat"><option value="">Any category</option>${cats.map(c => `<option value="${esc(c)}"${f.cat === c ? ' selected' : ''}>${esc(catLabel(c))}</option>`).join('')}</select></div>
+      <div class="fields2"><div class="field"><label for="ffrom">From</label><input id="ffrom" data-f="from" type="date" value="${esc(f.from)}"></div><div class="field"><label for="fto">To</label><input id="fto" data-f="to" type="date" value="${esc(f.to)}"></div></div>
+    </div></div><div id="logList">${logListHTML()}</div>`;
+}
+function updateLog() { const el = $('#logList'); if (el) el.innerHTML = logListHTML(); }
+
+/* ---- summary ---- */
+function period() {
+  const today = todayISO();
+  if (ui.sumMode === 'month') {
+    const first = addMonths(today.slice(0, 7) + '-01', ui.monthOff);
+    return { mode: 'month', from: first, to: monthEndISO(first), label: parseISO(first).toLocaleDateString(undefined, { month: 'long', year: 'numeric' }), cur: ui.monthOff === 0 };
+  }
+  const ws = addDays(weekStart(today), 7 * ui.weekOff), we = addDays(ws, 6);
+  const o = { month: 'short', day: 'numeric' };
+  return { mode: 'week', from: ws, to: we, label: `${parseISO(ws).toLocaleDateString(undefined, o)} – ${parseISO(we).toLocaleDateString(undefined, o)}, ${parseISO(we).getFullYear()}`, cur: ui.weekOff === 0 };
+}
+function jobBarsHTML(es, p) {
+  const weeks = p.mode === 'week' ? 1 : (daysBetween(p.from, p.to) + 1) / 7;
+  const rows = state.jobs.map(j => ({ j, min: sumMin(es.filter(e => e.jobId === j.id)), n: es.filter(e => e.jobId === j.id).length, target: p.mode === 'week' ? j.targetHours * 60 : 0 })).filter(r => r.min || r.n || (!r.j.archived && r.target));
+  if (!rows.length) return '<div class="card pad muted">Nothing logged in this period.</div>';
+  const max = Math.max(1, ...rows.map(r => Math.max(r.min, r.target)));
+  return `<div class="card">${rows.map(r => {
+    const w = r.min / max * 100, t = r.target / max * 100;
+    const txt = r.target ? `${fmtMin(r.min)} of ${fmtHrs(r.target)}` : p.mode === 'month' ? `${fmtMin(r.min)} · ${fmtHrs(r.min / weeks)}/wk` : fmtMin(r.min);
+    const over = r.target && r.min > r.target;
+    return `<div class="hbrow"><div class="top"><b>${dotHTML(r.j.id)} ${esc(r.j.name)}</b><span class="num ${over ? 'warn' : ''}">${esc(txt)}</span></div>
+      <svg class="hb" viewBox="0 0 100 12" preserveAspectRatio="none" role="img" aria-label="${esc(r.j.name)}: ${esc(txt)}"><rect x="0" y="2" width="100" height="8" rx="0.8" ry="4" fill="var(--soft)"/><rect x="0" y="2" width="${w.toFixed(2)}" height="8" rx="0.8" ry="4" fill="${esc(r.j.color)}"/>${r.target ? `<line x1="${t.toFixed(2)}" x2="${t.toFixed(2)}" y1="0" y2="12" stroke="var(--ink)" stroke-width="2" vector-effect="non-scaling-stroke"/>` : ''}</svg></div>`;
+  }).join('')}</div>${p.mode === 'week' && rows.some(r => r.target) ? '<p class="hint" style="margin:6px 4px 0">The dark tick marks the weekly target.</p>' : ''}`;
+}
+function dayChartHTML(es, p) {
+  const days = Array.from({ length: 7 }, (_, i) => addDays(p.from, i));
+  const tot = days.map(d => sumMin(es.filter(e => e.date === d)));
+  const max = Math.max(60, ...tot), H = 90, today = todayISO();
+  let g = '';
+  days.forEach((d, i) => {
+    const x = 8 + i * 44.5, W = 30; let y = 16 + H;
+    for (const j of state.jobs) {
+      const m = sumMin(es.filter(e => e.date === d && e.jobId === j.id)); if (!m) continue;
+      const h = m / max * H; y -= h;
+      g += `<rect x="${x}" y="${y.toFixed(1)}" width="${W}" height="${h.toFixed(1)}" fill="${esc(j.color)}" rx="2"/>`;
+    }
+    g += `<text x="${x + W / 2}" y="${(y - 3).toFixed(1)}" text-anchor="middle" font-size="10" fill="var(--muted)">${tot[i] ? esc(fmtHrs(tot[i])) : ''}</text>`;
+    g += `<text x="${x + W / 2}" y="${H + 30}" text-anchor="middle" font-size="11" fill="var(--${d === today ? 'ink' : 'muted'})" font-weight="${d === today ? 700 : 500}">${esc(parseISO(d).toLocaleDateString(undefined, { weekday: 'short' }).slice(0, 3))}</text>`;
+  });
+  return `<div class="card"><svg class="dayc" viewBox="0 0 320 ${H + 36}" role="img" aria-label="Hours by day">${g}</svg></div>`;
+}
+function topCatsHTML(es) {
+  const m = new Map();
+  for (const e of es) { const k = catKey(e.category); const c = m.get(k) || { min: 0, n: 0 }; c.min += e.minutes || 0; c.n++; m.set(k, c); }
+  const rows = [...m].sort((a, b) => b[1].min - a[1].min || b[1].n - a[1].n).slice(0, 6);
+  if (!rows.length) return '';
+  const max = Math.max(1, ...rows.map(r => r[1].min));
+  return `<div class="sec-h"><span>Top categories</span></div><ul class="card list">${rows.map(([k, c]) => `<li class="row static"><div class="row-main"><div class="row-title">${esc(catLabel(k))}</div><div class="bar" style="margin-top:6px"><i style="width:${(c.min / max * 100).toFixed(1)}%"></i></div></div><div class="row-sub num" style="text-align:right;white-space:nowrap">${esc(fmtMin(c.min))}<br>${plural(c.n, 'item')}</div></li>`).join('')}</ul>`;
+}
+function entryList(arr, o) { return `<ul class="card list">${arr.map(e => entryRow(e, { date: true, fu: true, ...o })).join('')}</ul>`; }
+function renderSummary() {
+  if (!state.jobs.length) return storageBannerHTML() + '<div class="empty"><div class="big">📊</div><h2>No jobs yet</h2><p>Add a job and log some entries first.</p><button type="button" class="btn primary" data-action="tab-today">Get started</button></div>';
+  const p = period(), es = inRange(p.from, p.to);
+  let html = storageBannerHTML() + `<div class="seg"><button type="button" class="chip" data-action="mode" data-v="week" aria-pressed="${p.mode === 'week'}">Week</button><button type="button" class="chip" data-action="mode" data-v="month" aria-pressed="${p.mode === 'month'}">Month</button></div>
+    <div class="seg2"><button type="button" class="btn" data-action="prev" aria-label="Previous">‹</button><div class="mid">${esc(p.label)}<small>${p.cur ? 'This ' + p.mode : '<button type="button" class="btn small ghost" data-action="now">Back to this ' + p.mode + '</button>'}</small></div><button type="button" class="btn" data-action="next" aria-label="Next">›</button></div>
+    <div class="tiles"><div class="card tile"><div class="lbl">Time</div><div class="val num">${esc(fmtMin(sumMin(es)))}</div></div><div class="card tile"><div class="lbl">Entries</div><div class="val num">${es.length}</div></div><div class="card tile"><div class="lbl">Done</div><div class="val num ok">${es.filter(e => e.status === 'done').length}</div></div></div>
+    <div class="sec-h"><span>Hours by job</span></div>${jobBarsHTML(es, p)}`;
+  if (p.mode === 'week') {
+    html += `<div class="sec-h"><span>Hours by day</span></div>${dayChartHTML(es, p)}`;
+  } else {
+    const wks = [];
+    for (let s = weekStart(p.from); s <= p.to; s = addDays(s, 7)) { const a = s < p.from ? p.from : s, z = addDays(s, 6) > p.to ? p.to : addDays(s, 6); wks.push([a, z, sumMin(es.filter(e => e.date >= a && e.date <= z))]); }
+    html += `<div class="sec-h"><span>By week</span></div><ul class="card list">${wks.map(([a, z, m]) => `<li class="row static"><div class="row-main"><div class="row-title">${esc(fmtDate(a, false))} – ${esc(fmtDate(z, false))}</div></div><div class="row-amt num">${esc(fmtMin(m))}</div></li>`).join('')}</ul>`;
+  }
+  html += topCatsHTML(es);
+  if (p.mode === 'week') {
+    const done = es.filter(e => e.status === 'done').sort(byOldest);
+    const live = es.filter(e => (e.status === 'progress' || e.status === 'blocked') && !e.carried).sort(byOldest);
+    const fus = state.entries.filter(e => isOpenFU(e) && e.date <= p.to).sort((a, b) => (a.followUp || '9999').localeCompare(b.followUp || '9999'));
+    html += `<div class="sec-h"><span>Completed</span><span>${done.length}</span></div>${done.length ? entryList(done) : '<div class="card pad muted">Nothing completed.</div>'}`;
+    if (live.length) html += `<div class="sec-h"><span>In progress / blocked</span><span>${live.length}</span></div>${entryList(live)}`;
+    if (fus.length) html += `<div class="sec-h"><span>Open follow-ups</span><span>${fus.length}</span></div>${entryList(fus.slice(0, 50))}`;
+  }
+  html += `<div class="stack"><button type="button" class="btn primary block" data-action="report">Copy as status report</button><button type="button" class="btn block" data-action="print">Print / Save PDF</button></div>`;
+  return html;
+}
+
+/* ---- status report ---- */
+const entryKey = e => e.jobId + '|' + (e.ticket ? e.ticket.toLowerCase() : e.title.toLowerCase());
+function lineFor(e) {
+  return `${e.title}${e.ticket ? ' [' + e.ticket + ']' : ''}${e.minutes ? ' (' + fmtMin(e.minutes) + ')' : ''}${e.status !== 'done' && e.followUp ? ' — by ' + e.followUp : ''}`;
+}
+function buildReport(from, to, label) {
+  const es = inRange(from, to).sort(byOldest);
+  const latest = new Map();
+  for (const e of es) latest.set(entryKey(e), e);
+  const openFU = state.entries.filter(e => isOpenFU(e) && e.date <= to);
+  const tx = [`Status report: ${label}`, ''];
+  let h = `<h1>Status report</h1><p class="pa-sub">${esc(label)} · ${esc(fmtMin(sumMin(es)))} logged</p>`;
+  let any = false;
+  for (const j of state.jobs) {
+    const mine = es.filter(e => e.jobId === j.id);
+    const fus = openFU.filter(e => e.jobId === j.id);
+    if (!mine.length && !fus.length) continue;
+    any = true;
+    const done = mine.filter(e => e.status === 'done');
+    const prog = mine.filter(e => e.status === 'progress' && latest.get(entryKey(e)) === e);
+    const blocked = mine.filter(e => e.status === 'blocked' && latest.get(entryKey(e)) === e);
+    const shown = new Set([...prog, ...blocked].map(entryKey));
+    const nextMap = new Map();
+    for (const e of [...mine.filter(x => x.status === 'followup' && latest.get(entryKey(x)) === x), ...fus].sort(byOldest)) if (!shown.has(entryKey(e))) nextMap.set(entryKey(e), e);
+    const next = [...nextMap.values()];
+    const secs = [['Done', done], ['In progress', prog], ['Blocked', blocked], ['Next', next]].filter(s => s[1].length);
+    tx.push(`== ${j.name} (${fmtMin(sumMin(mine))}) ==`);
+    h += `<h2>${esc(j.name)} <span style="float:right;font-weight:400">${esc(fmtMin(sumMin(mine)))}</span></h2>`;
+    for (const [t, arr] of secs) {
+      tx.push(t + ':', ...arr.map(e => '- ' + lineFor(e)), '');
+      h += `<h3>${t}</h3><ul>${arr.map(e => `<li>${esc(lineFor(e))}</li>`).join('')}</ul>`;
+    }
+    if (!secs.length) tx.push('(no items)', '');
+  }
+  if (!any) { tx.push('Nothing logged in this period.'); h += '<p>Nothing logged in this period.</p>'; }
+  return { text: tx.join('\n').replace(/\n{3,}/g, '\n\n').trim() + '\n', html: h };
+}
+function doPrint(html, title) {
+  let pa = document.getElementById('printArea');
+  if (!pa) { pa = document.createElement('div'); pa.id = 'printArea'; document.body.appendChild(pa); }
+  pa.innerHTML = html;
+  const oldTitle = document.title; document.title = title || oldTitle;
+  const done = () => { window.removeEventListener('afterprint', done); document.title = oldTitle; const q = document.getElementById('printArea'); if (q) q.innerHTML = ''; };
+  window.addEventListener('afterprint', done);
+  setTimeout(() => window.print(), 60);
+}
+async function copyText(t) {
+  try { await navigator.clipboard.writeText(t); return true; } catch {}
+  try { const ta = document.createElement('textarea'); ta.value = t; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); const ok = document.execCommand('copy'); ta.remove(); return !!ok; } catch { return false; }
+}
+function reportDialog() {
+  const p = period(), r = buildReport(p.from, p.to, p.label);
+  const dlg = $('#dlg');
+  dlg.innerHTML = `<div class="dlg-form"><h2>Status report</h2><textarea class="big" id="repText" readonly aria-label="Status report"></textarea>
+    <div class="dlg-actions"><button type="button" class="btn" data-k="print">Print / PDF</button><span class="spacer"></span><button type="button" class="btn ghost" data-k="close">Close</button><button type="button" class="btn primary" data-k="copy">Copy</button></div></div>`;
+  $('#repText').value = r.text;
+  $('[data-k="close"]', dlg).onclick = () => dlg.close();
+  $('[data-k="print"]', dlg).onclick = () => { dlg.close(); doPrint(r.html, 'Status report ' + p.label); };
+  $('[data-k="copy"]', dlg).onclick = async () => {
+    if (await copyText(r.text)) { toast('Copied'); dlg.close(); }
+    else { const t = $('#repText'); t.focus(); t.select(); toast('Select all and copy manually.'); }
+  };
+  dlg.onclose = () => { dlg.onclose = null; };
+  dlg.showModal();
+  window.__lastReport = r.text;
+}
+
+/* ---- jobs + backup views ---- */
+function renderJobs() {
+  const rows = state.jobs.map(j => {
+    const n = state.entries.filter(e => e.jobId === j.id).length;
+    return `<li class="row ${j.archived ? 'faded' : ''}" data-action="jobedit" data-id="${esc(j.id)}">${dotHTML(j.id)}<div class="row-main"><div class="row-title">${esc(j.name)}${j.archived ? '<span class="badge">Archived</span>' : ''}</div>
+      <div class="row-sub">${[j.prefix ? 'Prefix ' + esc(j.prefix) : '', j.targetHours ? esc(fmtHrs(j.targetHours * 60)) + '/week target' : '', nEntries(n)].filter(Boolean).join(' · ')}</div></div></li>`;
+  }).join('');
+  return storageBannerHTML() + (state.jobs.length ? `<ul class="card list" style="margin-top:14px">${rows}</ul>` : '<div class="empty"><div class="big">💼</div><h2>No jobs yet</h2><p>Add the jobs you log time against.</p></div>') +
+    `<button type="button" class="btn primary block" style="margin-top:14px" data-action="jobadd">Add job</button><p class="hint" style="margin-top:10px">Tap a job to rename it, change its color, set a ticket prefix or weekly target, or archive it.</p>`;
+}
+function renderBackup() {
+  const last = state.meta.lastBackup ? `Last backup: ${esc(fmtDateTime(state.meta.lastBackup))}.` : 'No backup made yet.';
+  const canEncrypt = !!(window.crypto && crypto.subtle);
+  return storageBannerHTML() + installCardHTML() + `<div class="stack">
+    <section class="card pad"><h3>Before you use this</h3><div class="note">${esc(CONF)}</div></section>
+    <section class="card pad"><h3>Back up</h3>
+      <p class="muted">${last}</p>
+      <p>Saves one file with your jobs and entries. On iPhone it opens the share sheet. Save it to Files or OneDrive. <b>Never put this file in your GitHub repo.</b></p>
+      ${canEncrypt ? `<div class="field"><label for="bkPass">Passphrase (optional, encrypts the file)</label><input id="bkPass" type="password" autocomplete="new-password"></div>
+      <div class="field" style="margin-top:8px"><label for="bkPass2">Repeat passphrase</label><input id="bkPass2" type="password" autocomplete="new-password"></div>
+      <p class="hint">If you set one, the file can’t be opened without it.</p>` : ''}
+      <button type="button" class="btn primary block" style="margin-top:12px" data-action="export">Back up now</button></section>
+    <section class="card pad"><h3>Restore</h3><p>Pick a backup file made by this app. You’ll choose whether to replace what’s here or merge it in.</p>
+      <button type="button" class="btn block" data-action="restore">Choose backup file…</button></section>
+    <section class="card pad"><h3>Export to Excel</h3><p>Entries for a date range as a CSV file.</p>
+      <button type="button" class="btn block" data-action="csv">Export entries (CSV)…</button></section>
+    <section class="card pad"><h3>Import from text</h3><p>Paste lines like <code>2026-10-11, Job name, What I did, CHG123, 1h30</code> and check the preview first.</p>
+      <button type="button" class="btn block" data-action="import">Import pasted lines…</button></section>
+    <section class="card pad"><h3>Danger zone</h3><p>Erases all jobs and entries on this device.</p>
+      <button type="button" class="btn danger block" data-action="wipe">Erase everything on this device</button></section>
+    <p class="hint" style="text-align:center">Your data lives only on this device. Nothing is sent anywhere.</p></div>`;
+}
+function render() {
+  const y = window.scrollY;
+  renderedDay = todayISO();
+  view.innerHTML = { today: renderToday, log: renderLog, summary: renderSummary, jobs: renderJobs, backup: renderBackup }[tab]();
+  $$('nav.tabs button').forEach(b => b.setAttribute('aria-current', b.dataset.tab === tab ? 'page' : 'false'));
+  const add = $('#addBtn');
+  add.classList.toggle('hide', !((tab === 'today' || tab === 'log') && state.jobs.length) && tab !== 'jobs');
+  add.textContent = tab === 'jobs' ? '+ Job' : '+ Entry';
+  $('#title').textContent = { today: 'Today', log: 'Log', summary: 'Summary', jobs: 'Jobs', backup: 'Backup & restore' }[tab];
+  $('#sub').textContent = new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+  window.scrollTo(0, y);
+}
+function go(t) { tab = t; render(); window.scrollTo(0, 0); }
+
+/* ---- backup / restore ---- */
+async function doExport() {
+  const pass = ($('#bkPass') || {}).value || '', pass2 = ($('#bkPass2') || {}).value || '';
+  if (pass) {
+    if (pass.length < 8) return toast('Use at least 8 characters for the passphrase.');
+    if (pass !== pass2) return toast('The two passphrases don’t match.');
+  }
+  const btn = $('[data-action="export"]'); if (btn) btn.disabled = true;
+  try {
+    const text = await Backup.build({ appId: APP_ID, schema: SCHEMA, data: exportData(), passphrase: pass || null });
+    const r = await deliverFile(`goobs-worklog-backup-${todayISO()}${pass ? '-encrypted' : ''}.json`, text, 'application/json');
+    if (r !== 'cancelled') {
+      state.meta.lastBackup = new Date().toISOString();
+      await persist({ touch: false });
+      render();
+      toast(r === 'shared' ? 'Backup shared' : 'Backup saved to your downloads');
+    }
+  } catch (e) { toast('Backup failed: ' + e.message); }
+  finally { const b2 = $('[data-action="export"]'); if (b2) b2.disabled = false; }
+}
+async function restoreFromText(text) {
+  let parsed;
+  try { parsed = await Backup.parse(text, { appId: APP_ID, schema: SCHEMA }); }
+  catch (e) { await msgBox('Can’t restore that file', e.message); return false; }
+  if (!parsed) return false;
+  const { data, dropped } = normalizeData(parsed.data);
+  if (!data.jobs.length && !data.entries.length) { await msgBox('Nothing to restore', 'That backup has no jobs or entries in it.'); return false; }
+  const hasLocal = state.jobs.length > 0 || state.entries.length > 0;
+  const sum = `${plural(data.jobs.length, 'job')} and ${nEntries(data.entries.length)}`;
+  const when = parsed.exportedAt ? ` Backup made ${fmtDateTime(parsed.exportedAt)}.` : '';
+  const skipped = dropped ? ` ${plural(dropped, 'unreadable item')} will be skipped.` : '';
+  const body = `<p>${esc(sum + '.' + when + skipped)}</p>` + (hasLocal ? '<p class="muted"><b>Replace all</b> swaps everything here for the backup. <b>Merge</b> adds what isn’t here yet and keeps the rest.</p>' : '');
+  const choice = await askDialog({
+    title: 'Restore this backup?', body,
+    buttons: hasLocal
+      ? [{ label: 'Cancel', value: 'cancel' }, { label: 'Merge', value: 'merge' }, { label: 'Replace all', value: 'replace', kind: 'danger' }]
+      : [{ label: 'Cancel', value: 'cancel' }, { label: 'Restore', value: 'replace', kind: 'primary' }]
+  });
+  if (choice === 'replace') {
+    const ts = parsed.exportedAt && !isNaN(Date.parse(parsed.exportedAt)) ? parsed.exportedAt : new Date().toISOString();
+    state.jobs = data.jobs; state.entries = data.entries; state.timer = null;
+    if (!jobById(state.settings.lastJob)) state.settings.lastJob = '';
+    ui.quickJob = '';
+    state.meta.lastBackup = ts; state.meta.lastChange = ts;
+    await persist({ touch: false });
+    render(); toast(`Restored ${sum}`); return true;
+  }
+  if (choice === 'merge') {
+    const map = new Map(); let nj = 0, ne = 0;
+    for (const j of data.jobs) {
+      const same = state.jobs.find(x => x.id === j.id) || state.jobs.find(x => x.name.toLowerCase() === j.name.toLowerCase());
+      if (same) map.set(j.id, same.id);
+      else if (state.jobs.length < MAX_JOBS) { state.jobs.push(j); map.set(j.id, j.id); nj++; }
+    }
+    const ids = new Set(state.entries.map(e => e.id));
+    for (const e of data.entries) {
+      if (ids.has(e.id) || !map.has(e.jobId) || state.entries.length >= MAX_ENTRIES) continue;
+      state.entries.push({ ...e, jobId: map.get(e.jobId) }); ids.add(e.id); ne++;
+    }
+    await persist(); render(); toast(`Merged in ${plural(nj, 'job')} and ${nEntries(ne)}`); return true;
+  }
+  return false;
+}
+async function doRestore() {
+  const f = await pickFile(); if (!f) return;
+  let text;
+  try { text = await readFileText(f); } catch { await msgBox('Couldn’t read that file', 'Try choosing it again.'); return; }
+  await restoreFromText(text);
+}
+function csvText(from, to) {
+  const es = inRange(from, to).sort(byOldest);
+  const rows = [['Date', 'Job', 'Title', 'Ticket', 'Minutes', 'Hours', 'Category', 'Status', 'Follow-up', 'Notes'],
+    ...es.map(e => [e.date, jobName(e.jobId), e.title, e.ticket, e.minutes || '', e.minutes ? (e.minutes / 60).toFixed(2) : '', e.category, STATUS_LABEL[e.status], e.followUp, e.notes])];
+  return { n: es.length, csv: '﻿' + rows.map(r => r.map(csvCell).join(',')).join('\r\n') };
+}
+function csvDialog() {
+  if (!state.entries.length) return toast('No entries to export yet.');
+  const today = todayISO();
+  formDialog({
+    title: 'Export entries (CSV)', grid: 'fields2',
+    fields: [{ name: 'from', label: 'From', type: 'date', required: true, value: today.slice(0, 8) + '01' }, { name: 'to', label: 'To', type: 'date', required: true, value: today }],
+    submitLabel: 'Export',
+    onSubmit: async v => {
+      if (!isISO(v.from) || !isISO(v.to) || v.from > v.to) return 'Pick a valid date range.';
+      const r = csvText(v.from, v.to);
+      if (!r.n) return 'No entries in that range.';
+      const res = await deliverFile(`worklog-${v.from}-to-${v.to}.csv`, r.csv, 'text/csv');
+      if (res !== 'cancelled') toast(res === 'shared' ? 'CSV shared' : `CSV saved: ${nEntries(r.n)}`);
+    }
+  });
+}
+async function doWipe() {
+  if (!(await confirmBox('Erase everything?', 'This permanently deletes all jobs and entries on this device. Make a backup first if you might want them.', 'Erase everything'))) return;
+  state = defaultState(); ui.quickJob = ''; ui.quickText = '';
+  await persist({ touch: false });
+  render(); toast('Everything erased');
+}
+
+/* ---- import pasted lines ---- */
+function splitLine(line) {
+  const delim = line.includes('\t') ? '\t' : ',';
+  const out = []; let cur = '', q = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (q) { if (c === '"') { if (line[i + 1] === '"') { cur += '"'; i++; } else q = false; } else cur += c; }
+    else if (c === '"' && cur === '') q = true;
+    else if (c === delim) { out.push(cur.trim()); cur = ''; }
+    else cur += c;
+  }
+  out.push(cur.trim());
+  return out;
+}
+function looseDate(s) {
+  s = str(s).trim().toLowerCase();
+  if (isISO(s)) return s;
+  if (s === 'today') return todayISO();
+  if (s === 'yesterday') return addDays(todayISO(), -1);
+  const m = s.match(/^(\d{1,2})\/(\d{1,2})(?:\/(\d{2}|\d{4}))?$/);
+  if (!m) return '';
+  let y = m[3] ? +m[3] : new Date().getFullYear(); if (y < 100) y += 2000;
+  const iso = `${y}-${pad(+m[1])}-${pad(+m[2])}`;
+  return isISO(iso) ? iso : '';
+}
+/* returns {rows:[{n,raw,entry?,err?,dup?}], newJobs:[names]} without touching state */
+function parseImport(text, createJobs) {
+  const jobs = new Map(state.jobs.map(j => [j.name.toLowerCase(), j]));
+  const seen = new Set(state.entries.map(e => [e.date, e.jobId, e.title.toLowerCase(), e.ticket.toLowerCase()].join('|')));
+  const newJobs = new Map(); const rows = [];
+  let room = MAX_ENTRIES - state.entries.length;
+  str(text).split(/\r?\n/).forEach((raw, i) => {
+    const line = raw.trim();
+    if (!line || line[0] === '#') return;
+    const f = splitLine(line);
+    if (!rows.length && /^date$/i.test(f[0])) return;
+    const r = { n: i + 1, raw: line };
+    rows.push(r);
+    const date = looseDate(f[0]);
+    if (!date) { r.err = 'Date should look like 2026-10-11.'; return; }
+    const jn = (f[1] || '').trim();
+    if (!jn) { r.err = 'Missing job name.'; return; }
+    let job = jobs.get(jn.toLowerCase()), jobId;
+    if (job) jobId = job.id;
+    else if (createJobs) {
+      if (!newJobs.has(jn.toLowerCase())) {
+        if (state.jobs.length + newJobs.size >= MAX_JOBS) { r.err = 'Too many jobs.'; return; }
+        newJobs.set(jn.toLowerCase(), { name: jn.slice(0, 60), id: uid() });
+      }
+      jobId = newJobs.get(jn.toLowerCase()).id; job = null;
+    } else { r.err = `Unknown job “${jn.slice(0, 40)}”. Add it first or tick “Create missing jobs”.`; return; }
+    const title = (f[2] || '').replace(/\s+/g, ' ').trim();
+    if (!title) { r.err = 'Missing title.'; return; }
+    const tm = parseMinutes(f[4] || '');
+    if (tm.err) { r.err = tm.err; return; }
+    const st = (f[6] || '').trim().toLowerCase();
+    const status = !st ? 'done' : (STATUSES.find(([v, l]) => v === st || l.toLowerCase() === st) || [])[0];
+    if (!status) { r.err = 'Status should be done, in progress, blocked or follow-up needed.'; return; }
+    const ticket = normTicket(f[3] || '', job);
+    const key = [date, jobId, title.toLowerCase(), ticket.toLowerCase()].join('|');
+    if (seen.has(key)) { r.dup = true; return; }
+    if (room <= 0) { r.err = 'Entry limit reached.'; return; }
+    seen.add(key); room--;
+    r.entry = { date, jobId, title, ticket, minutes: tm.min || null, category: f[5] || '', status, notes: f[7] || '' };
+  });
+  return { rows, newJobs: [...newJobs.values()] };
+}
+function applyImport(res) {
+  const added = new Set();
+  for (const nj of res.newJobs) {
+    if (!res.rows.some(r => r.entry && r.entry.jobId === nj.id)) continue;
+    state.jobs.push(normJob({ id: nj.id, name: nj.name }, state.jobs.length)); added.add(nj.id);
+  }
+  let n = 0;
+  const ids = new Set(state.jobs.map(j => j.id));
+  for (const r of res.rows) {
+    if (!r.entry || !ids.has(r.entry.jobId)) continue;
+    const e = normEntry({ id: uid(), createdAt: Date.now() + n, ...r.entry }, ids);
+    if (e) { state.entries.push(e); n++; }
+  }
+  return { n, jobs: added.size };
+}
+function importDialog() {
+  if (!state.jobs.length) return toast('Add a job first.');
+  const dlg = $('#dlg');
+  dlg.innerHTML = `<div class="dlg-form"><h2>Import pasted lines</h2>
+    <p class="muted">One entry per line: <code>date, job, title, ticket, time</code>. Optional extras: category, status, notes. Use quotes around text containing commas.</p>
+    <textarea class="big" id="impText" placeholder="2026-10-11, Day job, Reviewed change request, CHG0012345, 1h30" aria-label="Lines to import"></textarea>
+    <div class="field check"><input type="checkbox" id="impCreate"><label for="impCreate">Create missing jobs</label></div>
+    <div id="impPrev" aria-live="polite"></div>
+    <div class="dlg-actions"><button type="button" class="btn ghost" data-k="cancel">Cancel</button><span class="spacer"></span><button type="button" class="btn" data-k="prev">Preview</button><button type="button" class="btn primary" data-k="go" disabled>Import</button></div></div>`;
+  let previewed = null;
+  const goBtn = $('[data-k="go"]', dlg);
+  const preview = () => {
+    const text = $('#impText').value, cj = $('#impCreate').checked;
+    const res = parseImport(text, cj);
+    const ok = res.rows.filter(r => r.entry), bad = res.rows.filter(r => r.err), dup = res.rows.filter(r => r.dup);
+    $('#impPrev').innerHTML = res.rows.length ? `<p><b>${ok.length}</b> ready${bad.length ? `, <b class="bad">${bad.length}</b> with errors` : ''}${dup.length ? `, ${dup.length} duplicate${dup.length === 1 ? '' : 's'} skipped` : ''}${res.newJobs.length ? `, new jobs: ${esc(res.newJobs.map(j => j.name).join('; '))}` : ''}.</p>
+      <div class="pv">${res.rows.slice(0, 200).map(r => `<div class="${r.err ? 'e' : r.dup ? 'd' : 'o'}">${r.err ? '✗' : r.dup ? '=' : '✓'} Line ${r.n}: ${esc(r.err || (r.dup ? 'Already logged, skipped.' : `${r.entry.date} · ${r.entry.title}${r.entry.minutes ? ' · ' + fmtMin(r.entry.minutes) : ''}`))}</div>`).join('')}</div>` : '<p class="muted">No lines found.</p>';
+    previewed = { text, cj, n: ok.length };
+    goBtn.disabled = !ok.length; goBtn.textContent = ok.length ? `Import ${ok.length}` : 'Import';
+  };
+  $('[data-k="prev"]', dlg).onclick = preview;
+  $('[data-k="cancel"]', dlg).onclick = () => dlg.close();
+  goBtn.onclick = () => {
+    const text = $('#impText').value, cj = $('#impCreate').checked;
+    if (!previewed || previewed.text !== text || previewed.cj !== cj) { preview(); return toast('Check the updated preview, then import.'); }
+    const res = parseImport(text, cj), r = applyImport(res);
+    dlg.close(); commit();
+    toast(`Imported ${nEntries(r.n)}${r.jobs ? ' and ' + plural(r.jobs, 'job') : ''}`);
+  };
+  dlg.onclose = () => { dlg.onclose = null; };
+  dlg.showModal();
+  $('#impText').focus();
+}
+
+/* ---- quick add ---- */
+function quickAdd(start) {
+  const inp = $('#qText'); if (!inp) return;
+  const job = jobById(defaultJobId());
+  const q = parseQuick(inp.value, job);
+  if (!q.title) { inp.focus(); return toast('Type what you did first.'); }
+  const e = addEntry({ date: todayISO(), jobId: job.id, title: q.title, ticket: normTicket(q.ticket, job), minutes: q.minutes, status: start ? 'progress' : 'done' });
+  if (!e) return;
+  ui.quickText = '';
+  if (start) { commit(); startTimer(e.id); }
+  else { commit(); toast('Logged', { label: 'Undo', fn: () => { removeEntry(e.id); commit(); } }); }
+  const n = $('#qText'); if (n) n.focus();
+}
+function quickMore() {
+  const inp = $('#qText'); const job = jobById(defaultJobId());
+  const q = parseQuick(inp ? inp.value : '', job);
+  entryDialog(null, { title: q.title, ticket: q.ticket, minutes: q.minutes, jobId: job && job.id });
+}
+
+/* ---- wiring ---- */
+view.addEventListener('click', e => {
+  const el = e.target.closest('[data-action]');
+  if (!el) return;
+  const id = el.dataset.id;
+  switch (el.dataset.action) {
+    case 'edit': entryDialog(id); break;
+    case 'timer': (state.timer && state.timer.entryId === id) ? stopTimer() : startTimer(id); break;
+    case 'done': markDone(id); break;
+    case 'carry': carryForward(id); break;
+    case 'qjob': ui.quickJob = id; state.settings.lastJob = id; ui.quickText = ($('#qText') || {}).value || ''; render(); { const q = $('#qText'); if (q) q.focus(); } break;
+    case 'qadd': quickAdd(false); break;
+    case 'qstart': quickAdd(true); break;
+    case 'qmore': quickMore(); break;
+    case 'frcreate': {
+      const n = (($('#frName') || {}).value || '').trim();
+      if (!n) { toast('Type a job name.'); break; }
+      const j = normJob({ id: uid(), name: n }, 0); state.jobs.push(j); state.settings.lastJob = j.id; ui.quickJob = j.id; commit(); break;
+    }
+    case 'togglefilters': ui.f.open = !ui.f.open; render(); break;
+    case 'clearfilters': ui.f = { q: ui.f.q, job: '', cat: '', status: '', from: '', to: '', open: ui.f.open }; ui.logLimit = 150; render(); break;
+    case 'more': ui.logLimit += 150; updateLog(); break;
+    case 'mode': ui.sumMode = el.dataset.v; render(); break;
+    case 'prev': if (ui.sumMode === 'month') ui.monthOff--; else ui.weekOff--; render(); break;
+    case 'next': if (ui.sumMode === 'month') ui.monthOff++; else ui.weekOff++; render(); break;
+    case 'now': ui.weekOff = 0; ui.monthOff = 0; render(); break;
+    case 'report': reportDialog(); break;
+    case 'print': { const p = period(); const r = buildReport(p.from, p.to, p.label); doPrint(r.html, 'Status report ' + p.label); break; }
+    case 'jobadd': jobDialog(); break;
+    case 'jobedit': jobDialog(id); break;
+    case 'tab-jobs': go('jobs'); break;
+    case 'tab-today': go('today'); break;
+    case 'export': doExport(); break;
+    case 'restore': doRestore(); break;
+    case 'csv': csvDialog(); break;
+    case 'import': importDialog(); break;
+    case 'wipe': doWipe(); break;
+    case 'install': runInstall(); break;
+  }
+});
+view.addEventListener('input', e => {
+  const t = e.target;
+  if (t.id === 'qText') ui.quickText = t.value;
+  else if (t.dataset && t.dataset.f && t.tagName === 'INPUT') { ui.f[t.dataset.f] = t.value; ui.logLimit = 150; updateLog(); }
+});
+view.addEventListener('change', e => {
+  const t = e.target;
+  if (t.dataset && t.dataset.f && t.tagName === 'SELECT') { ui.f[t.dataset.f] = t.value; ui.logLimit = 150; render(); }
+});
+view.addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  if (e.target.id === 'qText') { e.preventDefault(); quickAdd(false); }
+  else if (e.target.id === 'frName') { e.preventDefault(); const b = $('[data-action="frcreate"]'); if (b) b.click(); }
+});
+$('#addBtn').onclick = () => (tab === 'jobs' ? jobDialog() : entryDialog());
+$$('nav.tabs button').forEach(b => { b.onclick = () => go(b.dataset.tab); });
+function refreshIfIdle() { if (!$('dialog[open]')) render(); }
+document.addEventListener('visibilitychange', () => { if (!document.hidden) refreshIfIdle(); });
+window.addEventListener('pageshow', e => { if (e.persisted) refreshIfIdle(); });
+/* live timer clock + midnight rollover */
+setInterval(() => {
+  $$('[data-since]').forEach(el => { el.textContent = fmtClock(Date.now() - Number(el.dataset.since)); });
+  if (renderedDay && todayISO() !== renderedDay && !$('dialog[open]') && !(document.activeElement && /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName))) render();
+}, 1000);
+
+(async function init() {
+  try { db = await openDB(DB_NAME); } catch (e) { console.error(e); db = null; }
+  if (db) {
+    try {
+      const raw = await idbGet(db, 'state');
+      if (raw) {
+        try { state = loadState(JSON.parse(raw)); }
+        catch (e) { console.error(e); await idbPut(db, 'state-damaged-' + Date.now(), raw); toast('Saved data looked damaged. A copy was kept aside.'); }
+      }
+    } catch (e) { console.error(e); db = null; }
+  }
+  render();
+})();
+</script>
+</body>
+</html>

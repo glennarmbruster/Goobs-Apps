@@ -176,6 +176,31 @@ table.ct thead th{border-top:0;color:var(--muted);font-size:12px}
 table.ct tfoot td{font-weight:700}
 textarea.mono{font-family:ui-monospace,Menlo,monospace;font-size:14px;min-height:130px}
 .pv li.err .row-sub{color:var(--bad)}
+.sheet{padding:16px;margin-top:12px}
+.sheet h2{font-size:20px;overflow-wrap:anywhere}
+.sheet h3{font-size:17px;overflow-wrap:anywhere}
+.sheet .meta{font-size:13px;color:var(--muted)}
+.sheet .sh{font-size:12px;text-transform:uppercase;letter-spacing:.06em;font-weight:700;color:var(--muted);margin:12px 0 2px}
+.sheet .pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:15px}
+.sheet .sr{display:flex;gap:8px;font-size:15px;overflow-wrap:anywhere}
+.sheet .sr .k{flex:none;min-width:112px;color:var(--muted)}
+.sec-h .acts{display:flex;flex:none;white-space:nowrap}
+.sheet .sr .v{min-width:0}
+.sheet .sp{margin-top:18px;padding-top:12px;border-top:2px solid var(--line)}
+.sheet .gap{margin-top:12px}
+@media print{
+  header.top,nav.tabs,.noprint,.toast,dialog,.banner{display:none!important}
+  html,body{background:#fff!important;color:#000!important}
+  body{padding:0!important;font-size:10.5pt;line-height:1.3}
+  .sheet h2{font-size:16pt}.sheet h3{font-size:13pt}.sheet .sh{margin:7px 0 1px}.sheet .sp{margin-top:10px;padding-top:8px}.sheet .pre,.sheet .sr{font-size:10.5pt}
+  .wrap{max-width:none;padding:0}
+  .sheet{background:#fff!important;border:0!important;box-shadow:none!important;padding:0!important;margin:0!important}
+  .sheet,.sheet *{color:#000!important;background:transparent!important}
+  .sheet a{text-decoration:none}
+  .sheet .sp{break-inside:avoid;page-break-inside:avoid;border-top:1px solid #000}
+  .sheet .sp:first-of-type{border-top:0}
+  .sheet .sh{color:#333!important}
+}
 </style>
 </head>
 <body>
@@ -489,11 +514,15 @@ if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol))
 
 
 /* ===================== House app ===================== */
-const APP_ID = 'goobs-house', DB_NAME = 'goobs-house-db', SCHEMA = 1;
-const MAX = { things: 200, tasks: 1000, history: 20000, logs: 100, readings: 20000, warranties: 500, fields: 12, claims: 60 };
-const KINDS = [['area', 'Home area'], ['equipment', 'Equipment'], ['vehicle', 'Vehicle']];
+const APP_ID = 'goobs-house', DB_NAME = 'goobs-house-db', SCHEMA = 2; // 2 = pets (Thing kind 'pet', vaccine tasks, sitter sheet text). Backups without any pet data are still written as 1.
+const MAX = { things: 200, tasks: 1000, history: 20000, logs: 100, readings: 20000, warranties: 500, fields: 12, claims: 60, pets: 30, vaxPerPet: 40 };
+const KINDS = [['area', 'Home area'], ['equipment', 'Equipment'], ['vehicle', 'Vehicle'], ['pet', 'Pet']];
+const GENERIC_KINDS = KINDS.filter(k => k[0] !== 'pet'); // pets are added through their own dialog
 const KIND_KEYS = KINDS.map(k => k[0]);
-const KIND_PLURAL = { area: 'Home areas', equipment: 'Equipment', vehicle: 'Vehicles' };
+const KIND_PLURAL = { area: 'Home areas', equipment: 'Equipment', vehicle: 'Vehicles', pet: 'Pets' };
+const SPECIES = [['cat', 'Cat'], ['dog', 'Dog'], ['other', 'Other']];
+const SPECIES_KEYS = SPECIES.map(x => x[0]);
+const SPECIES_LABEL = { cat: 'Cat', dog: 'Dog', other: 'Pet' };
 const UNITS = [['day', 'days'], ['week', 'weeks'], ['month', 'months'], ['year', 'years'], ['fixed', 'same date every year'], ['miles', 'miles (odometer)'], ['once', 'one time only']];
 const UNIT_KEYS = UNITS.map(u => u[0]);
 const UNIT_CAP = { day: 3650, week: 520, month: 1200, year: 100, fixed: 1, miles: 1000000, once: 1 };
@@ -561,11 +590,28 @@ function applySeason(dateISO, months) {
 }
 
 /* ---- model ---- */
+function normPet(p) {
+  p = p && typeof p === 'object' ? p : {};
+  const s = (v, n) => str(v).slice(0, n);
+  const ft = Math.floor(Number(p.foodTimes));
+  return {
+    species: SPECIES_KEYS.includes(p.species) ? p.species : 'other', breed: s(p.breed, 80),
+    born: isoOr(p.born), bornKind: p.bornKind === 'adopted' ? 'adopted' : 'birthday', chip: s(p.chip, 40), weight: numOrNull(p.weight, 0, 2000),
+    vetName: s(p.vetName, 100), vetPhone: s(p.vetPhone, 40), vetAddr: s(p.vetAddr, 200),
+    erName: s(p.erName, 100), erPhone: s(p.erPhone, 40), erAddr: s(p.erAddr, 200),
+    foodBrand: s(p.foodBrand, 100), foodPortion: s(p.foodPortion, 100), foodTimes: ft >= 1 && ft <= 12 ? ft : null, foodWhen: s(p.foodWhen, 100),
+    meds: s(p.meds, 1500), routine: s(p.routine, 1500), insurance: s(p.insurance, 300)
+  };
+}
+function normSitter(x) {
+  x = x && typeof x === 'object' ? x : {};
+  return { house: str(x.house).slice(0, 3000), owners: str(x.owners).slice(0, 1500) };
+}
 function normThing(t) {
   if (!t || typeof t !== 'object') return null;
   const name = str(t.name).trim().slice(0, 100);
   if (!name) return null;
-  return {
+  const out = {
     id: str(t.id) || uid(), name, kind: KIND_KEYS.includes(t.kind) ? t.kind : 'equipment',
     make: str(t.make).slice(0, 80), model: str(t.model).slice(0, 80), serial: str(t.serial).slice(0, 80),
     date: isoOr(t.date), notes: str(t.notes).slice(0, 3000),
@@ -573,6 +619,8 @@ function normThing(t) {
     odometer: numOrNull(t.odometer, 0, 5e6), odoDate: isoOr(t.odoDate),
     createdAt: isNum(t.createdAt) ? t.createdAt : 0
   };
+  if (out.kind === 'pet') out.pet = normPet(t.pet);
+  return out;
 }
 function normPrev(p) {
   if (!p || typeof p !== 'object') return null;
@@ -596,7 +644,7 @@ function normTask(t) {
     nextOdo: unit === 'miles' ? numOrNull(t.nextOdo, 0, 1e8) : null, lastOdo: numOrNull(t.lastOdo, 0, 1e8),
     lastDone: isoOr(t.lastDone), rollFrom: t.rollFrom === 'due' || unit === 'fixed' ? 'due' : 'done',
     months: normMonths(t.months), snoozeUntil: isoOr(t.snoozeUntil), cost: numOrNull(t.cost, 0, 1e8),
-    notes: str(t.notes).slice(0, 3000), active: t.active !== false, createdAt: isNum(t.createdAt) ? t.createdAt : 0
+    notes: str(t.notes).slice(0, 3000), active: t.active !== false, vax: t.vax === true, createdAt: isNum(t.createdAt) ? t.createdAt : 0
   };
 }
 function normHistory(h) {
@@ -663,7 +711,9 @@ function normalizeData(raw) {
     return out;
   };
   const r = raw && typeof raw === 'object' ? raw : {};
-  const things = run(r.things, normThing, MAX.things);
+  let things = run(r.things, normThing, MAX.things);
+  let petN = 0;
+  things = things.filter(t => { if (t.kind !== 'pet') return true; if (++petN > MAX.pets) { dropped++; return false; } return true; });
   const tIds = new Set(things.map(t => t.id));
   const fix = id => (tIds.has(id) ? id : '');
   const tasks = run(r.tasks, normTask, MAX.tasks).map(t => ({ ...t, thingId: fix(t.thingId) }));
@@ -674,16 +724,19 @@ function normalizeData(raw) {
   const fieldIds = new Map(logs.map(l => [l.id, new Set(l.fields.map(f => f.id))]));
   for (const rd of readings) for (const k of Object.keys(rd.values)) if (!fieldIds.get(rd.logId).has(k)) delete rd.values[k];
   const warranties = run(r.warranties, normWarranty, MAX.warranties).map(w => ({ ...w, thingId: fix(w.thingId) }));
-  return { data: { things, tasks, history, logs, readings, warranties }, dropped };
+  return { data: { things, tasks, history, logs, readings, warranties, sitter: normSitter(r.sitter) }, dropped };
 }
-const defaultState = () => ({ schemaVersion: SCHEMA, meta: { lastBackup: null, lastChange: null }, settings: {}, things: [], tasks: [], history: [], logs: [], readings: [], warranties: [] });
+const defaultState = () => ({ schemaVersion: SCHEMA, meta: { lastBackup: null, lastChange: null }, settings: {}, things: [], tasks: [], history: [], logs: [], readings: [], warranties: [], sitter: normSitter() });
 function loadState(parsed) {
   const { data } = normalizeData(parsed);
   const m = parsed && parsed.meta && typeof parsed.meta === 'object' ? parsed.meta : {};
   return { schemaVersion: SCHEMA, meta: { lastBackup: str(m.lastBackup) || null, lastChange: str(m.lastChange) || null }, settings: {}, ...data };
 }
-const exportData = () => ({ things: state.things, tasks: state.tasks, history: state.history, logs: state.logs, readings: state.readings, warranties: state.warranties });
-const hasAnyData = () => state.things.length + state.tasks.length + state.history.length + state.logs.length + state.readings.length + state.warranties.length > 0;
+const exportData = () => ({ things: state.things, tasks: state.tasks, history: state.history, logs: state.logs, readings: state.readings, warranties: state.warranties, sitter: state.sitter });
+const sitterHas = x => !!(x && (x.house || x.owners));
+const hasAnyData = () => state.things.length + state.tasks.length + state.history.length + state.logs.length + state.readings.length + state.warranties.length > 0 || sitterHas(state.sitter);
+/* backups that contain no pet data stay at schema 1 so an older copy of the app can still read them; anything with pet data is 2 */
+const exportSchema = () => (state.things.some(t => t.kind === 'pet') || state.tasks.some(t => t.vax) || sitterHas(state.sitter) ? 2 : 1);
 
 /* ---- persistence ---- */
 let state = defaultState(), db = null, saveFailed = false, persistAsked = false, saveChain = Promise.resolve();
@@ -975,18 +1028,24 @@ function parseTaskLines(text) {
     if (first) { first = false; if (/^title$/i.test(cols[0])) return; }
     const r = { line: i + 1, raw, title: cols[0] || '', thingName: cols[1] || '', ok: false, err: '' };
     if (!r.title) r.err = 'missing title';
-    else if (cols.length > 4) r.err = 'too many columns (put quotes around text that contains commas)';
+    else if (cols.length > 5 || (cols.length === 5 && !((cols[4] || '').trim() && parseDueDate(cols[4])))) r.err = 'too many columns (put quotes around text that contains commas)';
     else {
       const ev = parseEvery(cols[2] || '');
-      const due = parseDueDate(cols[3] || '');
+      const last = (cols[4] || '').trim() ? parseDueDate(cols[4]) : '';
+      let due = parseDueDate(cols[3] || '');
       if (!ev) r.err = `can't read the interval "${cols[2] || ''}" (try "every 3 months")`;
       else if (!due) r.err = `can't read the date "${cols[3]}" (use YYYY-MM-DD or M/D/YYYY)`;
-      else { r.title = r.title.slice(0, 120); Object.assign(r, ev, { nextDue: due, ok: true }); }
+      else if (last && last > todayISO()) r.err = 'the last-given date is in the future';
+      else {
+        if (last && !(cols[3] || '').trim() && ev.unit !== 'once') due = stepDate({ unit: ev.unit, every: ev.every }, last, parseISO(last).getDate());
+        r.title = r.title.slice(0, 120); Object.assign(r, ev, { nextDue: due, lastDone: last || '', ok: true });
+      }
     }
     rows.push(r);
   });
   return rows;
 }
+const findThingIdByName = n => { const x = state.things.find(t => t.name.toLowerCase() === str(n).trim().toLowerCase()); return x ? x.id : ''; };
 function applyImport(rows) {
   let n = 0, newThings = 0;
   for (const r of rows) {
@@ -997,7 +1056,8 @@ function applyImport(rows) {
       const th = findOrAddThing(r.thingName.trim().slice(0, 100), 'equipment');
       if (th) { thingId = th.id; if (state.things.length > before) newThings++; }
     }
-    state.tasks.push(normTask({ id: uid(), thingId, title: r.title, unit: r.unit, every: r.every, nextDue: r.nextDue, anchorDay: parseISO(r.nextDue).getDate(), rollFrom: r.unit === 'fixed' ? 'due' : 'done', createdAt: nowTs() }));
+    const owner = thingById(thingId);
+    state.tasks.push(normTask({ id: uid(), thingId, title: r.title, unit: r.unit, every: r.every, nextDue: r.nextDue, lastDone: r.lastDone || '', anchorDay: parseISO(r.nextDue).getDate(), rollFrom: r.unit === 'fixed' ? 'due' : 'done', vax: !!(owner && owner.kind === 'pet'), createdAt: nowTs() }));
     n++;
   }
   return { n, newThings };
@@ -1067,14 +1127,37 @@ function chartSVG(log, f) {
 
 /* ---- dialogs ---- */
 function thingOptions() { return [['', 'General (no thing)'], ...state.things.slice().sort(byName).map(x => [x.id, x.name])]; }
+async function deleteThing(t) {
+  const nt = state.tasks.filter(x => x.thingId === t.id).length, nl = state.logs.filter(x => x.thingId === t.id).length, nw = state.warranties.filter(x => x.thingId === t.id).length;
+  const choice = await askDialog({
+    title: `Delete “${t.name}”?`,
+    body: `<p>It has ${plural(nt, 'task')}, ${plural(nl, 'log')} and ${plural(nw, 'warranty')}. History is always kept.</p>`,
+    buttons: [{ label: 'Cancel', value: 'cancel' }, { label: 'Keep items as General', value: 'keep' }, { label: 'Delete all', value: 'all', kind: 'danger' }]
+  });
+  if (choice !== 'keep' && choice !== 'all') return false;
+  if (choice === 'all') {
+    const lids = new Set(state.logs.filter(x => x.thingId === t.id).map(x => x.id));
+    state.tasks = state.tasks.filter(x => x.thingId !== t.id);
+    state.logs = state.logs.filter(x => x.thingId !== t.id);
+    state.readings = state.readings.filter(x => !lids.has(x.logId));
+    state.warranties = state.warranties.filter(x => x.thingId !== t.id);
+  } else {
+    for (const x of [...state.tasks, ...state.logs, ...state.warranties]) if (x.thingId === t.id) { x.thingId = ''; if ('vax' in x) x.vax = false; }
+  }
+  for (const h of state.history) if (h.thingId === t.id) { h.thingName = t.name; h.thingId = ''; }
+  state.things = state.things.filter(x => x.id !== t.id);
+  if (nav.sub === 'thing' && nav.id === t.id) { nav.sub = null; nav.id = null; }
+  commit(); toast(t.kind === 'pet' ? 'Pet deleted' : 'Thing deleted'); return true;
+}
 function thingDialog(id) {
   const t = id ? thingById(id) : null;
   if (id && !t) return;
+  if (t && t.kind === 'pet') return petDialog(id);
   formDialog({
     title: t ? 'Edit thing' : 'Add thing',
     fields: [
       { name: 'name', label: 'Name', required: true, value: t && t.name, placeholder: 'e.g. Pool, Generator, Jeep' },
-      { name: 'kind', label: 'Kind', type: 'select', options: KINDS, value: t ? t.kind : 'equipment' },
+      { name: 'kind', label: 'Kind', type: 'select', options: GENERIC_KINDS, value: t ? t.kind : 'equipment' },
       { name: 'make', label: 'Make', value: t && t.make }, { name: 'model', label: 'Model', value: t && t.model },
       { name: 'serial', label: 'Serial number', value: t && t.serial },
       { name: 'date', label: 'Purchase / install date', type: 'date', value: t && t.date },
@@ -1095,28 +1178,7 @@ function thingDialog(id) {
       } else state.things.push(normThing({ id: uid(), ...rec, odometer: odo, odoDate: odo != null ? todayISO() : '', createdAt: nowTs() }));
       commit();
     },
-    onDelete: t ? async () => {
-      const nt = state.tasks.filter(x => x.thingId === t.id).length, nl = state.logs.filter(x => x.thingId === t.id).length, nw = state.warranties.filter(x => x.thingId === t.id).length;
-      const choice = await askDialog({
-        title: `Delete “${t.name}”?`,
-        body: `<p>It has ${plural(nt, 'task')}, ${plural(nl, 'log')} and ${plural(nw, 'warranty')}. History is always kept.</p>`,
-        buttons: [{ label: 'Cancel', value: 'cancel' }, { label: 'Keep items as General', value: 'keep' }, { label: 'Delete all', value: 'all', kind: 'danger' }]
-      });
-      if (choice !== 'keep' && choice !== 'all') return false;
-      if (choice === 'all') {
-        const lids = new Set(state.logs.filter(x => x.thingId === t.id).map(x => x.id));
-        state.tasks = state.tasks.filter(x => x.thingId !== t.id);
-        state.logs = state.logs.filter(x => x.thingId !== t.id);
-        state.readings = state.readings.filter(x => !lids.has(x.logId));
-        state.warranties = state.warranties.filter(x => x.thingId !== t.id);
-      } else {
-        for (const x of [...state.tasks, ...state.logs, ...state.warranties]) if (x.thingId === t.id) x.thingId = '';
-      }
-      for (const h of state.history) if (h.thingId === t.id) { h.thingName = t.name; h.thingId = ''; }
-      state.things = state.things.filter(x => x.id !== t.id);
-      if (nav.sub === 'thing' && nav.id === t.id) { nav.sub = null; nav.id = null; }
-      commit(); toast('Thing deleted'); return true;
-    } : null
+    onDelete: t ? () => deleteThing(t) : null
   });
 }
 function odoDialog(id) {
@@ -1387,6 +1449,344 @@ function claimDialog(id) {
   });
 }
 
+/* ===================== Pets ===================== */
+/* A pet is a Thing with kind 'pet' and a `pet` sub-object. Vaccines and preventives are ordinary recurring tasks flagged vax:true, so they
+   show on the Due tab, roll forward, snooze, undo and keep history exactly like every other task. The weight log is an ordinary log. */
+const isPet = t => !!t && t.kind === 'pet';
+const allPets = () => state.things.filter(isPet).sort(byName);
+const petVax = id => state.tasks.filter(t => t.thingId === id && t.vax);
+
+function ageText(born, today) {
+  if (!isISO(born) || !isISO(today) || born > today) return '';
+  const b = parseISO(born), t = parseISO(today);
+  const m = (t.getFullYear() - b.getFullYear()) * 12 + t.getMonth() - b.getMonth() - (t.getDate() < b.getDate() ? 1 : 0);
+  if (m >= 12) { const y = Math.floor(m / 12), r = m % 12; return plural(y, 'yr') + (r ? ' ' + plural(r, 'mo') : ''); }
+  if (m >= 1) return plural(m, 'mo');
+  const d = daysBetween(born, today);
+  return d >= 7 ? plural(Math.floor(d / 7), 'wk') : d >= 1 ? plural(d, 'day') : 'less than a day';
+}
+function petAgeLine(p, today) {
+  const q = p.pet; if (!q.born) return '';
+  const age = ageText(q.born, today);
+  return q.bornKind === 'adopted' ? `Adopted ${fmtDate(q.born, false)}${age ? ' · home ' + age : ''}` : `Born ${fmtDate(q.born, false)}${age ? ' · ' + age + ' old' : ''}`;
+}
+
+/* ---- weight (a normal log with one field, id "wt") ---- */
+const weightLogOf = petId => state.logs.find(l => l.thingId === petId && l.fields.some(f => f.id === 'wt'));
+function ensureWeightLog(pet) {
+  let l = weightLogOf(pet.id);
+  if (l) return l;
+  if (state.logs.length >= MAX.logs) return null;
+  l = normLog({ id: uid(), name: `${pet.name} weight`, thingId: pet.id, type: 'readings', fields: [{ id: 'wt', name: 'Weight', unit: 'lb' }], createdAt: nowTs() });
+  state.logs.push(l);
+  return l;
+}
+function petWeight(pet) {
+  const l = weightLogOf(pet.id);
+  if (l) {
+    const es = entriesOf(l.id).filter(r => isNum(r.values.wt));
+    if (es.length) { const f = l.fields.find(x => x.id === 'wt'); return { v: es[es.length - 1].values.wt, unit: f && f.unit ? f.unit : '', date: es[es.length - 1].date }; }
+  }
+  return pet.pet.weight != null ? { v: pet.pet.weight, unit: 'lb', date: '' } : null;
+}
+function addWeight(pet, w, date) {
+  date = date || todayISO();
+  pet.pet.weight = w;
+  const l = ensureWeightLog(pet);
+  if (!l) return false;
+  const same = state.readings.find(r => r.logId === l.id && r.date === date);
+  if (same) { same.values.wt = w; return true; }
+  if (state.readings.length >= MAX.readings) return false;
+  state.readings.push(normReading({ id: uid(), logId: l.id, date, values: { wt: w }, cost: null, note: '', createdAt: nowTs() }));
+  return true;
+}
+const weightText = w => (w ? `${fmtNum(w.v)}${w.unit ? ' ' + w.unit : ''}` : '');
+
+/* ---- starters (opt-in; first dates are placeholders) ---- */
+const PET_STARTERS = [
+  { k: 'rabies1', title: 'Rabies vaccine', every: 1, unit: 'year', first: 30, sp: ['cat', 'dog'], note: '1-year' },
+  { k: 'rabies3', title: 'Rabies vaccine', every: 3, unit: 'year', first: 30, sp: ['cat', 'dog'], note: '3-year booster' },
+  { k: 'fvrcp1', title: 'FVRCP vaccine', every: 1, unit: 'year', first: 30, sp: ['cat'], note: 'yearly' },
+  { k: 'fvrcp3', title: 'FVRCP vaccine', every: 3, unit: 'year', first: 30, sp: ['cat'], note: 'adult 3-year' },
+  { k: 'dhpp1', title: 'DHPP vaccine', every: 1, unit: 'year', first: 30, sp: ['dog'], note: 'yearly' },
+  { k: 'dhpp3', title: 'DHPP vaccine', every: 3, unit: 'year', first: 30, sp: ['dog'], note: 'adult 3-year' },
+  { k: 'bord', title: 'Bordetella vaccine', every: 1, unit: 'year', first: 30, sp: ['dog'], note: '' },
+  { k: 'flea', title: 'Flea and tick preventive', every: 1, unit: 'month', first: 7, sp: ['cat', 'dog'], note: '' },
+  { k: 'heart', title: 'Heartworm preventive', every: 1, unit: 'month', first: 7, sp: ['dog'], note: '' },
+  { k: 'exam', title: 'Annual vet exam', every: 1, unit: 'year', first: 45, sp: ['cat', 'dog', 'other'], note: '' },
+  { k: 'dental', title: 'Dental check', every: 1, unit: 'year', first: 60, sp: ['cat', 'dog', 'other'], note: '' }
+];
+const startersFor = species => PET_STARTERS.filter(s => s.sp.includes(species));
+function addPetStarters(petId, keys) {
+  const pet = thingById(petId); if (!isPet(pet)) return { n: 0, skipped: 0 };
+  const today = todayISO(); let n = 0, skipped = 0;
+  for (const s of startersFor(pet.pet.species)) {
+    if (!keys.includes(s.k)) continue;
+    if (petVax(petId).some(t => t.title.toLowerCase() === s.title.toLowerCase()) || petVax(petId).length >= MAX.vaxPerPet || state.tasks.length >= MAX.tasks) { skipped++; continue; }
+    const nextDue = addDays(today, s.first);
+    state.tasks.push(normTask({ id: uid(), thingId: petId, title: s.title, unit: s.unit, every: s.every, nextDue, anchorDay: parseISO(nextDue).getDate(), rollFrom: 'done', vax: true, createdAt: nowTs() }));
+    n++;
+  }
+  return { n, skipped };
+}
+function petStarterDialog(petId) {
+  const pet = thingById(petId); if (!isPet(pet)) return;
+  const list = startersFor(pet.pet.species);
+  formDialog({
+    title: `Vaccines and preventives · ${pet.name}`,
+    intro: 'Tick what applies. Intervals are generic (ask your vet) and the first due dates are placeholders to edit. Where two intervals are listed, tick only one. Nothing is added unless ticked.',
+    fields: list.map(s => ({ name: s.k, type: 'checkbox', value: false, label: `${s.title} (${intervalText({ ...s, months: [], nextDue: '' })}${s.note ? ', ' + s.note : ''})` })),
+    submitLabel: 'Add selected',
+    onSubmit: v => {
+      const keys = list.filter(s => v[s.k]).map(s => s.k);
+      if (!keys.length) return 'Tick at least one item.';
+      const r = addPetStarters(petId, keys);
+      commit();
+      toast(`Added ${plural(r.n, 'item')}${r.skipped ? ` (${r.skipped} already there)` : ''}`);
+    }
+  });
+}
+
+/* ---- dialogs ---- */
+function petDialog(id) {
+  const t = id ? thingById(id) : null;
+  if (id && !isPet(t)) return;
+  const q = t ? t.pet : normPet({});
+  const cw = t ? petWeight(t) : null;
+  formDialog({
+    title: t ? 'Edit pet' : 'Add pet',
+    fields: [
+      { name: 'name', label: 'Name', required: true, value: t && t.name },
+      { name: 'species', label: 'Species', type: 'select', options: SPECIES, value: q.species },
+      { name: 'breed', label: 'Breed / color', value: q.breed },
+      { name: 'bornKind', label: 'The date below is', type: 'select', options: [['birthday', 'Birthday'], ['adopted', 'Adoption date']], value: q.bornKind },
+      { name: 'born', label: 'Date (optional, age is shown)', type: 'date', value: q.born },
+      { name: 'chip', label: 'Microchip number', value: q.chip, hint: 'Free text.' },
+      { name: 'weight', label: 'Weight in lb (optional)', type: 'number', value: cw ? cw.v : '', min: 0, hint: 'Saving a new weight adds a dated entry to this pet’s weight log.' }
+    ],
+    submitLabel: t ? 'Save' : 'Add pet',
+    onSubmit: v => {
+      if (!t && allPets().length >= MAX.pets) return `Limit of ${MAX.pets} pets reached.`;
+      if (!t && state.things.length >= MAX.things) return `Limit of ${MAX.things} things reached.`;
+      if (v.born && (!isISO(v.born) || v.born > todayISO())) return 'Pick a valid date that is not in the future.';
+      const w = v.weight === '' ? null : numOrNull(v.weight, 0.01, 2000);
+      if (v.weight !== '' && w == null) return 'Enter a valid weight.';
+      const fields = { species: v.species, breed: v.breed.trim(), bornKind: v.bornKind, born: v.born || '', chip: v.chip.trim() };
+      let pet = t;
+      if (t) { t.name = v.name.trim().slice(0, 100); t.pet = normPet({ ...t.pet, ...fields }); }
+      else { pet = normThing({ id: uid(), name: v.name.trim(), kind: 'pet', pet: fields, createdAt: nowTs() }); state.things.push(pet); nav = { tab: 'things', sub: 'thing', id: pet.id }; }
+      if (w == null) pet.pet.weight = null;
+      else if (!cw || cw.v !== w) addWeight(pet, w);
+      commit();
+    },
+    onDelete: t ? () => deleteThing(t) : null
+  });
+}
+function petVetDialog(id) {
+  const t = thingById(id); if (!isPet(t)) return; const q = t.pet;
+  formDialog({
+    title: `Vet · ${t.name}`,
+    fields: [
+      { name: 'vetName', label: 'Clinic', value: q.vetName }, { name: 'vetPhone', label: 'Clinic phone', type: 'tel', value: q.vetPhone }, { name: 'vetAddr', label: 'Clinic address', value: q.vetAddr },
+      { name: 'erName', label: 'After-hours / emergency vet', value: q.erName }, { name: 'erPhone', label: 'Emergency phone', type: 'tel', value: q.erPhone }, { name: 'erAddr', label: 'Emergency address', value: q.erAddr }
+    ],
+    onSubmit: v => { t.pet = normPet({ ...t.pet, vetName: v.vetName.trim(), vetPhone: v.vetPhone.trim(), vetAddr: v.vetAddr.trim(), erName: v.erName.trim(), erPhone: v.erPhone.trim(), erAddr: v.erAddr.trim() }); commit(); }
+  });
+}
+function petCareDialog(id) {
+  const t = thingById(id); if (!isPet(t)) return; const q = t.pet;
+  formDialog({
+    title: `Care · ${t.name}`,
+    fields: [
+      { name: 'foodBrand', label: 'Food (brand)', value: q.foodBrand }, { name: 'foodPortion', label: 'Portion', value: q.foodPortion, placeholder: 'e.g. 1/2 cup' },
+      { name: 'foodTimes', label: 'Meals per day', type: 'number', value: q.foodTimes != null ? q.foodTimes : '', min: 1, step: 1 },
+      { name: 'foodWhen', label: 'Feeding times', value: q.foodWhen, placeholder: 'e.g. 7 am and 6 pm' },
+      { name: 'meds', label: 'Medications and supplements', type: 'textarea', value: q.meds, placeholder: 'Name, dose, when. One per line.' },
+      { name: 'routine', label: q.species === 'cat' ? 'Litter box and routine' : q.species === 'dog' ? 'Walks and routine' : 'Routine', type: 'textarea', value: q.routine },
+      { name: 'insurance', label: 'Pet insurance', value: q.insurance, placeholder: 'Company, policy number', hint: 'Not shown on the sitter sheet.' },
+      { name: 'notes', label: 'Notes (shown on the sitter sheet)', type: 'textarea', value: t.notes, placeholder: 'Quirks, hiding spots, fears. Text only.' }
+    ],
+    onSubmit: v => {
+      const ft = v.foodTimes === '' ? null : Math.floor(Number(v.foodTimes));
+      if (ft != null && !(ft >= 1 && ft <= 12)) return 'Meals per day: enter 1 to 12.';
+      t.pet = normPet({ ...t.pet, foodBrand: v.foodBrand.trim(), foodPortion: v.foodPortion.trim(), foodTimes: ft, foodWhen: v.foodWhen.trim(), meds: v.meds.trim(), routine: v.routine.trim(), insurance: v.insurance.trim() });
+      t.notes = v.notes.trim().slice(0, 3000);
+      commit();
+    }
+  });
+}
+function weightDialog(id) {
+  const t = thingById(id); if (!isPet(t)) return;
+  formDialog({
+    title: `Log weight · ${t.name}`,
+    fields: [{ name: 'date', label: 'Date', type: 'date', value: todayISO(), required: true }, { name: 'weight', label: 'Weight (lb)', type: 'number', min: 0, required: true }],
+    submitLabel: 'Add',
+    onSubmit: v => {
+      if (!isISO(v.date)) return 'Pick a valid date.';
+      const w = numOrNull(v.weight, 0.01, 2000); if (w == null) return 'Enter a valid weight.';
+      if (!addWeight(t, w, v.date)) return 'Couldn’t add the entry (limit reached).';
+      commit();
+    }
+  });
+}
+const VAX_UNITS = UNITS.filter(u => ['day', 'week', 'month', 'year', 'once'].includes(u[0]));
+function vaxDialog(petId, id) {
+  const pet = thingById(petId); if (!isPet(pet)) return;
+  const t = id ? taskById(id) : null;
+  if (id && !t) return;
+  formDialog({
+    title: t ? 'Edit vaccine / preventive' : `Add vaccine or preventive · ${pet.name}`,
+    fields: [
+      { name: 'title', label: 'Name', required: true, value: t && t.title, placeholder: 'e.g. Rabies vaccine' },
+      { name: 'lastDone', label: 'Last given', type: 'date', value: t && t.lastDone },
+      { name: 'every', label: 'Repeats every', type: 'number', value: t ? t.every : 1, min: 1, step: 1 },
+      { name: 'unit', label: 'Unit', type: 'select', options: VAX_UNITS, value: t && VAX_UNITS.some(u => u[0] === t.unit) ? t.unit : 'year' },
+      { name: 'nextDue', label: 'Next due', type: 'date', value: t && t.nextDue, hint: 'Leave blank to count from the last-given date.' },
+      { name: 'notes', label: 'Notes', type: 'textarea', value: t && t.notes, placeholder: 'Brand, lot, vet, certificate location.' }
+    ],
+    submitLabel: t ? 'Save' : 'Add',
+    onSubmit: v => {
+      if (!t && (petVax(petId).length >= MAX.vaxPerPet || state.tasks.length >= MAX.tasks)) return `Limit of ${MAX.vaxPerPet} items per pet reached.`;
+      const unit = v.unit; let every = Math.floor(Number(v.every));
+      if (!(every >= 1)) return 'Enter an interval of 1 or more.';
+      every = Math.min(every, UNIT_CAP[unit]); if (unit === 'once') every = 1;
+      if (v.lastDone && (!isISO(v.lastDone) || v.lastDone > todayISO())) return 'Last given must be a valid date that is not in the future.';
+      if (v.nextDue && !isISO(v.nextDue)) return 'Pick a valid next due date.';
+      let nextDue = v.nextDue;
+      if (!nextDue && v.lastDone && unit !== 'once') nextDue = stepDate({ unit, every }, v.lastDone, parseISO(v.lastDone).getDate());
+      if (!nextDue) return 'Enter the next due date' + (unit === 'once' ? '.' : ' or when it was last given.');
+      const rec = { title: v.title.trim().slice(0, 120), thingId: petId, unit, every, nextDue, lastDone: v.lastDone || '', rollFrom: 'done', months: [], notes: v.notes.trim(), vax: true };
+      if (t) {
+        const dateChanged = t.nextDue !== rec.nextDue || t.unit !== rec.unit;
+        Object.assign(t, rec);
+        if (dateChanged) { t.anchorDay = parseISO(nextDue).getDate(); t.snoozeUntil = ''; t.active = true; }
+      } else state.tasks.push(normTask({ id: uid(), ...rec, anchorDay: parseISO(nextDue).getDate(), createdAt: nowTs() }));
+      commit();
+    },
+    onDelete: t ? async () => {
+      if (!(await confirmBox(`Delete “${t.title}”?`, 'Its history is kept.', 'Delete'))) return false;
+      state.tasks = state.tasks.filter(x => x.id !== t.id); commit(); toast('Deleted'); return true;
+    } : null
+  });
+}
+function sitterDialog() {
+  formDialog({
+    title: 'House notes and owner contacts',
+    intro: 'Printed on the sitter sheet. Stored only on this device (and in your backup file). Avoid passwords and door codes you would not hand to a stranger.',
+    fields: [
+      { name: 'owners', label: 'Owner contact numbers', type: 'textarea', value: state.sitter.owners, placeholder: 'Name: phone, one per line' },
+      { name: 'house', label: 'House notes', type: 'textarea', value: state.sitter.house, placeholder: 'Wifi, trash day, where supplies are, thermostat…' }
+    ],
+    onSubmit: v => { state.sitter = normSitter({ owners: v.owners.trim(), house: v.house.trim() }); commit(); }
+  });
+}
+
+/* ---- sitter sheet ---- */
+const PHONE_RE = /^[0-9\s().+\-]{3,}$/;
+const phoneHTML = p => (PHONE_RE.test(p) && p.replace(/\D/g, '').length >= 3 ? `<a href="tel:${esc(p.replace(/[^0-9+]/g, ''))}">${esc(p)}</a>` : esc(p));
+function petSheet(p, today) {
+  const q = p.pet;
+  const age = q.born ? (q.bornKind === 'adopted' ? `adopted ${fmtDate(q.born, false)}, home ${ageText(q.born, today) || 'today'}` : `${ageText(q.born, today)} old`) : '';
+  const head = [SPECIES_LABEL[q.species], q.breed, age, q.chip ? 'Microchip ' + q.chip : ''].filter(Boolean);
+  const rows = (...pairs) => pairs.filter(r => r[1] !== '' && r[1] != null).map(r => ({ k: r[0], v: String(r[1]), phone: !!r[2] }));
+  const secs = [
+    { h: 'Feeding', rows: rows(['Food', q.foodBrand], ['Portion', q.foodPortion], ['Meals per day', q.foodTimes], ['When', q.foodWhen]) },
+    { h: 'Medications and supplements', text: q.meds },
+    { h: q.species === 'cat' ? 'Litter box and routine' : q.species === 'dog' ? 'Walks and routine' : 'Routine', text: q.routine },
+    { h: 'Vet', rows: rows(['Clinic', q.vetName], ['Phone', q.vetPhone, true], ['Address', q.vetAddr]) },
+    { h: 'Emergency / after-hours vet', rows: rows(['Name', q.erName], ['Phone', q.erPhone, true], ['Address', q.erAddr]) },
+    { h: 'Notes', text: p.notes }
+  ].filter(s => (s.rows && s.rows.length) || s.text);
+  return { name: p.name, head, secs };
+}
+const sitterPets = id => (id && id !== 'all' ? allPets().filter(p => p.id === id) : allPets());
+function sitterHTML(list, today) {
+  const S = state.sitter;
+  const block = (h, txt) => (txt ? `<div class="gap"><div class="sh">${esc(h)}</div><div class="pre">${esc(txt)}</div></div>` : '');
+  const pets = list.map(p => petSheet(p, today)).map(m => `<section class="sp"><h3>${esc(m.name)}</h3>${m.head.length ? `<div class="meta">${esc(m.head.join(' · '))}</div>` : ''}
+    ${m.secs.map(s => s.rows ? `<div class="sh">${esc(s.h)}</div>${s.rows.map(r => `<div class="sr"><span class="k">${esc(r.k)}</span><span class="v">${r.phone ? phoneHTML(r.v) : esc(r.v)}</span></div>`).join('')}` : `<div class="sh">${esc(s.h)}</div><div class="pre">${esc(s.text)}</div>`).join('')}</section>`).join('');
+  return `<article class="card sheet" id="sheet" aria-label="Pet sitter sheet"><h2>Pet sitter sheet</h2><div class="meta">Prepared ${esc(fmtDate(today, false))}</div>
+    ${block('Owner contacts', S.owners)}${block('House notes', S.house)}${pets}</article>`;
+}
+function sitterText(list, today) {
+  const S = state.sitter, out = ['PET SITTER SHEET', `Prepared ${fmtDate(today, false)}`];
+  if (S.owners) out.push('', 'OWNER CONTACTS', S.owners);
+  if (S.house) out.push('', 'HOUSE NOTES', S.house);
+  for (const p of list) {
+    const m = petSheet(p, today);
+    out.push('', `== ${m.name.toUpperCase()} ==`);
+    if (m.head.length) out.push(m.head.join(' · '));
+    for (const s of m.secs) {
+      out.push('', s.h);
+      if (s.rows) for (const r of s.rows) out.push(`${r.k}: ${r.v}`); else out.push(s.text);
+    }
+  }
+  return out.join('\n');
+}
+async function copyText(txt) {
+  try { await navigator.clipboard.writeText(txt); return true; } catch { /* fall through */ }
+  try {
+    const ta = document.createElement('textarea'); ta.value = txt; ta.setAttribute('readonly', ''); ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0';
+    document.body.appendChild(ta); ta.select(); const ok = document.execCommand && document.execCommand('copy'); ta.remove();
+    return !!ok;
+  } catch { return false; }
+}
+async function copySitter() {
+  const list = sitterPets(nav.id);
+  if (!list.length) return toast('Add a pet first.');
+  const txt = sitterText(list, todayISO());
+  if (await copyText(txt)) return toast('Sitter sheet copied');
+  await askDialog({ title: 'Copy this text', body: `<textarea readonly class="mono" style="min-height:220px">${esc(txt)}</textarea>`, buttons: [{ label: 'Close', value: true, kind: 'primary' }] });
+}
+
+/* ---- pet views ---- */
+function petRowBits(p, today) {
+  const q = p.pet;
+  return [[SPECIES_LABEL[q.species], q.breed].filter(Boolean).join(' · '), q.born ? ageText(q.born, today) : ''].filter(Boolean);
+}
+function renderPet(id) {
+  const t = thingById(id), q = t.pet, today = todayISO();
+  const vax = petVax(id).map(x => ({ x, S: taskStatus(x, today) })).sort((a, b) => (a.x.active === b.x.active ? 0 : a.x.active ? -1 : 1) || a.S.ord - b.S.ord);
+  const others = state.tasks.filter(x => x.thingId === id && !x.vax).map(x => ({ x, S: taskStatus(x, today) })).sort((a, b) => (a.x.active === b.x.active ? 0 : a.x.active ? -1 : 1) || a.S.ord - b.S.ord);
+  const wl = weightLogOf(id), logs = state.logs.filter(l => l.thingId === id && l !== wl);
+  const hist = histSorted().filter(h => h.thingId === id).slice(0, 8), lat = latestIds();
+  const kv = (k, v) => (v ? `<div class="kv">${esc(k)}: <b>${esc(v)}</b></div>` : '');
+  const kvp = (k, v) => (v ? `<div class="kv">${esc(k)}: <b>${phoneHTML(v)}</b></div>` : '');
+  const w = petWeight(t), wf = wl ? wl.fields.find(f => f.id === 'wt') : null;
+  const wEntries = wl ? entriesOf(wl.id).filter(r => isNum(r.values.wt)).length : 0;
+  const pre = v => (v ? `<div class="kv" style="white-space:pre-wrap">${esc(v)}</div>` : '');
+  return storageBannerHTML() + backLink('Things') + `
+    <section class="card pad" style="margin-top:12px"><h3>${esc(t.name)} <span class="badge acc">${esc(SPECIES_LABEL[q.species])}</span></h3>
+      ${kv('Breed / color', q.breed)}${petAgeLine(t, today) ? `<div class="kv"><b>${esc(petAgeLine(t, today))}</b></div>` : ''}${kv('Microchip', q.chip)}
+      <div class="kv">Weight: <b>${w ? esc(weightText(w)) + (w.date ? ' (' + esc(fmtDate(w.date, false)) + ')' : '') : 'not set'}</b></div>
+      <div class="btnrow"><button type="button" class="btn small" data-action="edit-pet" data-id="${esc(id)}">Edit</button><button type="button" class="btn small" data-action="log-weight" data-id="${esc(id)}">Log weight</button><button type="button" class="btn small" data-action="sitter" data-id="${esc(id)}">Sitter sheet</button></div>
+      ${wEntries > 1 && wf ? chartSVG(wl, wf) : ''}</section>
+    <div class="sec-h"><span>Vaccines and preventives</span><span class="acts"><button type="button" class="btn small ghost" data-action="vax-starters" data-id="${esc(id)}">Starters…</button><button type="button" class="btn small ghost" data-action="add-vax" data-id="${esc(id)}">+ Add</button></span></div>
+    ${vax.length ? `<ul class="card list">${vax.map(z => taskRow(z.x, today)).join('')}</ul>` : '<p class="muted" style="margin:0 4px">None yet. Use Starters to pick common ones for a ' + esc(SPECIES_LABEL[q.species].toLowerCase()) + '.</p>'}
+    <div class="sec-h"><span>Vet</span><button type="button" class="btn small ghost" data-action="edit-vet" data-id="${esc(id)}">Edit</button></div>
+    <section class="card pad">${kv('Clinic', q.vetName)}${kvp('Phone', q.vetPhone)}${kv('Address', q.vetAddr)}${kv('After-hours / emergency', q.erName)}${kvp('Emergency phone', q.erPhone)}${kv('Emergency address', q.erAddr)}
+      ${q.vetName || q.vetPhone || q.vetAddr || q.erName || q.erPhone || q.erAddr ? '' : '<p class="muted" style="margin:0">No vet details yet.</p>'}</section>
+    <div class="sec-h"><span>Care</span><button type="button" class="btn small ghost" data-action="edit-care" data-id="${esc(id)}">Edit</button></div>
+    <section class="card pad">${kv('Food', q.foodBrand)}${kv('Portion', q.foodPortion)}${kv('Meals per day', q.foodTimes)}${kv('Feeding times', q.foodWhen)}
+      ${q.meds ? `<div class="kv">Meds and supplements:</div>${pre(q.meds)}` : ''}${q.routine ? `<div class="kv">${q.species === 'cat' ? 'Litter box and routine' : q.species === 'dog' ? 'Walks and routine' : 'Routine'}:</div>${pre(q.routine)}` : ''}
+      ${kv('Insurance', q.insurance)}${t.notes ? `<div class="kv">Notes:</div>${pre(t.notes)}` : ''}
+      ${q.foodBrand || q.foodPortion || q.foodTimes || q.foodWhen || q.meds || q.routine || q.insurance || t.notes ? '' : '<p class="muted" style="margin:0">No care details yet.</p>'}</section>
+    <div class="sec-h"><span>Other tasks</span><button type="button" class="btn small ghost" data-action="add-task-for" data-id="${esc(id)}">+ Task</button></div>
+    ${others.length ? `<ul class="card list">${others.map(z => taskRow(z.x, today)).join('')}</ul>` : '<p class="muted" style="margin:0 4px">No other tasks.</p>'}
+    <div class="sec-h"><span>Logs</span><button type="button" class="btn small ghost" data-action="add-log-for" data-id="${esc(id)}">+ Log</button></div>
+    ${wl || logs.length ? `<ul class="card list">${[...(wl ? [wl] : []), ...logs].map(logRow).join('')}</ul>` : '<p class="muted" style="margin:0 4px">No logs.</p>'}
+    ${hist.length ? `<div class="sec-h"><span>History</span></div><ul class="card list">${hist.map(h => histRow(h, lat.has(h.id))).join('')}</ul>` : ''}`;
+}
+function renderSitter(id) {
+  const list = sitterPets(id), pets = allPets(), today = todayISO();
+  if (!pets.length) return storageBannerHTML() + backLink('Things') + '<div class="empty"><div class="big">🐾</div><h2>No pets yet</h2><p>Add a pet, then come back to build the sitter sheet.</p><button class="btn primary" data-action="add-pet">Add a pet</button></div>';
+  return storageBannerHTML() + `<div class="noprint">${backLink('Things')}
+    ${pets.length > 1 ? `<div class="chips" role="group" aria-label="Pets" style="margin-top:12px"><button type="button" class="chip" aria-pressed="${!list.length || list.length === pets.length}" data-action="sitter-pick" data-id="all">All pets</button>${pets.map(p => `<button type="button" class="chip" aria-pressed="${list.length === 1 && list[0].id === p.id}" data-action="sitter-pick" data-id="${esc(p.id)}">${esc(p.name)}</button>`).join('')}</div>` : ''}
+    <div class="btnrow"><button type="button" class="btn small primary" data-action="sitter-print">Print</button><button type="button" class="btn small" data-action="sitter-copy">Copy as text</button><button type="button" class="btn small" data-action="sitter-edit">House notes and contacts</button></div></div>
+    ${sitterHTML(list.length ? list : pets, today)}
+    <p class="hint noprint">Only what you entered is shown. Fill in food, meds, routine, vet and emergency vet on each pet.</p>`;
+}
+
 /* ---- navigation + views ---- */
 const view = $('#view');
 let nav = { tab: 'due', sub: null, id: null };
@@ -1447,15 +1847,15 @@ function renderDue() {
 function thingRow(t, today) {
   const ts = state.tasks.filter(x => x.thingId === t.id && x.active).map(x => ({ x, S: taskStatus(x, today) })).sort((a, b) => a.S.ord - b.S.ord);
   const over = ts.filter(z => z.S.sec === 'overdue').length;
-  const bits = [[t.make, t.model].filter(Boolean).join(' '), t.kind === 'vehicle' && t.odometer != null ? fmtInt(t.odometer) + ' mi' : '', plural(ts.length, 'task')].filter(Boolean);
+  const bits = t.kind === 'pet' ? [...petRowBits(t, today), plural(ts.length, 'task')] : [[t.make, t.model].filter(Boolean).join(' '), t.kind === 'vehicle' && t.odometer != null ? fmtInt(t.odometer) + ' mi' : '', plural(ts.length, 'task')].filter(Boolean);
   return `<li class="row" data-action="open-thing" data-id="${esc(t.id)}"><div class="row-main"><div class="row-title">${esc(t.name)}${over ? `<span class="badge bad">${over} overdue</span>` : ''}</div>
     <div class="row-sub">${esc(bits.join(' · '))}</div>${ts[0] ? `<div class="row-sub ${ts[0].S.cls}">${esc(ts[0].x.title)} — ${esc(ts[0].S.text)}</div>` : ''}</div><span class="muted">›</span></li>`;
 }
 function renderThings() {
   const today = todayISO();
-  const head = `<div class="btnrow" style="margin:14px 0 0"><button type="button" class="btn small" data-action="costs">💲 Costs</button><button type="button" class="btn small" data-action="starters">Starter items…</button></div>`;
-  if (!state.things.length) return storageBannerHTML() + `<div class="empty"><div class="big">🏡</div><h2>No things yet</h2><p>A thing is a home area, a piece of equipment or a vehicle: Pool, Generator, HVAC, Jeep. Tasks, logs and warranties attach to it.</p>
-    <button class="btn primary" data-action="add">Add a thing</button><br><button class="btn" data-action="starters" style="margin-top:10px">Add starter items…</button></div>`;
+  const head = `<div class="btnrow" style="margin:14px 0 0"><button type="button" class="btn small" data-action="costs">💲 Costs</button><button type="button" class="btn small" data-action="starters">Starter items…</button><button type="button" class="btn small" data-action="add-pet">🐾 Add pet</button>${allPets().length ? '<button type="button" class="btn small" data-action="sitter" data-id="all">Sitter sheet</button>' : ''}</div>`;
+  if (!state.things.length) return storageBannerHTML() + `<div class="empty"><div class="big">🏡</div><h2>No things yet</h2><p>A thing is a home area, a piece of equipment, a vehicle or a pet: Pool, Generator, HVAC, Jeep. Tasks, logs and warranties attach to it.</p>
+    <button class="btn primary" data-action="add">Add a thing</button><br><button class="btn" data-action="starters" style="margin-top:10px">Add starter items…</button><br><button class="btn" data-action="add-pet" style="margin-top:10px">🐾 Add a pet</button></div>`;
   let html = storageBannerHTML() + head;
   for (const [k] of KINDS) {
     const arr = state.things.filter(t => t.kind === k).sort(byName);
@@ -1468,6 +1868,7 @@ function renderThings() {
 function renderThing(id) {
   const t = thingById(id);
   if (!t) { nav.sub = null; return renderThings(); }
+  if (t.kind === 'pet') return renderPet(id);
   const today = todayISO();
   const tasks = state.tasks.filter(x => x.thingId === id).map(x => ({ x, S: taskStatus(x, today) })).sort((a, b) => (a.x.active === b.x.active ? 0 : a.x.active ? -1 : 1) || a.S.ord - b.S.ord);
   const logs = state.logs.filter(l => l.thingId === id), ws = state.warranties.filter(w => w.thingId === id);
@@ -1583,14 +1984,15 @@ function renderImport() {
   if (importRows) {
     const ok = importRows.filter(r => r.ok).length;
     pv = importRows.length ? `<div class="sec-h"><span>Preview</span><span class="num">${ok} of ${importRows.length} ready</span></div><ul class="card list pv">${importRows.map(r => `<li class="row static ${r.ok ? '' : 'err'}"><div class="row-main"><div class="row-title">${esc(r.title || '(no title)')}</div>
-      <div class="row-sub">${r.ok ? `${esc(r.thingName.trim() || 'General')}${r.thingName.trim() && !state.things.some(t => t.name.toLowerCase() === r.thingName.trim().toLowerCase()) ? ' (new thing)' : ''} · ${esc(intervalText({ ...r, months: [] }))} · next ${esc(fmtDate(r.nextDue))}` : `Line ${r.line}: ${esc(r.err)}`}</div></div><span class="badge ${r.ok ? 'ok' : 'bad'}">${r.ok ? 'OK' : 'Skip'}</span></li>`).join('')}</ul>
+      <div class="row-sub">${r.ok ? `${esc(r.thingName.trim() || 'General')}${r.thingName.trim() && !state.things.some(t => t.name.toLowerCase() === r.thingName.trim().toLowerCase()) ? ' (new thing)' : ''} · ${esc(intervalText({ ...r, months: [] }))} · next ${esc(fmtDate(r.nextDue))}${r.lastDone ? ' · last given ' + esc(fmtDate(r.lastDone)) : ''}${(thingById(findThingIdByName(r.thingName)) || {}).kind === 'pet' ? ' · vaccine list' : ''}` : `Line ${r.line}: ${esc(r.err)}`}</div></div><span class="badge ${r.ok ? 'ok' : 'bad'}">${r.ok ? 'OK' : 'Skip'}</span></li>`).join('')}</ul>
       <button type="button" class="btn primary block" style="margin-top:12px" data-action="import-go" ${ok ? '' : 'disabled'}>Import ${plural(ok, 'task')}</button>` : '<div class="card empty" style="margin-top:12px"><p>Nothing to import. Paste some lines first.</p></div>';
   }
   return storageBannerHTML() + backLink('Backup') + `<section class="card pad" style="margin-top:12px"><h3>Import tasks from CSV lines</h3>
-    <p class="muted">One task per line: <code>title, thing, every N unit, next due</code>. Units: days, weeks, months, years. Examples:</p>
+    <p class="muted">One task per line: <code>title, thing, every N unit, next due, last given</code>. Units: days, weeks, months, years. The last two are optional (leave next due blank to count from last given). If the thing is a pet, the task joins that pet’s vaccines list. Examples:</p>
     <p class="hint" style="white-space:pre-wrap">Replace HVAC filter, HVAC, every 3 months, 2026-11-15
 Clean gutters, Home, every 6 months, 12/1/2026
-Pool pump check, Pool, weekly, 2026-10-18</p>
+Pool pump check, Pool, weekly, 2026-10-18
+Rabies vaccine, Mochi, every 3 years, , 2025-06-02</p>
     <div class="field"><label for="impText">Paste lines</label><textarea id="impText" class="mono" placeholder="title, thing, every 3 months, 2026-11-15">${esc(importText)}</textarea></div>
     <button type="button" class="btn block" style="margin-top:10px" data-action="import-preview">Preview</button></section>${pv}`;
 }
@@ -1600,7 +2002,7 @@ function renderBackup() {
   return storageBannerHTML() + installCardHTML() + `<div class="stack">
     <section class="card pad"><h3>Back up</h3>
       <p class="muted">${last}</p>
-      <p>Saves one file with your things, tasks, history, logs and warranties. On iPhone it opens the share sheet — save it to Files or OneDrive. <b>Never put this file in your GitHub repo.</b></p>
+      <p>Saves one file with your things (including pets), tasks, history, logs, warranties and sitter-sheet notes. On iPhone it opens the share sheet — save it to Files or OneDrive. <b>Never put this file in your GitHub repo.</b></p>
       ${canEncrypt ? `<div class="field"><label for="bkPass">Passphrase (optional — encrypts the file)</label><input id="bkPass" type="password" autocomplete="new-password"></div>
       <div class="field" style="margin-top:8px"><label for="bkPass2">Repeat passphrase</label><input id="bkPass2" type="password" autocomplete="new-password"></div>
       <p class="hint">If you set one, the file can’t be opened without it — not even by me.</p>` : ''}
@@ -1620,7 +2022,8 @@ const ADD_LABEL = { due: '+ Task', things: '+ Thing', logs: '+ Log', warranties:
 function render() {
   const y = window.scrollY;
   let html, title = TITLES[nav.tab], add = ADD_LABEL[nav.tab] || null;
-  if (nav.tab === 'things' && nav.sub === 'thing') { const t = thingById(nav.id); html = renderThing(nav.id); title = t ? t.name : 'Things'; add = '+ Task'; }
+  if (nav.tab === 'things' && nav.sub === 'thing') { const t = thingById(nav.id); html = renderThing(nav.id); title = t ? t.name : 'Things'; add = t && t.kind === 'pet' ? '+ Vaccine' : '+ Task'; }
+  else if (nav.tab === 'things' && nav.sub === 'sitter') { html = renderSitter(nav.id); title = 'Sitter sheet'; add = null; }
   else if (nav.tab === 'things' && nav.sub === 'costs') { html = renderCosts(); title = 'Costs'; add = null; }
   else if (nav.tab === 'logs' && nav.sub === 'log') { const l = logById(nav.id); html = renderLog(nav.id); title = l ? l.name : 'Logs'; add = '+ Entry'; }
   else if (nav.tab === 'due' && nav.sub === 'history') { html = renderHistoryAll(); title = 'History'; add = null; }
@@ -1635,7 +2038,7 @@ function render() {
 }
 function go(tab, sub = null, id = null) { nav = { tab, sub, id }; render(); window.scrollTo(0, 0); }
 function addForCurrent() {
-  if (nav.sub === 'thing') return taskDialog(null, nav.id);
+  if (nav.sub === 'thing') return isPet(thingById(nav.id)) ? vaxDialog(nav.id) : taskDialog(null, nav.id);
   if (nav.sub === 'log') return readingDialog(nav.id);
   ({ due: () => taskDialog(), things: () => thingDialog(), logs: () => logDialog(), warranties: () => warrantyDialog() }[nav.tab] || (() => {}))();
 }
@@ -1649,7 +2052,7 @@ async function doExport() {
   }
   const btn = $('[data-action="export"]'); if (btn) btn.disabled = true;
   try {
-    const text = await Backup.build({ appId: APP_ID, schema: SCHEMA, data: exportData(), passphrase: pass || null });
+    const text = await Backup.build({ appId: APP_ID, schema: exportSchema(), data: exportData(), passphrase: pass || null });
     const r = await deliverFile(`goobs-house-backup-${todayISO()}${pass ? '-encrypted' : ''}.json`, text, 'application/json');
     if (r !== 'cancelled') {
       state.meta.lastBackup = new Date().toISOString();
@@ -1668,7 +2071,7 @@ async function restoreFromText(text) {
   catch (e) { await msgBox('Can’t restore that file', e.message); return false; }
   if (!parsed) return false;
   const { data, dropped } = normalizeData(parsed.data);
-  const total = data.things.length + data.tasks.length + data.history.length + data.logs.length + data.readings.length + data.warranties.length;
+  const total = data.things.length + data.tasks.length + data.history.length + data.logs.length + data.readings.length + data.warranties.length + (sitterHas(data.sitter) ? 1 : 0);
   if (!total) { await msgBox('Nothing to restore', 'That backup has no things, tasks, logs or warranties in it.'); return false; }
   const hasLocal = hasAnyData();
   const sum = countsText(data);
@@ -1693,8 +2096,9 @@ async function restoreFromText(text) {
     let added = 0;
     for (const k of ['things', 'tasks', 'history', 'logs', 'readings', 'warranties']) {
       const ids = new Set(state[k].map(x => x.id));
-      for (const x of data[k]) if (!ids.has(x.id) && state[k].length < MAX[k]) { state[k].push(x); added++; }
+      for (const x of data[k]) if (!ids.has(x.id) && state[k].length < MAX[k] && !(k === 'things' && x.kind === 'pet' && state.things.filter(t => t.kind === 'pet').length >= MAX.pets)) { state[k].push(x); added++; }
     }
+    for (const f of ['house', 'owners']) if (!state.sitter[f] && data.sitter[f]) { state.sitter[f] = data.sitter[f]; added++; }
     await persist(); render(); toast(`Merged in ${plural(added, 'item')}`); return true;
   }
   return false;
@@ -1750,7 +2154,7 @@ view.addEventListener('click', e => {
   const id = el.dataset.id;
   switch (el.dataset.action) {
     case 'add': addForCurrent(); break;
-    case 'edit-task': taskDialog(id); break;
+    case 'edit-task': { const tk = taskById(id); if (tk && tk.vax && isPet(thingById(tk.thingId))) vaxDialog(tk.thingId, id); else taskDialog(id); break; }
     case 'done': doneDialog(id); break;
     case 'snooze': snoozeDialog(id); break;
     case 'undo': undoEntry(id); break;
@@ -1764,6 +2168,18 @@ view.addEventListener('click', e => {
     case 'add-log-for': logDialog(null, id); break;
     case 'add-warr-for': warrantyDialog(null, id); break;
     case 'costs': go('things', 'costs'); break;
+    case 'add-pet': petDialog(); break;
+    case 'edit-pet': petDialog(id); break;
+    case 'edit-vet': petVetDialog(id); break;
+    case 'edit-care': petCareDialog(id); break;
+    case 'log-weight': weightDialog(id); break;
+    case 'add-vax': vaxDialog(id); break;
+    case 'vax-starters': petStarterDialog(id); break;
+    case 'sitter': go('things', 'sitter', id || 'all'); break;
+    case 'sitter-pick': nav.id = id; render(); break;
+    case 'sitter-edit': sitterDialog(); break;
+    case 'sitter-print': window.print(); break;
+    case 'sitter-copy': copySitter(); break;
     case 'cost-year': costYear = id; render(); break;
     case 'open-log': go('logs', 'log', id); break;
     case 'edit-log': logDialog(id); break;
