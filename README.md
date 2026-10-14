@@ -48,3 +48,7 @@ None of the new apps use Firebase; each has its own encrypted Backup screen.
 - `worklog/` what you did on each job, tickets, time, weekly status report. On-device only.
 - `house/` now has pets: vet, vaccines/preventives in Due, and a printable sitter sheet.
 - Recipes read one file per recipe from `recipes/library/`; Change category is in a recipe's More menu.
+
+## Added: Pool
+- `pool/` water-chemistry advisor for one pool (default 14,000 gal; set the volume in Settings and every dose scales). Log a test (FC and pH required; TA, CYA, CH optional, CYA accepts `<40`) and it picks the mode (normal, preventative, SLAM, mustard, post-SLAM) and shows exact amounts in priority order with when to add and when to retest. Also: chemical dose log, history charts with target bands, daily/weekly/monthly routine with due badges, editable targets, encrypted Backup. On-device only, no Firebase, no reminders or notifications.
+- Rules built in: liquid chlorine first, no pH changes while FC is above 10, no algaecide or cal-hypo in plans, Yellow Treat only for confirmed mustard (enter the label dose in Settings for exact ounces), pucks (not granular stabilizer) for CYA. Granular stabilizer amounts and the "what not to use" list appear only after tapping Ask.

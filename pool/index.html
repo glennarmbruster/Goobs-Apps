@@ -1,0 +1,1300 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pool</title>
+<meta name="description" content="Water tests, dosing plans and routine for a 14,000-gallon pool. Data stays on your device.">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#f1f7f9" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1311" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Pool">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<style>
+:root{
+  --bg:#f5f4ef; --card:#ffffff; --ink:#1b2420; --muted:#66736d; --line:#e2e0d6; --soft:#efede5;
+  --accent:#0f766e; --accent-ink:#ffffff; --accent-soft:#d9f0ec;
+  --bad:#b42318; --bad-soft:#fde8e6; --warn:#9a5b00; --warn-soft:#fdf0d5; --ok:#166534; --ok-soft:#dcf5e3;
+  --radius:14px; --shadow:0 1px 2px rgba(16,24,20,.06),0 6px 18px rgba(16,24,20,.06);
+  color-scheme:light dark;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0e1311; --card:#171f1c; --ink:#e7eeeb; --muted:#97a69f; --line:#27332e; --soft:#1e2824;
+    --accent:#2dd4bf; --accent-ink:#06211d; --accent-soft:#12332e;
+    --bad:#ff8a80; --bad-soft:#3a1a18; --warn:#f6c26b; --warn-soft:#3a2c12; --ok:#7ee2a0; --ok-soft:#14301f;
+    --shadow:none;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation;
+  padding-bottom:calc(92px + env(safe-area-inset-bottom));
+}
+a{color:var(--accent)}
+h1,h2,h3{margin:0;line-height:1.2}
+h3{font-size:16px}
+p{margin:0 0 8px}
+.wrap{max-width:720px;margin:0 auto;padding:0 16px}
+.muted{color:var(--muted)} .bad{color:var(--bad)} .warn{color:var(--warn)} .ok{color:var(--ok)}
+.num{font-variant-numeric:tabular-nums}
+.hide{display:none!important}
+.pad{padding:14px 16px}
+.hint{font-size:13px;color:var(--muted);margin-top:4px}
+
+/* header */
+header.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top)}
+header.top .wrap{display:flex;align-items:center;gap:12px;min-height:58px}
+header.top .grow{flex:1;min-width:0}
+header.top h1{font-size:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+header.top .sub{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.back{display:inline-flex;align-items:center;min-height:44px;padding-right:6px;text-decoration:none;font-weight:600}
+
+/* cards, tiles, lists */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+.tile{padding:12px}
+.tile .lbl{font-size:12px;color:var(--muted);font-weight:600}
+.tile .val{font-size:20px;font-weight:700;margin-top:2px}
+.sec-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin:22px 4px 8px;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700}
+.sec-h .btn{text-transform:none;letter-spacing:0}
+.list{list-style:none;margin:0;padding:0}
+.row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-top:1px solid var(--line);cursor:pointer}
+.row:first-child{border-top:0}
+.row.static{cursor:default}
+.row-main{flex:1;min-width:0}
+.row-title{font-weight:600;overflow-wrap:anywhere}
+.row-sub{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.row-amt{font-weight:700;white-space:nowrap}
+.row.faded{opacity:.6}
+.badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 7px;border-radius:999px;background:var(--soft);color:var(--muted);vertical-align:middle;margin-left:6px}
+.badge.ok{background:var(--ok-soft);color:var(--ok)} .badge.warn{background:var(--warn-soft);color:var(--warn)} .badge.bad{background:var(--bad-soft);color:var(--bad)} .badge.acc{background:var(--accent-soft);color:var(--accent)}
+.empty{text-align:center;padding:40px 20px;color:var(--muted)}
+.empty .big{font-size:40px;line-height:1;margin-bottom:10px}
+.empty h2{color:var(--ink);font-size:18px;margin-bottom:6px}
+.empty .btn{margin-top:14px}
+.banner{padding:12px 14px;border-radius:12px;background:var(--warn-soft);color:var(--warn);font-size:14px;margin:14px 0;display:flex;gap:10px;justify-content:space-between;align-items:center}
+.banner.bad{background:var(--bad-soft);color:var(--bad)}
+.bar{height:8px;border-radius:99px;background:var(--soft);overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--accent);border-radius:99px}
+.bar.over>i{background:var(--bad)}
+
+/* buttons */
+.btn{white-space:nowrap;appearance:none;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-weight:600;min-height:44px;padding:0 16px;border-radius:12px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.danger{color:var(--bad)}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--accent)}
+.btn.small{min-height:36px;padding:0 12px;font-size:14px;border-radius:10px}
+.btn.block{width:100%}
+.btn:active{transform:translateY(1px)}
+.btn:disabled{opacity:.5;cursor:default}
+.btn:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible,.chip:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 14px;min-height:36px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+
+/* bottom nav + fab */
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+nav.tabs .wrap{display:flex;padding:0}
+nav.tabs a,nav.tabs button{flex:1;min-height:58px;border:0;background:none;color:var(--muted);font:inherit;font-size:11px;font-weight:600;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;text-decoration:none}
+nav.tabs .ico{font-size:20px;line-height:1}
+nav.tabs [aria-current="page"]{color:var(--accent)}
+.fab{position:fixed;right:max(16px,calc(50vw - 344px));bottom:calc(74px + env(safe-area-inset-bottom));z-index:7;width:56px;height:56px;border-radius:50%;border:0;background:var(--accent);color:var(--accent-ink);font-size:30px;line-height:1;box-shadow:0 6px 18px rgba(0,0,0,.28);cursor:pointer}
+.fab:active{transform:scale(.96)}
+
+/* forms + dialogs */
+input,select,textarea{width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-height:44px}
+textarea{min-height:92px;resize:vertical}
+input[type=checkbox]{width:22px;height:22px;min-height:0;padding:0;accent-color:var(--accent);flex:none}
+.field label{display:block;font-size:13px;font-weight:600;color:var(--muted);margin-bottom:4px}
+.field.check{display:flex;align-items:center;gap:10px}
+.field.check label{margin:0;color:var(--ink);font-size:16px;font-weight:500}
+.fields2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+dialog{border:0;border-radius:18px;padding:0;width:calc(100vw - 24px);max-width:520px;background:var(--card);color:var(--ink);box-shadow:0 20px 60px rgba(0,0,0,.35)}
+dialog::backdrop{background:rgba(10,15,12,.55)}
+.dlg-form{padding:20px;display:flex;flex-direction:column;gap:12px;max-height:85vh;max-height:85dvh;overflow:auto}
+.dlg-form h2{font-size:19px}
+.dlg-actions{display:flex;gap:8px;align-items:center;margin-top:6px;flex-wrap:wrap}
+.dlg-actions .spacer{flex:1}
+.ask-actions{justify-content:flex-end}
+.dlg-err{color:var(--bad);font-size:14px}
+.dlg-err:empty{display:none}
+.ask-body{font-size:15px;color:var(--ink)}
+.ask-body p{margin:0 0 8px}
+.checkgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px}
+.checkgrid .field.check label{font-size:15px}
+
+/* toast */
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom));background:#1b2420;color:#fff;padding:12px 16px;border-radius:12px;display:flex;gap:14px;align-items:center;z-index:60;max-width:calc(100vw - 24px);box-shadow:0 8px 24px rgba(0,0,0,.35);font-size:15px}
+.toast button{background:none;border:0;color:#7dd3c8;font:inherit;font-weight:700;cursor:pointer;min-height:36px}
+
+@media (prefers-reduced-motion:no-preference){.btn,.fab{transition:transform .08s}}
+
+.syncbadge{flex:none;white-space:nowrap;border:1px solid var(--line,#d5dbe0);background:var(--card,#fff);color:inherit;border-radius:999px;padding:4px 10px;font:inherit;font-size:.82rem;cursor:pointer;white-space:nowrap}
+.syncbadge.ok{color:#15803d}.syncbadge.bad{color:#b91c1c}
+.seg{display:flex;gap:8px;margin-top:6px}.seg .chip{flex:1;text-align:center}
+
+:root{--bg:#f1f7f9;--accent:#0e7490;--accent-ink:#fff;--accent-soft:#d4eef5}
+@media (prefers-color-scheme:dark){:root{--bg:#0d1417;--card:#152127;--line:#243640;--soft:#1b2c34;--accent:#22d3ee;--accent-ink:#06222a;--accent-soft:#103540}}
+.stack{display:flex;flex-direction:column;gap:14px;margin-top:14px}
+.ctl{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin-top:12px}
+.ctl .btn.primary{flex:1}
+.ptiles{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:14px 0 0}
+.ptile{padding:8px 2px;text-align:center;min-width:0}
+.ptile .lbl{font-size:11px;font-weight:700;color:var(--muted)}
+.ptile .val{font-size:19px;font-weight:700;margin:1px 0}
+.ptile .age{font-size:10px;color:var(--muted);line-height:1.2}
+.ptile.ok{background:var(--ok-soft)} .ptile.ok .val{color:var(--ok)}
+.ptile.warn{background:var(--warn-soft)} .ptile.warn .val{color:var(--warn)}
+.ptile.bad{background:var(--bad-soft)} .ptile.bad .val{color:var(--bad)}
+.modebar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:14px}
+.modebadge{font-size:13px;font-weight:800;letter-spacing:.03em;padding:6px 12px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.modebadge.ok{background:var(--ok-soft);color:var(--ok)} .modebadge.warn{background:var(--warn-soft);color:var(--warn)} .modebadge.bad{background:var(--bad-soft);color:var(--bad)}
+.slambox{margin-top:12px;padding:12px 14px;border-radius:12px;background:var(--bad-soft);color:var(--ink);border:1px solid var(--bad)}
+.slambox.post{background:var(--warn-soft);border-color:var(--warn)}
+.slambox b.big{font-size:17px}
+.slambox .btn{margin-top:10px;white-space:normal;text-align:center;height:auto;padding:8px 14px}
+.steps{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column;gap:10px}
+.step{padding:12px 14px;display:flex;gap:12px}
+.step .n{flex:none;width:30px;height:30px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:15px}
+.step.info .n{background:var(--soft);color:var(--muted)}
+.step .body{flex:1;min-width:0}
+.step .ttl{font-weight:700;overflow-wrap:anywhere}
+.step .amt{font-size:21px;font-weight:800;color:var(--accent);margin:2px 0;overflow-wrap:anywhere}
+.step .tx{font-size:14px;color:var(--ink);overflow-wrap:anywhere}
+.step .tm{font-size:13px;color:var(--muted);margin-top:3px;overflow-wrap:anywhere}
+.step .btn{margin-top:8px}
+.notes{margin:10px 2px 0;padding:0 0 0 18px;font-size:14px;color:var(--muted)}
+.notes li{margin:3px 0}
+.fields2 .field:has(textarea),.fields2 .field:has(select){grid-column:1/-1}
+.fields2 .field{min-width:0}
+.seg{display:flex;gap:8px;margin-top:12px}.seg .chip{flex:1;text-align:center}
+.chartbox{padding:10px 8px 6px;margin-top:12px}
+.chartbox h3{padding:0 6px;font-size:14px}
+.chartbox svg{width:100%;height:auto;display:block}
+.chartbox .tip{min-height:20px;font-size:13px;padding:2px 6px;color:var(--muted)}
+.mval{font-weight:700;white-space:nowrap;text-align:right}
+.rtn li{padding:6px 0;font-size:15px}
+.setgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.setgrid .field,.fields2 .field{min-width:0}
+.stack .field label{display:block}
+.fine{font-size:13px;color:var(--muted)}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap"><div class="grow"><h1 id="title">Pool plan</h1><div class="sub" id="sub"></div></div><button type="button" class="btn small primary hide" id="addBtn">+ Test</button></div></header>
+<main class="wrap" id="view"></main>
+<nav class="tabs" aria-label="Sections"><div class="wrap">
+  <button type="button" data-tab="plan"><span class="ico">💧</span>Plan</button>
+  <button type="button" data-tab="history"><span class="ico">📈</span>History</button>
+  <button type="button" data-tab="routine"><span class="ico">✅</span>Routine</button>
+  <button type="button" data-tab="settings"><span class="ico">⚙️</span>Settings</button>
+  <button type="button" data-tab="backup"><span class="ico">💾</span>Backup</button>
+</div></nav>
+<script>
+'use strict';
+/* ===================== shared helpers (identical in every Goobs app) ===================== */
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => Array.from(el.querySelectorAll(s));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const isNum = v => typeof v === 'number' && Number.isFinite(v);
+const str = v => (typeof v === 'string' ? v : v == null ? '' : String(v));
+
+/* ---- dates: always local calendar dates stored as 'YYYY-MM-DD' ---- */
+const pad = n => String(n).padStart(2, '0');
+const fmtISO = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const parseISO = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+const isISO = s => typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s) && fmtISO(parseISO(s)) === s;
+const todayISO = () => fmtISO(new Date());
+const daysBetween = (a, b) => Math.round((parseISO(b) - parseISO(a)) / 86400000);
+const addDays = (s, n) => { const d = parseISO(s); d.setDate(d.getDate() + n); return fmtISO(d); };
+function addMonths(s, n, anchorDay) {
+  const d = parseISO(s);
+  const day = anchorDay || d.getDate();
+  const first = new Date(d.getFullYear(), d.getMonth() + n, 1);
+  const last = new Date(first.getFullYear(), first.getMonth() + 1, 0).getDate();
+  first.setDate(Math.min(day, last));
+  return fmtISO(first);
+}
+const monthEndISO = s => { const d = parseISO(s); return fmtISO(new Date(d.getFullYear(), d.getMonth() + 1, 0)); };
+
+function fmtDate(s, withWeekday = true) {
+  const d = parseISO(s);
+  const o = { month: 'short', day: 'numeric' };
+  if (withWeekday) o.weekday = 'short';
+  if (d.getFullYear() !== new Date().getFullYear()) o.year = 'numeric';
+  return d.toLocaleDateString(undefined, o);
+}
+function fmtDateTime(iso) {
+  const d = new Date(iso);
+  return isNaN(d) ? 'unknown date' : d.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+}
+const _mf = {};
+function money(n, cur = 'USD') {
+  if (!_mf[cur]) {
+    try { _mf[cur] = new Intl.NumberFormat(undefined, { style: 'currency', currency: cur }); }
+    catch { _mf[cur] = new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }); }
+  }
+  return _mf[cur].format(n);
+}
+const csvCell = v => {
+  let s = String(v ?? '');
+  if (/^[=+\-@\t\r]/.test(s)) s = "'" + s; // neutralise spreadsheet formula injection
+  return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+};
+function safeUrl(u) {
+  let s = String(u ?? '').trim();
+  if (!s) return '';
+  if (!/^[a-z][a-z0-9+.-]*:/i.test(s)) s = 'https://' + s;
+  try { const x = new URL(s); return /^https?:$/.test(x.protocol) ? x.href : ''; } catch { return ''; }
+}
+
+/* ---- storage: one JSON string under one key in IndexedDB ---- */
+function openDB(name) {
+  return new Promise((res, rej) => {
+    if (!window.indexedDB) return rej(new Error('IndexedDB unavailable'));
+    const r = indexedDB.open(name, 1);
+    r.onupgradeneeded = () => { r.result.createObjectStore('kv'); };
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+    r.onblocked = () => rej(new Error('Database blocked'));
+  });
+}
+function idbGet(db, key) {
+  return new Promise((res, rej) => {
+    const q = db.transaction('kv').objectStore('kv').get(key);
+    q.onsuccess = () => res(q.result);
+    q.onerror = () => rej(q.error);
+  });
+}
+function idbPut(db, key, val) {
+  return new Promise((res, rej) => {
+    const tx = db.transaction('kv', 'readwrite');
+    tx.objectStore('kv').put(val, key);
+    tx.oncomplete = () => res();
+    tx.onerror = () => rej(tx.error);
+    tx.onabort = () => rej(tx.error || new Error('Write aborted'));
+  });
+}
+
+/* ---- toast ---- */
+function toast(msg, action) {
+  const old = $('.toast'); if (old) old.remove();
+  const t = document.createElement('div');
+  t.className = 'toast'; t.setAttribute('role', 'status');
+  t.innerHTML = `<span>${esc(msg)}</span>` + (action ? `<button type="button">${esc(action.label)}</button>` : '');
+  if (action) t.querySelector('button').onclick = () => { t.remove(); action.fn(); };
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), action ? 8000 : 3200);
+}
+
+/* ---- dialogs ---- */
+if (!$('#dlg')) document.body.insertAdjacentHTML('beforeend', '<dialog id="dlg"></dialog><dialog id="ask"></dialog>');
+{
+  const dlg = $('#dlg'); let down = false;
+  dlg.addEventListener('pointerdown', e => { down = e.target === dlg; });
+  dlg.addEventListener('click', e => { if (e.target === dlg && down) dlg.close(); });
+}
+
+function fieldHTML(f) {
+  const id = 'f_' + f.name, v = f.value ?? '';
+  if (f.type === 'checkbox')
+    return `<div class="field check"><input type="checkbox" id="${id}" name="${f.name}"${f.value ? ' checked' : ''}><label for="${id}">${esc(f.label)}</label></div>`;
+  let ctl;
+  if (f.type === 'select') {
+    ctl = `<select id="${id}" name="${f.name}">${f.options.map(o => {
+      const [val, label] = Array.isArray(o) ? o : [o, o];
+      return `<option value="${esc(val)}"${String(val) === String(v) ? ' selected' : ''}>${esc(label)}</option>`;
+    }).join('')}</select>`;
+  } else if (f.type === 'textarea') {
+    ctl = `<textarea id="${id}" name="${f.name}" placeholder="${esc(f.placeholder || '')}">${esc(v)}</textarea>`;
+  } else {
+    const t = f.type || 'text';
+    const extra = t === 'number' ? ` inputmode="decimal" step="${f.step || 'any'}"` : '';
+    ctl = `<input id="${id}" name="${f.name}" type="${t}" value="${esc(v)}" placeholder="${esc(f.placeholder || '')}"${extra}${f.min != null ? ` min="${f.min}"` : ''}${f.max != null ? ` max="${f.max}"` : ''} autocomplete="${f.autocomplete || 'off'}" autocapitalize="${f.capitalize || (t === 'email' || t === 'password' ? 'none' : 'sentences')}">`;
+  }
+  return `<div class="field"><label for="${id}">${esc(f.label)}${f.required ? ' *' : ''}</label>${ctl}${f.hint ? `<div class="hint">${esc(f.hint)}</div>` : ''}</div>`;
+}
+
+/* formDialog: fields -> values. onSubmit(values) may return an error string (keeps dialog open).
+   onDelete() may return true to close. extra: [{label, kind, onClick}] extra buttons. */
+function formDialog({ title, intro = '', fields, submitLabel = 'Save', onSubmit, onDelete, deleteLabel = 'Delete', extra = [], onClose, grid = '' }) {
+  const dlg = $('#dlg');
+  const body = grid ? `<div class="${grid}">${fields.map(fieldHTML).join('')}</div>` : fields.map(fieldHTML).join('');
+  dlg.innerHTML = `<form class="dlg-form" novalidate>
+    <h2>${esc(title)}</h2>${intro ? `<p class="muted">${esc(intro)}</p>` : ''}${body}
+    <div class="dlg-err" role="alert"></div>
+    <div class="dlg-actions">
+      ${onDelete ? `<button type="button" class="btn danger" data-k="del">${esc(deleteLabel)}</button>` : ''}
+      ${extra.map((x, i) => `<button type="button" class="btn ${x.kind || ''}" data-x="${i}">${esc(x.label)}</button>`).join('')}
+      <span class="spacer"></span>
+      <button type="button" class="btn ghost" data-k="cancel">Cancel</button>
+      <button type="submit" class="btn primary">${esc(submitLabel)}</button>
+    </div></form>`;
+  const form = $('form', dlg), err = $('.dlg-err', dlg);
+  const collect = () => {
+    const vals = {};
+    for (const f of fields) { const el = form.elements[f.name]; vals[f.name] = f.type === 'checkbox' ? el.checked : el.value; }
+    return vals;
+  };
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const vals = collect();
+    for (const f of fields) if (f.required && !String(vals[f.name]).trim()) { err.textContent = `${f.label} is required.`; return; }
+    err.textContent = '';
+    let msg;
+    try { msg = await onSubmit(vals); } catch (ex) { msg = ex.message || 'Something went wrong.'; }
+    if (msg) err.textContent = msg; else dlg.close();
+  });
+  $('[data-k="cancel"]', dlg).onclick = () => dlg.close();
+  if (onDelete) $('[data-k="del"]', dlg).onclick = async () => { if (await onDelete()) dlg.close(); };
+  $$('[data-x]', dlg).forEach(b => { b.onclick = () => extra[+b.dataset.x].onClick(collect()); });
+  dlg.onclose = () => { dlg.onclose = null; if (onClose) onClose(); };
+  dlg.showModal();
+  const first = form.querySelector('input:not([type=checkbox]),textarea');
+  if (first && !first.value) first.focus(); // new-item forms open ready to type; edit forms don't pop the keyboard
+}
+
+function askDialog({ title, body = '', buttons }) {
+  return new Promise(resolve => {
+    const d = $('#ask'); let done = false;
+    d.innerHTML = `<div class="dlg-form"><h2>${esc(title)}</h2>${body ? `<div class="ask-body">${body}</div>` : ''}
+      <div class="dlg-actions ask-actions">${buttons.map((b, i) => `<button type="button" class="btn ${b.kind || ''}" data-i="${i}">${esc(b.label)}</button>`).join('')}</div></div>`;
+    const finish = v => { if (done) return; done = true; d.close(); resolve(v); };
+    $$('button', d).forEach(btn => { btn.onclick = () => finish(buttons[+btn.dataset.i].value); });
+    d.oncancel = () => { done = true; resolve(undefined); };
+    d.showModal();
+  });
+}
+const confirmBox = async (title, bodyText, okLabel = 'Delete', danger = true) =>
+  (await askDialog({ title, body: bodyText ? `<p>${esc(bodyText)}</p>` : '', buttons: [{ label: 'Cancel', value: false }, { label: okLabel, value: true, kind: danger ? 'danger' : 'primary' }] })) === true;
+const msgBox = (title, bodyText) =>
+  askDialog({ title, body: `<p>${esc(bodyText)}</p>`, buttons: [{ label: 'OK', value: true, kind: 'primary' }] });
+
+/* ---- backup: optional AES-GCM passphrase encryption (Web Crypto, PBKDF2-SHA256) ---- */
+const b64 = buf => { let s = ''; const b = new Uint8Array(buf); for (let i = 0; i < b.length; i += 0x8000) s += String.fromCharCode.apply(null, b.subarray(i, i + 0x8000)); return btoa(s); };
+const unb64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+async function deriveKey(pass, salt, iterations) {
+  const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(pass), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey({ name: 'PBKDF2', salt, iterations, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+}
+async function encryptPayload(obj, pass) {
+  const salt = crypto.getRandomValues(new Uint8Array(16)), iv = crypto.getRandomValues(new Uint8Array(12));
+  const iterations = 250000;
+  const key = await deriveKey(pass, salt, iterations);
+  const ct = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, new TextEncoder().encode(JSON.stringify(obj)));
+  return { encrypted: true, kdf: 'PBKDF2-SHA256', iterations, salt: b64(salt), iv: b64(iv), data: b64(ct) };
+}
+async function decryptPayload(env, pass) {
+  const key = await deriveKey(pass, unb64(env.salt), env.iterations);
+  try {
+    const pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: unb64(env.iv) }, key, unb64(env.data));
+    return JSON.parse(new TextDecoder().decode(pt));
+  } catch { throw new Error('Wrong passphrase, or the file is damaged.'); }
+}
+function promptDecrypt(env) {
+  return new Promise(resolve => {
+    let result = null;
+    formDialog({
+      title: 'Encrypted backup', intro: 'Enter the passphrase you chose when you made this backup.',
+      fields: [{ name: 'pass', label: 'Passphrase', type: 'password', required: true }], submitLabel: 'Unlock',
+      onSubmit: async v => { try { result = await decryptPayload(env, v.pass); } catch (e) { return e.message; } },
+      onClose: () => resolve(result)
+    });
+  });
+}
+const Backup = {
+  async build({ appId, schema, data, passphrase }) {
+    const head = { app: appId, schemaVersion: schema, exportedAt: new Date().toISOString() };
+    if (passphrase) return JSON.stringify({ ...head, ...(await encryptPayload(data, passphrase)) });
+    return JSON.stringify({ ...head, encrypted: false, data }, null, 2);
+  },
+  /* returns {data, exportedAt, schemaVersion}, or null if the user cancelled the passphrase prompt; throws Error with a friendly message */
+  async parse(text, { appId, schema }) {
+    let env;
+    try { env = JSON.parse(text); } catch { throw new Error('That file isn’t a valid backup (it isn’t JSON).'); }
+    if (!env || typeof env !== 'object' || env.app !== appId)
+      throw new Error(env && typeof env === 'object' && env.app ? `That backup belongs to a different app (${String(env.app).slice(0, 40)}).` : 'That file isn’t a backup from this app.');
+    if (!Number.isInteger(env.schemaVersion) || env.schemaVersion < 1) throw new Error('The backup is missing its version number.');
+    if (env.schemaVersion > schema) throw new Error('That backup was made by a newer version of the app. Close and reopen this app to update it, then try again.');
+    let data;
+    if (env.encrypted) {
+      if (!(window.crypto && crypto.subtle)) throw new Error('Encrypted backups need a secure (https) connection.');
+      if (!(env.iterations >= 1000 && env.iterations <= 2000000) || typeof env.salt !== 'string' || typeof env.iv !== 'string' || typeof env.data !== 'string')
+        throw new Error('The encrypted backup is damaged.');
+      data = await promptDecrypt(env);
+      if (data === null) return null;
+    } else data = env.data;
+    if (!data || typeof data !== 'object') throw new Error('The backup contains no data.');
+    return { data, exportedAt: typeof env.exportedAt === 'string' ? env.exportedAt : null, schemaVersion: env.schemaVersion };
+  }
+};
+
+/* share sheet when the platform supports sharing files (iPhone), otherwise a normal download */
+async function deliverFile(filename, text, mime = 'application/json') {
+  const file = new File([text], filename, { type: mime });
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try { await navigator.share({ files: [file], title: filename }); return 'shared'; }
+    catch (e) { if (e && e.name === 'AbortError') return 'cancelled'; /* otherwise fall back to a download */ }
+  }
+  const url = URL.createObjectURL(file);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.style.display = 'none';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 15000);
+  return 'downloaded';
+}
+function pickFile(accept = '.json,application/json') {
+  return new Promise(resolve => {
+    const i = document.createElement('input');
+    i.type = 'file'; i.accept = accept; i.style.display = 'none';
+    document.body.appendChild(i);
+    let done = false;
+    const fin = f => { if (done) return; done = true; i.remove(); resolve(f); };
+    i.addEventListener('change', () => fin((i.files && i.files[0]) || null));
+    i.addEventListener('cancel', () => fin(null));
+    i.click();
+  });
+}
+const readFileText = f => (f.text ? f.text() : new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = () => rej(r.error); r.readAsText(f); }));
+
+/* nag banner: only when there is data and no recent backup */
+function backupNag(meta, hasData) {
+  if (!hasData) return null;
+  if (!meta.lastBackup) return 'You have data but no backup yet. Make one so you can restore it if this device loses it.';
+  const age = (Date.now() - Date.parse(meta.lastBackup)) / 86400000;
+  const changed = meta.lastChange && Date.parse(meta.lastChange) > Date.parse(meta.lastBackup) + 1000;
+  if (changed && age >= 7) return `Your last backup was ${Math.floor(age)} days ago and you’ve made changes since.`;
+  return null;
+}
+
+/* ---- install helper ---- */
+let deferredInstall = null;
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferredInstall = e; if (typeof render === 'function') render(); });
+const isStandalone = () => (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+function installCardHTML() {
+  if (isStandalone()) return '';
+  const ios = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const msg = deferredInstall
+    ? '<p>Install it for its own window and full offline use.</p><button class="btn primary" data-action="install">Install app</button>'
+    : ios
+      ? '<p>In Safari tap <b>Share</b> → <b>Add to Home Screen</b>. <b>Do this before entering data</b> — the home-screen app keeps its own separate storage from the Safari tab. Then open it from the new icon.</p>'
+      : '<p>Use your browser’s menu → <b>Install app</b> (or <b>Add to Home Screen</b>).</p>';
+  return `<section class="card pad"><h3>Install on this device</h3>${msg}</section>`;
+}
+async function runInstall() { if (!deferredInstall) return; deferredInstall.prompt(); try { await deferredInstall.userChoice; } catch {} deferredInstall = null; if (typeof render === 'function') render(); }
+
+
+
+if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol))
+  window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
+
+/* Exit link: every app's top bar gets "‹ Apps" (back to the main apps page) unless that screen already has its own back link. */
+(function () {
+  const add = () => {
+    const w = document.querySelector('header.top .wrap');
+    if (!w || w.querySelector('a.back')) return;
+    const a = document.createElement('a');
+    a.className = 'back exit'; a.href = '../'; a.textContent = '‹ Apps'; a.setAttribute('aria-label', 'Exit to all apps');
+    w.insertBefore(a, w.firstChild);
+  };
+  const start = () => { add(); new MutationObserver(add).observe(document.body, { childList: true, subtree: true }); };
+  if (document.body) start(); else document.addEventListener('DOMContentLoaded', start);
+})();
+
+
+/* ===================== Pool app ===================== */
+const APP_ID = 'goobs-pool', DB_NAME = 'goobs-pool-db', SCHEMA = 1;
+const MAX = { tests: 20000, doses: 20000 };
+const WATERS = [['clear', 'Clear'], ['green', 'Green or cloudy'], ['mustard', 'Mustard/yellow (confirmed)'], ['post', 'SLAM finished – rebalance']];
+const WATER_KEYS = WATERS.map(w => w[0]);
+const CHEMS = {
+  'liquid-chlorine': { label: 'Liquid chlorine 10%', unit: 'oz' },
+  acid: { label: 'Muriatic acid', unit: 'oz' },
+  'baking-soda': { label: 'Baking soda', unit: 'lb' },
+  pucks: { label: 'Trichlor pucks', unit: 'pucks' },
+  algaecide: { label: 'Algaecide', unit: 'oz' },
+  'yellow-treat': { label: 'Yellow Treat', unit: 'oz' },
+  'cal-hypo': { label: 'Cal-hypo shock', unit: 'oz' },
+  other: { label: 'Other', unit: 'oz' }
+};
+const BASE_GAL = 14000;
+const DEF = {
+  volume: 14000, slamFc: 24,
+  fcLow: 4, fcHigh: 6, fcTarget: 5,
+  cyaLow: 50, cyaHigh: 70, cyaTarget: 60,
+  phLow: 7.4, phHigh: 7.6, phTarget: 7.5, phMax: 7.8,
+  taLow: 60, taHigh: 80, taTarget: 70,
+  yellowDose: '', acidStrength: '31.45'
+};
+const LIM = { volume: [500, 100000], slamFc: [10, 60], fcLow: [0, 60], fcHigh: [0, 60], fcTarget: [0, 60], cyaLow: [0, 300], cyaHigh: [0, 300], cyaTarget: [0, 300], phLow: [6, 9], phHigh: [6, 9], phTarget: [6, 9], phMax: [6, 9], taLow: [0, 400], taHigh: [0, 400], taTarget: [0, 400] };
+const NUM_KEYS = Object.keys(LIM);
+
+/* ---- parsing ---- */
+function parseNum(s) {
+  if (typeof s === 'number') return isNum(s) && Math.abs(s) <= 1e9 ? s : null;
+  s = str(s).trim();
+  if (s.includes(',') && s.includes('.')) s = s.replace(/,/g, '');
+  else s = s.replace(',', '.');
+  if (!/^[-+]?(\d+\.?\d*|\.\d+)$/.test(s)) return null;
+  const n = Number(s);
+  return isNum(n) && Math.abs(n) <= 1e9 ? n : null;
+}
+const numIn = (v, lo, hi) => { if (v === '' || v == null) return null; const n = parseNum(v); return n != null && n >= lo && n <= hi ? Math.round(n * 100) / 100 : null; };
+const fmtN = n => (isNum(n) ? String(parseFloat(n.toFixed(2))) : '');
+const fmtN1 = n => (isNum(n) ? String(parseFloat(n.toFixed(1))) : '');
+/* CYA: a number, or "<40" (stored as text "<40" with working value 35). Returns {value, text, error} */
+function parseCya(v) {
+  if (v == null || v === '') return { value: null, text: '' };
+  if (typeof v === 'string') {
+    const t = v.trim().replace(/&lt;/g, '<').replace(/\s+/g, '');
+    if (t === '') return { value: null, text: '' };
+    if (t === '<40') return { value: 35, text: '<40' };
+    if (t.startsWith('<')) return { value: null, text: '', error: true };
+  }
+  const n = parseNum(v);
+  if (n == null || n < 0 || n > 300) return { value: null, text: '', error: true };
+  return { value: Math.round(n * 100) / 100, text: '' };
+}
+
+/* =====================================================================
+   ENGINE: pure functions, no DOM. advise() returns the whole plan.
+   ===================================================================== */
+function cfgSettings(set) {
+  const o = { ...DEF };
+  if (set && typeof set === 'object') for (const k of NUM_KEYS) { const n = numIn(set[k], LIM[k][0], LIM[k][1]); if (n != null) o[k] = n; }
+  if (set && typeof set === 'object') {
+    const y = set.yellowDose === '' || set.yellowDose == null ? null : numIn(set.yellowDose, 0.01, 1000);
+    o.yellowDose = y == null ? '' : y;
+    o.acidStrength = set.acidStrength === '14.5' ? '14.5' : '31.45';
+  }
+  return o;
+}
+function doseCfg(s) {
+  const k = s.volume / BASE_GAL;
+  return { k, clPpm: 18 * k, acidPerPh: (s.acidStrength === '14.5' ? 80 : 40) * k, sodaLbPerPpm: 0.15 * k, puckFc: 1.5 / k, puckCya: 0.9 / k, stabOzPerPpm: 1.3 * k };
+}
+const rnd = x => Math.round(x + 1e-9);
+function fmtOz(oz) {
+  oz = rnd(oz);
+  if (oz >= 128) { const g = Math.floor(oz / 128), r = oz - g * 128; return `${g} gal${r ? ' ' + r + ' oz' : ''} (total ${oz} oz)`; }
+  return `${oz} oz`;
+}
+const ozAmt = oz => { oz = rnd(oz); return { oz, gal: Math.floor(oz / 128), text: fmtOz(oz) }; };
+const lbAmt = lb => { lb = Math.round(lb * 10 + 1e-9) / 10; return { lb, oz: rnd(lb * 16), text: `${lb.toFixed(1)} lb (${rnd(lb * 16)} oz)` }; };
+const slamOf = sl => (sl && typeof sl === 'object' ? sl.state : sl) || 'none';
+const agoTag = (name, inp) => (inp.carried && inp.carried[name] ? ` (${name.toUpperCase()} last tested ${inp.ages[name]} day${inp.ages[name] === 1 ? '' : 's'} ago)` : '');
+
+const MODE_LABEL = { slam: 'GREEN ALGAE / CLOUDY WATER (SLAM)', mustard: 'MUSTARD / YELLOW ALGAE', post: 'POST-SLAM', normal: 'NORMAL MAINTENANCE', preventative: 'PREVENTATIVE MAINTENANCE' };
+const MODE_CLS = { slam: 'bad', mustard: 'bad', post: 'warn', normal: '', preventative: 'ok' };
+const TIMING = 'Add chemicals in the evening with the pump running; retest FC/pH next morning';
+
+function inRoutineRange(inp, s) {
+  return inp.fc >= s.fcLow && inp.fc <= s.fcHigh && inp.ph >= s.phLow && inp.ph <= s.phMax && (inp.ta == null || (inp.ta >= s.taLow && inp.ta <= s.taHigh));
+}
+
+function advise(inp, set, slam) {
+  const s = cfgSettings(set), c = doseCfg(s), sl = slamOf(slam);
+  const fc = parseNum(inp.fc), ph = parseNum(inp.ph);
+  const ta = inp.ta === '' || inp.ta == null ? null : parseNum(inp.ta);
+  const ch = inp.ch === '' || inp.ch == null ? null : parseNum(inp.ch);
+  const cy = parseCya(inp.cyaText === '<40' ? '<40' : inp.cya);
+  const cya = cy.value;
+  const water = WATER_KEYS.includes(inp.water) ? inp.water : 'clear';
+  const working = { fc, ph, ta, cya, cyaText: cy.text, ch };
+  const out = { mode: '', modeKey: '', steps: [], notes: [], reminders: [], working, timing: '', priority: null, summary: '', backToRoutine: false };
+  const steps = out.steps;
+  const add = st => { st.n = steps.length + 1; st.action = !!st.chem && !!st.amount && (st.amount.oz != null || st.amount.lb != null || st.amount.pucks != null); steps.push(st); return st; };
+  const info = (key, title, text, extra = {}) => add({ key, title, chem: null, amount: null, text, when: '', retest: '', ...extra });
+
+  if (fc == null || ph == null) { out.mode = 'NO TEST'; out.modeKey = 'none'; out.summary = 'Log a water test to get a plan.'; return out; }
+
+  /* ---- mode ---- */
+  let key;
+  if (water === 'green') key = 'slam';
+  else if (water === 'mustard') key = 'mustard';
+  else if (water === 'post') key = 'post';
+  else if (sl !== 'none' || fc > 10) key = 'post';
+  else {
+    const out1 = fc < s.fcLow || fc > s.fcHigh || (ta != null && (ta < s.taLow || ta > s.taHigh)) || (cya != null && (cya < s.cyaLow || cya > s.cyaHigh)) || ph < s.phLow || ph > s.phMax;
+    key = out1 ? 'normal' : 'preventative';
+  }
+  out.modeKey = key; out.mode = MODE_LABEL[key];
+  if (key !== 'preventative') out.priority = 'chlorine';
+
+  /* ---- shared step builders ---- */
+  const chlorineStep = () => {
+    if (fc < s.fcLow) {
+      const oz = (s.fcTarget - fc) * c.clPpm;
+      add({ key: 'chlorine', title: 'Liquid chlorine', chem: 'liquid-chlorine', amount: ozAmt(oz), text: `FC ${fmtN(fc)} is under ${fmtN(s.fcLow)}. This brings it to ${fmtN(s.fcTarget)} ppm (${fmtN(s.fcTarget - fc)} ppm × ${fmtN(c.clPpm)} oz).`, when: 'Now: afternoon or evening, pump running.', retest: 'Retest FC in 2–4 hours or next morning.' });
+    } else if (fc <= s.fcHigh) {
+      info('chlorine', 'Chlorine: none now', `FC ${fmtN(fc)} is in range. Expect ${rnd(18 * c.k)}–${rnd(36 * c.k)} oz/day; top up when FC drops under ${fmtN(s.fcLow)}.`);
+    } else {
+      info('chlorine', 'Chlorine: do not add', `FC ${fmtN(fc)} is above ${fmtN(s.fcHigh)}. Add none; retest tomorrow.`);
+    }
+  };
+  const taStep = () => {
+    if (ta == null) { out.notes.push('TA has not been tested yet; add it to your next test.'); return; }
+    if (ta < s.taLow) {
+      const lb = (s.taTarget - ta) / 10 * 1.5 * c.k;
+      add({ key: 'ta', title: 'Baking soda', chem: 'baking-soda', amount: lbAmt(lb), text: `TA ${fmtN(ta)} is under ${fmtN(s.taLow)}${agoTag('ta', inp)}. This brings it to ${fmtN(s.taTarget)}.`, when: 'Evening, pump running; broadcast across the surface.', retest: 'Retest TA and pH in 4–6 hours or next morning.' });
+    } else if (ta > s.taHigh) {
+      if (!(ph > s.phHigh)) out.notes.push(`TA ${fmtN(ta)} is above ${fmtN(s.taHigh)}${agoTag('ta', inp)}: no action. Acid for pH will bring it down over time.`);
+    }
+  };
+  const phStep = () => {
+    if (fc > 10) { out.notes.push(`pH readings are unreliable while FC is above 10 ppm, so pH adjustments are skipped. Retest pH once FC is 10 or lower.`); return; }
+    const taLow = ta != null && ta < s.taLow;
+    const thr = key === 'preventative' ? s.phMax : s.phHigh;
+    if (ph > thr) {
+      const oz = (ph - s.phTarget) * c.acidPerPh;
+      if (taLow) {
+        info('ph-hold', 'pH: wait', `pH ${fmtN(ph)} is high, but TA is low. Baking soda first; retest pH 4–6 hours after it, then add acid only if pH is still above ${fmtN(s.phHigh)} (about ${fmtOz((ph - s.phTarget) * c.acidPerPh)} at today's reading).`);
+      } else {
+        add({ key: 'ph', title: `Muriatic acid ${s.acidStrength}%`, chem: 'acid', amount: ozAmt(oz), text: `pH ${fmtN(ph)} lowers to ${fmtN(s.phTarget)}. Actual effect varies with TA${agoTag('ta', inp)}.`, when: 'Evening: pour in front of a return, pump running.', retest: 'Retest pH 4–6 hours after.' });
+      }
+    } else if (ph < s.phLow) {
+      info('ph-low', 'pH is low', ta != null && ta < s.taLow
+        ? `pH ${fmtN(ph)} is under ${fmtN(s.phLow)}. TA is low too: the baking soda step lifts both. Retest pH 4–6 hours after.`
+        : `pH ${fmtN(ph)} is under ${fmtN(s.phLow)}. Nothing in your kit raises pH except baking soda, which also raises TA. Aerate (jets/returns pointed up) and retest in 4–6 hours.`);
+    }
+  };
+  const cyaStep = () => {
+    if (cya == null) { out.notes.push('CYA has not been tested yet; add it to your next test.'); return; }
+    const lowTxt = cy.text ? `CYA tested ${cy.text} (using ${cya} for dosing)` : `CYA ${fmtN(cya)}`;
+    if (cya < s.cyaLow) {
+      const n = Math.ceil((s.cyaTarget - cya) / c.puckCya - 1e-9);
+      const wLo = Math.max(1, Math.ceil(n / 2 / 7)), wHi = Math.max(1, Math.ceil(n / 7));
+      add({ key: 'cya', title: 'Chlorine source: pucks', chem: 'pucks', amount: { pucks: n, text: `${n} pucks total` },
+        text: `${lowTxt}${agoTag('cya', inp)} is under ${fmtN(s.cyaLow)}. Replace some of the daily liquid chlorine with pucks: 1–2 pucks per day in a floater/feeder (each = ${fmtN1(c.puckFc)} ppm FC + ${fmtN1(c.puckCya)} ppm CYA). ${n} pucks total to reach ${fmtN(s.cyaTarget)}, about ${wLo === wHi ? wLo : wLo + '–' + wHi} week${wHi === 1 ? '' : 's'} at 1–2/day.`,
+        when: fc > s.fcHigh ? 'Start once FC is back in range.' : 'Standing: 1–2 pucks per day.', retest: 'Retest CYA weekly while building.' });
+    } else if (cya > s.cyaHigh) {
+      info('cya-high', 'CYA is high: stop pucks', `${lowTxt}${agoTag('cya', inp)} is above ${fmtN(s.cyaHigh)}. Stop pucks; use liquid chlorine only. CYA only comes down by a partial drain and refill.`);
+    } else if (key === 'normal') out.notes.push(`CYA ${fmtN(cya)} is in range: do not add stabilizer.`);
+  };
+  const slamChlorine = () => {
+    if (fc < s.slamFc) {
+      add({ key: 'chlorine', title: `Liquid chlorine to FC ${fmtN(s.slamFc)}`, chem: 'liquid-chlorine', amount: ozAmt((s.slamFc - fc) * c.clPpm), text: `Raises FC ${fmtN(fc)} to ${fmtN(s.slamFc)} (${fmtN(s.slamFc - fc)} ppm × ${fmtN(c.clPpm)} oz).`, when: 'At dusk, pump running.', retest: 'Retest FC 2–4 hours after dosing, then next morning.' });
+    } else {
+      info('chlorine', 'Chlorine: no more needed', `FC ${fmtN(fc)} is at or above ${fmtN(s.slamFc)}. Add none now. Keep FC ≥ ${fmtN(s.slamFc)} ppm all day.`);
+    }
+  };
+  const slamRest = () => {
+    info('brush', 'Brush and circulate', 'Brush the entire pool: walls, bench, tanning ledge and spa. Run the pump 24/7. Vacuum/robot. Clean or backwash the filter as needed.');
+    info('hold', `Keep FC at ${fmtN(s.slamFc)} all day`, `Test every 3–4 hours on day one and top up with liquid chlorine: ${fmtN(c.clPpm)} oz per 1 ppm below ${fmtN(s.slamFc)}.`);
+    info('no-adjust', 'No pH, TA or CYA changes', 'Chlorine comes first. Leave pH, TA and CYA alone while FC is above 10.');
+    info('finish', 'SLAM is complete when', `Water is clear and FC loses 1 ppm or less overnight (overnight chlorine loss test). Then press “SLAM is finished” on the Plan screen.`);
+  };
+
+  if (key === 'slam') {
+    slamChlorine(); slamRest();
+    out.summary = `SLAM: chlorine to ${fmtN(s.slamFc)}, brush, pump 24/7.`;
+  } else if (key === 'mustard') {
+    slamChlorine();
+    const per = s.yellowDose === '' ? null : Math.round(s.yellowDose * s.volume / 10000 * 10) / 10;
+    add({ key: 'yellow', title: 'Yellow Treat', chem: 'yellow-treat', amount: per == null ? { oz: null, text: 'per label' } : { oz: per, text: `${fmtN1(per)} oz` },
+      text: per == null ? 'Brush walls and shaded areas first, then treat. Dose per the label for your pool volume (enter the label dose in Settings to see exact ounces here).' : `Brush walls and shaded areas first, then treat: ${fmtN1(per)} oz for ${s.volume.toLocaleString('en-US')} gal (label dose ${fmtN(s.yellowDose)} oz per 10,000 gal).`,
+      when: 'After brushing, per the label.', retest: '' });
+    slamRest();
+    out.summary = `SLAM plus Yellow Treat: chlorine to ${fmtN(s.slamFc)}, brush, treat per label.`;
+  } else if (key === 'post') {
+    if (fc > s.fcHigh) info('chlorine', 'Chlorine: none, let FC fall', `FC ${fmtN(fc)} is above ${fmtN(s.fcHigh)}. Add no chlorine. Let it fall to ${fmtN(s.fcLow)}–${fmtN(s.fcHigh)}; retest daily.`);
+    else chlorineStep();
+    if (sl === 'active' && water === 'clear' && fc > 10) out.notes.push(`SLAM is still marked active. If the overnight test (FC loses 1 ppm or less) has not passed, keep FC at ${fmtN(s.slamFc)} and do not press “SLAM is finished”.`);
+    taStep(); phStep(); cyaStep();
+    const acts = steps.filter(x => x.action).length;
+    const calm = fc >= s.fcLow && fc <= s.fcHigh && ph >= s.phLow && ph <= s.phMax && (ta == null || (ta >= s.taLow && ta <= s.taHigh)) && !acts && !steps.some(x => x.key === 'cya-high');
+    if (calm) { out.backToRoutine = true; out.summary = 'Back to routine.'; out.steps = []; steps.length = 0; }
+    else out.summary = fc > 10 ? 'Post-SLAM: let FC fall, then rebalance pH and TA.' : 'Post-SLAM: chlorine first, then pH and TA.';
+  } else {
+    if (key === 'normal') {
+      chlorineStep(); taStep(); phStep(); cyaStep();
+      out.summary = steps.some(x => x.action) ? `${steps.filter(x => x.action).length} to add, in this order.` : 'Nothing to add right now.';
+    } else {
+      taStep(); phStep(); cyaStep();
+      out.summary = 'All in range. Nothing to add; routine only.';
+      out.reminders = [
+        `Daily: test FC and pH. Keep FC ${fmtN(s.fcLow)}–${fmtN(s.fcHigh)} (expect ${rnd(18 * c.k)}–${rnd(36 * c.k)} oz of liquid chlorine a day).`,
+        'Weekly: test TA. Brush the entire pool (walls, bench, tanning ledge, spa) and run the robot/vacuum.',
+        `Optional weekly: ${fmtN1(2 * c.k)}–${fmtN1(4 * c.k)} oz algaecide, preventative only; not required if chlorine is maintained.`,
+        'Monthly: test CYA (pucks to maintain; no stabilizer if in range) and calcium hardness.'
+      ];
+    }
+  }
+  if (steps.some(x => x.action)) out.timing = TIMING + (steps.some(x => x.chem === 'acid' || x.chem === 'baking-soda') ? ' (acid/baking soda: 4–6 h).' : '.');
+  return out;
+}
+
+/* On-request content (never part of the default plan) */
+function askNotUse(inp, set, slam) {
+  const s = cfgSettings(set), r = advise(inp, s, slam), k = r.modeKey, list = [];
+  const ch = r.working.ch;
+  if (k === 'slam' || k === 'mustard' || k === 'post') list.push(['Algaecide to kill active algae', 'Liquid chlorine does the killing. Algaecide is not a substitute.']);
+  else list.push(['Algaecide as a treatment', 'It is only an optional preventative, and chlorine does the real work.']);
+  if (k !== 'mustard') list.push(['Yellow Treat', 'Only for algae you have confirmed is mustard/yellow.']);
+  list.push(['Cal-hypo shock', ch == null ? 'Calcium hardness is unknown, and there is no dosing reference for it here. Liquid chlorine already does this job.' : `It adds calcium (yours is ${fmtN(ch)} ppm) and there is no dosing reference for it here. Liquid chlorine already does this job.`]);
+  list.push(['Granular stabilizer', 'Use pucks to build and maintain CYA.']);
+  if (r.working.fc > 10 || k === 'slam' || k === 'mustard') list.push(['pH, TA or CYA changes while FC is above 10', 'pH readings are unreliable at that chlorine level, and chlorine comes first.']);
+  return list;
+}
+function askStabilizer(inp, set) {
+  const s = cfgSettings(set), c = doseCfg(s), cy = parseCya(inp.cyaText === '<40' ? '<40' : inp.cya);
+  if (cy.value == null) return { oz: null, text: 'Enter a CYA test first.' };
+  if (cy.value >= s.cyaTarget) return { oz: 0, text: `CYA ${fmtN(cy.value)} is already at or above ${fmtN(s.cyaTarget)}. Add none.` };
+  const oz = rnd((s.cyaTarget - cy.value) / 10 * 13 * c.k);
+  return { oz, cya: cy.value, text: `${fmtOz(oz)} of granular stabilizer takes CYA from ${fmtN(cy.value)}${cy.text ? ' (tested ' + cy.text + ')' : ''} to ${fmtN(s.cyaTarget)} (13 oz per +10 ppm at 14,000 gal).`, note: 'Pucks are the default; this is only for when you want CYA up fast.' };
+}
+/* post-test slam state transition (pure) */
+function nextSlam(cur, test, inp, set, today) {
+  const s = cfgSettings(set), c = slamOf(cur), since = cur && typeof cur === 'object' ? cur.since || '' : '';
+  if (test.water === 'green' || test.water === 'mustard') return c === 'active' ? { state: 'active', since: since || today } : { state: 'active', since: today };
+  if (test.water === 'post') return inRoutineRange(inp, s) ? { state: 'none', since: '' } : { state: 'post', since: since || '' };
+  if (c === 'active' || c === 'post') return inRoutineRange(inp, s) ? { state: 'none', since: '' } : { state: c, since };
+  return { state: 'none', since: '' };
+}
+
+/* ---- model / normalization ---- */
+const isoDT = v => { if (typeof v !== 'string' || !v) return null; const t = Date.parse(v); if (!isFinite(t)) return null; const y = new Date(t).getUTCFullYear(); return y >= 2000 && y <= 2100 ? new Date(t).toISOString() : null; };
+function normTest(t) {
+  if (!t || typeof t !== 'object') return null;
+  const at = isoDT(t.at), fc = numIn(t.fc, 0, 60), ph = numIn(t.ph, 6, 9);
+  if (!at || fc == null || ph == null) return null;
+  let cya = null, cyaText = '';
+  if (str(t.cyaText).replace(/\s/g, '') === '<40') { cya = 35; cyaText = '<40'; }
+  else { const c = parseCya(t.cya); if (!c.error) { cya = c.value; cyaText = c.text; } }
+  return {
+    id: str(t.id).slice(0, 60) || uid(), at, fc, ph, ta: numIn(t.ta, 0, 400), cya, cyaText, ch: numIn(t.ch, 0, 1000),
+    water: WATER_KEYS.includes(t.water) ? t.water : 'clear', temp: numIn(t.temp, 30, 120), notes: str(t.notes).slice(0, 1000)
+  };
+}
+function normDose(d) {
+  if (!d || typeof d !== 'object') return null;
+  const at = isoDT(d.at), amount = numIn(d.amount, 0, 100000);
+  if (!at || amount == null) return null;
+  const chem = Object.prototype.hasOwnProperty.call(CHEMS, d.chem) ? d.chem : 'other';
+  return { id: str(d.id).slice(0, 60) || uid(), at, chem, amount, unit: CHEMS[chem].unit, note: str(d.note).slice(0, 500), source: d.source === 'plan' ? 'plan' : 'manual' };
+}
+function normSettings(raw) {
+  const o = cfgSettings(raw);
+  if (!(o.fcLow <= o.fcTarget && o.fcTarget <= o.fcHigh)) { o.fcLow = DEF.fcLow; o.fcTarget = DEF.fcTarget; o.fcHigh = DEF.fcHigh; }
+  if (!(o.cyaLow <= o.cyaTarget && o.cyaTarget <= o.cyaHigh)) { o.cyaLow = DEF.cyaLow; o.cyaTarget = DEF.cyaTarget; o.cyaHigh = DEF.cyaHigh; }
+  if (!(o.taLow <= o.taTarget && o.taTarget <= o.taHigh)) { o.taLow = DEF.taLow; o.taTarget = DEF.taTarget; o.taHigh = DEF.taHigh; }
+  if (!(o.phLow <= o.phTarget && o.phTarget <= o.phHigh && o.phHigh <= o.phMax)) { o.phLow = DEF.phLow; o.phTarget = DEF.phTarget; o.phHigh = DEF.phHigh; o.phMax = DEF.phMax; }
+  return o;
+}
+const normDay = v => (isISO(v) ? v : '');
+function normalizeData(raw) {
+  raw = raw && typeof raw === 'object' ? raw : {};
+  let dropped = 0;
+  const lists = {};
+  for (const [k, fn, mx] of [['tests', normTest, MAX.tests], ['doses', normDose, MAX.doses]]) {
+    const src = Array.isArray(raw[k]) ? raw[k] : [], seen = new Set(), list = [];
+    for (const x of src) {
+      const n = fn(x);
+      if (!n || seen.has(n.id)) { dropped++; continue; }
+      seen.add(n.id); list.push(n);
+    }
+    if (list.length > mx) { dropped += list.length - mx; list.length = mx; }
+    lists[k] = list;
+  }
+  const r = raw.routine && typeof raw.routine === 'object' ? raw.routine : {};
+  const sl = raw.slam && typeof raw.slam === 'object' ? raw.slam : {};
+  const st = ['none', 'active', 'post'].includes(sl.state) ? sl.state : 'none';
+  return {
+    data: {
+      settings: normSettings(raw.settings), tests: lists.tests, doses: lists.doses,
+      routine: { daily: normDay(r.daily), weekly: normDay(r.weekly), monthly: normDay(r.monthly) },
+      slam: { state: st, since: st === 'none' ? '' : normDay(sl.since) }
+    }, dropped
+  };
+}
+const DATA_KEYS = ['settings', 'tests', 'doses', 'routine', 'slam'];
+const defaultState = () => ({ schemaVersion: SCHEMA, meta: { lastBackup: null, lastChange: null }, ...normalizeData({}).data });
+function loadState(parsed) {
+  const { data } = normalizeData(parsed);
+  const m = (parsed && parsed.meta) || {};
+  return { schemaVersion: SCHEMA, meta: { lastBackup: str(m.lastBackup) || null, lastChange: str(m.lastChange) || null }, ...data };
+}
+const exportData = () => { const o = {}; for (const k of DATA_KEYS) o[k] = state[k]; return o; };
+const hasAnyData = () => state.tests.length > 0 || state.doses.length > 0 || Object.values(state.routine).some(Boolean) || state.slam.state !== 'none' || JSON.stringify(state.settings) !== JSON.stringify(normSettings({}));
+
+/* ---- persistence ---- */
+let state = defaultState(), db = null, saveFailed = false, persistAsked = false, saveChain = Promise.resolve();
+function persist({ touch = true } = {}) {
+  if (touch) state.meta.lastChange = new Date().toISOString();
+  if (!db) return Promise.resolve();
+  const snap = JSON.stringify(state);
+  saveChain = saveChain.then(() => idbPut(db, 'state', snap)).then(() => { saveFailed = false; }).catch(err => { console.error(err); saveFailed = true; });
+  if (!persistAsked && navigator.storage && navigator.storage.persist) { persistAsked = true; navigator.storage.persist().catch(() => {}); }
+  return saveChain;
+}
+const commit = () => { persist(); render(); };
+
+/* ---- selectors ---- */
+const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
+const dayOf = iso => fmtISO(new Date(iso));
+const testsNewest = () => [...state.tests].sort((a, b) => b.at.localeCompare(a.at));
+const latestTest = () => testsNewest()[0] || null;
+const ageLabel = d => (d == null ? 'never' : d <= 0 ? 'today' : d === 1 ? 'yesterday' : d + ' d ago');
+function resolveInputs(test, tests, today = todayISO()) {
+  const sorted = tests.filter(t => t.at <= test.at).sort((a, b) => b.at.localeCompare(a.at));
+  const inp = { fc: test.fc, ph: test.ph, water: test.water, temp: test.temp, ages: { fc: daysBetween(dayOf(test.at), today), ph: daysBetween(dayOf(test.at), today), ta: null, cya: null, ch: null }, carried: {} };
+  for (const k of ['ta', 'cya', 'ch']) {
+    const src = sorted.find(t => t[k] != null);
+    inp[k] = src ? src[k] : null;
+    if (k === 'cya') inp.cyaText = src ? src.cyaText : '';
+    if (src) { inp.ages[k] = daysBetween(dayOf(src.at), today); inp.carried[k] = test[k] == null; }
+  }
+  return inp;
+}
+function currentPlan() {
+  const t = latestTest();
+  if (!t) return null;
+  const inp = resolveInputs(t, state.tests);
+  return { test: t, inp, plan: advise(inp, state.settings, state.slam) };
+}
+const CADENCE = { daily: 1, weekly: 7, monthly: 30 };
+function routineStatus(k, today = todayISO()) {
+  const last = state.routine[k];
+  if (!last) return { days: null, cls: 'bad', label: 'Due', sub: 'never done' };
+  const d = daysBetween(last, today), ev = CADENCE[k];
+  const sub = d <= 0 ? 'done today' : d === 1 ? 'done yesterday' : `done ${d} days ago`;
+  if (d < ev) return { days: d, cls: 'ok', label: 'OK', sub };
+  if (d === ev) return { days: d, cls: 'warn', label: 'Due', sub };
+  return { days: d, cls: 'bad', label: 'Overdue', sub };
+}
+function routineItems(k) {
+  const s = state.settings, kk = s.volume / BASE_GAL;
+  return {
+    daily: ['Test FC and pH (your kit also gives TA and CYA)', `Keep FC ${fmtN(s.fcLow)}–${fmtN(s.fcHigh)} ppm; typical use is ${rnd(18 * kk)}–${rnd(36 * kk)} oz of liquid chlorine a day`, `Adjust pH only if it is above ${fmtN(s.phMax)}`],
+    weekly: [`Test TA; baking soda only if TA is under ${fmtN(s.taLow)}`, 'Brush the walls, bench, tanning ledge and spa', 'Run the robot / vacuum', `Optional: ${fmtN1(2 * kk)}–${fmtN1(4 * kk)} oz algaecide (preventative only; not required if chlorine is maintained)`],
+    monthly: ['Test CYA; use pucks to maintain, no stabilizer if in range', 'Test calcium hardness']
+  }[k];
+}
+const toLocalInput = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+const fromLocalInput = s => { s = str(s).trim(); if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(s)) return null; const d = new Date(s); return isNaN(d) ? null : d; };
+const fmtWhen = iso => { const d = new Date(iso); return d.toLocaleString(undefined, { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }); };
+
+/* ---- dialogs ---- */
+function testDialog(id) {
+  const t = id ? state.tests.find(x => x.id === id) : null;
+  if (id && !t) return;
+  formDialog({
+    title: t ? 'Edit water test' : 'Log water test', submitLabel: t ? 'Save' : 'Save & show plan', grid: 'fields2',
+    fields: [
+      { name: 'at', label: 'Date and time', type: 'datetime-local', required: true, value: toLocalInput(t ? new Date(t.at) : new Date()) },
+      { name: 'water', label: 'Water', type: 'select', options: WATERS, value: t ? t.water : 'clear' },
+      { name: 'fc', label: 'FC (ppm) *', type: 'number', value: t ? t.fc : '', placeholder: '0–60' },
+      { name: 'ph', label: 'pH *', type: 'number', value: t ? t.ph : '', placeholder: '6.0–9.0' },
+      { name: 'ta', label: 'TA (ppm)', type: 'number', value: t && t.ta != null ? t.ta : '', hint: 'Blank = use the last logged value' },
+      { name: 'cya', label: 'CYA (ppm)', type: 'text', value: t ? (t.cyaText || (t.cya != null ? t.cya : '')) : '', hint: 'Number, or type <40' },
+      { name: 'ch', label: 'Calcium hardness', type: 'number', value: t && t.ch != null ? t.ch : '' },
+      { name: 'temp', label: 'Water temp (°F)', type: 'number', value: t && t.temp != null ? t.temp : '' },
+      { name: 'notes', label: 'Notes', type: 'textarea', value: t ? t.notes : '' }
+    ],
+    onSubmit: v => {
+      const when = fromLocalInput(v.at);
+      if (!when) return 'Enter a valid date and time.';
+      if (when.getTime() > Date.now() + 86400000) return 'That date is in the future.';
+      const fc = v.fc.trim() === '' ? null : numIn(v.fc, 0, 60); if (fc == null) return 'FC is required (0–60 ppm).';
+      const ph = v.ph.trim() === '' ? null : numIn(v.ph, 6, 9); if (ph == null) return 'pH is required (6.0–9.0).';
+      const opt = (val, lo, hi, name) => { if (String(val).trim() === '') return [null]; const n = numIn(val, lo, hi); return n == null ? [null, `${name} must be ${lo}–${hi}.`] : [n]; };
+      const [ta, e1] = opt(v.ta, 0, 400, 'TA'); if (e1) return e1;
+      const [ch, e2] = opt(v.ch, 0, 1000, 'Calcium hardness'); if (e2) return e2;
+      const [temp, e3] = opt(v.temp, 30, 120, 'Water temp'); if (e3) return e3;
+      const cy = parseCya(v.cya);
+      if (cy.error) return 'CYA must be 0–300, or <40.';
+      if (!t && state.tests.length >= MAX.tests) return 'Test limit reached.';
+      const rec = normTest({ id: t ? t.id : uid(), at: when.toISOString(), fc, ph, ta, cya: cy.value, cyaText: cy.text, ch, water: v.water, temp, notes: v.notes.trim() });
+      if (t) Object.assign(t, rec);
+      else {
+        state.tests.push(rec);
+        const inp = resolveInputs(rec, state.tests);
+        const ns = nextSlam(state.slam, rec, inp, state.settings, dayOf(rec.at));
+        if (rec.at >= (latestTest() || rec).at) state.slam = ns;
+      }
+      if (!t) ui.tab = 'plan';
+      commit(); if (!t) window.scrollTo(0, 0);
+      toast(t ? 'Test updated' : 'Test saved');
+    },
+    onDelete: t ? async () => {
+      if (!(await confirmBox('Delete this test?', `${fmtWhen(t.at)}: FC ${fmtN(t.fc)}, pH ${fmtN(t.ph)}.`, 'Delete'))) return false;
+      state.tests = state.tests.filter(x => x.id !== t.id); commit(); toast('Test deleted'); return true;
+    } : null
+  });
+}
+function doseDialog(opts = {}) {
+  const d = opts.id ? state.doses.find(x => x.id === opts.id) : null;
+  if (opts.id && !d) return;
+  const chemOpts = Object.entries(CHEMS).map(([k, c]) => [k, `${c.label} (${c.unit})`]);
+  formDialog({
+    title: d ? 'Edit chemical entry' : 'Chemicals added', submitLabel: d ? 'Save' : 'Log it', grid: 'fields2',
+    fields: [
+      { name: 'at', label: 'Date and time', type: 'datetime-local', required: true, value: toLocalInput(d ? new Date(d.at) : new Date()) },
+      { name: 'chem', label: 'Chemical', type: 'select', options: chemOpts, value: d ? d.chem : opts.chem || 'liquid-chlorine' },
+      { name: 'amount', label: 'Amount', type: 'number', required: true, value: d ? d.amount : opts.amount != null ? opts.amount : '' },
+      { name: 'note', label: 'Note (optional)', value: d ? d.note : opts.note || '' }
+    ],
+    onSubmit: v => {
+      const when = fromLocalInput(v.at); if (!when) return 'Enter a valid date and time.';
+      const amount = numIn(v.amount, 0, 100000);
+      if (amount == null || String(v.amount).trim() === '') return 'Enter the amount added.';
+      if (!d && state.doses.length >= MAX.doses) return 'Entry limit reached.';
+      const rec = normDose({ id: d ? d.id : uid(), at: when.toISOString(), chem: v.chem, amount, note: v.note.trim(), source: d ? d.source : opts.source || 'manual' });
+      if (d) Object.assign(d, rec); else state.doses.push(rec);
+      commit(); toast(`Logged ${CHEMS[rec.chem].label}`);
+    },
+    onDelete: d ? async () => {
+      if (!(await confirmBox('Delete this entry?', `${CHEMS[d.chem].label}, ${fmtN(d.amount)} ${d.unit}.`, 'Delete'))) return false;
+      state.doses = state.doses.filter(x => x.id !== d.id); commit(); return true;
+    } : null
+  });
+}
+function stepDone(i) {
+  const cp = currentPlan(); if (!cp) return;
+  const st = cp.plan.steps[i]; if (!st || !st.chem) return;
+  const def = st.chem === 'pucks' ? 1 : st.chem === 'baking-soda' ? st.amount.lb : st.amount.oz;
+  if (def == null || st.chem === 'pucks') return doseDialog({ chem: st.chem, amount: def == null ? '' : def, source: 'plan', note: `Plan step ${st.n}` });
+  if (state.doses.length >= MAX.doses) return toast('Entry limit reached.');
+  const rec = normDose({ id: uid(), at: new Date().toISOString(), chem: st.chem, amount: def, note: `Plan step ${st.n}`, source: 'plan' });
+  state.doses.push(rec); commit();
+  toast(`Logged ${fmtN(def)} ${rec.unit} ${CHEMS[st.chem].label}`, { label: 'Undo', fn: () => { state.doses = state.doses.filter(x => x.id !== rec.id); commit(); } });
+}
+function askSheet() {
+  const cp = currentPlan();
+  if (!cp) return toast('Log a water test first.');
+  const d = $('#ask');
+  d.innerHTML = `<div class="dlg-form"><h2>Ask</h2>
+    <div class="dlg-actions"><button type="button" class="btn block" data-q="not">What should I NOT use right now?</button>
+    <button type="button" class="btn block" data-q="stab">Granular stabilizer amount</button></div>
+    <div id="askOut" class="ask-body"></div>
+    <div class="dlg-actions ask-actions"><button type="button" class="btn primary" data-q="close">Close</button></div></div>`;
+  $$('[data-q]', d).forEach(b => {
+    b.onclick = () => {
+      const q = b.dataset.q;
+      if (q === 'close') return d.close();
+      const out = $('#askOut', d);
+      if (q === 'not') out.innerHTML = '<ul class="notes" style="color:var(--ink)">' + askNotUse(cp.inp, state.settings, state.slam).map(([a, w]) => `<li><b>${esc(a)}.</b> ${esc(w)}</li>`).join('') + '</ul>';
+      else { const r = askStabilizer(cp.inp, state.settings); out.innerHTML = `<p><b>${esc(r.text)}</b></p>${r.note ? `<p class="muted">${esc(r.note)}</p>` : ''}`; }
+    };
+  });
+  d.showModal();
+}
+
+/* ---- charts (inline SVG) ---- */
+function lineChart({ label, unit, pts, lo, hi, from, to }) {
+  if (!pts.length) return `<div class="card chartbox"><h3>${esc(label)}</h3><p class="muted" style="padding:6px">No tests in this range.</p></div>`;
+  const W = 340, H = 128, PL = 34, PR = 10, PT = 8, PB = 20, pw = W - PL - PR, ph = H - PT - PB;
+  const vals = pts.map(p => p.v);
+  let y0 = Math.min(...vals, lo), y1 = Math.max(...vals, hi);
+  const pad2 = (y1 - y0) * 0.12 || 1; y0 -= pad2; y1 += pad2;
+  const X = t => PL + pw * (to === from ? 0.5 : (t - from) / (to - from)), Y = v => PT + ph * (1 - (v - y0) / (y1 - y0));
+  const f = v => Math.round(v * 10) / 10;
+  let g = `<rect x="${PL}" y="${f(Y(hi))}" width="${pw}" height="${f(Math.max(1, Y(lo) - Y(hi)))}" fill="var(--ok)" opacity=".16"/>`;
+  for (const v of [y0 + pad2, (y0 + y1) / 2, y1 - pad2]) g += `<line x1="${PL}" x2="${W - PR}" y1="${f(Y(v))}" y2="${f(Y(v))}" stroke="var(--line)"/><text x="${PL - 4}" y="${f(Y(v)) + 3}" text-anchor="end" font-size="10" fill="var(--muted)">${esc(fmtN1(v))}</text>`;
+  g += `<text x="${PL}" y="${H - 6}" font-size="10" fill="var(--muted)">${esc(new Date(from).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }))}</text><text x="${W - PR}" y="${H - 6}" text-anchor="end" font-size="10" fill="var(--muted)">${esc(new Date(to).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }))}</text>`;
+  g += `<path d="M${pts.map(p => `${f(X(p.t))} ${f(Y(p.v))}`).join('L')}" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round"/>`;
+  for (const p of pts) g += `<circle cx="${f(X(p.t))}" cy="${f(Y(p.v))}" r="3.5" fill="${p.v < lo || p.v > hi ? 'var(--bad)' : 'var(--accent)'}"><title>${esc(fmtWhen(new Date(p.t).toISOString()) + ': ' + (p.text || fmtN(p.v)) + unit)}</title></circle>`;
+  return `<div class="card chartbox"><h3>${esc(label)} <span class="muted" style="font-weight:500">target ${esc(fmtN(lo))}–${esc(fmtN(hi))}</span></h3><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(label)} over time, ${pts.length} tests" data-chart="${esc(label)}">${g}</svg></div>`;
+}
+
+/* ---- views ---- */
+const view = $('#view');
+const ui = { tab: 'plan', hist: 'tests', range: 90 };
+function storageBannerHTML() {
+  if (saveFailed) return '<div class="banner bad">Couldn’t save to this device’s storage. Back up now so nothing is lost.</div>';
+  if (!db) return '<div class="banner bad">This browser isn’t allowing storage (private mode?). Changes won’t survive closing the app — use Backup.</div>';
+  return '';
+}
+function tileCls(k, v, inp) {
+  const s = state.settings;
+  if (v == null) return '';
+  if (k === 'fc') return v >= s.fcLow && v <= s.fcHigh ? 'ok' : v > s.fcHigh && v <= 10 ? 'warn' : v > 10 ? 'warn' : 'bad';
+  if (k === 'ph') return v >= s.phLow && v <= s.phHigh ? 'ok' : v > s.phHigh && v <= s.phMax ? 'warn' : 'bad';
+  if (k === 'ta') return v >= s.taLow && v <= s.taHigh ? 'ok' : 'bad';
+  if (k === 'cya') return v >= s.cyaLow && v <= s.cyaHigh ? 'ok' : 'bad';
+  return '';
+}
+function tilesHTML(inp) {
+  const cyaTxt = inp.cyaText || (inp.cya != null ? fmtN(inp.cya) : '–');
+  const items = [['FC', 'fc', fmtN(inp.fc)], ['pH', 'ph', fmtN(inp.ph)], ['TA', 'ta', inp.ta != null ? fmtN(inp.ta) : '–'], ['CYA', 'cya', cyaTxt], ['CH', 'ch', inp.ch != null ? fmtN(inp.ch) : '–']];
+  return `<div class="ptiles">${items.map(([l, k, shown]) => {
+    const v = k === 'cya' ? inp.cya : inp[k];
+    const age = k === 'ph' && inp.fc > 10 ? 'unreliable' : ageLabel(inp.ages[k]);
+    return `<div class="card ptile ${tileCls(k, v, inp)}" data-tile="${k}"><div class="lbl">${l}</div><div class="val num">${esc(shown)}</div><div class="age">${esc(age)}</div></div>`;
+  }).join('')}</div>`;
+}
+function stepHTML(st, i, cp) {
+  const logged = st.chem && state.doses.some(d => d.chem === st.chem && d.at >= cp.test.at);
+  return `<li class="card step ${st.chem ? '' : 'info'}" data-step="${st.n}"><div class="n">${st.n}</div><div class="body">
+    <div class="ttl">${esc(st.title)}${logged ? ' <span class="badge ok">Logged</span>' : ''}</div>
+    ${st.amount ? `<div class="amt num">${esc(st.amount.text)}</div>` : ''}
+    ${st.text ? `<div class="tx">${esc(st.text)}</div>` : ''}
+    ${st.when ? `<div class="tm">When: ${esc(st.when)}</div>` : ''}${st.retest ? `<div class="tm">Retest: ${esc(st.retest.replace(/^Retest /, ''))}</div>` : ''}
+    ${st.chem ? `<button type="button" class="btn small" data-action="step-done" data-i="${i}">${logged ? 'Log again' : 'Mark as done'}</button>` : ''}</div></li>`;
+}
+function renderPlan() {
+  const cp = currentPlan();
+  const head = storageBannerHTML();
+  const btns = `<div class="ctl"><button type="button" class="btn primary" data-action="log-test">Log water test</button><button type="button" class="btn" data-action="log-dose">Chemicals added</button></div>`;
+  if (!cp) return head + `<div class="empty"><div class="big">💧</div><h2>No water tests yet</h2><p>Enter FC and pH from your kit and the app tells you exactly what to add, in order, and when to retest.</p><button class="btn primary" data-action="log-test">Log your first water test</button><br><button class="btn ghost" data-action="restore">Restore from a backup file</button></div>`;
+  const { plan, inp, test } = cp, today = todayISO();
+  const sl = state.slam;
+  let h = head + `<div class="modebar"><span class="modebadge ${MODE_CLS[plan.modeKey]}" id="modeBadge">${esc(plan.mode)}</span></div>`;
+  if (sl.state === 'active') {
+    const n = (sl.since ? daysBetween(sl.since, today) : 0) + 1;
+    h += `<div class="slambox" id="slamBox"><b class="big">SLAM day ${n}</b><div class="fine" style="color:var(--ink)">Started ${esc(sl.since ? fmtDate(sl.since) : 'earlier')}. Chlorine first.</div><button type="button" class="btn block" data-action="slam-finish">SLAM is finished (clear water, passed overnight test)</button></div>`;
+  } else if (sl.state === 'post') {
+    h += `<div class="slambox post" id="slamBox"><b class="big">Post-SLAM: rebalance</b><div class="fine" style="color:var(--ink)">Chlorine first, then pH and TA. This clears on its own when FC ${fmtN(state.settings.fcLow)}–${fmtN(state.settings.fcHigh)}, pH ${fmtN(state.settings.phLow)}–${fmtN(state.settings.phMax)} and TA are in range.</div><button type="button" class="btn block" data-action="slam-clear">Back to routine</button></div>`;
+  }
+  h += tilesHTML(inp) + btns;
+  const dAge = daysBetween(dayOf(test.at), today);
+  h += `<div class="sec-h"><span>Plan</span><span style="text-transform:none;letter-spacing:0;font-weight:500">test of ${esc(fmtWhen(test.at))}</span></div>`;
+  if (dAge >= 2) h += `<div class="banner">This test is ${dAge} days old. Log a fresh one for a current plan.</div>`;
+  h += `<div class="card pad"><b>${esc(plan.summary)}</b>${plan.priority ? '<div class="fine">Priority: chlorine first.</div>' : ''}</div>`;
+  if (plan.steps.length) h += `<ol class="steps">${plan.steps.map((st, i) => stepHTML(st, i, cp)).join('')}</ol>`;
+  if (plan.timing) h += `<p class="fine" style="margin:10px 4px 0">${esc(plan.timing)}</p>`;
+  if (plan.notes.length) h += `<ul class="notes">${plan.notes.map(n => `<li>${esc(n)}</li>`).join('')}</ul>`;
+  if (plan.reminders.length) h += `<div class="sec-h"><span>Routine reminders</span></div><div class="card pad"><ul class="notes" style="margin:0;color:var(--ink)">${plan.reminders.map(n => `<li>${esc(n)}</li>`).join('')}</ul></div>`;
+  h += `<div class="ctl"><button type="button" class="btn block" data-action="ask">Ask…</button></div>`;
+  h += `<div class="sec-h"><span>Routine</span><button type="button" class="btn small ghost" data-action="go-routine">Open</button></div><ul class="card list">${['daily', 'weekly', 'monthly'].map(k => { const r = routineStatus(k); return `<li class="row static"><div class="row-main"><div class="row-title" style="text-transform:capitalize">${k}</div><div class="row-sub">${esc(r.sub)}</div></div><span class="badge ${r.cls}">${r.label}</span></li>`; }).join('')}</ul>`;
+  return h;
+}
+function renderHistory() {
+  const seg = `<div class="seg"><button type="button" class="chip" data-action="hist" data-v="tests" aria-pressed="${ui.hist === 'tests'}">Tests</button><button type="button" class="chip" data-action="hist" data-v="chem" aria-pressed="${ui.hist === 'chem'}">Chemicals</button></div>`;
+  if (ui.hist === 'chem') return storageBannerHTML() + seg + renderChem();
+  const all = testsNewest();
+  if (!all.length) return storageBannerHTML() + seg + '<div class="empty"><div class="big">📈</div><h2>No tests yet</h2><p>Charts and the test list appear here.</p><button class="btn primary" data-action="log-test">Log water test</button></div>';
+  const to = Date.now(), from = to - ui.range * 86400000;
+  const inR = all.filter(t => Date.parse(t.at) >= from).reverse();
+  const s = state.settings;
+  const ser = (k, label, unit, lo, hi) => lineChart({ label, unit, lo, hi, from, to, pts: inR.filter(t => t[k] != null).map(t => ({ t: Date.parse(t.at), v: t[k], text: k === 'cya' && t.cyaText ? t.cyaText : null })) });
+  const rng = `<div class="seg">${[30, 90].map(n => `<button type="button" class="chip" data-action="range" data-v="${n}" aria-pressed="${ui.range === n}">${n} days</button>`).join('')}</div>`;
+  const row = t => `<li class="row" data-action="edit-test" data-id="${esc(t.id)}"><div class="row-main"><div class="row-title">${esc(fmtWhen(t.at))}${t.water !== 'clear' ? `<span class="badge ${t.water === 'post' ? 'warn' : 'bad'}">${esc(WATERS.find(w => w[0] === t.water)[1])}</span>` : ''}</div>
+    <div class="row-sub num">FC ${fmtN(t.fc)} · pH ${fmtN(t.ph)}${t.ta != null ? ' · TA ' + fmtN(t.ta) : ''}${t.cya != null ? ' · CYA ' + esc(t.cyaText || fmtN(t.cya)) : ''}${t.ch != null ? ' · CH ' + fmtN(t.ch) : ''}${t.temp != null ? ' · ' + fmtN(t.temp) + '°F' : ''}</div>${t.notes ? `<div class="row-sub">${esc(t.notes.length > 120 ? t.notes.slice(0, 120) + '…' : t.notes)}</div>` : ''}</div></li>`;
+  return storageBannerHTML() + seg + rng + ser('fc', 'Free chlorine', ' ppm', s.fcLow, s.fcHigh) + ser('ph', 'pH', '', s.phLow, s.phHigh) + ser('ta', 'Total alkalinity', ' ppm', s.taLow, s.taHigh) + ser('cya', 'CYA', ' ppm', s.cyaLow, s.cyaHigh)
+    + `<div class="sec-h"><span>All tests (${all.length})</span></div><ul class="card list">${all.slice(0, 200).map(row).join('')}</ul>`;
+}
+function renderChem() {
+  const since = Date.now() - 30 * 86400000;
+  const recent = state.doses.filter(d => Date.parse(d.at) >= since);
+  const tot = {};
+  for (const d of recent) tot[d.chem] = (tot[d.chem] || 0) + d.amount;
+  const totRows = Object.entries(CHEMS).filter(([k]) => tot[k]).map(([k, c]) => {
+    const v = Math.round(tot[k] * 100) / 100;
+    return `<li class="row static"><div class="row-main"><div class="row-title">${esc(c.label)}</div></div><div class="mval num">${esc(fmtN(v))} ${esc(c.unit)}${c.unit === 'oz' && v >= 128 ? `<div class="fine">${fmtN1(v / 128)} gal</div>` : ''}</div></li>`;
+  }).join('');
+  const all = [...state.doses].sort((a, b) => b.at.localeCompare(a.at));
+  const row = d => `<li class="row" data-action="edit-dose" data-id="${esc(d.id)}"><div class="row-main"><div class="row-title">${esc(CHEMS[d.chem].label)}</div><div class="row-sub">${esc(fmtWhen(d.at))}${d.note ? ' · ' + esc(d.note) : ''}</div></div><div class="mval num">${esc(fmtN(d.amount))} ${esc(d.unit)}</div></li>`;
+  return `<div class="ctl"><button type="button" class="btn primary" data-action="log-dose">+ Chemicals added</button></div>
+    <div class="sec-h"><span>Last 30 days</span></div>${totRows ? `<ul class="card list" id="totals">${totRows}</ul>` : '<div class="card pad muted">Nothing logged in the last 30 days.</div>'}
+    <div class="sec-h"><span>All entries (${all.length})</span></div>${all.length ? `<ul class="card list">${all.slice(0, 200).map(row).join('')}</ul>` : '<div class="card pad muted">No entries yet.</div>'}`;
+}
+function renderRoutine() {
+  const names = { daily: 'Daily', weekly: 'Weekly', monthly: 'Monthly' };
+  return storageBannerHTML() + `<div class="stack">${['daily', 'weekly', 'monthly'].map(k => {
+    const r = routineStatus(k);
+    return `<section class="card pad" data-routine="${k}"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><h3>${names[k]}<span class="badge ${r.cls}">${r.label}</span></h3><button type="button" class="btn small primary" data-action="routine-done" data-k="${k}">Done</button></div>
+      <div class="fine" style="margin:4px 0 6px">${esc(r.sub)}${state.routine[k] ? ' · ' + esc(fmtDate(state.routine[k])) : ''}</div>
+      <ul class="rtn notes" style="color:var(--ink);margin:0">${routineItems(k).map(i => `<li>${esc(i)}</li>`).join('')}</ul></section>`;
+  }).join('')}</div>`;
+}
+const SET_FIELDS = [
+  ['volume', 'Pool volume (gal)'], ['slamFc', 'SLAM FC target'],
+  ['fcLow', 'FC low'], ['fcTarget', 'FC dose-to'], ['fcHigh', 'FC high'],
+  ['cyaLow', 'CYA low'], ['cyaTarget', 'CYA dose-to'], ['cyaHigh', 'CYA high'],
+  ['phLow', 'pH low'], ['phTarget', 'pH dose-to'], ['phHigh', 'pH act above'],
+  ['taLow', 'TA low'], ['taTarget', 'TA dose-to'], ['taHigh', 'TA high'],
+  ['phMax', 'pH tolerated in routine']
+];
+function renderSettings() {
+  const s = state.settings;
+  const f = ([k, l]) => `<div class="field"><label for="s_${k}">${esc(l)}</label><input id="s_${k}" type="number" inputmode="decimal" step="any" value="${esc(s[k])}"></div>`;
+  return storageBannerHTML() + `<div class="stack">
+    <section class="card pad"><h3>Pool and targets</h3><p class="hint">Every chemical amount scales with volume (reference doses are for 14,000 gallons).</p>
+      <div class="setgrid" style="margin-top:10px">${SET_FIELDS.map(f).join('')}</div></section>
+    <section class="card pad"><h3>Products</h3>
+      <div class="field" style="margin-top:8px"><label for="s_yellowDose">Yellow Treat dose (oz per 10,000 gal, from the label)</label><input id="s_yellowDose" type="number" inputmode="decimal" step="any" value="${esc(s.yellowDose)}" placeholder="Leave empty until you check the label"></div>
+      <div class="field" style="margin-top:10px"><label for="s_acidStrength">Muriatic acid strength</label><select id="s_acidStrength"><option value="31.45"${s.acidStrength === '31.45' ? ' selected' : ''}>31.45% (8 oz lowers pH 0.2)</option><option value="14.5"${s.acidStrength === '14.5' ? ' selected' : ''}>14.5% (16 oz lowers pH 0.2)</option></select></div></section>
+    <section class="card pad"><h3>SLAM state</h3><p class="hint">Set automatically from your tests. Change it here only to correct it.</p>
+      <div class="field" style="margin-top:8px"><label for="s_slam">State</label><select id="s_slam"><option value="none"${state.slam.state === 'none' ? ' selected' : ''}>Not in a SLAM</option><option value="active"${state.slam.state === 'active' ? ' selected' : ''}>SLAM active</option><option value="post"${state.slam.state === 'post' ? ' selected' : ''}>Post-SLAM rebalance</option></select></div></section>
+    <div id="setErr" class="dlg-err" role="alert"></div>
+    <div class="ctl" style="margin-top:0"><button type="button" class="btn primary" data-action="save-settings">Save settings</button><button type="button" class="btn" data-action="reset-settings">Reset to defaults</button></div>
+    <p class="hint" style="text-align:center">Units: US fluid ounces (oz), pounds (lb), gallons (gal), °F, ppm.</p></div>`;
+}
+function renderBackup() {
+  const last = state.meta.lastBackup ? `Last backup: ${esc(fmtDateTime(state.meta.lastBackup))}.` : 'No backup made yet.';
+  const canEncrypt = !!(window.crypto && crypto.subtle);
+  return storageBannerHTML() + installCardHTML() + `<div class="stack">
+    <section class="card pad"><h3>Back up</h3>
+      <p class="muted">${last}</p>
+      <p>Saves one file with your tests, chemicals log, routine and settings. On iPhone it opens the share sheet; save it to Files or OneDrive. Keep the file out of your GitHub repo.</p>
+      ${canEncrypt ? `<div class="field"><label for="bkPass">Passphrase (optional — encrypts the file)</label><input id="bkPass" type="password" autocomplete="new-password"></div>
+      <div class="field" style="margin-top:8px"><label for="bkPass2">Repeat passphrase</label><input id="bkPass2" type="password" autocomplete="new-password"></div>
+      <p class="hint">If you set one, the file can’t be opened without it.</p>` : ''}
+      <button type="button" class="btn primary block" style="margin-top:12px" data-action="export">Back up now</button></section>
+    <section class="card pad"><h3>Restore</h3><p>Pick a backup file made by this app. You’ll choose whether to replace what’s here or merge it in.</p>
+      <button type="button" class="btn block" data-action="restore">Choose backup file…</button></section>
+    <section class="card pad"><h3>Danger zone</h3><p>Erases everything in this app on this device.</p>
+      <button type="button" class="btn danger block" data-action="wipe">Erase everything on this device</button></section>
+    <p class="hint" style="text-align:center">Your data lives only on this device. Nothing is sent anywhere.</p></div>`;
+}
+const TITLES = { plan: 'Pool plan', history: 'History', routine: 'Routine', settings: 'Settings', backup: 'Backup & restore' };
+function render() {
+  const y = window.scrollY;
+  view.innerHTML = { plan: renderPlan, history: renderHistory, routine: renderRoutine, settings: renderSettings, backup: renderBackup }[ui.tab]();
+  $$('nav.tabs button').forEach(b => b.setAttribute('aria-current', b.dataset.tab === ui.tab ? 'page' : 'false'));
+  const add = $('#addBtn');
+  const label = ui.tab === 'history' && ui.hist === 'chem' ? '+ Chemicals' : ['plan', 'history', 'routine'].includes(ui.tab) ? '+ Test' : '';
+  add.classList.toggle('hide', !label); if (label) add.textContent = label;
+  $('#title').textContent = TITLES[ui.tab];
+  $('#sub').textContent = new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' }) + ' · ' + state.settings.volume.toLocaleString('en-US') + ' gal';
+  window.scrollTo(0, y);
+}
+function go(t) { ui.tab = t; render(); window.scrollTo(0, 0); }
+
+/* ---- settings ---- */
+function saveSettings() {
+  const err = $('#setErr'); err.textContent = '';
+  const raw = {};
+  for (const [k, l] of SET_FIELDS) {
+    const v = $('#s_' + k).value.trim();
+    const n = v === '' ? null : numIn(v, LIM[k][0], LIM[k][1]);
+    if (n == null) { err.textContent = `${l}: enter a number from ${LIM[k][0]} to ${LIM[k][1]}.`; return; }
+    raw[k] = n;
+  }
+  const yd = $('#s_yellowDose').value.trim();
+  if (yd !== '' && numIn(yd, 0.01, 1000) == null) { err.textContent = 'Yellow Treat dose must be a positive number (oz per 10,000 gal), or empty.'; return; }
+  raw.yellowDose = yd; raw.acidStrength = $('#s_acidStrength').value;
+  const chk = (a, b, c, name) => (a <= b && b <= c ? '' : `${name}: low ≤ dose-to ≤ high.`);
+  const e = chk(raw.fcLow, raw.fcTarget, raw.fcHigh, 'FC') || chk(raw.cyaLow, raw.cyaTarget, raw.cyaHigh, 'CYA') || chk(raw.taLow, raw.taTarget, raw.taHigh, 'TA') || chk(raw.phLow, raw.phTarget, raw.phHigh, 'pH') || (raw.phHigh <= raw.phMax ? '' : 'pH tolerated in routine must be at least “pH act above”.');
+  if (e) { err.textContent = e; return; }
+  state.settings = normSettings(raw);
+  const ss = $('#s_slam').value;
+  if (ss !== state.slam.state) state.slam = { state: ss, since: ss === 'none' ? '' : state.slam.since || todayISO() };
+  commit(); toast('Settings saved');
+}
+
+/* ---- backup / restore ---- */
+async function doExport() {
+  const pass = ($('#bkPass') || {}).value || '', pass2 = ($('#bkPass2') || {}).value || '';
+  if (pass) {
+    if (pass.length < 8) return toast('Use at least 8 characters for the passphrase.');
+    if (pass !== pass2) return toast('The two passphrases don’t match.');
+  }
+  const btn = $('[data-action="export"]'); if (btn) btn.disabled = true;
+  try {
+    const text = await Backup.build({ appId: APP_ID, schema: SCHEMA, data: exportData(), passphrase: pass || null });
+    const r = await deliverFile(`goobs-pool-backup-${todayISO()}${pass ? '-encrypted' : ''}.json`, text, 'application/json');
+    if (r !== 'cancelled') {
+      state.meta.lastBackup = new Date().toISOString();
+      await persist({ touch: false });
+      render();
+      toast(r === 'shared' ? 'Backup shared' : 'Backup saved to your downloads');
+    }
+  } catch (e) { toast('Backup failed: ' + e.message); }
+  finally { const b2 = $('[data-action="export"]'); if (b2) b2.disabled = false; }
+}
+async function restoreFromText(text) {
+  let parsed;
+  try { parsed = await Backup.parse(text, { appId: APP_ID, schema: SCHEMA }); }
+  catch (e) { await msgBox('Can’t restore that file', e.message); return false; }
+  if (!parsed) return false;
+  const { data, dropped } = normalizeData(parsed.data);
+  const empty = !data.tests.length && !data.doses.length && !Object.values(data.routine).some(Boolean) && data.slam.state === 'none' && JSON.stringify(data.settings) === JSON.stringify(normSettings({}));
+  if (empty) { await msgBox('Nothing to restore', 'That backup has no data in it.'); return false; }
+  const hasLocal = hasAnyData();
+  const sum = `${plural(data.tests.length, 'test')}, ${plural(data.doses.length, 'chemical entry')}`;
+  const when = parsed.exportedAt ? ` Backup made ${fmtDateTime(parsed.exportedAt)}.` : '';
+  const skipped = dropped ? ` ${plural(dropped, 'unreadable item')} will be skipped.` : '';
+  const body = `<p>${esc(sum + '.' + when + skipped)}</p>` + (hasLocal ? '<p class="muted"><b>Replace all</b> swaps everything here for the backup. <b>Merge</b> adds what isn’t here yet and keeps your current settings.</p>' : '');
+  const choice = await askDialog({
+    title: 'Restore this backup?', body,
+    buttons: hasLocal
+      ? [{ label: 'Cancel', value: 'cancel' }, { label: 'Merge', value: 'merge' }, { label: 'Replace all', value: 'replace', kind: 'danger' }]
+      : [{ label: 'Cancel', value: 'cancel' }, { label: 'Restore', value: 'replace', kind: 'primary' }]
+  });
+  if (choice === 'replace') {
+    const ts = parsed.exportedAt && !isNaN(Date.parse(parsed.exportedAt)) ? parsed.exportedAt : new Date().toISOString();
+    for (const k of DATA_KEYS) state[k] = data[k];
+    state.meta.lastBackup = ts; state.meta.lastChange = ts;
+    await persist({ touch: false });
+    render(); toast(`Restored ${sum}`); return true;
+  }
+  if (choice === 'merge') {
+    const merged = { settings: state.settings, slam: state.slam, routine: { ...state.routine } }; let added = 0;
+    for (const k of ['tests', 'doses']) { const ids = new Set(state[k].map(x => x.id)); merged[k] = [...state[k]]; for (const x of data[k]) if (!ids.has(x.id)) { merged[k].push(x); added++; } }
+    for (const k of ['daily', 'weekly', 'monthly']) if (data.routine[k] > merged.routine[k]) merged.routine[k] = data.routine[k];
+    const n = normalizeData(merged).data;
+    for (const k of DATA_KEYS) state[k] = n[k];
+    await persist(); render(); toast(`Merged in ${plural(added, 'item')}`); return true;
+  }
+  return false;
+}
+async function doRestore() {
+  const f = await pickFile(); if (!f) return;
+  let text;
+  try { text = await readFileText(f); } catch { await msgBox('Couldn’t read that file', 'Try choosing it again.'); return; }
+  await restoreFromText(text);
+}
+async function doWipe() {
+  if (!(await confirmBox('Erase everything?', 'This permanently deletes all tests, chemical entries, routine dates and settings on this device.', 'Erase everything'))) return;
+  state = defaultState();
+  await persist({ touch: false });
+  render(); toast('Everything erased');
+}
+
+/* ---- wiring ---- */
+view.addEventListener('click', e => {
+  const el = e.target.closest('[data-action]');
+  if (!el) return;
+  const id = el.dataset.id;
+  switch (el.dataset.action) {
+    case 'log-test': testDialog(); break;
+    case 'log-dose': doseDialog(); break;
+    case 'edit-test': testDialog(id); break;
+    case 'edit-dose': doseDialog({ id }); break;
+    case 'step-done': stepDone(+el.dataset.i); break;
+    case 'ask': askSheet(); break;
+    case 'go-routine': go('routine'); break;
+    case 'hist': ui.hist = el.dataset.v; render(); break;
+    case 'range': ui.range = +el.dataset.v; render(); break;
+    case 'slam-finish': state.slam = { state: 'post', since: state.slam.since }; commit(); toast('SLAM marked finished: post-SLAM rebalance'); break;
+    case 'slam-clear': state.slam = { state: 'none', since: '' }; commit(); toast('Back to routine'); break;
+    case 'routine-done': { const k = el.dataset.k, prev = state.routine[k]; state.routine[k] = todayISO(); commit(); toast(`${k[0].toUpperCase() + k.slice(1)} done`, { label: 'Undo', fn: () => { state.routine[k] = prev; commit(); } }); break; }
+    case 'save-settings': saveSettings(); break;
+    case 'reset-settings': state.settings = normSettings({}); commit(); toast('Settings reset'); break;
+    case 'export': doExport(); break;
+    case 'restore': doRestore(); break;
+    case 'wipe': doWipe(); break;
+    case 'install': runInstall(); break;
+  }
+});
+$('#addBtn').onclick = () => { if (ui.tab === 'history' && ui.hist === 'chem') doseDialog(); else testDialog(); };
+$$('nav.tabs button').forEach(b => { b.onclick = () => go(b.dataset.tab); });
+document.addEventListener('visibilitychange', () => { if (!document.hidden && !$('dialog[open]')) render(); });
+
+(async function init() {
+  try { db = await openDB(DB_NAME); } catch (e) { console.error(e); db = null; }
+  if (db) {
+    try {
+      const raw = await idbGet(db, 'state');
+      if (raw) {
+        try { state = loadState(JSON.parse(raw)); }
+        catch (e) { console.error(e); await idbPut(db, 'state-damaged-' + Date.now(), raw); toast('Saved data looked damaged — a copy was kept aside.'); }
+      }
+    } catch (e) { console.error(e); db = null; }
+  }
+  render();
+})();
+</script>
+</body>
+</html>
