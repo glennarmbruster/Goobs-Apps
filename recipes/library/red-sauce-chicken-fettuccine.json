@@ -1,0 +1,39 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "red-sauce-chicken-fettuccine",
+  "title": "Red Sauce Chicken Fettuccine (Egglife)",
+  "description": "Doctored jarred red sauce with warmed sous vide chicken breast, tossed with fully cooked Egglife fettuccine at the very end.",
+  "category": "Main dish",
+  "tags": ["weeknight", "high-protein", "leftover-friendly", "mild"],
+  "servings": 3,
+  "servingsLabel": "servings",
+  "prepMin": 5,
+  "cookMin": 18,
+  "equipment": ["Enamel-coated Dutch oven", "Anova Precision Oven"],
+  "ingredients": [
+    { "id": "chicken", "qty": 1, "unit": "lb", "name": "sous vide chicken breasts, already cooked", "note": "cut into 1-inch chunks" },
+    { "id": "pasta", "qty": 9, "unit": "oz", "name": "Egglife Power Pasta fettuccine style, fully cooked" },
+    { "id": "sauce", "qty": 24, "unit": "oz", "name": "jarred red pasta sauce", "note": "smooth style" },
+    { "id": "broth", "qty": 0.5, "unit": "cup", "name": "low-sodium chicken broth", "note": "plus a splash more if needed" },
+    { "id": "butter", "qty": 1, "unit": "tbsp", "name": "salted butter" },
+    { "id": "garlic", "qty": 1.5, "unit": "tbsp", "name": "jarred minced garlic" },
+    { "id": "paprika", "qty": 1, "unit": "tsp", "name": "smoked paprika" },
+    { "id": "umami", "qty": 1, "unit": "tsp", "name": "Trader Joe's Umami seasoning" },
+    { "id": "italian", "qty": 1, "unit": "tsp", "name": "Italian seasoning" },
+    { "id": "onion", "qty": 0.5, "unit": "tsp", "name": "granulated onion" },
+    { "id": "pepper", "qty": 0.25, "unit": "tsp", "name": "black pepper" },
+    { "id": "mozz", "qty": 1.5, "unit": "cup", "name": "freshly shredded low-moisture mozzarella" },
+    { "id": "parm", "qty": 0.5, "unit": "cup", "name": "freshly grated parmesan" }
+  ],
+  "steps": [
+    { "title": "Prep", "text": "Cut {chicken} into 1-inch chunks and set aside. Leave {pasta} in the package for now. It is already cooked and only needs warming at the very end." },
+    { "title": "Bloom the aromatics", "text": "Melt {butter} in the Dutch oven over medium heat. Add {garlic} and stir for 30 seconds until fragrant but not browned. Stir in {paprika}, {umami}, {italian}, {onion} and {pepper} and cook 20 seconds to bloom the spices in the fat." },
+    { "title": "Build the sauce", "text": "Pour in {sauce} and {broth}. Simmer over medium-low for 8 minutes, stirring occasionally, until thick enough to cling to a spoon. Keep it slightly looser than you want the final sauce, because the pasta will absorb some." },
+    { "title": "Warm the chicken", "text": "Stir in {chicken} and warm gently for 3 to 4 minutes. Do not boil. The chicken is already cooked, so more heat only dries it out." },
+    { "title": "Add the pasta", "text": "Shake the {pasta} package gently to separate the strands. Add to the pot and toss with tongs for 1 to 2 minutes, just until warm. If the sauce looks tight, loosen with a splash more broth. Do not go past 2 minutes or the pasta gets soft." },
+    { "title": "Cheese and serve", "text": "Sprinkle {mozz} and {parm} over the top, cover, and let it sit off the heat for 2 minutes until melted and stretchy. Serve right away in smaller portions with plenty of sauce spooned over." }
+  ],
+  "notes": "Egglife pasta is fully cooked, so it is a warm-through step only. Do not boil or bake it. Use the enamel Dutch oven rather than bare cast iron for a long tomato simmer. Leftovers reheat best in a skillet over medium-low with a splash of broth, and the sauce and chicken can be made ahead and the pasta added fresh. Do not freeze with the pasta in it.",
+  "source": "Glenn and Claude, 2026-10-14"
+}
