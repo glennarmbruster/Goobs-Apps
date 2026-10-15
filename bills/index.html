@@ -798,7 +798,24 @@ function billRow(b, today) {
     <div class="row-amt num">${money(b.amount)}</div>
     <button type="button" class="btn small primary" data-action="pay" data-id="${id}" aria-label="Mark ${esc(b.name)} paid">Paid</button></li>`;
 }
-let horizon = 'eonm';
+let horizon = 'eonm', checkDate = '';
+/* "What will I have on <date>?": balance now, plus unpaid paychecks and minus unpaid bills due through that date */
+function dateCheckHTML(f, today) {
+  let h = `<section class="card pad" id="dateCheck" style="margin-top:14px"><h3>Balance on a date</h3><div class="field"><label for="chkDate">Pick a date</label><input type="date" id="chkDate" data-check value="${esc(checkDate)}"></div>`;
+  if (!checkDate) return h + '<p class="hint">See what you will have after the paychecks and bills due through that day.</p></section>';
+  if (!isISO(checkDate)) return h + '<p class="bad" style="margin-top:8px">Pick a valid date.</p></section>';
+  if (daysBetween(today, checkDate) > 730) return h + '<p class="bad" style="margin-top:8px">Pick a date within the next 2 years.</p></section>';
+  const r = forecast(checkDate), ev = r.events, pays = ev.filter(e => e.amt > 0), bills = ev.filter(e => e.amt < 0);
+  h += `<div class="val num ${r.end < 0 ? 'bad' : ''}" style="font-size:28px;font-weight:700;margin-top:10px" id="chkVal">${money(r.end)}</div><div class="hint">on ${esc(fmtDate(checkDate))}${checkDate < today ? ' (past date: balance now adjusted for unpaid items due through it)' : ''}</div>
+    <table class="tbl" style="width:100%;margin-top:10px" id="chkMath"><tbody>
+    <tr><td>Balance now</td><td class="num" style="text-align:right">${money(r.cb.amount)}</td></tr>
+    <tr><td>+ Paychecks (${pays.length})</td><td class="num ok" style="text-align:right">+${money(r.inn)}</td></tr>
+    <tr><td>− Bills (${bills.length})</td><td class="num" style="text-align:right">−${money(r.out)}</td></tr>
+    <tr><td><b>Balance on ${esc(fmtDate(checkDate))}</b></td><td class="num ${r.end < 0 ? 'bad' : ''}" style="text-align:right"><b>${money(r.end)}</b></td></tr></tbody></table>`;
+  if (ev.length && r.low.amt < Math.min(r.cb.amount, r.end)) h += `<p class="hint">It dips to <span class="${r.low.amt < 0 ? 'bad' : ''}">${money(r.low.amt)}</span> on ${esc(fmtDate(r.low.date))} before then.</p>`;
+  if (ev.length) h += `<details class="card eg" style="margin-top:10px"><summary>What is included <span class="hint">· ${plural(ev.length, 'item')}</span></summary><ul class="list" id="chkList">${ev.map(e => `<li class="row static"><div class="row-main"><div class="row-title">${esc(e.name)}</div><div class="row-sub">${esc(evLabel(e.date, today))} · balance ${money(e.run)}</div></div><div class="row-amt num ${e.amt > 0 ? 'ok' : ''}">${e.amt > 0 ? '+' : '−'}${money(Math.abs(e.amt))}</div></li>`).join('')}</ul></details>`;
+  return h + '</section>';
+}
 const evLabel = (d, today) => { const diff = daysBetween(today, d); return diff < 0 ? `${plural(-diff, 'day')} overdue · was ${fmtDate(d)}` : diff === 0 ? 'Today' : fmtDate(d); };
 function renderCash() {
   const today = todayISO(), f = forecast(horizonEnd(horizon, today)), ban = storageBannerHTML();
@@ -815,6 +832,7 @@ function renderCash() {
   h += `<section class="card pad" id="balCard"><div class="lbl muted" style="font-size:13px;font-weight:600">Balance now</div><div class="val num ${cb.amount < 0 ? 'bad' : ''}" style="font-size:32px;font-weight:700" id="balNow">${money(cb.amount)}</div>
     <div class="hint">From ${money(cb.anchor.amount)} set ${esc(fmtDate(cb.anchor.date))}, plus paychecks and minus bills marked since.</div>
     <button type="button" class="btn primary block" style="margin-top:12px" data-action="set-balance">Set current balance</button></section>
+    ${dateCheckHTML(f, today)}
     <div class="tiles cash">
       <div class="card tile"><div class="lbl">Balance ${esc(endLbl)}</div><div class="val num ${f.end < 0 ? 'bad' : ''}" id="balEnd">${money(f.end)}</div></div>
       <div class="card tile"><div class="lbl">Lowest point</div><div class="val num ${f.low.amt < 0 ? 'bad' : ''}" id="balLow">${money(f.low.amt)}</div><div class="hint">${f.low.date === cb.anchor.date && f.low.amt === cb.amount ? 'right now' : esc(fmtDate(f.low.date))}</div></div>
@@ -1042,6 +1060,9 @@ view.addEventListener('click', e => {
     case 'wipe': doWipe(); break;
     case 'install': runInstall(); break;
   }
+});
+view.addEventListener('change', e => {
+  if (e.target && e.target.id === 'chkDate') { checkDate = e.target.value || ''; render(); }
 });
 $('#addBtn').onclick = () => (tab === 'cash' ? incomeDialog() : billDialog());
 $$('nav.tabs button').forEach(b => { b.onclick = () => go(b.dataset.tab); });
