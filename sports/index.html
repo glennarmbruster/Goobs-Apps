@@ -199,6 +199,11 @@ table.tbl{border-collapse:collapse;width:100%;font-size:14px}
 .pv th,.pv td{padding:6px 7px;font-size:12.5px;white-space:normal;text-align:left;vertical-align:top}
 .pv tr.bad td{color:var(--bad)} .pv tr.dup td{color:var(--muted)}
 .fine{font-size:13px;color:var(--muted)}
+.chips{display:flex;gap:8px;overflow-x:auto;margin-top:14px;padding-bottom:2px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;min-height:38px;padding:0 14px;border-radius:19px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-weight:600;display:inline-flex;align-items:center;cursor:pointer;white-space:nowrap}
+.chip.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.etbl tr.lead td{font-weight:800}
 .espn-line{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-top:12px}
 .espn-line .fine{flex:1;min-width:0;overflow-wrap:anywhere}
 .espn-test{margin-top:8px;overflow-wrap:anywhere}.espn-test:empty{display:none}.espn-test.ok{color:var(--ok,#15803d);font-weight:600}.espn-test.bad{color:var(--bad,#b91c1c);font-weight:600}
@@ -686,6 +691,16 @@ function mostPlayed(games, tid, teams) {
   ids.sort((x, y) => cnt.get(y) - cnt.get(x) || lastD.get(y).localeCompare(lastD.get(x)) || nm(x).localeCompare(nm(y)));
   return ids[0] || null;
 }
+/* opponents a team has played (final, scored), most-played first (ties: more recent, then name) */
+function opponentsByPlayed(games, tid, teams) {
+  const cnt = new Map(), lastD = new Map(), tmap = new Map(teams.map(t => [t.id, t]));
+  for (const g of games) {
+    if (!countsInSeries(g) || (g.homeId !== tid && g.awayId !== tid)) continue;
+    const o = g.homeId === tid ? g.awayId : g.homeId;
+    cnt.set(o, (cnt.get(o) || 0) + 1); if (!lastD.has(o) || g.date > lastD.get(o)) lastD.set(o, g.date);
+  }
+  return [...cnt.keys()].filter(id => tmap.has(id)).sort((x, y) => cnt.get(y) - cnt.get(x) || lastD.get(y).localeCompare(lastD.get(x)) || tmap.get(x).name.localeCompare(tmap.get(y).name));
+}
 /* RIVALRY MATRIX: rows = my teams (or everyone when <= 8 teams / none marked mine); cols = opponents */
 function matrix(games, teams) {
   const mine = teams.filter(t => t.mine);
@@ -1127,6 +1142,11 @@ function normEspn(raw) {
   return out;
 }
 const normSettings = s => ({ otl: !!(s && typeof s === 'object' && s.otl === true) });
+function normPrefs(r) {
+  r = obj(r); const stMine = {};
+  for (const [k, v] of Object.entries(obj(r.stMine))) if (LEAGUE_KEYS.includes(k) && typeof v === 'boolean') stMine[k] = v;
+  return { fTeam: str(r.fTeam).slice(0, 60) || 'mine', sLeague: typeof r.sLeague === 'string' ? r.sLeague.slice(0, 60) : null, stMine };
+}
 function normalizeData(raw) {
   raw = raw && typeof raw === 'object' ? raw : {};
   let dropped = 0;
@@ -1149,9 +1169,9 @@ function normalizeData(raw) {
       if (ids.length === 2 && tseen.has(ids[0]) && tseen.has(ids[1]) && ids[0] < ids[1] && typeof v === 'string' && v.trim()) rn[k] = v.slice(0, 2000);
     }
   }
-  return { data: { teams, games, settings: normSettings(raw.settings), rivalNotes: rn, espn: normEspn(raw.espn) }, dropped };
+  return { data: { teams, games, settings: normSettings(raw.settings), rivalNotes: rn, espn: normEspn(raw.espn), prefs: normPrefs(raw.prefs) }, dropped };
 }
-const DATA_KEYS = ['teams', 'games', 'settings', 'rivalNotes', 'espn'];
+const DATA_KEYS = ['teams', 'games', 'settings', 'rivalNotes', 'espn', 'prefs'];
 const defaultState = () => ({ schemaVersion: SCHEMA, meta: { lastBackup: null, lastChange: null }, ...normalizeData({}).data });
 function loadState(parsed) {
   const { data } = normalizeData(parsed);
@@ -1195,12 +1215,20 @@ function autoSeason() {
 const perspective = (g, pref) => {
   if (pref && (g.homeId === pref || g.awayId === pref)) return pref;
   const h = tm(g.homeId), a = tm(g.awayId);
-  return h && h.mine ? h.id : a && a.mine ? a.id : null;
+  return h && h.mine ? h.id : a && a.mine ? a.id : h && h.espnSync ? h.id : a && a.espnSync ? a.id : null;
 };
 
 /* ---- UI state ---- */
 const view = $('#view');
-const ui = { tab: 'schedule', fTeam: 'all', fSeason: null, sSeason: null, rA: null, rB: null, showAll: false, espn: { state: 'idle' }, espnTest: null, espnTry: 0, lastLeague: null };
+const isMine = t => !!t && (t.mine === true || t.espnSync === true);
+const myTeams = () => state.teams.filter(isMine);
+const leagueName = t => (t.espnPath ? leagueLabel(t.espnPath) : str(t.league).trim());
+const leagueKey = t => leagueName(t).toLowerCase();
+function setFTeam(v) { ui.fTeam = v; state.prefs.fTeam = v; persist({ touch: false }); }
+/* 'mine' = any of my teams, 'all' = everyone, otherwise one team id */
+function fTeamId() { return ui.fTeam !== 'all' && ui.fTeam !== 'mine' && tm(ui.fTeam) ? ui.fTeam : null; }
+function fMode() { const id = fTeamId(); if (id) return id; return ui.fTeam === 'all' || !myTeams().length ? 'all' : 'mine'; }
+const ui = { tab: 'schedule', fTeam: 'mine', stTried: {}, fSeason: null, sSeason: null, rA: null, rB: null, showAll: false, espn: { state: 'idle' }, espnTest: null, espnTry: 0, lastLeague: null };
 function storageBannerHTML() {
   if (saveFailed) return '<div class="banner bad">Couldn’t save to this device’s storage. Back up now so nothing is lost.</div>';
   if (!db) return '<div class="banner bad">This browser isn’t allowing storage (private mode?). Changes won’t survive closing the app — use Backup.</div>';
@@ -1336,7 +1364,7 @@ function pickTeamDialog(n) {
         t = normTeam({ id: uid(), name: c.name, short: c.short, color: c.color || PALETTE[state.teams.length % PALETTE.length], league: leagueLabel(n.path), mine: v.mine, espnId: c.id, espnPath: n.path, espnSync: true });
         state.teams.push(t);
       }
-      ui.tab = 'schedule'; ui.fTeam = 'all'; ui.fSeason = null; commit(); toast(`Added ${t.name} — downloading its schedule…`);
+      ui.tab = 'schedule'; setFTeam('mine'); ui.fSeason = null; commit(); toast(`Added ${t.name} — downloading its schedule…`);
       refreshEspn({ only: t.id });
     }
   });
@@ -1416,18 +1444,41 @@ function pruneEspn() {
 }
 
 /* ===================== SCHEDULE ===================== */
+const selGroupsHTML = (name, label, groups, val) => `<div class="field"><label for="sel_${name}">${esc(label)}</label><select id="sel_${name}" data-sel="${name}">${groups.filter(g => g[1].length).map(([gl, opts]) => `<optgroup label="${esc(gl)}">${opts.map(([v, l]) => `<option value="${esc(v)}"${String(v) === String(val) ? ' selected' : ''}>${esc(l)}</option>`).join('')}</optgroup>`).join('')}</select></div>`;
+function teamFilterGroups() {
+  const my = myTeams(), mySet = new Set(my.map(t => t.id)), nm = t => [t.id, t.name];
+  return [['Show', my.length ? [['mine', 'All my teams'], ['all', 'Everyone']] : [['all', 'All teams']]], ['My teams', my.map(nm)], ['Other teams', state.teams.filter(t => !mySet.has(t.id)).map(nm)]];
+}
+function teamChipsHTML() {
+  const mode = fMode(), my = myTeams();
+  const chip = (v, label, dotId) => `<button type="button" class="chip${mode === v ? ' on' : ''}" data-action="chip" data-v="${esc(v)}" aria-pressed="${mode === v}">${dotId ? dot(dotId) : ''}${esc(label)}</button>`;
+  return `<div class="chips" id="teamChips" role="group" aria-label="Team filter">${my.length ? chip('mine', 'All mine') : ''}${my.map(t => chip(t.id, t.short || t.name, t.id)).join('')}${chip('all', 'Everyone')}</div>`;
+}
+/* team pickers in dialogs: my teams on top */
+function groupTeamSelects(...names) {
+  const my = new Set(myTeams().map(t => t.id)); if (!my.size) return;
+  const form = $('#dlg form'); if (!form) return;
+  for (const n of names) {
+    const sel = form.elements[n]; if (!sel || !sel.options) continue;
+    const val = sel.value, opts = Array.from(sel.options).map(o => [o.value, o.textContent]);
+    const g = (label, list) => (list.length ? `<optgroup label="${label}">${list.map(([v, l]) => `<option value="${esc(v)}">${esc(l)}</option>`).join('')}</optgroup>` : '');
+    sel.innerHTML = g('My teams', opts.filter(o => my.has(o[0]))) + g('Other teams', opts.filter(o => !my.has(o[0])));
+    sel.value = val;
+  }
+}
 function curSeason() { return ui.fSeason === null ? autoSeason() : ui.fSeason; }
 function visibleGames() {
   const season = curSeason();
-  return state.games.filter(g => (ui.fTeam === 'all' || g.homeId === ui.fTeam || g.awayId === ui.fTeam) && (season === 'all' || g.season === season));
+  const mode = fMode();
+  return state.games.filter(g => (mode === 'all' || (mode === 'mine' ? isMine(tm(g.homeId)) || isMine(tm(g.awayId)) : g.homeId === mode || g.awayId === mode)) && (season === 'all' || g.season === season));
 }
 function nextGame() {
-  const today = todayISO(), anyMine = state.teams.some(t => t.mine);
-  const pool = state.games.filter(g => g.status === 'scheduled' && g.date >= today && (ui.fTeam !== 'all' ? (g.homeId === ui.fTeam || g.awayId === ui.fTeam) : !anyMine || (tm(g.homeId) || {}).mine || (tm(g.awayId) || {}).mine));
+  const today = todayISO(), anyMine = myTeams().length, id = fTeamId();
+  const pool = state.games.filter(g => g.status === 'scheduled' && g.date >= today && (id ? (g.homeId === id || g.awayId === id) : !anyMine || isMine(tm(g.homeId)) || isMine(tm(g.awayId))));
   return pool.sort(gameCmp)[0] || null;
 }
 function heroInner(g) {
-  const c = countdown(g.date, g.time), pid = perspective(g, ui.fTeam === 'all' ? null : ui.fTeam);
+  const c = countdown(g.date, g.time), pid = perspective(g, fTeamId());
   const meta = [fmtDate(g.date) + (g.time ? ' · ' + fmtTime(g.time) : ' · time TBA'), g.venue, g.channel && 'TV: ' + g.channel].filter(Boolean).join(' · ');
   const vs = `${dot(g.awayId)}${esc(tName(g.awayId))} <span class="muted">@</span> ${dot(g.homeId)}${esc(tName(g.homeId))}`;
   return `<div class="lbl">Next game${g.type !== 'regular' ? ' · ' + esc((TYPES.find(t => t[0] === g.type) || [0, ''])[1]) : ''}</div><div class="cd" id="cd">${esc(c.label)}</div><div class="cdsub" id="cdsub">${esc(c.sub)}</div><div class="vs">${vs}</div><div class="meta">${esc(meta)}</div>`;
@@ -1449,12 +1500,13 @@ function gameRowHTML(g, pref) {
 }
 function renderSchedule() {
   if (!state.teams.length) return storageBannerHTML() + '<div class="empty"><div class="big">🏟️</div><h2>Add your team first</h2><p>Enter your team, then its schedule, and the app does the countdown, standings and rivalry math.</p><button type="button" class="btn primary" data-action="add-team">Add a team</button><button type="button" class="btn" style="margin-top:10px" data-action="espn-add">Add from a league (online)</button></div>';
-  const season = curSeason(), vis = visibleGames(), today = todayISO(), pref = ui.fTeam === 'all' ? null : ui.fTeam;
+  const season = curSeason(), vis = visibleGames(), today = todayISO(), pref = fTeamId();
   const seasons = seasonsList(); if (season !== 'all' && !seasons.includes(season)) seasons.unshift(season);
   const next = nextGame();
   let h = storageBannerHTML();
   h += next ? `<div class="card hero" id="hero" data-action="edit-game" data-id="${esc(next.id)}" style="border-left-color:${esc(tColor(perspective(next, pref) || next.homeId))}">${heroInner(next)}</div>` : '';
-  h += `<div class="filters">${selHTML('fTeam', 'Team', [['all', 'All teams'], ...state.teams.map(t => [t.id, t.name])], ui.fTeam)}${selHTML('fSeason', 'Season', [['all', 'All seasons'], ...seasons.map(s => [s, s])], season)}</div>`;
+  h += teamChipsHTML();
+  h += `<div class="filters">${selGroupsHTML('fTeam', 'Team', teamFilterGroups(), fMode())}${selHTML('fSeason', 'Season', [['all', 'All seasons'], ...seasons.map(s => [s, s])], season)}</div>`;
   h += `<div class="ctl"><button type="button" class="btn" data-action="import">Paste schedule</button><button type="button" class="btn" data-action="export-ics">Export .ics</button></div>` + (syncedTeams().length ? espnLineHTML() : '');
   if (!state.games.length) return h + '<div class="empty"><div class="big">📅</div><h2>No games yet</h2><p>Add one game, or paste a whole schedule.</p><button type="button" class="btn primary" data-action="add-game">Add a game</button></div>';
   const needs = vis.filter(g => g.status === 'scheduled' && g.date < today).sort((a, b) => gameCmp(b, a));
@@ -1534,6 +1586,7 @@ function gameDialog(id, preset = {}) {
       state.games = state.games.filter(x => x.id !== g.id); commit(); toast('Game deleted'); return true;
     } : null
   });
+  groupTeamSelects('awayId', 'homeId');
 }
 function scoreDialog(id) {
   const g = state.games.find(x => x.id === id); if (!g) return;
@@ -1595,11 +1648,12 @@ function meetingDialog(preset = {}) {
       state.games.push(rec); ui.rA = v.a; ui.rB = v.b; commit(); toast('Meeting added');
     }
   });
+  groupTeamSelects('a', 'b');
 }
 
 /* ---- bulk import ---- */
 function importDialog(prev = {}) {
-  const mineFirst = [...state.teams.filter(t => t.mine), ...state.teams.filter(t => !t.mine)];
+  const mineFirst = [...state.teams.filter(isMine), ...state.teams.filter(t => !isMine(t))];
   const opts = [...mineFirst.map(t => [t.id, t.name]), ['__new__', 'New team…']];
   let next = null;
   formDialog({
@@ -1666,17 +1720,37 @@ async function exportICS() {
 }
 
 /* ===================== STANDINGS ===================== */
+/* one league at a time: leagues that hold my teams, plus leagues among hand-entered teams */
+function standingsLeagues() {
+  const out = [], seen = new Set();
+  const add = t => { const k = leagueKey(t); if (!seen.has(k)) { seen.add(k); out.push({ key: k, name: leagueName(t) || 'No league' }); } };
+  myTeams().forEach(add);
+  state.teams.filter(t => !t.espnPath).forEach(add);
+  return out;
+}
+function curLeague(opts) {
+  const k = state.prefs.sLeague;
+  if (typeof k === 'string' && opts.some(o => o.key === k)) return k;
+  const first = myTeams()[0], fk = first ? leagueKey(first) : null;
+  return opts.some(o => o.key === fk) ? fk : opts[0] ? opts[0].key : '';
+}
+function leagueChipsHTML(opts, lg) {
+  if (opts.length < 2) return '';
+  return `<div class="chips" id="leagueChips" role="group" aria-label="League">${opts.map(o => `<button type="button" class="chip${o.key === lg ? ' on' : ''}" data-action="league" data-v="${esc(o.key)}" aria-pressed="${o.key === lg}">${esc(o.name)}</button>`).join('')}</div>`;
+}
 function renderStandings() {
-  const real = state.games.filter(g => g.type === 'regular');
+  const lopts = standingsLeagues(), lg = curLeague(lopts), lgTeams = state.teams.filter(t => leagueKey(t) === lg), lgIds = new Set(lgTeams.map(t => t.id));
+  const real = state.games.filter(g => g.type === 'regular' && (lgIds.has(g.homeId) || lgIds.has(g.awayId)));
   const seasons = [...new Set(real.map(g => g.season))].sort((a, b) => seasonYear(b) - seasonYear(a) || b.localeCompare(a));
-  const official = renderEspnStandings();
+  const chips = leagueChipsHTML(lopts, lg);
+  const official = renderEspnStandings(lg);
   const optCard = `<section class="card pad" style="margin-top:14px"><div class="optrow"><input type="checkbox" id="optOtl" data-opt="otl"${state.settings.otl ? ' checked' : ''}><label for="optOtl">Count overtime losses separately (OTL, hockey style)</label></div><p class="hint">Standings use final regular-season games only. Ties count as half a win.</p></section>`;
-  if (!seasons.length) return storageBannerHTML() + '<div class="empty"><div class="big">📊</div><h2>No standings yet</h2><p>Standings are computed from final regular-season scores. Add games on the Schedule tab.</p><button type="button" class="btn primary" data-action="add-game">Add a game</button></div>' + official + optCard;
+  if (!seasons.length) return storageBannerHTML() + chips + '<div class="empty"><div class="big">📊</div><h2>No standings yet</h2><p>Standings are computed from final regular-season scores. Add games on the Schedule tab.</p><button type="button" class="btn primary" data-action="add-game">Add a game</button></div>' + official + optCard;
   let season = ui.sSeason === null ? autoSeason() : ui.sSeason;
   if (!seasons.includes(season)) season = seasons[0];
-  const st = standings(state.games, state.teams, season, { otl: state.settings.otl });
+  const st = standings(state.games, lgTeams, season, { otl: state.settings.otl });
   const otl = state.settings.otl;
-  let h = storageBannerHTML() + `<div class="filters" style="grid-template-columns:1fr">${selHTML('sSeason', 'Season', seasons.map(s => [s, s]), season)}</div>`;
+  let h = storageBannerHTML() + chips + `<div class="filters" style="grid-template-columns:1fr">${selHTML('sSeason', 'Season', seasons.map(s => [s, s]), season)}</div>`;
   const head = `<tr><th class="tm">Team</th><th>W</th><th>L</th>${otl ? '<th>OTL</th>' : ''}<th>T</th><th>PCT</th><th>GB</th><th>PF</th><th>PA</th><th>DIFF</th><th>STRK</th><th>L10</th><th>HOME</th><th>AWAY</th></tr>`;
   if (!st.groups.length) h += '<div class="card pad muted" style="margin-top:14px">No games in this season yet.</div>';
   for (const gr of st.groups) {
@@ -1687,30 +1761,42 @@ function renderStandings() {
 
 /* Official table straight from the cached ESPN reply; only columns that have data are shown */
 const ESPN_COLS = [['gp', 'GP'], ['w', 'W'], ['l', 'L'], ['t', 'T'], ['otl', 'OTL'], ['pts', 'PTS'], ['pct', 'PCT'], ['gb', 'GB'], ['pf', 'PF'], ['pa', 'PA'], ['diff', 'DIFF'], ['streak', 'STRK']];
+const espnIsMy = (path, id) => state.teams.some(t => isMine(t) && t.espnPath === path && t.espnId === id);
 function espnGroupHTML(gr, path, open) {
   const cols = ESPN_COLS.filter(([k]) => gr.rows.some(r => (k === 't' || k === 'otl') ? Number(r[k]) > 0 : r[k] !== '' && r[k] != null));
-  const mineRow = r => state.teams.some(t => t.espnSync && t.espnPath === path && t.espnId === r.id);
-  return `<details class="card eg"${open ? ' open' : ''}><summary>${esc(gr.name || 'League')}<span class="fine"> · ${plural(gr.rows.length, 'team')}</span></summary><div class="tscroll"><table class="tbl etbl"><thead><tr><th class="tm">Team</th>${cols.map(([, h]) => `<th>${h}</th>`).join('')}</tr></thead><tbody>${gr.rows.map(r => `<tr class="${mineRow(r) ? 'lead' : ''}" data-eid="${esc(r.id)}"><td class="tm">${esc(r.name)}</td>${cols.map(([k]) => `<td>${esc(r[k] || '–')}</td>`).join('')}</tr>`).join('')}</tbody></table></div></details>`;
+  return `<details class="card eg"${open ? ' open' : ''}><summary>${esc(gr.name || 'League')}<span class="fine"> · ${plural(gr.rows.length, 'team')}</span></summary><div class="tscroll"><table class="tbl etbl"><thead><tr><th class="tm">Team</th>${cols.map(([, h]) => `<th>${h}</th>`).join('')}</tr></thead><tbody>${gr.rows.map(r => `<tr class="${espnIsMy(path, r.id) ? 'lead' : ''}" data-eid="${esc(r.id)}"><td class="tm">${esc(r.name)}</td>${cols.map(([k]) => `<td>${esc(r[k] || '–')}</td>`).join('')}</tr>`).join('')}</tbody></table></div></details>`;
 }
-function renderEspnStandings() {
-  const paths = [...new Set(syncedTeams().map(t => t.espnPath))];
-  if (!paths.length) return '';
+const leaguePath = lg => { const t = state.teams.find(x => x.espnSync && x.espnPath && leagueKey(x) === lg); return t ? t.espnPath : null; };
+async function ensureStandings(p) {
+  if (state.espn.standings[p] || ui.stTried[p] || navigator.onLine === false || espnBusy) return;
+  ui.stTried[p] = true;
+  try {
+    const groups = parseEspnStandings(await espnGet(espnStandingsUrl(p)));
+    if (groups.length) { state.espn.standings[p] = { at: new Date().toISOString(), groups }; await persist(); }
+  } catch (e) { /* the placeholder stays; Refresh retries */ }
+  if (ui.tab === 'standings') render();
+}
+function renderEspnStandings(lg) {
+  const p = leaguePath(lg);
+  if (!p) return '';
+  const c = state.espn.standings[p];
   let h = `<div class="sec-h" style="margin-top:22px"><span>Official standings (ESPN)</span></div>${espnLineHTML()}`;
-  for (const p of paths) {
-    const c = state.espn.standings[p];
-    h += `<h3 class="eh" data-league="${esc(p)}">${esc(leagueLabel(p))}<span class="fine"> · ${c ? 'updated ' + esc(fmtAgo(c.at)) : 'nothing saved yet'}</span></h3>`;
-    if (!c || !c.groups.length) { h += '<div class="card pad muted">No official standings saved yet. They download with the next refresh.</div>'; continue; }
-    const hasMine = gr => gr.rows.some(r => state.teams.some(t => t.espnSync && t.espnPath === p && t.espnId === r.id));
-    let any = c.groups.some(hasMine);
-    h += c.groups.map((gr, i) => espnGroupHTML(gr, p, any ? hasMine(gr) : i === 0)).join('');
+  h += `<h3 class="eh" data-league="${esc(p)}">${esc(leagueLabel(p))}<span class="fine"> · ${c ? 'updated ' + esc(fmtAgo(c.at)) : 'nothing saved yet'}</span></h3>`;
+  if (!c || !c.groups.length) { setTimeout(() => ensureStandings(p), 0); return h + '<div class="card pad muted">No official standings saved yet. They download when you’re online, or with Refresh.</div>'; }
+  const total = c.groups.reduce((n, g) => n + g.rows.length, 0), pref = state.prefs.stMine[p], on = typeof pref === 'boolean' ? pref : total >= 30;
+  h += `<div class="optrow" style="margin-top:8px"><input type="checkbox" id="optMy" data-opt="stMine" data-path="${esc(p)}"${on ? ' checked' : ''}><label for="optMy">Jump to my teams (${plural(total, 'team')} in this table)</label></div>`;
+  if (!on) {
+    const any = c.groups.some(g => g.rows.some(r => espnIsMy(p, r.id)));
+    return h + c.groups.map((gr, i) => espnGroupHTML(gr, p, any ? gr.rows.some(r => espnIsMy(p, r.id)) : i === 0)).join('');
   }
-  return h;
+  const shown = c.groups.map(g => ({ name: g.name, rows: g.rows.filter(r => espnIsMy(p, r.id)) })).filter(g => g.rows.length);
+  return h + (shown.length ? shown.map(gr => espnGroupHTML(gr, p, true)).join('') : '<div class="card pad muted">None of your teams are in this table.</div>');
 }
 
 /* ===================== RIVALRIES ===================== */
 function rivalPair() {
   if (state.teams.length < 2) return [null, null];
-  const a = ui.rA && tm(ui.rA) ? ui.rA : (state.teams.find(t => t.mine) || state.teams[0]).id;
+  const a = ui.rA && tm(ui.rA) ? ui.rA : (myTeams()[0] || state.teams[0]).id;
   let b = ui.rB && tm(ui.rB) && ui.rB !== a ? ui.rB : mostPlayed(state.games, a, state.teams);
   if (!b || b === a) b = state.teams.find(t => t.id !== a).id;
   return [a, b];
@@ -1740,9 +1826,12 @@ function renderMatrix() {
 }
 function renderRivalries() {
   if (state.teams.length < 2) return storageBannerHTML() + '<div class="empty"><div class="big">⚔️</div><h2>Add two teams</h2><p>Pick any two teams to see their all-time series, streaks and every meeting.</p><button type="button" class="btn primary" data-action="add-team">Add a team</button></div>';
-  const [a, b] = rivalPair(), h = h2h(state.games, a, b), opts = state.teams.map(t => [t.id, t.name]);
+  const [a, b] = rivalPair(), h = h2h(state.games, a, b), mySet = new Set(myTeams().map(t => t.id));
+  const nmo = t => [t.id, t.name], played = opponentsByPlayed(state.games, a, state.teams), pSet = new Set(played);
+  const teamGroups = mySet.size ? [['My teams', state.teams.filter(t => mySet.has(t.id)).map(nmo)], ['Other teams', state.teams.filter(t => !mySet.has(t.id)).map(nmo)]] : [['All teams', state.teams.map(nmo)]];
+  const vsGroups = [['Played (most first)', played.map(id => nmo(tm(id)))], ['Other teams', state.teams.filter(t => t.id !== a && !pSet.has(t.id)).map(nmo)]];
   const A = tName(a), B = tName(b);
-  let out = storageBannerHTML() + `<div class="filters">${selHTML('rA', 'Team', opts, a)}${selHTML('rB', 'Versus', opts, b)}</div><div class="ctl"><button type="button" class="btn" data-action="add-meeting">Add past meeting</button></div>`;
+  let out = storageBannerHTML() + `<div class="filters">${selGroupsHTML('rA', 'Team', teamGroups, a)}${selGroupsHTML('rB', 'Versus', vsGroups, b)}</div><div class="ctl"><button type="button" class="btn" data-action="add-meeting">Add past meeting</button></div>`;
   if (!h.n) {
     out += `<section class="card pad series" id="series"><div class="sr-teams"><div>${dot(a)}${esc(A)}</div><div class="sr-rec">0-0</div><div>${esc(B)}${dot(b)}</div></div><p class="muted" style="margin-top:8px">No meetings recorded yet. Add a past meeting, or enter final scores on the Schedule tab.</p></section>`;
   } else {
@@ -1821,7 +1910,7 @@ function teamDialog(id) {
       state.games = state.games.filter(g => g.homeId !== t.id && g.awayId !== t.id);
       state.teams = state.teams.filter(x => x.id !== t.id);
       for (const k of Object.keys(state.rivalNotes)) if (k.split('|').includes(t.id)) delete state.rivalNotes[k];
-      if (ui.fTeam === t.id) ui.fTeam = 'all';
+      if (ui.fTeam === t.id) setFTeam('mine');
       pruneEspn(); commit(); toast(gs.length ? `Deleted ${t.name} and ${plural(gs.length, 'game')}` : 'Team deleted'); return true;
     } : null
   });
@@ -1886,12 +1975,12 @@ async function restoreFromText(text) {
     const ts = parsed.exportedAt && !isNaN(Date.parse(parsed.exportedAt)) ? parsed.exportedAt : new Date().toISOString();
     for (const k of DATA_KEYS) state[k] = data[k];
     state.meta.lastBackup = ts; state.meta.lastChange = ts;
-    ui.fTeam = 'all'; ui.rA = ui.rB = null;
+    ui.fTeam = state.prefs.fTeam; ui.rA = ui.rB = null;
     await persist({ touch: false });
     render(); toast(`Restored ${sum}`); return true;
   }
   if (choice === 'merge') {
-    const merged = { settings: state.settings, espn: state.espn.lastRefresh ? state.espn : data.espn, rivalNotes: { ...data.rivalNotes, ...state.rivalNotes } }; let added = 0;
+    const merged = { settings: state.settings, espn: state.espn.lastRefresh ? state.espn : data.espn, prefs: state.prefs, rivalNotes: { ...data.rivalNotes, ...state.rivalNotes } }; let added = 0;
     for (const k of ['teams', 'games']) { const ids = new Set(state[k].map(x => x.id)); merged[k] = [...state[k]]; for (const x of data[k]) if (!ids.has(x.id)) { merged[k].push(x); added++; } }
     const n = normalizeData(merged).data;
     for (const k of DATA_KEYS) state[k] = n[k];
@@ -1907,7 +1996,7 @@ async function doRestore() {
 }
 async function doWipe() {
   if (!(await confirmBox('Erase everything?', 'This permanently deletes all teams, games, scores and notes on this device.', 'Erase everything'))) return;
-  state = defaultState(); ui.fTeam = 'all'; ui.fSeason = null; ui.sSeason = null; ui.rA = ui.rB = null;
+  state = defaultState(); ui.fTeam = 'mine'; ui.fSeason = null; ui.sSeason = null; ui.rA = ui.rB = null;
   await persist({ touch: false });
   render(); toast('Everything erased');
 }
@@ -1947,6 +2036,8 @@ view.addEventListener('click', e => {
     case 'restore': doRestore(); break;
     case 'wipe': doWipe(); break;
     case 'install': runInstall(); break;
+    case 'chip': setFTeam(el.dataset.v); ui.showAll = false; render(); break;
+    case 'league': state.prefs.sLeague = el.dataset.v; ui.sSeason = null; commit(); break;
     case 'espn-add': addFromLeagueDialog(); break;
     case 'espn-refresh': refreshEspn(); break;
     case 'espn-past': pastDialog(); break;
@@ -1957,13 +2048,14 @@ view.addEventListener('change', e => {
   const el = e.target;
   if (el.dataset.sel) {
     const v = el.value;
-    if (el.dataset.sel === 'fTeam') ui.fTeam = v;
+    if (el.dataset.sel === 'fTeam') setFTeam(v);
     else if (el.dataset.sel === 'fSeason') ui.fSeason = v;
     else if (el.dataset.sel === 'sSeason') ui.sSeason = v;
     else if (el.dataset.sel === 'rA') { ui.rA = v; if (ui.rB === v) ui.rB = null; }
     else if (el.dataset.sel === 'rB') ui.rB = v;
     ui.showAll = false; render();
   } else if (el.dataset.opt === 'otl') { state.settings.otl = el.checked; commit(); }
+  else if (el.dataset.opt === 'stMine') { state.prefs.stMine[el.dataset.path] = el.checked; commit(); }
 });
 $('#addBtn').onclick = () => { if (ui.tab === 'rivalries') meetingDialog(); else if (ui.tab === 'teams') teamDialog(null); else gameDialog(null); };
 $$('nav.tabs button').forEach(b => { b.onclick = () => go(b.dataset.tab); });
@@ -1983,6 +2075,7 @@ setInterval(tickCountdown, 30000);
       }
     } catch (e) { console.error(e); db = null; }
   }
+  ui.fTeam = state.prefs.fTeam;
   render();
   maybeAutoRefresh();
 })();
