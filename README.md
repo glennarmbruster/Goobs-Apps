@@ -52,3 +52,9 @@ None of the new apps use Firebase; each has its own encrypted Backup screen.
 ## Added: Pool
 - `pool/` water-chemistry advisor for one pool (default 14,000 gal; set the volume in Settings and every dose scales). Log a test (FC and pH required; TA, CYA, CH optional, CYA accepts `<40`) and it picks the mode (normal, preventative, SLAM, mustard, post-SLAM) and shows exact amounts in priority order with when to add and when to retest. Also: chemical dose log, history charts with target bands, daily/weekly/monthly routine with due badges, editable targets, encrypted Backup. On-device only, no Firebase, no reminders or notifications.
 - Rules built in: liquid chlorine first, no pH changes while FC is above 10, no algaecide or cal-hypo in plans, Yellow Treat only for confirmed mustard (enter the label dose in Settings for exact ounces), pucks (not granular stabilizer) for CYA. Granular stabilizer amounts and the "what not to use" list appear only after tapping Ask.
+
+## Added: Sous Vide, Watch Log, Sports
+- **Sous Vide** (`/sousvide/`): steak and sous vide time/temperature calculator (cut, thickness, start state, doneness), sear plan, 10 steakhouse-style recipes with a low-calorie swap, saved recipes, cook mode with timers, and a cook log. Defaults to Anova Precision Oven bagless mode.
+- **Watch Log** (`/watchlog/`): private TV/movie log. You type or paste cast and crew; it cross-references who was in what, shared cast between titles, and shortest chains between two people.
+- **Sports** (`/sports/`): schedules (paste import, .ics export), standings calculator, head-to-head rivalry records and a rivalry matrix. You enter the data.
+None of these use Firebase or the network. Data stays on the device; JSON backup as in the other apps.

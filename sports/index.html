@@ -1,0 +1,1549 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sports</title>
+<meta name="description" content="Schedules, standings and rivalry records for your teams. You enter the data; it stays on your device.">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#f6f8f1" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0f1410" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Sports">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<style>
+:root{
+  --bg:#f5f4ef; --card:#ffffff; --ink:#1b2420; --muted:#66736d; --line:#e2e0d6; --soft:#efede5;
+  --accent:#0f766e; --accent-ink:#ffffff; --accent-soft:#d9f0ec;
+  --bad:#b42318; --bad-soft:#fde8e6; --warn:#9a5b00; --warn-soft:#fdf0d5; --ok:#166534; --ok-soft:#dcf5e3;
+  --radius:14px; --shadow:0 1px 2px rgba(16,24,20,.06),0 6px 18px rgba(16,24,20,.06);
+  color-scheme:light dark;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0e1311; --card:#171f1c; --ink:#e7eeeb; --muted:#97a69f; --line:#27332e; --soft:#1e2824;
+    --accent:#2dd4bf; --accent-ink:#06211d; --accent-soft:#12332e;
+    --bad:#ff8a80; --bad-soft:#3a1a18; --warn:#f6c26b; --warn-soft:#3a2c12; --ok:#7ee2a0; --ok-soft:#14301f;
+    --shadow:none;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation;
+  padding-bottom:calc(92px + env(safe-area-inset-bottom));
+}
+a{color:var(--accent)}
+h1,h2,h3{margin:0;line-height:1.2}
+h3{font-size:16px}
+p{margin:0 0 8px}
+.wrap{max-width:720px;margin:0 auto;padding:0 16px}
+.muted{color:var(--muted)} .bad{color:var(--bad)} .warn{color:var(--warn)} .ok{color:var(--ok)}
+.num{font-variant-numeric:tabular-nums}
+.hide{display:none!important}
+.pad{padding:14px 16px}
+.hint{font-size:13px;color:var(--muted);margin-top:4px}
+
+/* header */
+header.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top)}
+header.top .wrap{display:flex;align-items:center;gap:12px;min-height:58px}
+header.top .grow{flex:1;min-width:0}
+header.top h1{font-size:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+header.top .sub{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.back{display:inline-flex;align-items:center;min-height:44px;padding-right:6px;text-decoration:none;font-weight:600}
+
+/* cards, tiles, lists */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+.tile{padding:12px}
+.tile .lbl{font-size:12px;color:var(--muted);font-weight:600}
+.tile .val{font-size:20px;font-weight:700;margin-top:2px}
+.sec-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin:22px 4px 8px;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700}
+.sec-h .btn{text-transform:none;letter-spacing:0}
+.list{list-style:none;margin:0;padding:0}
+.row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-top:1px solid var(--line);cursor:pointer}
+.row:first-child{border-top:0}
+.row.static{cursor:default}
+.row-main{flex:1;min-width:0}
+.row-title{font-weight:600;overflow-wrap:anywhere}
+.row-sub{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.row-amt{font-weight:700;white-space:nowrap}
+.row.faded{opacity:.6}
+.badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 7px;border-radius:999px;background:var(--soft);color:var(--muted);vertical-align:middle;margin-left:6px}
+.badge.ok{background:var(--ok-soft);color:var(--ok)} .badge.warn{background:var(--warn-soft);color:var(--warn)} .badge.bad{background:var(--bad-soft);color:var(--bad)} .badge.acc{background:var(--accent-soft);color:var(--accent)}
+.empty{text-align:center;padding:40px 20px;color:var(--muted)}
+.empty .big{font-size:40px;line-height:1;margin-bottom:10px}
+.empty h2{color:var(--ink);font-size:18px;margin-bottom:6px}
+.empty .btn{margin-top:14px}
+.banner{padding:12px 14px;border-radius:12px;background:var(--warn-soft);color:var(--warn);font-size:14px;margin:14px 0;display:flex;gap:10px;justify-content:space-between;align-items:center}
+.banner.bad{background:var(--bad-soft);color:var(--bad)}
+.bar{height:8px;border-radius:99px;background:var(--soft);overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--accent);border-radius:99px}
+.bar.over>i{background:var(--bad)}
+
+/* buttons */
+.btn{white-space:nowrap;appearance:none;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-weight:600;min-height:44px;padding:0 16px;border-radius:12px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.danger{color:var(--bad)}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--accent)}
+.btn.small{min-height:36px;padding:0 12px;font-size:14px;border-radius:10px}
+.btn.block{width:100%}
+.btn:active{transform:translateY(1px)}
+.btn:disabled{opacity:.5;cursor:default}
+.btn:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible,.chip:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 14px;min-height:36px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+
+/* bottom nav + fab */
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+nav.tabs .wrap{display:flex;padding:0}
+nav.tabs a,nav.tabs button{flex:1;min-height:58px;border:0;background:none;color:var(--muted);font:inherit;font-size:11px;font-weight:600;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;text-decoration:none}
+nav.tabs .ico{font-size:20px;line-height:1}
+nav.tabs [aria-current="page"]{color:var(--accent)}
+.fab{position:fixed;right:max(16px,calc(50vw - 344px));bottom:calc(74px + env(safe-area-inset-bottom));z-index:7;width:56px;height:56px;border-radius:50%;border:0;background:var(--accent);color:var(--accent-ink);font-size:30px;line-height:1;box-shadow:0 6px 18px rgba(0,0,0,.28);cursor:pointer}
+.fab:active{transform:scale(.96)}
+
+/* forms + dialogs */
+input,select,textarea{width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-height:44px}
+textarea{min-height:92px;resize:vertical}
+input[type=checkbox]{width:22px;height:22px;min-height:0;padding:0;accent-color:var(--accent);flex:none}
+.field label{display:block;font-size:13px;font-weight:600;color:var(--muted);margin-bottom:4px}
+.field.check{display:flex;align-items:center;gap:10px}
+.field.check label{margin:0;color:var(--ink);font-size:16px;font-weight:500}
+.fields2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+dialog{border:0;border-radius:18px;padding:0;width:calc(100vw - 24px);max-width:520px;background:var(--card);color:var(--ink);box-shadow:0 20px 60px rgba(0,0,0,.35)}
+dialog::backdrop{background:rgba(10,15,12,.55)}
+.dlg-form{padding:20px;display:flex;flex-direction:column;gap:12px;max-height:85vh;max-height:85dvh;overflow:auto}
+.dlg-form h2{font-size:19px}
+.dlg-actions{display:flex;gap:8px;align-items:center;margin-top:6px;flex-wrap:wrap}
+.dlg-actions .spacer{flex:1}
+.ask-actions{justify-content:flex-end}
+.dlg-err{color:var(--bad);font-size:14px}
+.dlg-err:empty{display:none}
+.ask-body{font-size:15px;color:var(--ink)}
+.ask-body p{margin:0 0 8px}
+.checkgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px}
+.checkgrid .field.check label{font-size:15px}
+
+/* toast */
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom));background:#1b2420;color:#fff;padding:12px 16px;border-radius:12px;display:flex;gap:14px;align-items:center;z-index:60;max-width:calc(100vw - 24px);box-shadow:0 8px 24px rgba(0,0,0,.35);font-size:15px}
+.toast button{background:none;border:0;color:#7dd3c8;font:inherit;font-weight:700;cursor:pointer;min-height:36px}
+
+@media (prefers-reduced-motion:no-preference){.btn,.fab{transition:transform .08s}}
+
+.syncbadge{flex:none;white-space:nowrap;border:1px solid var(--line,#d5dbe0);background:var(--card,#fff);color:inherit;border-radius:999px;padding:4px 10px;font:inherit;font-size:.82rem;cursor:pointer;white-space:nowrap}
+.syncbadge.ok{color:#15803d}.syncbadge.bad{color:#b91c1c}
+.seg{display:flex;gap:8px;margin-top:6px}.seg .chip{flex:1;text-align:center}
+
+:root{--bg:#f6f8f1;--accent:#4d7c0f;--accent-ink:#fff;--accent-soft:#e3efd0}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1410;--card:#171e17;--line:#263226;--soft:#1e271e;--accent:#a3e635;--accent-ink:#13200a;--accent-soft:#25331a}}
+.stack{display:flex;flex-direction:column;gap:14px;margin-top:14px}
+.ctl{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.ctl .btn{flex:1}
+.filters{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.filters .field{min-width:0}
+.filters label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:3px}
+#dlg .fields2 .field:has(textarea),#dlg .fields2 .field:has(select),#dlg .fields2 .field.check{grid-column:1/-1}
+#dlg .fields2 .field{min-width:0}
+.hero{padding:16px;border-left:6px solid var(--accent);background:var(--accent-soft);cursor:pointer;margin-top:14px}
+.hero .lbl{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.hero .cd{font-size:36px;font-weight:800;color:var(--accent);line-height:1.1;margin-top:2px}
+.hero .cdsub{font-size:14px;font-weight:600;color:var(--muted);min-height:20px}
+.hero .vs{font-size:19px;font-weight:700;margin-top:8px;overflow-wrap:anywhere}
+.hero .meta{font-size:14px;color:var(--ink);margin-top:3px;overflow-wrap:anywhere}
+.cal{flex:none;width:48px;text-align:center;border:1px solid var(--line);border-radius:10px;padding:3px 0;background:var(--bg)}
+.cal b{display:block;font-size:10px;letter-spacing:.06em;color:var(--accent);text-transform:uppercase}
+.cal span{display:block;font-size:19px;font-weight:800;line-height:1.1}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;flex:none}
+.score{font-weight:800;white-space:nowrap;text-align:right}
+.score small{display:block;font-size:11px;font-weight:600;color:var(--muted)}
+.when{font-size:13px;font-weight:600;color:var(--muted);white-space:nowrap}
+.rowbtn{flex:none}
+.tscroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table.tbl{border-collapse:collapse;width:100%;font-size:14px}
+.tbl th,.tbl td{padding:9px 8px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.tbl td{border-top:1px solid var(--line)}
+.tbl th{font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:700}
+.tbl .tm{text-align:left;position:sticky;left:0;background:var(--card);max-width:9.5em;overflow:hidden;text-overflow:ellipsis}
+.tbl td.tm{font-weight:600}
+.tbl .lead td{background:var(--accent-soft)}
+.tbl .lead td.tm{background:var(--accent-soft)}
+.tbl .l{text-align:left}
+.tbl tr[data-action]{cursor:pointer}
+.mx{text-align:center!important;min-width:56px;height:44px;cursor:pointer;font-weight:700;font-size:13px}
+.mx.self{background:var(--soft);color:var(--muted);cursor:default}
+.mx.p1{background:rgba(22,163,74,.15)} .mx.p2{background:rgba(22,163,74,.3)} .mx.p3{background:rgba(22,163,74,.48)}
+.mx.n1{background:rgba(220,38,38,.15)} .mx.n2{background:rgba(220,38,38,.3)} .mx.n3{background:rgba(220,38,38,.48)}
+.mx.none{color:var(--muted);font-weight:400}
+.series{text-align:center;margin-top:14px}
+.series .sr-teams{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.series .sr-teams>div{flex:1;min-width:0;font-weight:700;overflow-wrap:anywhere;font-size:15px}
+.series .sr-rec{flex:none!important;font-size:30px;font-weight:800;color:var(--accent);white-space:nowrap}
+.series .lead-tx{font-weight:700;margin-top:6px}
+.tiles2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.tiles2 .tile{padding:12px}
+.tiles2 .val{font-size:18px}
+.tiles2 .sub{font-size:12px;color:var(--muted);margin-top:1px;overflow-wrap:anywhere}
+.chartbox{padding:10px 8px 6px;margin-top:12px}
+.chartbox h3{padding:0 6px;font-size:14px}
+.chartbox svg{width:100%;height:auto;display:block}
+.optrow{display:flex;gap:10px;align-items:center}
+.optrow label{font-size:15px}
+.pvwrap{max-height:42vh;overflow:auto;border:1px solid var(--line);border-radius:10px;margin-top:8px}
+.pv th,.pv td{padding:6px 7px;font-size:12.5px;white-space:normal;text-align:left;vertical-align:top}
+.pv tr.bad td{color:var(--bad)} .pv tr.dup td{color:var(--muted)}
+.fine{font-size:13px;color:var(--muted)}
+.sw{display:inline-block;width:14px;height:14px;border-radius:50%;vertical-align:-2px;margin-right:6px}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap"><div class="grow"><h1 id="title">Sports</h1><div class="sub" id="sub"></div></div><button type="button" class="btn small primary hide" id="addBtn">+ Game</button></div></header>
+<main class="wrap" id="view"></main>
+<nav class="tabs" aria-label="Sections"><div class="wrap">
+  <button type="button" data-tab="schedule"><span class="ico">📅</span>Schedule</button>
+  <button type="button" data-tab="standings"><span class="ico">📊</span>Standings</button>
+  <button type="button" data-tab="rivalries"><span class="ico">⚔️</span>Rivalries</button>
+  <button type="button" data-tab="teams"><span class="ico">👥</span>Teams</button>
+  <button type="button" data-tab="backup"><span class="ico">💾</span>Backup</button>
+</div></nav>
+<script>
+'use strict';
+/* ===================== shared helpers (identical in every Goobs app) ===================== */
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => Array.from(el.querySelectorAll(s));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const isNum = v => typeof v === 'number' && Number.isFinite(v);
+const str = v => (typeof v === 'string' ? v : v == null ? '' : String(v));
+
+/* ---- dates: always local calendar dates stored as 'YYYY-MM-DD' ---- */
+const pad = n => String(n).padStart(2, '0');
+const fmtISO = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const parseISO = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+const isISO = s => typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s) && fmtISO(parseISO(s)) === s;
+const todayISO = () => fmtISO(new Date());
+const daysBetween = (a, b) => Math.round((parseISO(b) - parseISO(a)) / 86400000);
+const addDays = (s, n) => { const d = parseISO(s); d.setDate(d.getDate() + n); return fmtISO(d); };
+function addMonths(s, n, anchorDay) {
+  const d = parseISO(s);
+  const day = anchorDay || d.getDate();
+  const first = new Date(d.getFullYear(), d.getMonth() + n, 1);
+  const last = new Date(first.getFullYear(), first.getMonth() + 1, 0).getDate();
+  first.setDate(Math.min(day, last));
+  return fmtISO(first);
+}
+const monthEndISO = s => { const d = parseISO(s); return fmtISO(new Date(d.getFullYear(), d.getMonth() + 1, 0)); };
+
+function fmtDate(s, withWeekday = true) {
+  const d = parseISO(s);
+  const o = { month: 'short', day: 'numeric' };
+  if (withWeekday) o.weekday = 'short';
+  if (d.getFullYear() !== new Date().getFullYear()) o.year = 'numeric';
+  return d.toLocaleDateString(undefined, o);
+}
+function fmtDateTime(iso) {
+  const d = new Date(iso);
+  return isNaN(d) ? 'unknown date' : d.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+}
+const _mf = {};
+function money(n, cur = 'USD') {
+  if (!_mf[cur]) {
+    try { _mf[cur] = new Intl.NumberFormat(undefined, { style: 'currency', currency: cur }); }
+    catch { _mf[cur] = new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }); }
+  }
+  return _mf[cur].format(n);
+}
+const csvCell = v => {
+  let s = String(v ?? '');
+  if (/^[=+\-@\t\r]/.test(s)) s = "'" + s; // neutralise spreadsheet formula injection
+  return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+};
+function safeUrl(u) {
+  let s = String(u ?? '').trim();
+  if (!s) return '';
+  if (!/^[a-z][a-z0-9+.-]*:/i.test(s)) s = 'https://' + s;
+  try { const x = new URL(s); return /^https?:$/.test(x.protocol) ? x.href : ''; } catch { return ''; }
+}
+
+/* ---- storage: one JSON string under one key in IndexedDB ---- */
+function openDB(name) {
+  return new Promise((res, rej) => {
+    if (!window.indexedDB) return rej(new Error('IndexedDB unavailable'));
+    const r = indexedDB.open(name, 1);
+    r.onupgradeneeded = () => { r.result.createObjectStore('kv'); };
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+    r.onblocked = () => rej(new Error('Database blocked'));
+  });
+}
+function idbGet(db, key) {
+  return new Promise((res, rej) => {
+    const q = db.transaction('kv').objectStore('kv').get(key);
+    q.onsuccess = () => res(q.result);
+    q.onerror = () => rej(q.error);
+  });
+}
+function idbPut(db, key, val) {
+  return new Promise((res, rej) => {
+    const tx = db.transaction('kv', 'readwrite');
+    tx.objectStore('kv').put(val, key);
+    tx.oncomplete = () => res();
+    tx.onerror = () => rej(tx.error);
+    tx.onabort = () => rej(tx.error || new Error('Write aborted'));
+  });
+}
+
+/* ---- toast ---- */
+function toast(msg, action) {
+  const old = $('.toast'); if (old) old.remove();
+  const t = document.createElement('div');
+  t.className = 'toast'; t.setAttribute('role', 'status');
+  t.innerHTML = `<span>${esc(msg)}</span>` + (action ? `<button type="button">${esc(action.label)}</button>` : '');
+  if (action) t.querySelector('button').onclick = () => { t.remove(); action.fn(); };
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), action ? 8000 : 3200);
+}
+
+/* ---- dialogs ---- */
+if (!$('#dlg')) document.body.insertAdjacentHTML('beforeend', '<dialog id="dlg"></dialog><dialog id="ask"></dialog>');
+{
+  const dlg = $('#dlg'); let down = false;
+  dlg.addEventListener('pointerdown', e => { down = e.target === dlg; });
+  dlg.addEventListener('click', e => { if (e.target === dlg && down) dlg.close(); });
+}
+
+function fieldHTML(f) {
+  const id = 'f_' + f.name, v = f.value ?? '';
+  if (f.type === 'checkbox')
+    return `<div class="field check"><input type="checkbox" id="${id}" name="${f.name}"${f.value ? ' checked' : ''}><label for="${id}">${esc(f.label)}</label></div>`;
+  let ctl;
+  if (f.type === 'select') {
+    ctl = `<select id="${id}" name="${f.name}">${f.options.map(o => {
+      const [val, label] = Array.isArray(o) ? o : [o, o];
+      return `<option value="${esc(val)}"${String(val) === String(v) ? ' selected' : ''}>${esc(label)}</option>`;
+    }).join('')}</select>`;
+  } else if (f.type === 'textarea') {
+    ctl = `<textarea id="${id}" name="${f.name}" placeholder="${esc(f.placeholder || '')}">${esc(v)}</textarea>`;
+  } else {
+    const t = f.type || 'text';
+    const extra = t === 'number' ? ` inputmode="decimal" step="${f.step || 'any'}"` : '';
+    ctl = `<input id="${id}" name="${f.name}" type="${t}" value="${esc(v)}" placeholder="${esc(f.placeholder || '')}"${extra}${f.min != null ? ` min="${f.min}"` : ''}${f.max != null ? ` max="${f.max}"` : ''} autocomplete="${f.autocomplete || 'off'}" autocapitalize="${f.capitalize || (t === 'email' || t === 'password' ? 'none' : 'sentences')}">`;
+  }
+  return `<div class="field"><label for="${id}">${esc(f.label)}${f.required ? ' *' : ''}</label>${ctl}${f.hint ? `<div class="hint">${esc(f.hint)}</div>` : ''}</div>`;
+}
+
+/* formDialog: fields -> values. onSubmit(values) may return an error string (keeps dialog open).
+   onDelete() may return true to close. extra: [{label, kind, onClick}] extra buttons. */
+function formDialog({ title, intro = '', fields, submitLabel = 'Save', onSubmit, onDelete, deleteLabel = 'Delete', extra = [], onClose, grid = '' }) {
+  const dlg = $('#dlg');
+  const body = grid ? `<div class="${grid}">${fields.map(fieldHTML).join('')}</div>` : fields.map(fieldHTML).join('');
+  dlg.innerHTML = `<form class="dlg-form" novalidate>
+    <h2>${esc(title)}</h2>${intro ? `<p class="muted">${esc(intro)}</p>` : ''}${body}
+    <div class="dlg-err" role="alert"></div>
+    <div class="dlg-actions">
+      ${onDelete ? `<button type="button" class="btn danger" data-k="del">${esc(deleteLabel)}</button>` : ''}
+      ${extra.map((x, i) => `<button type="button" class="btn ${x.kind || ''}" data-x="${i}">${esc(x.label)}</button>`).join('')}
+      <span class="spacer"></span>
+      <button type="button" class="btn ghost" data-k="cancel">Cancel</button>
+      <button type="submit" class="btn primary">${esc(submitLabel)}</button>
+    </div></form>`;
+  const form = $('form', dlg), err = $('.dlg-err', dlg);
+  const collect = () => {
+    const vals = {};
+    for (const f of fields) { const el = form.elements[f.name]; vals[f.name] = f.type === 'checkbox' ? el.checked : el.value; }
+    return vals;
+  };
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const vals = collect();
+    for (const f of fields) if (f.required && !String(vals[f.name]).trim()) { err.textContent = `${f.label} is required.`; return; }
+    err.textContent = '';
+    let msg;
+    try { msg = await onSubmit(vals); } catch (ex) { msg = ex.message || 'Something went wrong.'; }
+    if (msg) err.textContent = msg; else dlg.close();
+  });
+  $('[data-k="cancel"]', dlg).onclick = () => dlg.close();
+  if (onDelete) $('[data-k="del"]', dlg).onclick = async () => { if (await onDelete()) dlg.close(); };
+  $$('[data-x]', dlg).forEach(b => { b.onclick = () => extra[+b.dataset.x].onClick(collect()); });
+  dlg.onclose = () => { dlg.onclose = null; if (onClose) onClose(); };
+  dlg.showModal();
+  const first = form.querySelector('input:not([type=checkbox]),textarea');
+  if (first && !first.value) first.focus(); // new-item forms open ready to type; edit forms don't pop the keyboard
+}
+
+function askDialog({ title, body = '', buttons }) {
+  return new Promise(resolve => {
+    const d = $('#ask'); let done = false;
+    d.innerHTML = `<div class="dlg-form"><h2>${esc(title)}</h2>${body ? `<div class="ask-body">${body}</div>` : ''}
+      <div class="dlg-actions ask-actions">${buttons.map((b, i) => `<button type="button" class="btn ${b.kind || ''}" data-i="${i}">${esc(b.label)}</button>`).join('')}</div></div>`;
+    const finish = v => { if (done) return; done = true; d.close(); resolve(v); };
+    $$('button', d).forEach(btn => { btn.onclick = () => finish(buttons[+btn.dataset.i].value); });
+    d.oncancel = () => { done = true; resolve(undefined); };
+    d.showModal();
+  });
+}
+const confirmBox = async (title, bodyText, okLabel = 'Delete', danger = true) =>
+  (await askDialog({ title, body: bodyText ? `<p>${esc(bodyText)}</p>` : '', buttons: [{ label: 'Cancel', value: false }, { label: okLabel, value: true, kind: danger ? 'danger' : 'primary' }] })) === true;
+const msgBox = (title, bodyText) =>
+  askDialog({ title, body: `<p>${esc(bodyText)}</p>`, buttons: [{ label: 'OK', value: true, kind: 'primary' }] });
+
+/* ---- backup: optional AES-GCM passphrase encryption (Web Crypto, PBKDF2-SHA256) ---- */
+const b64 = buf => { let s = ''; const b = new Uint8Array(buf); for (let i = 0; i < b.length; i += 0x8000) s += String.fromCharCode.apply(null, b.subarray(i, i + 0x8000)); return btoa(s); };
+const unb64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+async function deriveKey(pass, salt, iterations) {
+  const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(pass), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey({ name: 'PBKDF2', salt, iterations, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+}
+async function encryptPayload(obj, pass) {
+  const salt = crypto.getRandomValues(new Uint8Array(16)), iv = crypto.getRandomValues(new Uint8Array(12));
+  const iterations = 250000;
+  const key = await deriveKey(pass, salt, iterations);
+  const ct = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, new TextEncoder().encode(JSON.stringify(obj)));
+  return { encrypted: true, kdf: 'PBKDF2-SHA256', iterations, salt: b64(salt), iv: b64(iv), data: b64(ct) };
+}
+async function decryptPayload(env, pass) {
+  const key = await deriveKey(pass, unb64(env.salt), env.iterations);
+  try {
+    const pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: unb64(env.iv) }, key, unb64(env.data));
+    return JSON.parse(new TextDecoder().decode(pt));
+  } catch { throw new Error('Wrong passphrase, or the file is damaged.'); }
+}
+function promptDecrypt(env) {
+  return new Promise(resolve => {
+    let result = null;
+    formDialog({
+      title: 'Encrypted backup', intro: 'Enter the passphrase you chose when you made this backup.',
+      fields: [{ name: 'pass', label: 'Passphrase', type: 'password', required: true }], submitLabel: 'Unlock',
+      onSubmit: async v => { try { result = await decryptPayload(env, v.pass); } catch (e) { return e.message; } },
+      onClose: () => resolve(result)
+    });
+  });
+}
+const Backup = {
+  async build({ appId, schema, data, passphrase }) {
+    const head = { app: appId, schemaVersion: schema, exportedAt: new Date().toISOString() };
+    if (passphrase) return JSON.stringify({ ...head, ...(await encryptPayload(data, passphrase)) });
+    return JSON.stringify({ ...head, encrypted: false, data }, null, 2);
+  },
+  /* returns {data, exportedAt, schemaVersion}, or null if the user cancelled the passphrase prompt; throws Error with a friendly message */
+  async parse(text, { appId, schema }) {
+    let env;
+    try { env = JSON.parse(text); } catch { throw new Error('That file isn’t a valid backup (it isn’t JSON).'); }
+    if (!env || typeof env !== 'object' || env.app !== appId)
+      throw new Error(env && typeof env === 'object' && env.app ? `That backup belongs to a different app (${String(env.app).slice(0, 40)}).` : 'That file isn’t a backup from this app.');
+    if (!Number.isInteger(env.schemaVersion) || env.schemaVersion < 1) throw new Error('The backup is missing its version number.');
+    if (env.schemaVersion > schema) throw new Error('That backup was made by a newer version of the app. Close and reopen this app to update it, then try again.');
+    let data;
+    if (env.encrypted) {
+      if (!(window.crypto && crypto.subtle)) throw new Error('Encrypted backups need a secure (https) connection.');
+      if (!(env.iterations >= 1000 && env.iterations <= 2000000) || typeof env.salt !== 'string' || typeof env.iv !== 'string' || typeof env.data !== 'string')
+        throw new Error('The encrypted backup is damaged.');
+      data = await promptDecrypt(env);
+      if (data === null) return null;
+    } else data = env.data;
+    if (!data || typeof data !== 'object') throw new Error('The backup contains no data.');
+    return { data, exportedAt: typeof env.exportedAt === 'string' ? env.exportedAt : null, schemaVersion: env.schemaVersion };
+  }
+};
+
+/* share sheet when the platform supports sharing files (iPhone), otherwise a normal download */
+async function deliverFile(filename, text, mime = 'application/json') {
+  const file = new File([text], filename, { type: mime });
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try { await navigator.share({ files: [file], title: filename }); return 'shared'; }
+    catch (e) { if (e && e.name === 'AbortError') return 'cancelled'; /* otherwise fall back to a download */ }
+  }
+  const url = URL.createObjectURL(file);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.style.display = 'none';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 15000);
+  return 'downloaded';
+}
+function pickFile(accept = '.json,application/json') {
+  return new Promise(resolve => {
+    const i = document.createElement('input');
+    i.type = 'file'; i.accept = accept; i.style.display = 'none';
+    document.body.appendChild(i);
+    let done = false;
+    const fin = f => { if (done) return; done = true; i.remove(); resolve(f); };
+    i.addEventListener('change', () => fin((i.files && i.files[0]) || null));
+    i.addEventListener('cancel', () => fin(null));
+    i.click();
+  });
+}
+const readFileText = f => (f.text ? f.text() : new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = () => rej(r.error); r.readAsText(f); }));
+
+/* nag banner: only when there is data and no recent backup */
+function backupNag(meta, hasData) {
+  if (!hasData) return null;
+  if (!meta.lastBackup) return 'You have data but no backup yet. Make one so you can restore it if this device loses it.';
+  const age = (Date.now() - Date.parse(meta.lastBackup)) / 86400000;
+  const changed = meta.lastChange && Date.parse(meta.lastChange) > Date.parse(meta.lastBackup) + 1000;
+  if (changed && age >= 7) return `Your last backup was ${Math.floor(age)} days ago and you’ve made changes since.`;
+  return null;
+}
+
+/* ---- install helper ---- */
+let deferredInstall = null;
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferredInstall = e; if (typeof render === 'function') render(); });
+const isStandalone = () => (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+function installCardHTML() {
+  if (isStandalone()) return '';
+  const ios = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const msg = deferredInstall
+    ? '<p>Install it for its own window and full offline use.</p><button class="btn primary" data-action="install">Install app</button>'
+    : ios
+      ? '<p>In Safari tap <b>Share</b> → <b>Add to Home Screen</b>. <b>Do this before entering data</b> — the home-screen app keeps its own separate storage from the Safari tab. Then open it from the new icon.</p>'
+      : '<p>Use your browser’s menu → <b>Install app</b> (or <b>Add to Home Screen</b>).</p>';
+  return `<section class="card pad"><h3>Install on this device</h3>${msg}</section>`;
+}
+async function runInstall() { if (!deferredInstall) return; deferredInstall.prompt(); try { await deferredInstall.userChoice; } catch {} deferredInstall = null; if (typeof render === 'function') render(); }
+
+
+
+if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol))
+  window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
+
+/* Exit link: every app's top bar gets "‹ Apps" (back to the main apps page) unless that screen already has its own back link. */
+(function () {
+  const add = () => {
+    const w = document.querySelector('header.top .wrap');
+    if (!w || w.querySelector('a.back')) return;
+    const a = document.createElement('a');
+    a.className = 'back exit'; a.href = '../'; a.textContent = '‹ Apps'; a.setAttribute('aria-label', 'Exit to all apps');
+    w.insertBefore(a, w.firstChild);
+  };
+  const start = () => { add(); new MutationObserver(add).observe(document.body, { childList: true, subtree: true }); };
+  if (document.body) start(); else document.addEventListener('DOMContentLoaded', start);
+})();
+
+
+/* ===================== Sports app ===================== */
+const APP_ID = 'goobs-sports', DB_NAME = 'goobs-sports-db', SCHEMA = 1;
+const MAX = { teams: 500, games: 60000 };
+const STATUSES = [['scheduled', 'Scheduled'], ['final', 'Final'], ['postponed', 'Postponed'], ['cancelled', 'Cancelled']];
+const STATUS_KEYS = STATUSES.map(s => s[0]);
+const TYPES = [['regular', 'Regular season'], ['playoff', 'Playoff'], ['preseason', 'Preseason'], ['rivalry-historic', 'Historic meeting']];
+const TYPE_KEYS = TYPES.map(s => s[0]);
+const PALETTE = ['#4d7c0f', '#1d4ed8', '#b91c1c', '#7c3aed', '#0e7490', '#c2410c', '#be185d', '#334155'];
+const HEX = /^#[0-9a-fA-F]{6}$/;
+
+/* =====================================================================
+   ENGINE: pure functions, no DOM, no global state.
+   ===================================================================== */
+const normName = s => str(s).toLowerCase().replace(/[^a-z0-9 ]+/g, ' ').replace(/\s+/g, ' ').trim();
+const validTime = t => typeof t === 'string' && /^([01]\d|2[0-3]):[0-5]\d$/.test(t);
+const scoreIn = v => { if (v === '' || v == null) return null; const s = String(v).trim(); return /^\d{1,3}$/.test(s) ? Number(s) : null; };
+const isScored = g => !!g && g.status === 'final' && isNum(g.homeScore) && isNum(g.awayScore);
+const gameCmp = (a, b) => a.date.localeCompare(b.date) || (a.time || '').localeCompare(b.time || '') || a.id.localeCompare(b.id);
+const pairKey = (a, b) => [a, b].sort().join('|');
+/* W / L / T for a team in a scored game, else null. Equal scores are a tie. */
+function outcome(g, tid) {
+  if (!isScored(g)) return null;
+  if (g.homeId !== tid && g.awayId !== tid) return null;
+  if (g.homeScore === g.awayScore) return 'T';
+  return (g.homeId === tid) === (g.homeScore > g.awayScore) ? 'W' : 'L';
+}
+const marginFor = (g, tid) => (g.homeId === tid ? g.homeScore - g.awayScore : g.awayScore - g.homeScore);
+const scoreFor = (g, tid) => (g.homeId === tid ? g.homeScore : g.awayScore);
+const scoreAgainst = (g, tid) => (g.homeId === tid ? g.awayScore : g.homeScore);
+/* current streak from a chronological array of 'W'/'L'/'T' */
+function streakOf(results) {
+  const r = results.filter(x => x === 'W' || x === 'L' || x === 'T');
+  if (!r.length) return { type: '', len: 0 };
+  const type = r[r.length - 1]; let len = 0;
+  for (let i = r.length - 1; i >= 0 && r[i] === type; i--) len++;
+  return { type, len };
+}
+const fmtStreak = s => (s && s.len ? s.type + s.len : '–');
+const newRec = () => ({ w: 0, l: 0, t: 0 });
+const addRes = (r, res) => { if (res === 'W') r.w++; else if (res === 'L') r.l++; else if (res === 'T') r.t++; };
+const fmtRec = r => `${r.w}-${r.l}${r.t ? '-' + r.t : ''}`;
+const fmtPct = (num, den) => { if (!den) return '–'; const v = num / den; return v >= 1 ? '1.000' : v.toFixed(3).replace(/^0/, ''); };
+
+/* STANDINGS: regular-season, final, scored games of one season only. */
+function standings(games, teams, season, opts = {}) {
+  const otl = !!opts.otl;
+  const tmap = new Map(teams.map(t => [t.id, t]));
+  const inSeason = games.filter(g => g.season === season && g.type === 'regular');
+  const ids = new Set();
+  for (const g of inSeason) if (g.status !== 'cancelled') { if (tmap.has(g.homeId)) ids.add(g.homeId); if (tmap.has(g.awayId)) ids.add(g.awayId); }
+  const scored = inSeason.filter(isScored).sort(gameCmp);
+  const rows = new Map();
+  for (const id of ids) {
+    const t = tmap.get(id);
+    rows.set(id, { tid: id, name: t.name, short: t.short, color: t.color, division: str(t.division).trim(), w: 0, l: 0, t: 0, otl: 0, pf: 0, pa: 0, home: newRec(), away: newRec(), seq: [] });
+  }
+  for (const g of scored) {
+    for (const tid of [g.homeId, g.awayId]) {
+      const r = rows.get(tid); if (!r) continue;
+      const res = outcome(g, tid);
+      if (res === 'W') r.w++; else if (res === 'T') r.t++; else if (otl && g.ot) r.otl++; else r.l++;
+      r.pf += scoreFor(g, tid); r.pa += scoreAgainst(g, tid);
+      r.seq.push(res);
+      if (!g.neutral) addRes(tid === g.homeId ? r.home : r.away, res);
+    }
+  }
+  for (const r of rows.values()) {
+    r.gp = r.w + r.l + r.t + r.otl; r.num = 2 * r.w + r.t; r.den = 2 * r.gp || 1;
+    r.pct = r.gp ? r.num / r.den : 0; r.diff = r.pf - r.pa;
+    r.streak = streakOf(r.seq);
+    const last = r.seq.slice(-10), l10 = newRec(); for (const x of last) addRes(l10, x);
+    r.last10 = l10;
+  }
+  const groups = new Map();
+  for (const r of rows.values()) { if (!groups.has(r.division)) groups.set(r.division, []); groups.get(r.division).push(r); }
+  const names = [...groups.keys()].sort((a, b) => (a === '' ? 1 : b === '' ? -1 : a.localeCompare(b)));
+  const out = names.map(name => {
+    const ranked = rankRows(groups.get(name), scored);
+    const lead = ranked[0];
+    ranked.forEach((r, i) => { r.rank = i + 1; r.gb = ((lead.w - lead.l - lead.otl) - (r.w - r.l - r.otl)) / 2; });
+    return { name, rows: ranked };
+  });
+  return { season, otl, groups: out };
+}
+/* sort by win% (ties = half), then head-to-head if exactly two teams are tied, then point differential, then name */
+function rankRows(rows, scored) {
+  const base = [...rows].sort((a, b) => b.num * a.den - a.num * b.den);
+  const out = []; let i = 0;
+  while (i < base.length) {
+    let j = i + 1;
+    while (j < base.length && base[j].num * base[i].den === base[i].num * base[j].den) j++;
+    const cl = base.slice(i, j);
+    if (cl.length === 2) {
+      let net = 0;
+      for (const g of scored) {
+        const a = cl[0].tid, b = cl[1].tid;
+        if (!((g.homeId === a && g.awayId === b) || (g.homeId === b && g.awayId === a))) continue;
+        const res = outcome(g, a); net += res === 'W' ? 1 : res === 'L' ? -1 : 0;
+      }
+      cl.sort((x, y) => (net !== 0 ? (net > 0 ? (x === cl[0] ? -1 : 1) : (x === cl[0] ? 1 : -1)) : 0) || y.diff - x.diff || x.name.localeCompare(y.name));
+    } else cl.sort((x, y) => y.diff - x.diff || x.name.localeCompare(y.name));
+    out.push(...cl); i = j;
+  }
+  return out;
+}
+const fmtGB = gb => (gb === 0 ? '–' : String(gb));
+
+/* HEAD-TO-HEAD: every final, scored game between a and b, from a's point of view */
+/* preseason exhibitions never count toward a rivalry series */
+const countsInSeries = g => isScored(g) && g.type !== 'preseason';
+function meetingsOf(games, a, b) {
+  return games.filter(g => countsInSeries(g) && ((g.homeId === a && g.awayId === b) || (g.homeId === b && g.awayId === a))).sort(gameCmp);
+}
+function h2h(games, a, b) {
+  const ms = meetingsOf(games, a, b);
+  const r = { a, b, n: ms.length, w: 0, l: 0, t: 0, meetings: ms, first: ms[0] || null, last: ms[ms.length - 1] || null, bigA: null, bigB: null, avgMargin: 0, avgTotal: 0, atA: newRec(), atB: newRec(), neutral: newRec(), playoff: newRec(), pfA: 0, pfB: 0 };
+  const seq = []; let msum = 0, tsum = 0;
+  for (const g of ms) {
+    const res = outcome(g, a); seq.push(res); addRes(r, res);
+    const m = marginFor(g, a); msum += m; tsum += g.homeScore + g.awayScore;
+    r.pfA += scoreFor(g, a); r.pfB += scoreFor(g, b);
+    if (res === 'W' && (!r.bigA || m >= r.bigA.margin)) r.bigA = { g, margin: m };
+    if (res === 'L' && (!r.bigB || -m >= r.bigB.margin)) r.bigB = { g, margin: -m };
+    addRes(g.neutral ? r.neutral : g.homeId === a ? r.atA : r.atB, res);
+    if (g.type === 'playoff') addRes(r.playoff, res);
+  }
+  r.streak = streakOf(seq);
+  r.avgMargin = ms.length ? msum / ms.length : 0; r.avgTotal = ms.length ? tsum / ms.length : 0;
+  r.seq = seq;
+  return r;
+}
+function decadeBreakdown(meetings, a) {
+  const m = new Map();
+  for (const g of meetings) {
+    const d = Math.floor(Number(g.date.slice(0, 4)) / 10) * 10;
+    if (!m.has(d)) m.set(d, { decade: d, w: 0, l: 0, t: 0, n: 0 });
+    const r = m.get(d); addRes(r, outcome(g, a)); r.n++;
+  }
+  return [...m.values()].sort((x, y) => x.decade - y.decade);
+}
+/* the opponent a team has played (final, scored) the most; ties go to the more recent meeting, then name */
+function mostPlayed(games, tid, teams) {
+  const cnt = new Map(), lastD = new Map();
+  for (const g of games) {
+    if (!countsInSeries(g) || (g.homeId !== tid && g.awayId !== tid)) continue;
+    const o = g.homeId === tid ? g.awayId : g.homeId;
+    cnt.set(o, (cnt.get(o) || 0) + 1); if (!lastD.has(o) || g.date > lastD.get(o)) lastD.set(o, g.date);
+  }
+  const nm = id => (teams.find(t => t.id === id) || { name: '' }).name;
+  const ids = [...cnt.keys()].filter(id => teams.some(t => t.id === id));
+  ids.sort((x, y) => cnt.get(y) - cnt.get(x) || lastD.get(y).localeCompare(lastD.get(x)) || nm(x).localeCompare(nm(y)));
+  return ids[0] || null;
+}
+/* RIVALRY MATRIX: rows = my teams (or everyone when <= 8 teams / none marked mine); cols = opponents */
+function matrix(games, teams) {
+  const mine = teams.filter(t => t.mine);
+  const small = teams.length <= 8;
+  const rowsT = small || !mine.length ? teams : mine;
+  const cellFor = (a, b) => { const r = { w: 0, l: 0, t: 0, n: 0 }; for (const g of meetingsOf(games, a, b)) { addRes(r, outcome(g, a)); r.n++; } return r; };
+  let colsT = teams;
+  if (!small) colsT = teams.filter(c => rowsT.some(r => r.id !== c.id && games.some(g => countsInSeries(g) && ((g.homeId === r.id && g.awayId === c.id) || (g.homeId === c.id && g.awayId === r.id)))));
+  const cells = {};
+  for (const r of rowsT) { cells[r.id] = {}; for (const c of colsT) cells[r.id][c.id] = r.id === c.id ? null : cellFor(r.id, c.id); }
+  return { rows: rowsT.map(t => t.id), cols: colsT.map(t => t.id), cells };
+}
+/* -3 .. +3: how dominant the row team is in this cell (0 = even or no games) */
+function dominance(c) {
+  if (!c || !c.n) return 0;
+  const d = (c.w + c.t / 2) / c.n - 0.5, a = Math.abs(d);
+  const lvl = a < 0.1 ? 0 : a < 0.25 ? 1 : a < 0.4 ? 2 : 3;
+  return d < 0 ? -lvl : lvl;
+}
+
+/* COUNTDOWN: calendar days to the game from local midnight; sub-line from the exact kick-off time */
+function startMs(date, time) {
+  const [y, m, d] = date.split('-').map(Number);
+  if (validTime(time)) { const [hh, mm] = time.split(':').map(Number); return new Date(y, m - 1, d, hh, mm).getTime(); }
+  return new Date(y, m - 1, d).getTime();
+}
+function countdown(date, time, now = new Date()) {
+  const dd = daysBetween(fmtISO(now), date);
+  const out = { days: dd, label: '', sub: '' };
+  if (dd < 0) { out.label = dd === -1 ? 'Yesterday' : `${-dd} days ago`; return out; }
+  out.label = dd === 0 ? 'Today' : dd === 1 ? 'Tomorrow' : `${dd} days`;
+  if (!validTime(time)) { out.sub = dd === 0 ? 'Time to be announced' : ''; return out; }
+  const mins = Math.floor((startMs(date, time) - now.getTime()) / 60000);
+  if (mins <= 0) { out.sub = mins > -180 ? 'Underway' : 'Earlier today'; return out; }
+  const d = Math.floor(mins / 1440), h = Math.floor((mins % 1440) / 60), m = mins % 60;
+  out.sub = d > 0 ? `in ${d} d ${h} h` : h > 0 ? `in ${h} h ${m} min` : `in ${m} min`;
+  return out;
+}
+function fmtTime(t) { if (!validTime(t)) return ''; const h = Number(t.slice(0, 2)); return `${h % 12 || 12}:${t.slice(3)} ${h < 12 ? 'AM' : 'PM'}`; }
+const seasonYear = s => { const m = /^\s*(\d{4})/.exec(str(s)); return m ? Number(m[1]) : new Date().getFullYear(); };
+
+/* ---- schedule text parser ---- */
+const MON = '(jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|june?|july?|aug(?:ust)?|sep(?:t(?:ember)?)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)';
+const monthNo = w => ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'].indexOf(w.slice(0, 3).toLowerCase()) + 1;
+const WEEKDAY_END = /(?:^|[\s,])(?:mon|tues?|wed(?:nes)?|thu(?:rs?)?|fri|sat(?:ur)?|sun)(?:day)?\.?,?\s*$/i;
+function extractDate(s, defYear, wrap) {
+  const pats = [
+    [/\b(\d{4})-(\d{1,2})-(\d{1,2})\b/, m => [+m[1], +m[2], +m[3], true]],
+    [/\b(\d{1,2})\/(\d{1,2})(?:\/(\d{4}|\d{2}))?\b/, m => [m[3] ? (m[3].length === 2 ? 2000 + +m[3] : +m[3]) : null, +m[1], +m[2], !!m[3]]],
+    [new RegExp('\\b' + MON + '\\.?\\s+(\\d{1,2})(?:st|nd|rd|th)?\\b(?:,?\\s+(\\d{4})\\b)?', 'i'), m => [m[3] ? +m[3] : null, monthNo(m[1]), +m[2], !!m[3]]],
+    [new RegExp('\\b(\\d{1,2})(?:st|nd|rd|th)?\\s+' + MON + '\\.?(?:,?\\s+(\\d{4})\\b)?', 'i'), m => [m[3] ? +m[3] : null, monthNo(m[2]), +m[1], !!m[3]]]
+  ];
+  for (const [re, fn] of pats) {
+    const m = re.exec(s); if (!m) continue;
+    let [y, mo, d, hasYear] = fn(m);
+    if (!hasYear) y = defYear + (wrap && mo <= 6 ? 1 : 0);
+    const iso = `${String(y).padStart(4, '0')}-${pad(mo)}-${pad(d)}`;
+    let before = s.slice(0, m.index);
+    before = before.replace(WEEKDAY_END, ' ');
+    const rest = (before + ' ' + s.slice(m.index + m[0].length)).replace(/\s+/g, ' ').trim();
+    if (!isISO(iso)) return { iso: null, error: `“${m[0].trim()}” isn’t a real date`, rest, hasYear };
+    return { iso, error: '', rest, hasYear };
+  }
+  return { iso: null, error: 'No date found', rest: s, hasYear: false };
+}
+function extractTime(s) {
+  let m = /\b(\d{1,2})(?::(\d{2}))?\s*([ap])\.?\s?m\b\.?(?:\s*(?:[ECMP][SD]?T)\b)?/i.exec(s);
+  if (m) {
+    const h = +m[1], mi = m[2] ? +m[2] : 0;
+    const rest = (s.slice(0, m.index) + ' ' + s.slice(m.index + m[0].length)).replace(/\s+/g, ' ').trim();
+    if (h < 1 || h > 12 || mi > 59) return { time: '', error: `“${m[0].trim()}” isn’t a real time`, rest };
+    return { time: `${pad((h % 12) + (m[3].toLowerCase() === 'p' ? 12 : 0))}:${pad(mi)}`, error: '', rest };
+  }
+  m = /\b([01]?\d|2[0-3]):([0-5]\d)\b(?:\s*(?:[ECMP][SD]?T)\b)?/.exec(s);
+  if (m) return { time: `${pad(+m[1])}:${m[2]}`, error: '', rest: (s.slice(0, m.index) + ' ' + s.slice(m.index + m[0].length)).replace(/\s+/g, ' ').trim() };
+  return { time: '', error: '', rest: s };
+}
+const CHANNEL_WORDS = ['abc', 'cbs', 'nbc', 'fox', 'fs1', 'fs2', 'espn', 'espn2', 'espnu', 'espn+', 'tnt', 'tbs', 'truTV', 'nfln', 'nfl network', 'nba tv', 'nhl network', 'mlb network', 'peacock', 'prime video', 'prime', 'amazon', 'netflix', 'apple tv+', 'apple tv', 'youtube', 'cw', 'btn', 'big ten network', 'sec network', 'acc network', 'accn', 'longhorn network', 'fox sports', 'local'];
+const CHANNEL_RE = new RegExp('\\s(' + CHANNEL_WORDS.map(w => w.replace(/[+.*?^${}()|[\]\\]/g, '\\$&')).join('|') + ')$', 'i');
+function resolveTeam(name, teams) {
+  const n = normName(name); if (!n) return null;
+  let hit = teams.filter(t => normName(t.name) === n || (t.short && normName(t.short) === n));
+  if (hit.length === 1) return hit[0];
+  if (hit.length > 1) return null;
+  hit = teams.filter(t => { const tn = normName(t.name); return tn.endsWith(' ' + n) || tn.startsWith(n + ' ') || n.endsWith(' ' + tn) || n.startsWith(tn + ' '); });
+  return hit.length === 1 ? hit[0] : null;
+}
+const cleanTeamName = s => str(s).replace(/\s+/g, ' ').replace(/^[\s\-–,:;.]+|[\s\-–,:;.]+$/g, '').slice(0, 60);
+function splitCSV(line) {
+  const out = []; let cur = '', q = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (q) { if (c === '"') { if (line[i + 1] === '"') { cur += '"'; i++; } else q = false; } else cur += c; }
+    else if (c === '"') q = true;
+    else if (c === ',') { out.push(cur); cur = ''; }
+    else cur += c;
+  }
+  out.push(cur);
+  return out.map(x => x.trim());
+}
+const CSV_START = /^\s*"?(\d{4}-\d{1,2}-\d{1,2}|\d{1,2}\/\d{1,2}(\/\d{2,4})?)"?\s*,/;
+const COLS = { date: 'date', time: 'time', home: 'home', away: 'away', venue: 'venue', location: 'venue', channel: 'channel', tv: 'channel', broadcast: 'channel' };
+/* ctx: { season, teams:[{id,name,short}], games:[...existing], my:{id|null,name}, wrap } -> { rows, newTeams, counts } */
+function parseSchedule(text, ctx) {
+  const defYear = seasonYear(ctx.season), wrap = !!ctx.wrap, teams = ctx.teams || [];
+  const existing = new Set((ctx.games || []).map(g => `${g.date}|${g.homeId}|${g.awayId}`));
+  const names = new Map(), keyByNorm = new Map(); // key -> display name; normalized -> key
+  const used = new Set();
+  const keyFor = name => {
+    const t = resolveTeam(name, teams);
+    if (t) { names.set(t.id, t.name); return t.id; }
+    const n = normName(name); if (!n) return null;
+    if (!keyByNorm.has(n)) { keyByNorm.set(n, 'new:' + n); names.set('new:' + n, cleanTeamName(name)); }
+    return keyByNorm.get(n);
+  };
+  let myKey = null, myIsNew = false;
+  if (ctx.my) {
+    if (ctx.my.id) { myKey = ctx.my.id; const t = teams.find(x => x.id === ctx.my.id); names.set(myKey, t ? t.name : ctx.my.name); }
+    else { myKey = keyFor(ctx.my.name); myIsNew = myKey && myKey.startsWith('new:'); }
+  }
+  const seen = new Set(), rows = [];
+  const lines = str(text).split(/\r?\n/);
+  let col = null, headerDone = false;
+  lines.forEach((raw, idx) => {
+    let line = raw.trim().replace(/^[-*•–]\s+/, '').replace(/^\d{1,3}[.)]\s+(?=\S)/, '');
+    if (!line || /^(#|\/\/)/.test(line)) return;
+    const row = { n: idx + 1, raw: raw.trim(), status: 'ok', error: '', date: '', time: '', homeKey: null, awayKey: null, venue: '', channel: '' };
+    rows.push(row);
+    const fail = msg => { row.status = 'error'; row.error = msg; };
+    if (!headerDone) {
+      headerDone = true;
+      const cells = splitCSV(line).map(c => c.toLowerCase());
+      if (cells.includes('date') && (cells.includes('home') || cells.includes('away'))) {
+        col = {}; cells.forEach((c, i) => { if (COLS[c] && col[COLS[c]] == null) col[COLS[c]] = i; });
+        rows.pop(); return;
+      }
+    }
+    const isCsv = col || (CSV_START.test(line) && splitCSV(line).length >= 4);
+    let homeName = '', awayName = '';
+    if (isCsv) {
+      const cells = splitCSV(line), c = col || { date: 0, time: 1, home: 2, away: 3, venue: 4, channel: 5 };
+      const get = k => (c[k] == null ? '' : cells[c[k]] || '').trim();
+      const d = extractDate(get('date'), defYear, wrap);
+      if (!d.iso) return fail(d.error);
+      row.date = d.iso;
+      if (get('time')) { const t = extractTime(get('time')); if (t.error) return fail(t.error); if (!t.time) return fail(`“${get('time')}” isn’t a time`); row.time = t.time; }
+      homeName = get('home'); awayName = get('away'); row.venue = get('venue').slice(0, 120); row.channel = get('channel').slice(0, 40);
+      if (!homeName || !awayName) return fail('Needs both a home and an away team');
+    } else {
+      const d = extractDate(line, defYear, wrap);
+      if (!d.iso) return fail(d.error);
+      row.date = d.iso;
+      const t = extractTime(d.rest); if (t.error) return fail(t.error);
+      row.time = t.time;
+      let rest = t.rest;
+      const pm = /\(([^()]*)\)\s*$/.exec(rest);
+      if (pm) { row.channel = pm[1].trim().slice(0, 40); rest = rest.slice(0, pm.index).trim(); }
+      const rm = /(?:^|\s)(?:(vs\.?|v\.?|at)(?=\s)|@)\s*/i.exec(rest);
+      if (!rm) return fail('Couldn’t find “vs”, “@” or “at” before the opponent');
+      const home = !!rm[1] && rm[1].toLowerCase() !== 'at';
+      let after = rest.slice(rm.index + rm[0].length).trim(), opp = after, venue = '';
+      const vs = /\s(?:@|at|\|)\s+/i.exec(after);
+      if (vs) { opp = after.slice(0, vs.index); venue = after.slice(vs.index + vs[0].length); }
+      if (!row.channel) {
+        const target = venue || opp, cm = CHANNEL_RE.exec(target);
+        if (cm) { row.channel = cm[1].trim(); const cut = target.slice(0, cm.index).trim(); if (venue) venue = cut; else opp = cut; }
+      }
+      opp = cleanTeamName(opp); row.venue = cleanTeamName(venue).slice(0, 120);
+      if (!opp) return fail('No opponent found');
+      if (!myKey) return fail('Choose your team first');
+      const myName = names.get(myKey) || '';
+      if (home) { homeName = myName; awayName = opp; } else { homeName = opp; awayName = myName; }
+    }
+    const hk = keyFor(homeName), ak = keyFor(awayName);
+    if (!hk || !ak) return fail('Team name is empty');
+    if (hk === ak) return fail('A team can’t play itself');
+    row.homeKey = hk; row.awayKey = ak;
+    const dupKey = `${row.date}|${hk}|${ak}`;
+    if (existing.has(dupKey) || seen.has(dupKey)) { row.status = 'dup'; row.error = 'Already in your schedule'; return; }
+    seen.add(dupKey); used.add(hk); used.add(ak);
+  });
+  const newTeams = [];
+  for (const [k, nm] of names) if (k.startsWith('new:') && used.has(k)) newTeams.push({ key: k, name: nm, mine: k === myKey && myIsNew });
+  for (const r of rows) { r.homeName = names.get(r.homeKey) || ''; r.awayName = names.get(r.awayKey) || ''; }
+  const counts = { ok: 0, dup: 0, error: 0 };
+  for (const r of rows) counts[r.status]++;
+  return { rows, newTeams, counts, names: Object.fromEntries(names) };
+}
+
+/* ---- iCalendar (RFC 5545): floating local times, all-day when no time ---- */
+const icsEsc = s => str(s).replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\r?\n/g, '\\n');
+function foldLine(line) {
+  const enc = new TextEncoder(); let out = '', cur = '', bytes = 0, limit = 75;
+  for (const ch of line) {
+    const n = enc.encode(ch).length;
+    if (bytes + n > limit) { out += cur + '\r\n '; cur = ''; bytes = 0; limit = 74; }
+    cur += ch; bytes += n;
+  }
+  return out + cur;
+}
+function addMinutesWall(date, time, mins) { // wall-clock arithmetic: no time zone, so no DST surprises
+  const [y, m, d] = date.split('-').map(Number), [hh, mm] = time.split(':').map(Number);
+  const t = new Date(Date.UTC(y, m - 1, d, hh, mm + mins));
+  return { date: `${String(t.getUTCFullYear()).padStart(4, '0')}-${pad(t.getUTCMonth() + 1)}-${pad(t.getUTCDate())}`, time: `${pad(t.getUTCHours())}:${pad(t.getUTCMinutes())}` };
+}
+const icsDate = d => d.replace(/-/g, '');
+const icsDT = (d, t) => icsDate(d) + 'T' + t.replace(':', '') + '00';
+function buildICS(games, teams, opts = {}) {
+  const tmap = new Map(teams.map(t => [t.id, t]));
+  const stamp = (opts.now || new Date()).toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+  const L = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Goobs//Sports//EN', 'CALSCALE:GREGORIAN', 'X-WR-CALNAME:' + icsEsc(opts.name || 'Sports schedule')];
+  for (const g of [...games].sort(gameCmp)) {
+    const h = tmap.get(g.homeId), a = tmap.get(g.awayId); if (!h || !a) continue;
+    L.push('BEGIN:VEVENT', `UID:${g.id}@goobs-sports`, 'DTSTAMP:' + stamp);
+    if (validTime(g.time)) {
+      const end = addMinutesWall(g.date, g.time, 180);
+      L.push('DTSTART:' + icsDT(g.date, g.time), 'DTEND:' + icsDT(end.date, end.time));
+    } else {
+      L.push('DTSTART;VALUE=DATE:' + icsDate(g.date), 'DTEND;VALUE=DATE:' + icsDate(addDays(g.date, 1)));
+    }
+    L.push('SUMMARY:' + icsEsc(`${a.name} @ ${h.name}`));
+    if (g.venue) L.push('LOCATION:' + icsEsc(g.venue));
+    const desc = [g.channel ? 'TV: ' + g.channel : '', g.type !== 'regular' ? (TYPES.find(t => t[0] === g.type) || [0, ''])[1] : '', g.notes].filter(Boolean).join('\n');
+    if (desc) L.push('DESCRIPTION:' + icsEsc(desc));
+    L.push('END:VEVENT');
+  }
+  L.push('END:VCALENDAR');
+  return L.map(foldLine).join('\r\n') + '\r\n';
+}
+
+/* =====================================================================
+   MODEL / NORMALIZATION
+   ===================================================================== */
+const shortOf = name => {
+  const w = cleanTeamName(name).split(' ').filter(Boolean);
+  if (!w.length) return '';
+  return (w.length === 1 ? w[0].slice(0, 3) : w.slice(0, 4).map(x => x[0]).join('')).toUpperCase();
+};
+function normTeam(t) {
+  if (!t || typeof t !== 'object') return null;
+  const name = cleanTeamName(t.name); if (!name) return null;
+  return { id: str(t.id).slice(0, 60) || uid(), name, short: str(t.short).trim().slice(0, 6) || shortOf(name), league: str(t.league).trim().slice(0, 40), division: str(t.division).trim().slice(0, 40), color: HEX.test(str(t.color)) ? t.color.toLowerCase() : PALETTE[0], mine: t.mine === true, notes: str(t.notes).slice(0, 1000) };
+}
+function normGame(g) {
+  if (!g || typeof g !== 'object') return null;
+  const date = str(g.date); if (!isISO(date)) return null;
+  const homeId = str(g.homeId), awayId = str(g.awayId); if (!homeId || !awayId || homeId === awayId) return null;
+  const status = STATUS_KEYS.includes(g.status) ? g.status : 'scheduled';
+  let hs = scoreIn(g.homeScore), as = scoreIn(g.awayScore);
+  if (status !== 'final' || hs == null || as == null) { hs = null; as = null; }
+  return {
+    id: str(g.id).slice(0, 60) || uid(), season: str(g.season).trim().slice(0, 20) || date.slice(0, 4), date, time: validTime(str(g.time)) ? g.time : '',
+    homeId, awayId, venue: str(g.venue).trim().slice(0, 120), channel: str(g.channel).trim().slice(0, 40), status, homeScore: hs, awayScore: as,
+    ot: g.ot === true && hs != null && hs !== as, type: TYPE_KEYS.includes(g.type) ? g.type : 'regular', notes: str(g.notes).slice(0, 1000),
+    neutral: g.neutral === true, approx: g.approx === true
+  };
+}
+const normSettings = s => ({ otl: !!(s && typeof s === 'object' && s.otl === true) });
+function normalizeData(raw) {
+  raw = raw && typeof raw === 'object' ? raw : {};
+  let dropped = 0;
+  const teams = [], tseen = new Set();
+  for (const x of Array.isArray(raw.teams) ? raw.teams : []) {
+    const n = normTeam(x);
+    if (!n || tseen.has(n.id) || teams.length >= MAX.teams) { dropped++; continue; }
+    tseen.add(n.id); teams.push(n);
+  }
+  const games = [], gseen = new Set();
+  for (const x of Array.isArray(raw.games) ? raw.games : []) {
+    const n = normGame(x);
+    if (!n || gseen.has(n.id) || !tseen.has(n.homeId) || !tseen.has(n.awayId) || games.length >= MAX.games) { dropped++; continue; }
+    gseen.add(n.id); games.push(n);
+  }
+  const rn = {};
+  if (raw.rivalNotes && typeof raw.rivalNotes === 'object' && !Array.isArray(raw.rivalNotes)) {
+    for (const [k, v] of Object.entries(raw.rivalNotes)) {
+      const ids = k.split('|');
+      if (ids.length === 2 && tseen.has(ids[0]) && tseen.has(ids[1]) && ids[0] < ids[1] && typeof v === 'string' && v.trim()) rn[k] = v.slice(0, 2000);
+    }
+  }
+  return { data: { teams, games, settings: normSettings(raw.settings), rivalNotes: rn }, dropped };
+}
+const DATA_KEYS = ['teams', 'games', 'settings', 'rivalNotes'];
+const defaultState = () => ({ schemaVersion: SCHEMA, meta: { lastBackup: null, lastChange: null }, ...normalizeData({}).data });
+function loadState(parsed) {
+  const { data } = normalizeData(parsed);
+  const m = (parsed && parsed.meta) || {};
+  return { schemaVersion: SCHEMA, meta: { lastBackup: str(m.lastBackup) || null, lastChange: str(m.lastChange) || null }, ...data };
+}
+const exportData = () => { const o = {}; for (const k of DATA_KEYS) o[k] = state[k]; return o; };
+const hasAnyData = d => { d = d || state; return d.teams.length > 0 || d.games.length > 0 || Object.keys(d.rivalNotes).length > 0 || d.settings.otl; };
+
+/* ---- persistence ---- */
+let state = defaultState(), db = null, saveFailed = false, persistAsked = false, saveChain = Promise.resolve();
+function persist({ touch = true } = {}) {
+  if (touch) state.meta.lastChange = new Date().toISOString();
+  if (!db) return Promise.resolve();
+  const snap = JSON.stringify(state);
+  saveChain = saveChain.then(() => idbPut(db, 'state', snap)).then(() => { saveFailed = false; }).catch(err => { console.error(err); saveFailed = true; });
+  if (!persistAsked && navigator.storage && navigator.storage.persist) { persistAsked = true; navigator.storage.persist().catch(() => {}); }
+  return saveChain;
+}
+const commit = () => { persist(); render(); };
+
+/* ---- selectors ---- */
+const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
+const tm = id => state.teams.find(t => t.id === id);
+const tName = id => (tm(id) || { name: '(deleted team)' }).name;
+const tShort = id => { const t = tm(id); return t ? (t.short || t.name) : '?'; };
+const tColor = id => (tm(id) || { color: '#888888' }).color;
+const dot = id => `<i class="dot" style="background:${esc(tColor(id))}"></i>`;
+const gameDateLabel = g => (g.approx ? g.date.slice(0, 4) : fmtDate(g.date));
+function seasonsList() {
+  const s = new Set(state.games.map(g => g.season));
+  return [...s].sort((a, b) => seasonYear(b) - seasonYear(a) || b.localeCompare(a));
+}
+function autoSeason() {
+  const today = todayISO(), real = state.games.filter(g => g.type !== 'rivalry-historic');
+  const up = real.filter(g => g.status === 'scheduled' && g.date >= today).sort(gameCmp)[0];
+  if (up) return up.season;
+  const last = [...real].sort(gameCmp).pop();
+  return last ? last.season : today.slice(0, 4);
+}
+const perspective = (g, pref) => {
+  if (pref && (g.homeId === pref || g.awayId === pref)) return pref;
+  const h = tm(g.homeId), a = tm(g.awayId);
+  return h && h.mine ? h.id : a && a.mine ? a.id : null;
+};
+
+/* ---- UI state ---- */
+const view = $('#view');
+const ui = { tab: 'schedule', fTeam: 'all', fSeason: null, sSeason: null, rA: null, rB: null, showAll: false };
+function storageBannerHTML() {
+  if (saveFailed) return '<div class="banner bad">Couldn’t save to this device’s storage. Back up now so nothing is lost.</div>';
+  if (!db) return '<div class="banner bad">This browser isn’t allowing storage (private mode?). Changes won’t survive closing the app — use Backup.</div>';
+  return '';
+}
+const selHTML = (name, label, opts, val) => `<div class="field"><label for="sel_${name}">${esc(label)}</label><select id="sel_${name}" data-sel="${name}">${opts.map(([v, l]) => `<option value="${esc(v)}"${String(v) === String(val) ? ' selected' : ''}>${esc(l)}</option>`).join('')}</select></div>`;
+
+/* ===================== SCHEDULE ===================== */
+function curSeason() { return ui.fSeason === null ? autoSeason() : ui.fSeason; }
+function visibleGames() {
+  const season = curSeason();
+  return state.games.filter(g => (ui.fTeam === 'all' || g.homeId === ui.fTeam || g.awayId === ui.fTeam) && (season === 'all' || g.season === season));
+}
+function nextGame() {
+  const today = todayISO(), anyMine = state.teams.some(t => t.mine);
+  const pool = state.games.filter(g => g.status === 'scheduled' && g.date >= today && (ui.fTeam !== 'all' ? (g.homeId === ui.fTeam || g.awayId === ui.fTeam) : !anyMine || (tm(g.homeId) || {}).mine || (tm(g.awayId) || {}).mine));
+  return pool.sort(gameCmp)[0] || null;
+}
+function heroInner(g) {
+  const c = countdown(g.date, g.time), pid = perspective(g, ui.fTeam === 'all' ? null : ui.fTeam);
+  const meta = [fmtDate(g.date) + (g.time ? ' · ' + fmtTime(g.time) : ' · time TBA'), g.venue, g.channel && 'TV: ' + g.channel].filter(Boolean).join(' · ');
+  const vs = `${dot(g.awayId)}${esc(tName(g.awayId))} <span class="muted">@</span> ${dot(g.homeId)}${esc(tName(g.homeId))}`;
+  return `<div class="lbl">Next game${g.type !== 'regular' ? ' · ' + esc((TYPES.find(t => t[0] === g.type) || [0, ''])[1]) : ''}</div><div class="cd" id="cd">${esc(c.label)}</div><div class="cdsub" id="cdsub">${esc(c.sub)}</div><div class="vs">${vs}</div><div class="meta">${esc(meta)}</div>`;
+}
+function gameRowHTML(g, pref) {
+  const d = g.date.split('-'), pid = perspective(g, pref), res = pid ? outcome(g, pid) : null;
+  const mine = id => (tm(id) || {}).mine ? `<b>${esc(tName(id))}</b>` : esc(tName(id));
+  const sub = [g.approx ? g.date.slice(0, 4) : fmtDate(g.date) + (g.time ? ' · ' + fmtTime(g.time) : ''), g.venue, g.channel].filter(Boolean).map(esc).join(' · ');
+  const badges = (g.type !== 'regular' ? `<span class="badge acc">${esc((TYPES.find(t => t[0] === g.type) || [0, ''])[1].replace('Historic meeting', 'Historic'))}</span>` : '')
+    + (g.status === 'postponed' ? '<span class="badge warn">Postponed</span>' : '') + (g.status === 'cancelled' ? '<span class="badge bad">Cancelled</span>' : '');
+  let right = '';
+  const today = todayISO();
+  if (isScored(g)) right = `<div class="score num">${g.awayScore}–${g.homeScore}<small>${g.ot ? 'OT · ' : ''}${res ? `<span class="badge ${res === 'W' ? 'ok' : res === 'L' ? 'bad' : ''}">${res}</span>` : 'final'}</small></div>`;
+  else if (g.status === 'final') right = '<div class="when">Final</div>';
+  else if (g.status === 'scheduled' && g.date < today) right = `<button type="button" class="btn small rowbtn" data-action="enter-score" data-id="${esc(g.id)}">Enter score</button>`;
+  else if (g.status === 'scheduled') { const c = countdown(g.date, g.time); right = `<div class="when">${esc(c.days <= 1 ? c.label : c.days + ' d')}</div>`; }
+  const cal = g.approx ? `<div class="cal"><b>${esc(d[0])}</b><span>–</span></div>` : `<div class="cal"><b>${esc(new Date(+d[0], +d[1] - 1, +d[2]).toLocaleDateString(undefined, { month: 'short' }))}</b><span>${+d[2]}</span></div>`;
+  return `<li class="row${g.status === 'cancelled' ? ' faded' : ''}" data-action="edit-game" data-id="${esc(g.id)}">${cal}<div class="row-main"><div class="row-title">${mine(g.awayId)} <span class="muted">@</span> ${mine(g.homeId)}${badges}</div><div class="row-sub">${sub}</div></div>${right}</li>`;
+}
+function renderSchedule() {
+  if (!state.teams.length) return storageBannerHTML() + '<div class="empty"><div class="big">🏟️</div><h2>Add your team first</h2><p>Enter your team, then its schedule, and the app does the countdown, standings and rivalry math.</p><button type="button" class="btn primary" data-action="add-team">Add a team</button></div>';
+  const season = curSeason(), vis = visibleGames(), today = todayISO(), pref = ui.fTeam === 'all' ? null : ui.fTeam;
+  const seasons = seasonsList(); if (season !== 'all' && !seasons.includes(season)) seasons.unshift(season);
+  const next = nextGame();
+  let h = storageBannerHTML();
+  h += next ? `<div class="card hero" id="hero" data-action="edit-game" data-id="${esc(next.id)}" style="border-left-color:${esc(tColor(perspective(next, pref) || next.homeId))}">${heroInner(next)}</div>` : '';
+  h += `<div class="filters">${selHTML('fTeam', 'Team', [['all', 'All teams'], ...state.teams.map(t => [t.id, t.name])], ui.fTeam)}${selHTML('fSeason', 'Season', [['all', 'All seasons'], ...seasons.map(s => [s, s])], season)}</div>`;
+  h += `<div class="ctl"><button type="button" class="btn" data-action="import">Paste schedule</button><button type="button" class="btn" data-action="export-ics">Export .ics</button></div>`;
+  if (!state.games.length) return h + '<div class="empty"><div class="big">📅</div><h2>No games yet</h2><p>Add one game, or paste a whole schedule.</p><button type="button" class="btn primary" data-action="add-game">Add a game</button></div>';
+  const needs = vis.filter(g => g.status === 'scheduled' && g.date < today).sort((a, b) => gameCmp(b, a));
+  const upcoming = vis.filter(g => g.status === 'scheduled' && g.date >= today).sort(gameCmp);
+  const postponed = vis.filter(g => g.status === 'postponed').sort(gameCmp);
+  const results = vis.filter(g => g.status === 'final' || g.status === 'cancelled').sort((a, b) => gameCmp(b, a));
+  if (needs.length) h += `<div class="sec-h"><span>Needs a score (${needs.length})</span></div><ul class="card list" id="needs">${needs.map(g => gameRowHTML(g, pref)).join('')}</ul>`;
+  if (upcoming.length) {
+    h += `<div class="sec-h"><span>Upcoming (${upcoming.length})</span></div>`;
+    let cur = '', open = false;
+    for (const g of upcoming) {
+      const mk = g.date.slice(0, 7);
+      if (mk !== cur) { if (open) h += '</ul>'; cur = mk; open = true; const d = parseISO(g.date); h += `<div class="sec-h" style="margin-top:12px"><span>${esc(d.toLocaleDateString(undefined, { month: 'long', year: 'numeric' }))}</span></div><ul class="card list" data-month="${mk}">`; }
+      h += gameRowHTML(g, pref);
+    }
+    if (open) h += '</ul>';
+  } else h += '<div class="sec-h"><span>Upcoming</span></div><div class="card pad muted">No upcoming games in this view.</div>';
+  if (postponed.length) h += `<div class="sec-h"><span>Postponed (${postponed.length})</span></div><ul class="card list" id="postponed">${postponed.map(g => gameRowHTML(g, pref)).join('')}</ul>`;
+  const shown = ui.showAll ? results : results.slice(0, 60);
+  h += `<div class="sec-h"><span>Results (${results.length})</span></div>`;
+  h += results.length ? `<ul class="card list" id="results">${shown.map(g => gameRowHTML(g, pref)).join('')}</ul>` + (results.length > shown.length ? `<div class="ctl"><button type="button" class="btn" data-action="show-all">Show all ${results.length}</button></div>` : '') : '<div class="card pad muted">No results in this view.</div>';
+  return h;
+}
+function tickCountdown() {
+  if (ui.tab !== 'schedule' || document.hidden) return;
+  const hero = $('#hero'); if (!hero) return;
+  const g = state.games.find(x => x.id === hero.dataset.id); if (!g) return;
+  const c = countdown(g.date, g.time), a = $('#cd'), b = $('#cdsub');
+  if (a && a.textContent !== c.label) a.textContent = c.label;
+  if (b && b.textContent !== c.sub) b.textContent = c.sub;
+}
+
+/* ---- game dialogs ---- */
+function gameDialog(id, preset = {}) {
+  const g = id ? state.games.find(x => x.id === id) : null;
+  if (id && !g) return;
+  if (!g && state.teams.length < 2) { msgBox('Add two teams first', 'A game needs two teams: yours and the opponent.').then(() => go('teams')); return; }
+  const mine = state.teams.find(t => t.mine) || state.teams[0], other = state.teams.find(t => t.id !== mine.id);
+  const b = g || { homeId: mine.id, awayId: other.id, date: todayISO(), time: '', season: ui.fSeason && ui.fSeason !== 'all' ? ui.fSeason : autoSeason(), status: 'scheduled', type: 'regular', venue: '', channel: '', homeScore: '', awayScore: '', ot: false, neutral: false, notes: '', ...preset };
+  const opts = state.teams.map(t => [t.id, t.name]);
+  formDialog({
+    title: g ? 'Edit game' : 'Add game', submitLabel: g ? 'Save' : 'Add game', grid: 'fields2',
+    fields: [
+      { name: 'awayId', label: 'Away team', type: 'select', options: opts, value: b.awayId },
+      { name: 'homeId', label: 'Home team', type: 'select', options: opts, value: b.homeId },
+      { name: 'date', label: 'Date', type: 'date', value: b.date },
+      { name: 'time', label: 'Time (optional)', type: 'time', value: b.time },
+      { name: 'status', label: 'Status', type: 'select', options: STATUSES, value: b.status },
+      { name: 'awayScore', label: 'Away score', type: 'number', value: b.awayScore ?? '', placeholder: 'final only' },
+      { name: 'homeScore', label: 'Home score', type: 'number', value: b.homeScore ?? '', placeholder: 'final only' },
+      { name: 'ot', label: 'Went to overtime / extra innings / shootout', type: 'checkbox', value: b.ot },
+      { name: 'venue', label: 'Venue', value: b.venue, capitalize: 'words' },
+      { name: 'channel', label: 'TV / stream', value: b.channel },
+      { name: 'type', label: 'Type', type: 'select', options: TYPES, value: b.type },
+      { name: 'season', label: 'Season', value: b.season, hint: 'Groups games for standings, e.g. 2026' },
+      { name: 'neutral', label: 'Neutral site (not a home game for either team)', type: 'checkbox', value: b.neutral },
+      { name: 'notes', label: 'Notes', type: 'textarea', value: b.notes }
+    ],
+    onSubmit: v => {
+      const date = v.date.trim(); if (!isISO(date)) return 'Pick a valid date.';
+      if (v.homeId === v.awayId) return 'A team can’t play itself.';
+      const time = v.time.trim(); if (time && !validTime(time)) return 'Time must look like 19:30.';
+      let hs = null, as = null;
+      if (v.status === 'final') {
+        hs = scoreIn(v.homeScore); as = scoreIn(v.awayScore);
+        if (hs == null || as == null) return 'Enter both scores (whole numbers, 0–999) for a final.';
+        if (v.ot && hs === as) return 'An overtime game needs a winner. For a shootout, give the winner the extra goal.';
+      }
+      if (!g && state.games.length >= MAX.games) return 'Game limit reached.';
+      const rec = normGame({ id: g ? g.id : uid(), season: v.season, date, time, homeId: v.homeId, awayId: v.awayId, venue: v.venue, channel: v.channel, status: v.status, homeScore: hs, awayScore: as, ot: v.ot, type: v.type, notes: v.notes.trim(), neutral: v.neutral, approx: g ? g.approx && g.date === date : false });
+      if (g) Object.assign(g, rec); else state.games.push(rec);
+      commit(); toast(g ? 'Game updated' : 'Game added');
+    },
+    onDelete: g ? async () => {
+      if (!(await confirmBox('Delete this game?', `${tName(g.awayId)} @ ${tName(g.homeId)}, ${gameDateLabel(g)}.`, 'Delete'))) return false;
+      state.games = state.games.filter(x => x.id !== g.id); commit(); toast('Game deleted'); return true;
+    } : null
+  });
+}
+function scoreDialog(id) {
+  const g = state.games.find(x => x.id === id); if (!g) return;
+  formDialog({
+    title: 'Final score', intro: `${tName(g.awayId)} @ ${tName(g.homeId)}, ${gameDateLabel(g)}`, submitLabel: 'Save final', grid: 'fields2',
+    fields: [
+      { name: 'awayScore', label: tShort(g.awayId) + ' (away)', type: 'number', value: g.awayScore ?? '' },
+      { name: 'homeScore', label: tShort(g.homeId) + ' (home)', type: 'number', value: g.homeScore ?? '' },
+      { name: 'ot', label: 'Went to overtime / extra innings / shootout', type: 'checkbox', value: g.ot }
+    ],
+    extra: [{ label: 'Mark postponed', onClick: () => { g.status = 'postponed'; g.homeScore = null; g.awayScore = null; g.ot = false; $('#dlg').close(); commit(); toast('Marked postponed'); } }],
+    onSubmit: v => {
+      const hs = scoreIn(v.homeScore), as = scoreIn(v.awayScore);
+      if (hs == null || as == null) return 'Enter both scores (whole numbers, 0–999).';
+      if (v.ot && hs === as) return 'An overtime game needs a winner. For a shootout, give the winner the extra goal.';
+      g.status = 'final'; g.homeScore = hs; g.awayScore = as; g.ot = !!v.ot;
+      commit(); toast('Score saved');
+    }
+  });
+}
+/* "Add past meeting": year or full date, stored as an ordinary final Game */
+function parsePastDate(s) {
+  s = str(s).trim();
+  if (/^\d{4}$/.test(s)) { const y = Number(s); return y >= 1850 && y <= new Date().getFullYear() ? { date: `${s}-01-01`, approx: true } : { error: 'Year must be 1850 or later and not in the future.' }; }
+  const d = extractDate(s, 0, false);
+  if (!d.iso) return { error: 'Enter a year (1998) or a full date (1998-11-07, Nov 7 1998 or 11/7/1998).' };
+  if (!d.hasYear) return { error: 'Include the year.' };
+  if (d.iso < '1850-01-01' || d.iso > todayISO()) return { error: 'A past meeting must be between 1850 and today.' };
+  return { date: d.iso, approx: false };
+}
+function meetingDialog(preset = {}) {
+  if (state.teams.length < 2) { msgBox('Add two teams first', 'Past meetings are between two teams in this app.').then(() => go('teams')); return; }
+  const [a0, b0] = rivalPair();
+  const opts = state.teams.map(t => [t.id, t.name]);
+  formDialog({
+    title: 'Add past meeting', intro: 'Enter an old game for the rivalry record.', submitLabel: 'Add meeting', grid: 'fields2',
+    fields: [
+      { name: 'a', label: 'Team 1', type: 'select', options: opts, value: preset.a || a0 },
+      { name: 'b', label: 'Team 2', type: 'select', options: opts, value: preset.b || b0 },
+      { name: 'when', label: 'Year or date', value: '', placeholder: '1998 or 1998-11-07', hint: 'A year alone is fine.' },
+      { name: 'kind', label: 'Type', type: 'select', options: [['rivalry-historic', 'Regular / unspecified'], ['playoff', 'Playoff']], value: 'rivalry-historic' },
+      { name: 'as', label: 'Team 1 score', type: 'number', value: '' },
+      { name: 'bs', label: 'Team 2 score', type: 'number', value: '' },
+      { name: 'host', label: 'Played at', type: 'select', options: [['a', 'Team 1’s home'], ['b', 'Team 2’s home'], ['n', 'Neutral site / unknown']], value: 'n' },
+      { name: 'ot', label: 'Went to overtime', type: 'checkbox', value: false },
+      { name: 'venue', label: 'Venue', value: '' },
+      { name: 'notes', label: 'Notes', type: 'textarea', value: '' }
+    ],
+    onSubmit: v => {
+      if (v.a === v.b) return 'A team can’t play itself.';
+      const pd = parsePastDate(v.when); if (pd.error) return pd.error;
+      const sa = scoreIn(v.as), sb = scoreIn(v.bs);
+      if (sa == null || sb == null) return 'Enter both scores (whole numbers, 0–999).';
+      if (v.ot && sa === sb) return 'An overtime game needs a winner.';
+      if (state.games.length >= MAX.games) return 'Game limit reached.';
+      const aHome = v.host === 'a' || v.host === 'n';
+      const homeId = aHome ? v.a : v.b, awayId = aHome ? v.b : v.a;
+      const rec = normGame({ id: uid(), season: pd.date.slice(0, 4), date: pd.date, homeId, awayId, status: 'final', homeScore: aHome ? sa : sb, awayScore: aHome ? sb : sa, ot: v.ot, type: v.kind, venue: v.venue, notes: v.notes.trim(), neutral: v.host === 'n', approx: pd.approx });
+      state.games.push(rec); ui.rA = v.a; ui.rB = v.b; commit(); toast('Meeting added');
+    }
+  });
+}
+
+/* ---- bulk import ---- */
+function importDialog(prev = {}) {
+  const mineFirst = [...state.teams.filter(t => t.mine), ...state.teams.filter(t => !t.mine)];
+  const opts = [...mineFirst.map(t => [t.id, t.name]), ['__new__', 'New team…']];
+  let next = null;
+  formDialog({
+    title: 'Paste a schedule', intro: 'One game per line: “2026-11-07 7:30pm vs Texans @ NRG Stadium (CBS)”, “Sat Nov 7 @ Cowboys 3:25 PM FOX”, or CSV lines “date,time,home,away,venue,channel”. “vs” means home, “@” or “at” means away.', submitLabel: 'Preview',
+    fields: [
+      { name: 'text', label: 'Schedule', type: 'textarea', value: prev.text || '', placeholder: '2026-11-07 7:30pm vs Texans @ NRG Stadium (CBS)' },
+      { name: 'my', label: 'Your team (for vs / @ lines)', type: 'select', options: opts, value: prev.my || (mineFirst[0] ? mineFirst[0].id : '__new__') },
+      { name: 'myNew', label: 'New team name (if “New team…”)', value: prev.myNew || '' },
+      { name: 'season', label: 'Season', value: prev.season || (ui.fSeason && ui.fSeason !== 'all' ? ui.fSeason : autoSeason()), hint: 'Dates without a year use this year.' },
+      { name: 'wrap', label: 'Season runs past New Year (Jan–Jun dates belong to the next year)', type: 'checkbox', value: !!prev.wrap }
+    ],
+    onSubmit: v => {
+      if (!v.text.trim()) return 'Paste at least one line.';
+      if (!v.season.trim()) return 'Enter a season, e.g. 2026.';
+      if (v.my === '__new__' && !cleanTeamName(v.myNew)) return 'Enter your team’s name.';
+      next = v;
+    },
+    onClose: () => { if (next) { const v = next; next = null; importPreview(v); } }
+  });
+}
+async function importPreview(v) {
+  const isNew = v.my === '__new__';
+  const parsed = parseSchedule(v.text, { season: v.season.trim(), teams: state.teams, games: state.games, wrap: v.wrap, my: isNew ? { id: null, name: cleanTeamName(v.myNew) } : { id: v.my, name: tName(v.my) } });
+  const { rows, newTeams, counts } = parsed;
+  if (!rows.length) { await msgBox('Nothing to import', 'No schedule lines were found.'); return importDialog(v); }
+  const lim = rows.slice(0, 200);
+  const body = `<p class="muted">${esc(`${plural(counts.ok, 'game')} ready` + (counts.dup ? `, ${counts.dup} already here` : '') + (counts.error ? `, ${plural(counts.error, 'line')} with problems` : ''))}.</p>`
+    + (newTeams.length ? `<p>New teams to create: <b>${newTeams.map(t => esc(t.name)).join(', ')}</b></p>` : '')
+    + `<div class="pvwrap"><table class="tbl pv" id="pv"><thead><tr><th>Line</th><th>Game</th><th>Result</th></tr></thead><tbody>${lim.map(r => {
+      const g = r.status === 'error' ? esc(r.raw.slice(0, 70)) : `${esc(fmtDate(r.date))}${r.time ? ' ' + esc(fmtTime(r.time)) : ''}<br>${esc(r.awayName)} @ ${esc(r.homeName)}${r.venue ? '<br>' + esc(r.venue) : ''}${r.channel ? ' (' + esc(r.channel) + ')' : ''}`;
+      return `<tr class="${r.status === 'ok' ? '' : r.status === 'dup' ? 'dup' : 'bad'}"><td>${r.n}</td><td>${g}</td><td>${r.status === 'ok' ? 'Add' : esc(r.status === 'dup' ? 'Skip: ' + r.error : r.error)}</td></tr>`;
+    }).join('')}</tbody></table></div>${rows.length > lim.length ? `<p class="hint">Showing the first ${lim.length} lines.</p>` : ''}`;
+  const buttons = [{ label: 'Cancel', value: 'cancel' }, { label: 'Back', value: 'back' }];
+  if (counts.ok) buttons.push({ label: `Add ${plural(counts.ok, 'game')}`, value: 'add', kind: 'primary' });
+  const choice = await askDialog({ title: 'Check the import', body, buttons });
+  if (choice === 'back') return importDialog(v);
+  if (choice !== 'add') return;
+  applyImport(parsed, v);
+}
+function applyImport(parsed, v) {
+  const idOf = new Map(), made = [];
+  parsed.newTeams.forEach((nt, i) => {
+    const t = normTeam({ id: uid(), name: nt.name, color: PALETTE[(state.teams.length + i) % PALETTE.length], mine: nt.mine });
+    state.teams.push(t); idOf.set(nt.key, t.id); made.push(t);
+  });
+  if (v.my !== '__new__') { const t = tm(v.my); if (t && !t.mine) t.mine = true; }
+  const res = k => idOf.get(k) || k;
+  let added = 0;
+  for (const r of parsed.rows) {
+    if (r.status !== 'ok' || state.games.length >= MAX.games) continue;
+    const g = normGame({ id: uid(), season: v.season.trim(), date: r.date, time: r.time, homeId: res(r.homeKey), awayId: res(r.awayKey), venue: r.venue, channel: r.channel, status: 'scheduled', type: 'regular' });
+    if (g) { state.games.push(g); added++; }
+  }
+  ui.fSeason = v.season.trim(); ui.fTeam = 'all'; ui.tab = 'schedule';
+  commit(); window.scrollTo(0, 0);
+  toast(`Added ${plural(added, 'game')}` + (made.length ? ` and ${plural(made.length, 'team')}` : ''));
+}
+async function exportICS() {
+  const list = visibleGames().filter(g => g.status === 'scheduled');
+  if (!list.length) return toast('No scheduled games in this view to export.');
+  const text = buildICS(list, state.teams, { name: 'Sports schedule' });
+  const r = await deliverFile(`goobs-sports-schedule-${todayISO()}.ics`, text, 'text/calendar');
+  if (r !== 'cancelled') toast(r === 'shared' ? 'Calendar file shared' : `Saved ${plural(list.length, 'game')} to a .ics file`);
+}
+
+/* ===================== STANDINGS ===================== */
+function renderStandings() {
+  const real = state.games.filter(g => g.type === 'regular');
+  const seasons = [...new Set(real.map(g => g.season))].sort((a, b) => seasonYear(b) - seasonYear(a) || b.localeCompare(a));
+  const optCard = `<section class="card pad" style="margin-top:14px"><div class="optrow"><input type="checkbox" id="optOtl" data-opt="otl"${state.settings.otl ? ' checked' : ''}><label for="optOtl">Count overtime losses separately (OTL, hockey style)</label></div><p class="hint">Standings use final regular-season games only. Ties count as half a win.</p></section>`;
+  if (!seasons.length) return storageBannerHTML() + '<div class="empty"><div class="big">📊</div><h2>No standings yet</h2><p>Standings are computed from final regular-season scores. Add games on the Schedule tab.</p><button type="button" class="btn primary" data-action="add-game">Add a game</button></div>' + optCard;
+  let season = ui.sSeason === null ? autoSeason() : ui.sSeason;
+  if (!seasons.includes(season)) season = seasons[0];
+  const st = standings(state.games, state.teams, season, { otl: state.settings.otl });
+  const otl = state.settings.otl;
+  let h = storageBannerHTML() + `<div class="filters" style="grid-template-columns:1fr">${selHTML('sSeason', 'Season', seasons.map(s => [s, s]), season)}</div>`;
+  const head = `<tr><th class="tm">Team</th><th>W</th><th>L</th>${otl ? '<th>OTL</th>' : ''}<th>T</th><th>PCT</th><th>GB</th><th>PF</th><th>PA</th><th>DIFF</th><th>STRK</th><th>L10</th><th>HOME</th><th>AWAY</th></tr>`;
+  if (!st.groups.length) h += '<div class="card pad muted" style="margin-top:14px">No games in this season yet.</div>';
+  for (const gr of st.groups) {
+    h += `<div class="sec-h"><span>${esc(st.groups.length > 1 || gr.name ? gr.name || 'Other' : 'League')}</span></div><div class="card tscroll"><table class="tbl" data-group="${esc(gr.name)}"><thead>${head}</thead><tbody>${gr.rows.map(r => `<tr class="${r.rank === 1 && r.gp ? 'lead' : ''}" data-team="${esc(r.tid)}"><td class="tm">${dot(r.tid)}${esc(r.name)}</td><td>${r.w}</td><td>${r.l}</td>${otl ? `<td>${r.otl}</td>` : ''}<td>${r.t}</td><td>${fmtPct(r.num, r.gp ? r.den : 0)}</td><td>${fmtGB(r.gb)}</td><td>${r.pf}</td><td>${r.pa}</td><td>${r.diff > 0 ? '+' : ''}${r.diff}</td><td>${esc(fmtStreak(r.streak))}</td><td>${fmtRec(r.last10)}</td><td>${fmtRec(r.home)}</td><td>${fmtRec(r.away)}</td></tr>`).join('')}</tbody></table></div>`;
+  }
+  return h + optCard;
+}
+
+/* ===================== RIVALRIES ===================== */
+function rivalPair() {
+  if (state.teams.length < 2) return [null, null];
+  const a = ui.rA && tm(ui.rA) ? ui.rA : (state.teams.find(t => t.mine) || state.teams[0]).id;
+  let b = ui.rB && tm(ui.rB) && ui.rB !== a ? ui.rB : mostPlayed(state.games, a, state.teams);
+  if (!b || b === a) b = state.teams.find(t => t.id !== a).id;
+  return [a, b];
+}
+function timelineSVG(h, a, b) {
+  const W = 340, H = 96, mid = 48, n = h.meetings.length;
+  const maxM = Math.max(1, ...h.meetings.map(g => Math.abs(marginFor(g, a))));
+  const step = (W - 20) / n, bw = Math.max(2, Math.min(18, step - 2));
+  let g = `<line x1="6" x2="${W - 6}" y1="${mid}" y2="${mid}" stroke="var(--line)" stroke-width="1"/>`;
+  h.meetings.forEach((m, i) => {
+    const res = outcome(m, a), mg = Math.abs(marginFor(m, a)), ht = res === 'T' ? 3 : 6 + 34 * (mg / maxM), x = 10 + i * step + (step - bw) / 2;
+    const y = res === 'W' ? mid - ht : res === 'L' ? mid : mid - 1.5, col = res === 'W' ? tColor(a) : res === 'L' ? tColor(b) : 'var(--muted)';
+    g += `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${ht.toFixed(1)}" rx="2" fill="${esc(col)}"><title>${esc(gameDateLabel(m) + ': ' + tShort(m.awayId) + ' ' + m.awayScore + ' – ' + m.homeScore + ' ' + tShort(m.homeId))}</title></rect>`;
+  });
+  g += `<text x="6" y="${H - 2}" font-size="10" fill="var(--muted)">${esc(h.first.date.slice(0, 4))}</text><text x="${W - 6}" y="${H - 2}" font-size="10" text-anchor="end" fill="var(--muted)">${esc(h.last.date.slice(0, 4))}</text>`;
+  g += `<text x="6" y="10" font-size="10" fill="var(--muted)">${esc(tShort(a))} wins ↑</text><text x="${W - 6}" y="${H - 14}" font-size="10" text-anchor="end" fill="var(--muted)">${esc(tShort(b))} wins ↓</text>`;
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Results of ${n} meetings" data-chart="timeline">${g}</svg>`;
+}
+function renderMatrix() {
+  const mx = matrix(state.games, state.teams);
+  const cell = (r, c) => {
+    if (r === c) return '<td class="mx self">–</td>';
+    const x = mx.cells[r][c], d = dominance(x);
+    return `<td class="mx ${!x.n ? 'none' : d > 0 ? 'p' + d : d < 0 ? 'n' + -d : ''}" data-action="rival" data-a="${esc(r)}" data-b="${esc(c)}">${x.n ? esc(fmtRec(x)) : '·'}</td>`;
+  };
+  return `<div class="sec-h"><span>Rivalry matrix</span></div><div class="card tscroll"><table class="tbl" id="matrix"><thead><tr><th class="tm"></th>${mx.cols.map(c => `<th title="${esc(tName(c))}">${esc(tShort(c))}</th>`).join('')}</tr></thead><tbody>${mx.rows.map(r => `<tr><td class="tm">${dot(r)}${esc(tName(r))}</td>${mx.cols.map(c => cell(r, c)).join('')}</tr>`).join('')}</tbody></table></div><p class="hint">Each cell is the row team’s W-L(-T) against the column team. Green = row team dominates, red = column team does. Tap a cell to open that rivalry.</p>`;
+}
+function renderRivalries() {
+  if (state.teams.length < 2) return storageBannerHTML() + '<div class="empty"><div class="big">⚔️</div><h2>Add two teams</h2><p>Pick any two teams to see their all-time series, streaks and every meeting.</p><button type="button" class="btn primary" data-action="add-team">Add a team</button></div>';
+  const [a, b] = rivalPair(), h = h2h(state.games, a, b), opts = state.teams.map(t => [t.id, t.name]);
+  const A = tName(a), B = tName(b);
+  let out = storageBannerHTML() + `<div class="filters">${selHTML('rA', 'Team', opts, a)}${selHTML('rB', 'Versus', opts, b)}</div><div class="ctl"><button type="button" class="btn" data-action="add-meeting">Add past meeting</button></div>`;
+  if (!h.n) {
+    out += `<section class="card pad series" id="series"><div class="sr-teams"><div>${dot(a)}${esc(A)}</div><div class="sr-rec">0-0</div><div>${esc(B)}${dot(b)}</div></div><p class="muted" style="margin-top:8px">No meetings recorded yet. Add a past meeting, or enter final scores on the Schedule tab.</p></section>`;
+  } else {
+    const lead = h.w === h.l ? `Series tied ${fmtRec(h)}` : h.w > h.l ? `${A} leads ${fmtRec(h)}` : `${B} leads ${h.l}-${h.w}${h.t ? '-' + h.t : ''}`;
+    const sk = h.streak, skTx = sk.type === 'W' ? `${A} has won ${sk.len} straight` : sk.type === 'L' ? `${B} has won ${sk.len} straight` : `Last ${sk.len} ended in ties`;
+    out += `<section class="card pad series" id="series"><div class="sr-teams"><div>${dot(a)}${esc(A)}</div><div class="sr-rec num">${fmtRec(h)}</div><div>${esc(B)}${dot(b)}</div></div><div class="lead-tx">${esc(lead)}</div><div class="muted" style="font-size:14px;margin-top:4px">${esc(skTx)} · ${plural(h.n, 'meeting')}<br>First: ${esc(gameDateLabel(h.first))} · Last: ${esc(gameDateLabel(h.last))}</div></section>`;
+    const big = (x, who) => x ? `<div class="val num">${x.g.homeId === who ? x.g.homeScore : x.g.awayScore}–${x.g.homeId === who ? x.g.awayScore : x.g.homeScore}</div><div class="sub">by ${x.margin}, ${esc(gameDateLabel(x.g))}</div>` : '<div class="val">–</div><div class="sub">no wins</div>';
+    const am = h.avgMargin, amTx = am === 0 ? 'even' : (am > 0 ? tShort(a) : tShort(b)) + ' +' + Math.abs(am).toFixed(1);
+    out += `<div class="tiles2"><div class="card tile"><div class="lbl">${esc(tShort(a))} biggest win</div>${big(h.bigA, a)}</div><div class="card tile"><div class="lbl">${esc(tShort(b))} biggest win</div>${big(h.bigB, b)}</div><div class="card tile"><div class="lbl">Average margin</div><div class="val num" id="avgm">${esc(amTx)}</div><div class="sub">${esc(h.avgTotal.toFixed(1))} total per game</div></div><div class="card tile"><div class="lbl">Playoff record</div><div class="val num">${h.playoff.w + h.playoff.l + h.playoff.t ? esc(tShort(a) + ' ' + fmtRec(h.playoff)) : '–'}</div><div class="sub">${h.playoff.w + h.playoff.l + h.playoff.t ? plural(h.playoff.w + h.playoff.l + h.playoff.t, 'game') : 'none yet'}</div></div></div>`;
+    out += `<div class="sec-h"><span>Home / away splits (${esc(tShort(a))})</span></div><div class="card"><table class="tbl" id="splits"><tbody><tr><td class="l">At ${esc(tShort(a))}</td><td>${fmtRec(h.atA)}</td></tr><tr><td class="l">At ${esc(tShort(b))}</td><td>${fmtRec(h.atB)}</td></tr><tr><td class="l">Neutral / unknown</td><td>${fmtRec(h.neutral)}</td></tr></tbody></table></div>`;
+    const dec = decadeBreakdown(h.meetings, a);
+    out += `<div class="sec-h"><span>By decade (${esc(tShort(a))})</span></div><div class="card"><table class="tbl" id="decades"><tbody>${dec.map(d => `<tr><td class="l">${d.decade}s</td><td>${fmtRec(d)}</td><td>${d.n} gm</td></tr>`).join('')}</tbody></table></div>`;
+    out += `<div class="card chartbox"><h3>Every meeting</h3>${timelineSVG(h, a, b)}</div>`;
+  }
+  const note = state.rivalNotes[pairKey(a, b)] || '';
+  out += `<section class="card pad" style="margin-top:14px" id="rnote"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><h3>What makes this a rivalry</h3><button type="button" class="btn small" data-action="edit-note">${note ? 'Edit' : 'Add notes'}</button></div>${note ? `<p style="margin:8px 0 0;white-space:pre-wrap;overflow-wrap:anywhere">${esc(note)}</p>` : '<p class="muted" style="margin:8px 0 0">Nothing written yet.</p>'}</section>`;
+  if (h.n) out += `<div class="sec-h"><span>All meetings (${h.n})</span></div><ul class="card list" id="meetings">${[...h.meetings].reverse().map(g => gameRowHTML(g, a)).join('')}</ul>`;
+  return out + renderMatrix();
+}
+function noteDialog() {
+  const [a, b] = rivalPair(), key = pairKey(a, b);
+  formDialog({
+    title: `${tName(a)} vs ${tName(b)}`, submitLabel: 'Save',
+    fields: [{ name: 'note', label: 'What makes this a rivalry', type: 'textarea', value: state.rivalNotes[key] || '', placeholder: 'History, trophies, bad blood…' }],
+    onSubmit: v => { const t = v.note.trim(); if (t) state.rivalNotes[key] = t.slice(0, 2000); else delete state.rivalNotes[key]; commit(); toast('Notes saved'); }
+  });
+}
+
+/* ===================== TEAMS ===================== */
+function renderTeams() {
+  if (!state.teams.length) return storageBannerHTML() + '<div class="empty"><div class="big">👥</div><h2>No teams yet</h2><p>Add your team and its opponents. Mark your own teams so the app knows whose point of view to use.</p><button type="button" class="btn primary" data-action="add-team">Add a team</button></div>';
+  const cnt = id => state.games.filter(g => g.homeId === id || g.awayId === id).length;
+  const sorted = [...state.teams].sort((a, b) => (b.mine - a.mine) || a.name.localeCompare(b.name));
+  return storageBannerHTML() + `<ul class="card list" style="margin-top:14px" id="teamlist">${sorted.map(t => `<li class="row" data-action="edit-team" data-id="${esc(t.id)}"><span class="sw" style="background:${esc(t.color)};margin:0"></span><div class="row-main"><div class="row-title">${esc(t.name)}${t.mine ? '<span class="badge acc">My team</span>' : ''}</div><div class="row-sub">${[t.short, t.league, t.division].filter(Boolean).map(esc).join(' · ')}</div></div><div class="when">${plural(cnt(t.id), 'game')}</div></li>`).join('')}</ul>`;
+}
+function teamDialog(id) {
+  const t = id ? tm(id) : null;
+  if (id && !t) return;
+  formDialog({
+    title: t ? 'Edit team' : 'Add team', submitLabel: t ? 'Save' : 'Add team', grid: 'fields2',
+    fields: [
+      { name: 'name', label: 'Team name', required: true, value: t ? t.name : '', capitalize: 'words' },
+      { name: 'short', label: 'Abbreviation', value: t ? t.short : '', placeholder: 'auto', capitalize: 'characters' },
+      { name: 'color', label: 'Color', type: 'color', value: t ? t.color : PALETTE[state.teams.length % PALETTE.length] },
+      { name: 'league', label: 'League / sport', value: t ? t.league : '', placeholder: 'NFL, Little League…' },
+      { name: 'division', label: 'Division / group', value: t ? t.division : '', placeholder: 'AFC South', hint: 'Standings are grouped by this.' },
+      { name: 'mine', label: 'This is my team', type: 'checkbox', value: t ? t.mine : !state.teams.some(x => x.mine) },
+      { name: 'notes', label: 'Notes', type: 'textarea', value: t ? t.notes : '' }
+    ],
+    onSubmit: v => {
+      const name = cleanTeamName(v.name); if (!name) return 'Team name is required.';
+      if (state.teams.some(x => x.id !== (t && t.id) && normName(x.name) === normName(name))) return 'You already have a team with that name.';
+      if (!t && state.teams.length >= MAX.teams) return 'Team limit reached.';
+      const rec = normTeam({ id: t ? t.id : uid(), name, short: v.short, league: v.league, division: v.division, color: v.color, mine: v.mine, notes: v.notes.trim() });
+      if (t) Object.assign(t, rec); else state.teams.push(rec);
+      commit(); toast(t ? 'Team updated' : 'Team added');
+    },
+    onDelete: t ? async () => {
+      const gs = state.games.filter(g => g.homeId === t.id || g.awayId === t.id);
+      const fin = gs.filter(isScored).length;
+      const body = gs.length ? `${t.name} is in ${plural(gs.length, 'game')} (${fin} with a final score, ${gs.length - fin} without). Deleting the team also deletes those games and their results.` : `${t.name} has no games.`;
+      if (!(await confirmBox(gs.length ? `Delete ${t.name} and ${plural(gs.length, 'game')}?` : `Delete ${t.name}?`, body, gs.length ? `Delete team and ${plural(gs.length, 'game')}` : 'Delete'))) return false;
+      state.games = state.games.filter(g => g.homeId !== t.id && g.awayId !== t.id);
+      state.teams = state.teams.filter(x => x.id !== t.id);
+      for (const k of Object.keys(state.rivalNotes)) if (k.split('|').includes(t.id)) delete state.rivalNotes[k];
+      if (ui.fTeam === t.id) ui.fTeam = 'all';
+      commit(); toast(gs.length ? `Deleted ${t.name} and ${plural(gs.length, 'game')}` : 'Team deleted'); return true;
+    } : null
+  });
+}
+
+/* ===================== BACKUP ===================== */
+function renderBackup() {
+  const last = state.meta.lastBackup ? `Last backup: ${esc(fmtDateTime(state.meta.lastBackup))}.` : 'No backup made yet.';
+  const canEncrypt = !!(window.crypto && crypto.subtle);
+  return storageBannerHTML() + installCardHTML() + `<div class="stack">
+    <section class="card pad"><h3>Back up</h3>
+      <p class="muted">${last}</p>
+      <p>Saves one file with your teams, games, scores and rivalry notes. On iPhone it opens the share sheet; save it to Files or OneDrive. Keep the file out of your GitHub repo.</p>
+      ${canEncrypt ? `<div class="field"><label for="bkPass">Passphrase (optional — encrypts the file)</label><input id="bkPass" type="password" autocomplete="new-password"></div>
+      <div class="field" style="margin-top:8px"><label for="bkPass2">Repeat passphrase</label><input id="bkPass2" type="password" autocomplete="new-password"></div>
+      <p class="hint">If you set one, the file can’t be opened without it.</p>` : ''}
+      <button type="button" class="btn primary block" style="margin-top:12px" data-action="export">Back up now</button></section>
+    <section class="card pad"><h3>Restore</h3><p>Pick a backup file made by this app. You’ll choose whether to replace what’s here or merge it in.</p>
+      <button type="button" class="btn block" data-action="restore">Choose backup file…</button></section>
+    <section class="card pad"><h3>Danger zone</h3><p>Erases everything in this app on this device.</p>
+      <button type="button" class="btn danger block" data-action="wipe">Erase everything on this device</button></section>
+    <p class="hint" style="text-align:center">Your data lives only on this device. Nothing is sent anywhere.</p></div>`;
+}
+async function doExport() {
+  const pass = ($('#bkPass') || {}).value || '', pass2 = ($('#bkPass2') || {}).value || '';
+  if (pass) {
+    if (pass.length < 8) return toast('Use at least 8 characters for the passphrase.');
+    if (pass !== pass2) return toast('The two passphrases don’t match.');
+  }
+  const btn = $('[data-action="export"]'); if (btn) btn.disabled = true;
+  try {
+    const text = await Backup.build({ appId: APP_ID, schema: SCHEMA, data: exportData(), passphrase: pass || null });
+    const r = await deliverFile(`goobs-sports-backup-${todayISO()}${pass ? '-encrypted' : ''}.json`, text, 'application/json');
+    if (r !== 'cancelled') {
+      state.meta.lastBackup = new Date().toISOString();
+      await persist({ touch: false });
+      render();
+      toast(r === 'shared' ? 'Backup shared' : 'Backup saved to your downloads');
+    }
+  } catch (e) { toast('Backup failed: ' + e.message); }
+  finally { const b2 = $('[data-action="export"]'); if (b2) b2.disabled = false; }
+}
+async function restoreFromText(text) {
+  let parsed;
+  try { parsed = await Backup.parse(text, { appId: APP_ID, schema: SCHEMA }); }
+  catch (e) { await msgBox('Can’t restore that file', e.message); return false; }
+  if (!parsed) return false;
+  const { data, dropped } = normalizeData(parsed.data);
+  if (!hasAnyData(data)) { await msgBox('Nothing to restore', 'That backup has no data in it.'); return false; }
+  const hasLocal = hasAnyData();
+  const sum = `${plural(data.teams.length, 'team')}, ${plural(data.games.length, 'game')}`;
+  const when = parsed.exportedAt ? ` Backup made ${fmtDateTime(parsed.exportedAt)}.` : '';
+  const skipped = dropped ? ` ${plural(dropped, 'unreadable item')} will be skipped.` : '';
+  const body = `<p>${esc(sum + '.' + when + skipped)}</p>` + (hasLocal ? '<p class="muted"><b>Replace all</b> swaps everything here for the backup. <b>Merge</b> adds what isn’t here yet and keeps your current settings.</p>' : '');
+  const choice = await askDialog({
+    title: 'Restore this backup?', body,
+    buttons: hasLocal
+      ? [{ label: 'Cancel', value: 'cancel' }, { label: 'Merge', value: 'merge' }, { label: 'Replace all', value: 'replace', kind: 'danger' }]
+      : [{ label: 'Cancel', value: 'cancel' }, { label: 'Restore', value: 'replace', kind: 'primary' }]
+  });
+  if (choice === 'replace') {
+    const ts = parsed.exportedAt && !isNaN(Date.parse(parsed.exportedAt)) ? parsed.exportedAt : new Date().toISOString();
+    for (const k of DATA_KEYS) state[k] = data[k];
+    state.meta.lastBackup = ts; state.meta.lastChange = ts;
+    ui.fTeam = 'all'; ui.rA = ui.rB = null;
+    await persist({ touch: false });
+    render(); toast(`Restored ${sum}`); return true;
+  }
+  if (choice === 'merge') {
+    const merged = { settings: state.settings, rivalNotes: { ...data.rivalNotes, ...state.rivalNotes } }; let added = 0;
+    for (const k of ['teams', 'games']) { const ids = new Set(state[k].map(x => x.id)); merged[k] = [...state[k]]; for (const x of data[k]) if (!ids.has(x.id)) { merged[k].push(x); added++; } }
+    const n = normalizeData(merged).data;
+    for (const k of DATA_KEYS) state[k] = n[k];
+    await persist(); render(); toast(`Merged in ${plural(added, 'item')}`); return true;
+  }
+  return false;
+}
+async function doRestore() {
+  const f = await pickFile(); if (!f) return;
+  let text;
+  try { text = await readFileText(f); } catch { await msgBox('Couldn’t read that file', 'Try choosing it again.'); return; }
+  await restoreFromText(text);
+}
+async function doWipe() {
+  if (!(await confirmBox('Erase everything?', 'This permanently deletes all teams, games, scores and notes on this device.', 'Erase everything'))) return;
+  state = defaultState(); ui.fTeam = 'all'; ui.fSeason = null; ui.sSeason = null; ui.rA = ui.rB = null;
+  await persist({ touch: false });
+  render(); toast('Everything erased');
+}
+
+/* ===================== shell ===================== */
+const TABS = { schedule: ['Schedule', renderSchedule], standings: ['Standings', renderStandings], rivalries: ['Rivalries', renderRivalries], teams: ['Teams', renderTeams], backup: ['Backup & restore', renderBackup] };
+const ADD = { schedule: '+ Game', rivalries: '+ Meeting', teams: '+ Team' };
+function render() {
+  const y = window.scrollY;
+  view.innerHTML = TABS[ui.tab][1]();
+  $$('nav.tabs button').forEach(b => b.setAttribute('aria-current', b.dataset.tab === ui.tab ? 'page' : 'false'));
+  const add = $('#addBtn'), label = ADD[ui.tab] || '';
+  add.classList.toggle('hide', !label); if (label) add.textContent = label;
+  $('#title').textContent = 'Sports';
+  $('#sub').textContent = TABS[ui.tab][0] + ' · ' + new Date().toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+  window.scrollTo(0, y);
+}
+function go(t) { ui.tab = t; render(); window.scrollTo(0, 0); }
+
+view.addEventListener('click', e => {
+  const el = e.target.closest('[data-action]');
+  if (!el) return;
+  const id = el.dataset.id;
+  switch (el.dataset.action) {
+    case 'add-game': gameDialog(null); break;
+    case 'edit-game': gameDialog(id); break;
+    case 'enter-score': scoreDialog(id); break;
+    case 'import': importDialog(); break;
+    case 'export-ics': exportICS(); break;
+    case 'show-all': ui.showAll = true; render(); break;
+    case 'add-team': teamDialog(null); break;
+    case 'edit-team': teamDialog(id); break;
+    case 'add-meeting': meetingDialog(); break;
+    case 'edit-note': noteDialog(); break;
+    case 'rival': ui.rA = el.dataset.a; ui.rB = el.dataset.b; ui.tab = 'rivalries'; render(); window.scrollTo(0, 0); break;
+    case 'export': doExport(); break;
+    case 'restore': doRestore(); break;
+    case 'wipe': doWipe(); break;
+    case 'install': runInstall(); break;
+  }
+});
+view.addEventListener('change', e => {
+  const el = e.target;
+  if (el.dataset.sel) {
+    const v = el.value;
+    if (el.dataset.sel === 'fTeam') ui.fTeam = v;
+    else if (el.dataset.sel === 'fSeason') ui.fSeason = v;
+    else if (el.dataset.sel === 'sSeason') ui.sSeason = v;
+    else if (el.dataset.sel === 'rA') { ui.rA = v; if (ui.rB === v) ui.rB = null; }
+    else if (el.dataset.sel === 'rB') ui.rB = v;
+    ui.showAll = false; render();
+  } else if (el.dataset.opt === 'otl') { state.settings.otl = el.checked; commit(); }
+});
+$('#addBtn').onclick = () => { if (ui.tab === 'rivalries') meetingDialog(); else if (ui.tab === 'teams') teamDialog(null); else gameDialog(null); };
+$$('nav.tabs button').forEach(b => { b.onclick = () => go(b.dataset.tab); });
+document.addEventListener('visibilitychange', () => { if (!document.hidden && !$('dialog[open]')) render(); });
+setInterval(tickCountdown, 30000);
+
+(async function init() {
+  try { db = await openDB(DB_NAME); } catch (e) { console.error(e); db = null; }
+  if (db) {
+    try {
+      const raw = await idbGet(db, 'state');
+      if (raw) {
+        try { state = loadState(JSON.parse(raw)); }
+        catch (e) { console.error(e); await idbPut(db, 'state-damaged-' + Date.now(), raw); toast('Saved data looked damaged — a copy was kept aside.'); }
+      }
+    } catch (e) { console.error(e); db = null; }
+  }
+  render();
+})();
+</script>
+</body>
+</html>

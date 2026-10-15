@@ -1,0 +1,29 @@
+{
+  "name": "Sous Vide",
+  "short_name": "Sous Vide",
+  "description": "Steakhouse-style steak and sous vide lab: time and temperature calculator, sear plan, low-calorie swaps, saved recipes and a cook log. Data stays on your device.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#fbf5f1",
+  "theme_color": "#7c2d12",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

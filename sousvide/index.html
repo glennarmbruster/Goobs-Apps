@@ -1,0 +1,1637 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sous Vide</title>
+<meta name="description" content="Steakhouse-style steak and sous vide lab: time and temperature calculator, sear plan, low-calorie swaps, saved recipes and a cook log. Data stays on your device.">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#fbf5f1" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1a110d" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Sous Vide">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<style>
+:root{
+  --bg:#f5f4ef; --card:#ffffff; --ink:#1b2420; --muted:#66736d; --line:#e2e0d6; --soft:#efede5;
+  --accent:#0f766e; --accent-ink:#ffffff; --accent-soft:#d9f0ec;
+  --bad:#b42318; --bad-soft:#fde8e6; --warn:#9a5b00; --warn-soft:#fdf0d5; --ok:#166534; --ok-soft:#dcf5e3;
+  --radius:14px; --shadow:0 1px 2px rgba(16,24,20,.06),0 6px 18px rgba(16,24,20,.06);
+  color-scheme:light dark;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0e1311; --card:#171f1c; --ink:#e7eeeb; --muted:#97a69f; --line:#27332e; --soft:#1e2824;
+    --accent:#2dd4bf; --accent-ink:#06211d; --accent-soft:#12332e;
+    --bad:#ff8a80; --bad-soft:#3a1a18; --warn:#f6c26b; --warn-soft:#3a2c12; --ok:#7ee2a0; --ok-soft:#14301f;
+    --shadow:none;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation;
+  padding-bottom:calc(92px + env(safe-area-inset-bottom));
+}
+a{color:var(--accent)}
+h1,h2,h3{margin:0;line-height:1.2}
+h3{font-size:16px}
+p{margin:0 0 8px}
+.wrap{max-width:720px;margin:0 auto;padding:0 16px}
+.muted{color:var(--muted)} .bad{color:var(--bad)} .warn{color:var(--warn)} .ok{color:var(--ok)}
+.num{font-variant-numeric:tabular-nums}
+.hide{display:none!important}
+.pad{padding:14px 16px}
+.hint{font-size:13px;color:var(--muted);margin-top:4px}
+
+/* header */
+header.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top)}
+header.top .wrap{display:flex;align-items:center;gap:12px;min-height:58px}
+header.top .grow{flex:1;min-width:0}
+header.top h1{font-size:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+header.top .sub{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.back{display:inline-flex;align-items:center;min-height:44px;padding-right:6px;text-decoration:none;font-weight:600}
+
+/* cards, tiles, lists */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+.tile{padding:12px}
+.tile .lbl{font-size:12px;color:var(--muted);font-weight:600}
+.tile .val{font-size:20px;font-weight:700;margin-top:2px}
+.sec-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin:22px 4px 8px;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700}
+.sec-h .btn{text-transform:none;letter-spacing:0}
+.list{list-style:none;margin:0;padding:0}
+.row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-top:1px solid var(--line);cursor:pointer}
+.row:first-child{border-top:0}
+.row.static{cursor:default}
+.row-main{flex:1;min-width:0}
+.row-title{font-weight:600;overflow-wrap:anywhere}
+.row-sub{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.row-amt{font-weight:700;white-space:nowrap}
+.row.faded{opacity:.6}
+.badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 7px;border-radius:999px;background:var(--soft);color:var(--muted);vertical-align:middle;margin-left:6px}
+.badge.ok{background:var(--ok-soft);color:var(--ok)} .badge.warn{background:var(--warn-soft);color:var(--warn)} .badge.bad{background:var(--bad-soft);color:var(--bad)} .badge.acc{background:var(--accent-soft);color:var(--accent)}
+.empty{text-align:center;padding:40px 20px;color:var(--muted)}
+.empty .big{font-size:40px;line-height:1;margin-bottom:10px}
+.empty h2{color:var(--ink);font-size:18px;margin-bottom:6px}
+.empty .btn{margin-top:14px}
+.banner{padding:12px 14px;border-radius:12px;background:var(--warn-soft);color:var(--warn);font-size:14px;margin:14px 0;display:flex;gap:10px;justify-content:space-between;align-items:center}
+.banner.bad{background:var(--bad-soft);color:var(--bad)}
+.bar{height:8px;border-radius:99px;background:var(--soft);overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--accent);border-radius:99px}
+.bar.over>i{background:var(--bad)}
+
+/* buttons */
+.btn{white-space:nowrap;appearance:none;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-weight:600;min-height:44px;padding:0 16px;border-radius:12px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.danger{color:var(--bad)}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--accent)}
+.btn.small{min-height:36px;padding:0 12px;font-size:14px;border-radius:10px}
+.btn.block{width:100%}
+.btn:active{transform:translateY(1px)}
+.btn:disabled{opacity:.5;cursor:default}
+.btn:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible,.chip:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 14px;min-height:36px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+
+/* bottom nav + fab */
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+nav.tabs .wrap{display:flex;padding:0}
+nav.tabs a,nav.tabs button{flex:1;min-height:58px;border:0;background:none;color:var(--muted);font:inherit;font-size:11px;font-weight:600;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;text-decoration:none}
+nav.tabs .ico{font-size:20px;line-height:1}
+nav.tabs [aria-current="page"]{color:var(--accent)}
+.fab{position:fixed;right:max(16px,calc(50vw - 344px));bottom:calc(74px + env(safe-area-inset-bottom));z-index:7;width:56px;height:56px;border-radius:50%;border:0;background:var(--accent);color:var(--accent-ink);font-size:30px;line-height:1;box-shadow:0 6px 18px rgba(0,0,0,.28);cursor:pointer}
+.fab:active{transform:scale(.96)}
+
+/* forms + dialogs */
+input,select,textarea{width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-height:44px}
+textarea{min-height:92px;resize:vertical}
+input[type=checkbox]{width:22px;height:22px;min-height:0;padding:0;accent-color:var(--accent);flex:none}
+.field label{display:block;font-size:13px;font-weight:600;color:var(--muted);margin-bottom:4px}
+.field.check{display:flex;align-items:center;gap:10px}
+.field.check label{margin:0;color:var(--ink);font-size:16px;font-weight:500}
+.fields2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+dialog{border:0;border-radius:18px;padding:0;width:calc(100vw - 24px);max-width:520px;background:var(--card);color:var(--ink);box-shadow:0 20px 60px rgba(0,0,0,.35)}
+dialog::backdrop{background:rgba(10,15,12,.55)}
+.dlg-form{padding:20px;display:flex;flex-direction:column;gap:12px;max-height:85vh;max-height:85dvh;overflow:auto}
+.dlg-form h2{font-size:19px}
+.dlg-actions{display:flex;gap:8px;align-items:center;margin-top:6px;flex-wrap:wrap}
+.dlg-actions .spacer{flex:1}
+.ask-actions{justify-content:flex-end}
+.dlg-err{color:var(--bad);font-size:14px}
+.dlg-err:empty{display:none}
+.ask-body{font-size:15px;color:var(--ink)}
+.ask-body p{margin:0 0 8px}
+.checkgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px}
+.checkgrid .field.check label{font-size:15px}
+
+/* toast */
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom));background:#1b2420;color:#fff;padding:12px 16px;border-radius:12px;display:flex;gap:14px;align-items:center;z-index:60;max-width:calc(100vw - 24px);box-shadow:0 8px 24px rgba(0,0,0,.35);font-size:15px}
+.toast button{background:none;border:0;color:#7dd3c8;font:inherit;font-weight:700;cursor:pointer;min-height:36px}
+
+@media (prefers-reduced-motion:no-preference){.btn,.fab{transition:transform .08s}}
+
+.syncbadge{flex:none;white-space:nowrap;border:1px solid var(--line,#d5dbe0);background:var(--card,#fff);color:inherit;border-radius:999px;padding:4px 10px;font:inherit;font-size:.82rem;cursor:pointer;white-space:nowrap}
+.syncbadge.ok{color:#15803d}.syncbadge.bad{color:#b91c1c}
+.seg{display:flex;gap:8px;margin-top:6px}.seg .chip{flex:1;text-align:center}
+
+:root{--bg:#fbf5f1;--accent:#7c2d12;--accent-ink:#fff;--accent-soft:#f8e3d8;--line:#eaddd3;--soft:#f3e8e0}
+@media (prefers-color-scheme:dark){:root{--bg:#1a110d;--card:#251913;--line:#3b2a20;--soft:#2e2019;--accent:#fb9a6a;--accent-ink:#2a0f04;--accent-soft:#40261a}}
+.stack{display:flex;flex-direction:column;gap:14px;margin-top:14px}
+.fields2 .field{min-width:0}
+.fields2 .field.wide{grid-column:1/-1}
+.stepper{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--card)}
+.stepper button{width:44px;height:44px;border:0;background:var(--soft);font:inherit;font-size:22px;font-weight:700;color:var(--ink);cursor:pointer}
+.stepper b{min-width:44px;text-align:center;font-size:18px}
+.bigtemp{font-size:44px;font-weight:800;line-height:1.05;color:var(--accent)}
+.bigsub{font-size:14px;color:var(--muted);margin-top:2px}
+.tiles3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.tiles3 .tile{padding:10px 8px;text-align:center;min-width:0;background:var(--soft);border-radius:12px}
+.tiles3 .val{font-size:17px;font-weight:700;overflow-wrap:anywhere}
+.best{margin-top:12px;padding:10px 14px;border-radius:12px;background:var(--accent-soft);color:var(--ink);font-size:14px}
+.notes{margin:10px 2px 0;padding:0 0 0 18px;font-size:14px;color:var(--muted)}
+.notes li{margin:3px 0}
+.safe{margin-top:10px;padding:10px 14px;border-radius:12px;background:var(--warn-soft);color:var(--warn);font-size:14px}
+.kv{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-top:1px solid var(--line);font-size:15px}
+.kv:first-of-type{border-top:0}
+.kv span:first-child{color:var(--muted);white-space:nowrap}
+.fields2 select{font-size:15px;padding:10px 6px}
+.kv span:last-child{font-weight:600;text-align:right;overflow-wrap:anywhere}
+.ings{margin:8px 0 0;padding:0 0 0 18px}
+.ings li{margin:3px 0;overflow-wrap:anywhere}
+.stepl{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column;gap:10px}
+.stepl li{display:flex;gap:12px}
+.stepl .n{flex:none;width:28px;height:28px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:14px}
+.stepl .b{flex:1;min-width:0;overflow-wrap:anywhere}
+.stepl .t{font-weight:700}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.btnrow .btn{flex:1 1 40%}
+.search{margin:14px 0 10px}
+.stars{color:#d97706;letter-spacing:1px;white-space:nowrap}
+.tag{font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--soft);color:var(--muted)}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.fine{font-size:13px;color:var(--muted)}
+.cook{padding:18px 0 190px}
+.cook .big{font-size:25px;line-height:1.4;margin:16px 0 8px;overflow-wrap:anywhere}
+.cook .stt{font-size:13px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.cookbar{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--card);border-top:1px solid var(--line);padding:10px 12px calc(10px + env(safe-area-inset-bottom))}
+.cookbar .wrap{display:flex;gap:10px;padding:0}
+.cookbar .btn{flex:1;min-height:56px;font-size:17px}
+#timerbar{position:fixed;left:0;right:0;bottom:calc(70px + env(safe-area-inset-bottom));z-index:8;display:flex;flex-direction:column;gap:6px;padding:0 12px;pointer-events:none}
+body.cooking #timerbar{bottom:calc(86px + env(safe-area-inset-bottom))}
+#timerbar:empty{display:none}
+.timer{pointer-events:auto;max-width:520px;width:100%;margin:0 auto;display:flex;align-items:center;gap:8px;background:#1b1410;color:#fff;border-radius:14px;padding:6px 6px 6px 14px;box-shadow:0 6px 24px rgba(0,0,0,.35)}
+.timer b{font-variant-numeric:tabular-nums;font-size:19px}
+.timer span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px}
+.timer button{min-height:40px;border:0;border-radius:10px;background:rgba(255,255,255,.16);color:#fff;font:inherit;font-weight:700;padding:0 10px;cursor:pointer}
+.timer.done{background:#b42318}
+@media (prefers-reduced-motion:no-preference){.timer.done{animation:pulse 1s infinite}}
+@keyframes pulse{50%{opacity:.75}}
+body.cooking nav.tabs{display:none}
+details.ingd{margin-top:12px}
+details.ingd summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;align-items:center}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap"><div class="grow"><h1 id="title">Sous Vide</h1><div class="sub" id="sub"></div></div><button type="button" class="btn small primary hide" id="addBtn">+ Add</button></div></header>
+<main class="wrap" id="view"></main>
+<div id="timerbar" aria-live="polite"></div>
+<nav class="tabs" aria-label="Sections"><div class="wrap">
+  <button type="button" data-tab="plan"><span class="ico">🥩</span>Plan</button>
+  <button type="button" data-tab="recipes"><span class="ico">📖</span>Recipes</button>
+  <button type="button" data-tab="log"><span class="ico">📝</span>Log</button>
+  <button type="button" data-tab="settings"><span class="ico">⚙️</span>Settings</button>
+</div></nav>
+<script>
+'use strict';
+/* ===================== shared helpers (identical in every Goobs app) ===================== */
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => Array.from(el.querySelectorAll(s));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const isNum = v => typeof v === 'number' && Number.isFinite(v);
+const str = v => (typeof v === 'string' ? v : v == null ? '' : String(v));
+
+/* ---- dates: always local calendar dates stored as 'YYYY-MM-DD' ---- */
+const pad = n => String(n).padStart(2, '0');
+const fmtISO = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const parseISO = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+const isISO = s => typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s) && fmtISO(parseISO(s)) === s;
+const todayISO = () => fmtISO(new Date());
+const daysBetween = (a, b) => Math.round((parseISO(b) - parseISO(a)) / 86400000);
+const addDays = (s, n) => { const d = parseISO(s); d.setDate(d.getDate() + n); return fmtISO(d); };
+function addMonths(s, n, anchorDay) {
+  const d = parseISO(s);
+  const day = anchorDay || d.getDate();
+  const first = new Date(d.getFullYear(), d.getMonth() + n, 1);
+  const last = new Date(first.getFullYear(), first.getMonth() + 1, 0).getDate();
+  first.setDate(Math.min(day, last));
+  return fmtISO(first);
+}
+const monthEndISO = s => { const d = parseISO(s); return fmtISO(new Date(d.getFullYear(), d.getMonth() + 1, 0)); };
+
+function fmtDate(s, withWeekday = true) {
+  const d = parseISO(s);
+  const o = { month: 'short', day: 'numeric' };
+  if (withWeekday) o.weekday = 'short';
+  if (d.getFullYear() !== new Date().getFullYear()) o.year = 'numeric';
+  return d.toLocaleDateString(undefined, o);
+}
+function fmtDateTime(iso) {
+  const d = new Date(iso);
+  return isNaN(d) ? 'unknown date' : d.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+}
+const _mf = {};
+function money(n, cur = 'USD') {
+  if (!_mf[cur]) {
+    try { _mf[cur] = new Intl.NumberFormat(undefined, { style: 'currency', currency: cur }); }
+    catch { _mf[cur] = new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }); }
+  }
+  return _mf[cur].format(n);
+}
+const csvCell = v => {
+  let s = String(v ?? '');
+  if (/^[=+\-@\t\r]/.test(s)) s = "'" + s; // neutralise spreadsheet formula injection
+  return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+};
+function safeUrl(u) {
+  let s = String(u ?? '').trim();
+  if (!s) return '';
+  if (!/^[a-z][a-z0-9+.-]*:/i.test(s)) s = 'https://' + s;
+  try { const x = new URL(s); return /^https?:$/.test(x.protocol) ? x.href : ''; } catch { return ''; }
+}
+
+/* ---- storage: one JSON string under one key in IndexedDB ---- */
+function openDB(name) {
+  return new Promise((res, rej) => {
+    if (!window.indexedDB) return rej(new Error('IndexedDB unavailable'));
+    const r = indexedDB.open(name, 1);
+    r.onupgradeneeded = () => { r.result.createObjectStore('kv'); };
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+    r.onblocked = () => rej(new Error('Database blocked'));
+  });
+}
+function idbGet(db, key) {
+  return new Promise((res, rej) => {
+    const q = db.transaction('kv').objectStore('kv').get(key);
+    q.onsuccess = () => res(q.result);
+    q.onerror = () => rej(q.error);
+  });
+}
+function idbPut(db, key, val) {
+  return new Promise((res, rej) => {
+    const tx = db.transaction('kv', 'readwrite');
+    tx.objectStore('kv').put(val, key);
+    tx.oncomplete = () => res();
+    tx.onerror = () => rej(tx.error);
+    tx.onabort = () => rej(tx.error || new Error('Write aborted'));
+  });
+}
+
+/* ---- toast ---- */
+function toast(msg, action) {
+  const old = $('.toast'); if (old) old.remove();
+  const t = document.createElement('div');
+  t.className = 'toast'; t.setAttribute('role', 'status');
+  t.innerHTML = `<span>${esc(msg)}</span>` + (action ? `<button type="button">${esc(action.label)}</button>` : '');
+  if (action) t.querySelector('button').onclick = () => { t.remove(); action.fn(); };
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), action ? 8000 : 3200);
+}
+
+/* ---- dialogs ---- */
+if (!$('#dlg')) document.body.insertAdjacentHTML('beforeend', '<dialog id="dlg"></dialog><dialog id="ask"></dialog>');
+{
+  const dlg = $('#dlg'); let down = false;
+  dlg.addEventListener('pointerdown', e => { down = e.target === dlg; });
+  dlg.addEventListener('click', e => { if (e.target === dlg && down) dlg.close(); });
+}
+
+function fieldHTML(f) {
+  const id = 'f_' + f.name, v = f.value ?? '';
+  if (f.type === 'checkbox')
+    return `<div class="field check"><input type="checkbox" id="${id}" name="${f.name}"${f.value ? ' checked' : ''}><label for="${id}">${esc(f.label)}</label></div>`;
+  let ctl;
+  if (f.type === 'select') {
+    ctl = `<select id="${id}" name="${f.name}">${f.options.map(o => {
+      const [val, label] = Array.isArray(o) ? o : [o, o];
+      return `<option value="${esc(val)}"${String(val) === String(v) ? ' selected' : ''}>${esc(label)}</option>`;
+    }).join('')}</select>`;
+  } else if (f.type === 'textarea') {
+    ctl = `<textarea id="${id}" name="${f.name}" placeholder="${esc(f.placeholder || '')}">${esc(v)}</textarea>`;
+  } else {
+    const t = f.type || 'text';
+    const extra = t === 'number' ? ` inputmode="decimal" step="${f.step || 'any'}"` : '';
+    ctl = `<input id="${id}" name="${f.name}" type="${t}" value="${esc(v)}" placeholder="${esc(f.placeholder || '')}"${extra}${f.min != null ? ` min="${f.min}"` : ''}${f.max != null ? ` max="${f.max}"` : ''} autocomplete="${f.autocomplete || 'off'}" autocapitalize="${f.capitalize || (t === 'email' || t === 'password' ? 'none' : 'sentences')}">`;
+  }
+  return `<div class="field"><label for="${id}">${esc(f.label)}${f.required ? ' *' : ''}</label>${ctl}${f.hint ? `<div class="hint">${esc(f.hint)}</div>` : ''}</div>`;
+}
+
+/* formDialog: fields -> values. onSubmit(values) may return an error string (keeps dialog open).
+   onDelete() may return true to close. extra: [{label, kind, onClick}] extra buttons. */
+function formDialog({ title, intro = '', fields, submitLabel = 'Save', onSubmit, onDelete, deleteLabel = 'Delete', extra = [], onClose, grid = '' }) {
+  const dlg = $('#dlg');
+  const body = grid ? `<div class="${grid}">${fields.map(fieldHTML).join('')}</div>` : fields.map(fieldHTML).join('');
+  dlg.innerHTML = `<form class="dlg-form" novalidate>
+    <h2>${esc(title)}</h2>${intro ? `<p class="muted">${esc(intro)}</p>` : ''}${body}
+    <div class="dlg-err" role="alert"></div>
+    <div class="dlg-actions">
+      ${onDelete ? `<button type="button" class="btn danger" data-k="del">${esc(deleteLabel)}</button>` : ''}
+      ${extra.map((x, i) => `<button type="button" class="btn ${x.kind || ''}" data-x="${i}">${esc(x.label)}</button>`).join('')}
+      <span class="spacer"></span>
+      <button type="button" class="btn ghost" data-k="cancel">Cancel</button>
+      <button type="submit" class="btn primary">${esc(submitLabel)}</button>
+    </div></form>`;
+  const form = $('form', dlg), err = $('.dlg-err', dlg);
+  const collect = () => {
+    const vals = {};
+    for (const f of fields) { const el = form.elements[f.name]; vals[f.name] = f.type === 'checkbox' ? el.checked : el.value; }
+    return vals;
+  };
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const vals = collect();
+    for (const f of fields) if (f.required && !String(vals[f.name]).trim()) { err.textContent = `${f.label} is required.`; return; }
+    err.textContent = '';
+    let msg;
+    try { msg = await onSubmit(vals); } catch (ex) { msg = ex.message || 'Something went wrong.'; }
+    if (msg) err.textContent = msg; else dlg.close();
+  });
+  $('[data-k="cancel"]', dlg).onclick = () => dlg.close();
+  if (onDelete) $('[data-k="del"]', dlg).onclick = async () => { if (await onDelete()) dlg.close(); };
+  $$('[data-x]', dlg).forEach(b => { b.onclick = () => extra[+b.dataset.x].onClick(collect()); });
+  dlg.onclose = () => { dlg.onclose = null; if (onClose) onClose(); };
+  dlg.showModal();
+  const first = form.querySelector('input:not([type=checkbox]),textarea');
+  if (first && !first.value) first.focus(); // new-item forms open ready to type; edit forms don't pop the keyboard
+}
+
+function askDialog({ title, body = '', buttons }) {
+  return new Promise(resolve => {
+    const d = $('#ask'); let done = false;
+    d.innerHTML = `<div class="dlg-form"><h2>${esc(title)}</h2>${body ? `<div class="ask-body">${body}</div>` : ''}
+      <div class="dlg-actions ask-actions">${buttons.map((b, i) => `<button type="button" class="btn ${b.kind || ''}" data-i="${i}">${esc(b.label)}</button>`).join('')}</div></div>`;
+    const finish = v => { if (done) return; done = true; d.close(); resolve(v); };
+    $$('button', d).forEach(btn => { btn.onclick = () => finish(buttons[+btn.dataset.i].value); });
+    d.oncancel = () => { done = true; resolve(undefined); };
+    d.showModal();
+  });
+}
+const confirmBox = async (title, bodyText, okLabel = 'Delete', danger = true) =>
+  (await askDialog({ title, body: bodyText ? `<p>${esc(bodyText)}</p>` : '', buttons: [{ label: 'Cancel', value: false }, { label: okLabel, value: true, kind: danger ? 'danger' : 'primary' }] })) === true;
+const msgBox = (title, bodyText) =>
+  askDialog({ title, body: `<p>${esc(bodyText)}</p>`, buttons: [{ label: 'OK', value: true, kind: 'primary' }] });
+
+/* ---- backup: optional AES-GCM passphrase encryption (Web Crypto, PBKDF2-SHA256) ---- */
+const b64 = buf => { let s = ''; const b = new Uint8Array(buf); for (let i = 0; i < b.length; i += 0x8000) s += String.fromCharCode.apply(null, b.subarray(i, i + 0x8000)); return btoa(s); };
+const unb64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+async function deriveKey(pass, salt, iterations) {
+  const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(pass), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey({ name: 'PBKDF2', salt, iterations, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+}
+async function encryptPayload(obj, pass) {
+  const salt = crypto.getRandomValues(new Uint8Array(16)), iv = crypto.getRandomValues(new Uint8Array(12));
+  const iterations = 250000;
+  const key = await deriveKey(pass, salt, iterations);
+  const ct = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, new TextEncoder().encode(JSON.stringify(obj)));
+  return { encrypted: true, kdf: 'PBKDF2-SHA256', iterations, salt: b64(salt), iv: b64(iv), data: b64(ct) };
+}
+async function decryptPayload(env, pass) {
+  const key = await deriveKey(pass, unb64(env.salt), env.iterations);
+  try {
+    const pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: unb64(env.iv) }, key, unb64(env.data));
+    return JSON.parse(new TextDecoder().decode(pt));
+  } catch { throw new Error('Wrong passphrase, or the file is damaged.'); }
+}
+function promptDecrypt(env) {
+  return new Promise(resolve => {
+    let result = null;
+    formDialog({
+      title: 'Encrypted backup', intro: 'Enter the passphrase you chose when you made this backup.',
+      fields: [{ name: 'pass', label: 'Passphrase', type: 'password', required: true }], submitLabel: 'Unlock',
+      onSubmit: async v => { try { result = await decryptPayload(env, v.pass); } catch (e) { return e.message; } },
+      onClose: () => resolve(result)
+    });
+  });
+}
+const Backup = {
+  async build({ appId, schema, data, passphrase }) {
+    const head = { app: appId, schemaVersion: schema, exportedAt: new Date().toISOString() };
+    if (passphrase) return JSON.stringify({ ...head, ...(await encryptPayload(data, passphrase)) });
+    return JSON.stringify({ ...head, encrypted: false, data }, null, 2);
+  },
+  /* returns {data, exportedAt, schemaVersion}, or null if the user cancelled the passphrase prompt; throws Error with a friendly message */
+  async parse(text, { appId, schema }) {
+    let env;
+    try { env = JSON.parse(text); } catch { throw new Error('That file isn’t a valid backup (it isn’t JSON).'); }
+    if (!env || typeof env !== 'object' || env.app !== appId)
+      throw new Error(env && typeof env === 'object' && env.app ? `That backup belongs to a different app (${String(env.app).slice(0, 40)}).` : 'That file isn’t a backup from this app.');
+    if (!Number.isInteger(env.schemaVersion) || env.schemaVersion < 1) throw new Error('The backup is missing its version number.');
+    if (env.schemaVersion > schema) throw new Error('That backup was made by a newer version of the app. Close and reopen this app to update it, then try again.');
+    let data;
+    if (env.encrypted) {
+      if (!(window.crypto && crypto.subtle)) throw new Error('Encrypted backups need a secure (https) connection.');
+      if (!(env.iterations >= 1000 && env.iterations <= 2000000) || typeof env.salt !== 'string' || typeof env.iv !== 'string' || typeof env.data !== 'string')
+        throw new Error('The encrypted backup is damaged.');
+      data = await promptDecrypt(env);
+      if (data === null) return null;
+    } else data = env.data;
+    if (!data || typeof data !== 'object') throw new Error('The backup contains no data.');
+    return { data, exportedAt: typeof env.exportedAt === 'string' ? env.exportedAt : null, schemaVersion: env.schemaVersion };
+  }
+};
+
+/* share sheet when the platform supports sharing files (iPhone), otherwise a normal download */
+async function deliverFile(filename, text, mime = 'application/json') {
+  const file = new File([text], filename, { type: mime });
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try { await navigator.share({ files: [file], title: filename }); return 'shared'; }
+    catch (e) { if (e && e.name === 'AbortError') return 'cancelled'; /* otherwise fall back to a download */ }
+  }
+  const url = URL.createObjectURL(file);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.style.display = 'none';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 15000);
+  return 'downloaded';
+}
+function pickFile(accept = '.json,application/json') {
+  return new Promise(resolve => {
+    const i = document.createElement('input');
+    i.type = 'file'; i.accept = accept; i.style.display = 'none';
+    document.body.appendChild(i);
+    let done = false;
+    const fin = f => { if (done) return; done = true; i.remove(); resolve(f); };
+    i.addEventListener('change', () => fin((i.files && i.files[0]) || null));
+    i.addEventListener('cancel', () => fin(null));
+    i.click();
+  });
+}
+const readFileText = f => (f.text ? f.text() : new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = () => rej(r.error); r.readAsText(f); }));
+
+/* nag banner: only when there is data and no recent backup */
+function backupNag(meta, hasData) {
+  if (!hasData) return null;
+  if (!meta.lastBackup) return 'You have data but no backup yet. Make one so you can restore it if this device loses it.';
+  const age = (Date.now() - Date.parse(meta.lastBackup)) / 86400000;
+  const changed = meta.lastChange && Date.parse(meta.lastChange) > Date.parse(meta.lastBackup) + 1000;
+  if (changed && age >= 7) return `Your last backup was ${Math.floor(age)} days ago and you’ve made changes since.`;
+  return null;
+}
+
+/* ---- install helper ---- */
+let deferredInstall = null;
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferredInstall = e; if (typeof render === 'function') render(); });
+const isStandalone = () => (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+function installCardHTML() {
+  if (isStandalone()) return '';
+  const ios = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const msg = deferredInstall
+    ? '<p>Install it for its own window and full offline use.</p><button class="btn primary" data-action="install">Install app</button>'
+    : ios
+      ? '<p>In Safari tap <b>Share</b> → <b>Add to Home Screen</b>. <b>Do this before entering data</b> — the home-screen app keeps its own separate storage from the Safari tab. Then open it from the new icon.</p>'
+      : '<p>Use your browser’s menu → <b>Install app</b> (or <b>Add to Home Screen</b>).</p>';
+  return `<section class="card pad"><h3>Install on this device</h3>${msg}</section>`;
+}
+async function runInstall() { if (!deferredInstall) return; deferredInstall.prompt(); try { await deferredInstall.userChoice; } catch {} deferredInstall = null; if (typeof render === 'function') render(); }
+
+
+
+if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol))
+  window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
+
+/* Exit link: every app's top bar gets "‹ Apps" (back to the main apps page) unless that screen already has its own back link. */
+(function () {
+  const add = () => {
+    const w = document.querySelector('header.top .wrap');
+    if (!w || w.querySelector('a.back')) return;
+    const a = document.createElement('a');
+    a.className = 'back exit'; a.href = '../'; a.textContent = '‹ Apps'; a.setAttribute('aria-label', 'Exit to all apps');
+    w.insertBefore(a, w.firstChild);
+  };
+  const start = () => { add(); new MutationObserver(add).observe(document.body, { childList: true, subtree: true }); };
+  if (document.body) start(); else document.addEventListener('DOMContentLoaded', start);
+})();
+
+
+/* ===================== Sous Vide app ===================== */
+const APP_ID = 'goobs-sousvide', DB_NAME = 'goobs-sousvide-db', SCHEMA = 1;
+const MAX = { recipes: 2000, log: 20000 };
+
+/* ---- small number helpers ---- */
+const r1 = x => Math.round(x * 10) / 10;
+const nz = n => (isNum(n) ? String(parseFloat(n.toFixed(2))) : '');
+const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
+const clamp = (x, lo, hi) => Math.min(hi, Math.max(lo, x));
+const ceil5 = m => Math.ceil(m / 5 - 1e-9) * 5;
+const round5 = m => Math.round(m / 5) * 5;
+function parseNum(s) {
+  if (typeof s === 'number') return isNum(s) && Math.abs(s) <= 1e9 ? s : null;
+  s = str(s).trim();
+  if (s.includes(',') && s.includes('.')) s = s.replace(/,/g, ''); else s = s.replace(',', '.');
+  if (!/^[-+]?(\d+\.?\d*|\.\d+)$/.test(s)) return null;
+  const n = Number(s);
+  return isNum(n) && Math.abs(n) <= 1e9 ? n : null;
+}
+const numIn = (v, lo, hi) => { if (v === '' || v == null) return null; const n = parseNum(v); return n != null && n >= lo && n <= hi ? n : null; };
+
+/* ---- conversions ---- */
+const fToC = f => (f - 32) * 5 / 9;
+const cToF = c => c * 9 / 5 + 32;
+const inToCm = i => i * 2.54;
+const cmToIn = c => c / 2.54;
+const OZ_G = 28.349523125;
+const ozToG = o => o * OZ_G;
+const gToOz = g => g / OZ_G;
+const fmtTemp = (f, unit) => (unit === 'C' ? `${nz(r1(fToC(f)))}°C` : `${nz(r1(f))}°F`);
+const fmtLen = (inch, unit) => (unit === 'cm' ? `${nz(r1(inToCm(inch)))} cm` : `${nz(inch)} in`);
+/* user-entered temperature in the display unit -> °F */
+const tempToF = (v, unit) => (unit === 'C' ? cToF(v) : v);
+/* user-entered thickness in the display unit -> inches */
+const lenToIn = (v, unit) => (unit === 'cm' ? cmToIn(v) : v);
+
+/* ---- durations ---- */
+function fmtDur(min) {
+  min = Math.round(min);
+  if (min < 60) return `${min} min`;
+  const h = Math.floor(min / 60), m = min % 60;
+  return m ? `${h} h ${m} min` : `${h} h`;
+}
+function fmtDurShort(min) {
+  min = Math.round(min);
+  if (min < 60) return `${min}m`;
+  const h = Math.floor(min / 60), m = min % 60;
+  return m ? `${h}h${pad(m)}` : `${h}h`;
+}
+function fmtClockSecs(s) {
+  s = Math.max(0, Math.round(s));
+  const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), sec = s % 60;
+  return h ? `${h}:${pad(m)}:${pad(sec)}` : `${m}:${pad(sec)}`;
+}
+/* "90", "90 min", "1.5h", "2h", "2 h 30 min", "2h30", "1:30" -> minutes (integer) or null */
+function parseDuration(s) {
+  s = str(s).trim().toLowerCase().replace(/,/g, '.');
+  if (!s) return null;
+  let m, v = null;
+  if ((m = /^(\d+):(\d{1,2})$/.exec(s))) { if (+m[2] < 60) v = +m[1] * 60 + +m[2]; }
+  else if ((m = /^(\d+(?:\.\d+)?)$/.exec(s))) v = +m[1];
+  else if ((m = /^(\d+)\s*h(?:ours?|rs?)?\s*(\d+)$/.exec(s))) v = +m[1] * 60 + +m[2];
+  else {
+    const re = /(\d+(?:\.\d+)?)\s*(hours?|hrs?|h|minutes?|mins?|m)\b/g;
+    let total = 0, any = false, rest = s;
+    for (const x of s.matchAll(re)) { any = true; total += +x[1] * (x[2][0] === 'h' ? 60 : 1); rest = rest.replace(x[0], ''); }
+    if (any && /^[\s,]*(and)?[\s,]*$/.test(rest.replace(/and/g, ''))) v = total;
+  }
+  if (v == null || !isFinite(v)) return null;
+  v = Math.round(v);
+  return v >= 1 && v <= 14400 ? v : null;
+}
+/* first "N minutes / hours / seconds" in a step (a range uses its low end) -> seconds or null */
+function detectTimer(text) {
+  const m = /(\d+(?:\.\d+)?)(?:\s*[-–]\s*\d+(?:\.\d+)?)?\s*(hours?|hrs?|h|minutes?|mins?|min|seconds?|secs?)\b/i.exec(str(text));
+  if (!m) return null;
+  const n = +m[1], u = m[2].toLowerCase();
+  const secs = Math.round(n * (u[0] === 'h' ? 3600 : u[0] === 'm' ? 60 : 1));
+  return secs >= 5 && secs <= 172800 ? secs : null;
+}
+
+/* ---- fractions for ingredient amounts ---- */
+const FR = [[0, ''], [1 / 8, '⅛'], [1 / 4, '¼'], [1 / 3, '⅓'], [3 / 8, '⅜'], [1 / 2, '½'], [5 / 8, '⅝'], [2 / 3, '⅔'], [3 / 4, '¾'], [7 / 8, '⅞'], [1, '']];
+function fmtQty(x) {
+  if (!(x > 0)) return '0';
+  let whole = Math.floor(x + 1e-9), f = x - whole, best = FR[0];
+  for (const c of FR) if (Math.abs(c[0] - f) < Math.abs(best[0] - f)) best = c;
+  if (best[0] === 1) { whole += 1; best = FR[0]; }
+  if (whole === 0 && best[0] === 0) return String(parseFloat(x.toFixed(2)));
+  return (whole ? String(whole) : '') + best[1];
+}
+const FR_VAL = { '⅛': 1 / 8, '¼': 1 / 4, '⅓': 1 / 3, '⅜': 3 / 8, '½': 1 / 2, '⅝': 5 / 8, '⅔': 2 / 3, '¾': 3 / 4, '⅞': 7 / 8 };
+/* leading quantity of a line: "1 1/2", "1½", "½", "0.5", "2" -> {val, len} or null */
+function parseQty(s) {
+  let m;
+  if ((m = /^(\d+)\s+(\d+)\/(\d+)/.exec(s))) return +m[3] ? { val: +m[1] + +m[2] / +m[3], len: m[0].length } : null;
+  if ((m = /^(\d+)\/(\d+)/.exec(s))) return +m[2] ? { val: +m[1] / +m[2], len: m[0].length } : null;
+  if ((m = /^(\d+(?:\.\d+)?)\s*([⅛¼⅓⅜½⅝⅔¾⅞])/.exec(s))) return { val: +m[1] + FR_VAL[m[2]], len: m[0].length };
+  if ((m = /^([⅛¼⅓⅜½⅝⅔¾⅞])/.exec(s))) return { val: FR_VAL[m[1]], len: 1 };
+  if ((m = /^(\d+(?:\.\d+)?)/.exec(s))) return { val: +m[1], len: m[0].length };
+  return null;
+}
+/* scale the leading number (or range "1-2") of a free-text ingredient line */
+function scaleLine(line, f) {
+  line = str(line);
+  const lead = /^\s*/.exec(line)[0], body = line.slice(lead.length);
+  const a = parseQty(body);
+  if (!a || !(f > 0)) return line;
+  let rest = body.slice(a.len), out = fmtQty(a.val * f);
+  const rg = /^(\s*(?:-|–|to)\s*)/.exec(rest);
+  if (rg) { const b = parseQty(rest.slice(rg[1].length)); if (b) { out += (rg[1].trim() === 'to' ? ' to ' : '–') + fmtQty(b.val * f); rest = rest.slice(rg[1].length + b.len); } }
+  return lead + out + rest;
+}
+/* tsp -> tbsp -> cup once an amount is big enough, tbsp -> tsp when small */
+function normAmt(amt, unit) {
+  if (unit === 'tsp' && amt >= 3 - 1e-9) { amt /= 3; unit = 'tbsp'; }
+  else if (unit === 'tbsp' && amt < 1 - 1e-9) { amt *= 3; unit = 'tsp'; }
+  if (unit === 'tbsp' && amt >= 4 - 1e-9) { amt /= 16; unit = 'cup'; }
+  return { amt, unit };
+}
+const UNIT_PL = { clove: 'cloves', sprig: 'sprigs' };
+
+/* =====================================================================
+   ENGINE: pure functions, no DOM.
+   ===================================================================== */
+
+/* ---- heat-up model ----
+   Slab heated from both faces by a bath at constant temperature (first term of the series solution):
+     t = L^2 / (pi^2 * alpha) * ln( (4/pi) * dT0 / dTf )
+   L = thickness in metres, alpha = 1.4e-7 m^2/s (thermal diffusivity of meat), dT0 = bath - start (F),
+   dTf = 1 F (centre within 1 F of the bath). Returns 0 when the argument of ln is <= 1.
+   FROZEN: we use start = 0 F with the same formula and then add 50% (FROZEN_FACTOR = 1.5) as a simple
+   allowance for the latent heat of thawing; the plan shows a "from frozen" note.
+   Anova Precision Oven (APO) in steam mode: a real oven is slightly slower than a stirred water bath,
+   so the heat-up time is multiplied by 1.10 (APO_FACTOR). The immersion circulator uses 1.0. */
+const ALPHA = 1.4e-7, DT_FINAL = 1, FROZEN_FACTOR = 1.5, APO_FACTOR = 1.10;
+const START = {
+  fridge: { label: 'Fridge (38°F)', f: 38 },
+  room: { label: 'Room temp (70°F)', f: 70 },
+  frozen: { label: 'Frozen (0°F)', f: 0 }
+};
+function heatUpMin(thickIn, startKey, bathF) {
+  const st = START[startKey];
+  if (!st || !isNum(thickIn) || !(thickIn > 0) || !isNum(bathF)) return null;
+  const dT0 = bathF - st.f, arg = 4 / Math.PI * dT0 / DT_FINAL;
+  if (!(arg > 1)) return 0;
+  const L = thickIn * 0.0254;
+  let t = L * L / (Math.PI * Math.PI * ALPHA) * Math.log(arg);
+  if (startKey === 'frozen') t *= FROZEN_FACTOR;
+  return t / 60;
+}
+/* Oven-only (no sous vide): same slab model but in a 225 F dry oven. Air is a poor heat carrier, so the
+   time is multiplied by OVEN_AIR_FACTOR (rough allowance for surface heat-transfer resistance; about 27 min
+   for a 1 in steak from the fridge to a 125 F pull). dTf = oven - pull temperature. A rough estimate: use a probe. */
+const OVEN_F = 225, OVEN_AIR_FACTOR = 4, OVEN_PULL_BELOW = 5;
+function ovenMin(thickIn, startKey, targetF) {
+  const st = START[startKey];
+  if (!st || !isNum(thickIn) || !(thickIn > 0)) return null;
+  const pull = targetF - OVEN_PULL_BELOW, dT0 = OVEN_F - st.f, dTf = OVEN_F - pull;
+  const arg = 4 / Math.PI * dT0 / dTf;
+  if (!(arg > 1)) return 0;
+  const L = thickIn * 0.0254;
+  let t = L * L / (Math.PI * Math.PI * ALPHA) * Math.log(arg) * OVEN_AIR_FACTOR;
+  if (startKey === 'frozen') t *= FROZEN_FACTOR;
+  return t / 60;
+}
+
+/* ---- cuts table ----
+   tender: true  -> window = [ceil5(heat-up), maxMin] (or heat-up + maxBeyond for fish)
+   tender: false -> tenderizing window [minMin, maxMin] at the cooking temperature
+   oz = typical raw ounces per serving, kcalOz = approximate raw kcal per ounce, fat = has a trimmable fat cap
+   group drives the food-safety notes (see safetyFor). */
+const CUTS = {
+  ribeye: { label: 'Ribeye', group: 'beef', tender: true, maxMin: 240, oz: 12, kcalOz: 80, fat: true, done: 'beef', noun: 'ribeye steak', nounP: 'ribeye steaks', lean: 'sirloin' },
+  strip: { label: 'NY strip', group: 'beef', tender: true, maxMin: 180, oz: 10, kcalOz: 65, fat: true, done: 'beef', noun: 'NY strip steak', nounP: 'NY strip steaks', lean: 'sirloin' },
+  filet: { label: 'Filet / tenderloin', group: 'beef', tender: true, maxMin: 180, oz: 8, kcalOz: 60, fat: false, done: 'beef', noun: 'filet mignon', nounP: 'filets mignons' },
+  sirloin: { label: 'Sirloin', group: 'beef', tender: true, maxMin: 180, oz: 8, kcalOz: 52, fat: false, done: 'beef', noun: 'sirloin steak', nounP: 'sirloin steaks' },
+  tbone: { label: 'T-bone / porterhouse', group: 'beef', tender: true, maxMin: 240, oz: 16, kcalOz: 70, fat: true, done: 'beef', noun: 'T-bone steak', nounP: 'T-bone steaks', lean: 'filet' },
+  flatiron: { label: 'Flat iron', group: 'beef', tender: false, minMin: 240, maxMin: 1440, oz: 8, kcalOz: 62, fat: false, done: 'beefTough', noun: 'flat iron steak', nounP: 'flat iron steaks' },
+  skirt: { label: 'Skirt / flank', group: 'beef', tender: false, minMin: 240, maxMin: 1440, oz: 8, kcalOz: 68, fat: false, done: 'beefTough', noun: 'skirt steak', nounP: 'skirt steaks', thin: true },
+  tritip: { label: 'Tri-tip', group: 'beef', tender: false, minMin: 480, maxMin: 1440, oz: 8, kcalOz: 55, fat: false, done: 'beefTough', noun: 'tri-tip steak', nounP: 'tri-tip steaks' },
+  porkchop: { label: 'Pork chop', group: 'pork', tender: true, maxMin: 240, oz: 10, kcalOz: 55, fat: true, done: 'pork', noun: 'pork chop', nounP: 'pork chops' },
+  chickenbreast: { label: 'Chicken breast', group: 'chicken', tender: true, maxMin: 240, oz: 7, kcalOz: 33, fat: false, done: 'chickenBreast', noun: 'chicken breast', nounP: 'chicken breasts' },
+  chickenthigh: { label: 'Chicken thigh', group: 'chicken', tender: false, minMin: 240, maxMin: 720, oz: 6, kcalOz: 50, fat: false, done: 'chickenThigh', noun: 'chicken thigh', nounP: 'chicken thighs' },
+  salmon: { label: 'Salmon', group: 'fish', tender: true, maxBeyond: 45, oz: 6, kcalOz: 58, fat: false, done: 'salmon', noun: 'salmon fillet', nounP: 'salmon fillets' },
+  lamb: { label: 'Lamb chop', group: 'lamb', tender: true, maxMin: 180, oz: 8, kcalOz: 75, fat: true, done: 'lamb', noun: 'lamb chop', nounP: 'lamb chops' }
+};
+const CUT_KEYS = Object.keys(CUTS);
+const DONENESS = {
+  beef: [['rare', 'Rare', 125], ['mr', 'Medium-rare', 130], ['med', 'Medium', 140], ['mw', 'Medium-well', 150], ['well', 'Well', 160]],
+  beefTough: [['mr', 'Medium-rare', 130], ['med', 'Medium', 140], ['mw', 'Medium-well', 150]],
+  lamb: [['rare', 'Rare', 125], ['mr', 'Medium-rare', 130], ['med', 'Medium', 140], ['mw', 'Medium-well', 150]],
+  pork: [['rosy', 'Rosy and juicy', 135], ['med', 'Medium', 140], ['firm', 'Firm', 145]],
+  chickenBreast: [['soft', 'Very tender (soft, silky)', 145], ['juicy', 'Juicy (classic sous vide)', 150], ['firm', 'Firm (traditional)', 160]],
+  chickenThigh: [['t165', 'Tender', 165], ['t170', 'Very tender', 170], ['t175', 'Falling-apart', 175]],
+  salmon: [['silky', 'Silky', 115], ['tender', 'Tender', 120], ['flaky', 'Flaky', 125]]
+};
+const DEFAULT_DONE = { beef: 'mr', beefTough: 'mr', lamb: 'mr', pork: 'med', chickenBreast: 'juicy', chickenThigh: 't170', salmon: 'tender' };
+const donenessList = cut => (CUTS[cut] ? DONENESS[CUTS[cut].done] : DONENESS.beef);
+function donenessFor(cut, key) {
+  const c = CUTS[cut] || CUTS.ribeye, list = DONENESS[c.done];
+  return list.find(d => d[0] === key) || list.find(d => d[0] === DEFAULT_DONE[c.done]);
+}
+
+/* ---- equipment + finishes ---- */
+const EQUIP = { apo: 'Anova Precision Oven (steam / bagless)', circ: 'Immersion circulator + bag', oven: 'Oven only (no sous vide)' };
+const FINISH = {
+  sear: { label: 'Cast-iron sear', pan: 'Preheat a cast-iron skillet 5 minutes over high heat until the oil just shimmers (about 450–500°F surface)', fat: '1 tsp high-smoke-point oil per steak', base: 45, perIn: 30, min: 30, max: 90 },
+  torch: { label: 'Torch', pan: 'Set the meat on a wire rack and hold a searing torch 1–2 inches off the surface', fat: 'brush with a little oil first', base: 40, perIn: 20, min: 30, max: 75 },
+  broiler: { label: 'Broiler', pan: 'Preheat the broiler on high for 10 minutes, with the rack 3–4 inches from the element', fat: 'brush with a little oil first', base: 90, perIn: 45, min: 60, max: 150 },
+  grill: { label: 'Grill', pan: 'Preheat the grill to high (500°F or more) with clean, oiled grates', fat: 'brush with a little oil first', base: 60, perIn: 30, min: 45, max: 120 },
+  none: { label: 'No finish', pan: '', fat: '', base: 0, perIn: 0, min: 0, max: 0 }
+};
+function searPlan(finishKey, thickIn, equipment) {
+  const F = FINISH[finishKey] || FINISH.sear;
+  const none = finishKey === 'none';
+  const sec = none ? 0 : clamp(round5(F.base + Math.max(0, thickIn - 1) * F.perIn), F.min, F.max);
+  const rest = none && equipment !== 'oven' ? 0 : equipment === 'oven' ? 10 : thickIn >= 1.5 ? 5 : 3;
+  return { key: finishKey, label: F.label, pan: F.pan, fat: F.fat, secPerSide: sec, totalSec: sec * 2, restMin: rest, patDry: true };
+}
+
+/* ---- food-safety rules (kept deliberately simple; not a pasteurization table) ----
+   R1 non-fish, bath < 130 F: do not hold beyond 4 hours (window max capped at 240 min).
+   R2 beef / lamb / pork, bath < 135 F: total time at temperature >= heat-up + 1 h (window min raised).
+   R3 chicken, bath < 150 F: same +1 h rule, plus a note that 150 F or higher is recommended for pasteurization within the time shown.
+   Fish (salmon) is exempt: its window is heat-up + 45 min. */
+const SAFE_PLUS_MIN = 60, HOLD_CAP_MIN = 240;
+function safetyFor(group, bathF) {
+  const s = { plusMin: 0, capMin: null, notes: [] };
+  if (group === 'fish') return s;
+  if (bathF < 130) { s.capMin = HOLD_CAP_MIN; s.notes.push('Below 130°F, holding longer than 4 hours is not recommended.'); }
+  if ((group === 'beef' || group === 'lamb' || group === 'pork') && bathF < 135) { s.plusMin = SAFE_PLUS_MIN; s.notes.push('Below 135°F the center needs time to pasteurize: total time at temperature is at least heat-up + 1 hour.'); }
+  if (group === 'chicken' && bathF < 150) { s.plusMin = SAFE_PLUS_MIN; s.notes.push('Chicken: 150°F or higher is recommended for pasteurization within the time shown. Below 150°F it needs heat-up + 1 hour at least.'); }
+  return s;
+}
+
+/* ---- the plan ---- */
+function planCook(inp, equipment) {
+  const cut = CUTS[inp && inp.cut];
+  if (!cut) return { ok: false, error: 'Pick a cut.' };
+  const thick = inp.thick;
+  if (!isNum(thick) || thick < 0.25 || thick > 4) return { ok: false, error: 'Thickness must be between 0.25 and 4 inches.' };
+  if (!START[inp.start]) return { ok: false, error: 'Pick a starting state.' };
+  if (!FINISH[inp.finish]) return { ok: false, error: 'Pick a finish.' };
+  if (!EQUIP[equipment]) equipment = 'apo';
+  const d = donenessFor(inp.cut, inp.doneness), targetF = d[2];
+  const sear = searPlan(inp.finish, thick, equipment);
+  const finishMin = Math.ceil(sear.totalSec / 60) + (inp.finish === 'none' ? 0 : 3) + sear.restMin;
+  const out = { ok: true, cutKey: inp.cut, cutLabel: cut.label, donenessKey: d[0], donenessLabel: d[1], targetF, equipment, startKey: inp.start, thick, finishKey: inp.finish, sear, finishMin, notes: [], warns: [], mode: equipment === 'oven' ? 'oven' : 'bath' };
+  if (inp.start === 'frozen') out.notes.push('Cooking from frozen: heat-up includes an extra 50% for thawing. Thawing in the fridge first is quicker overall.');
+  if (equipment === 'oven') {
+    const t = ovenMin(thick, inp.start, targetF);
+    out.setTempF = OVEN_F; out.pullF = targetF - OVEN_PULL_BELOW;
+    out.heatRawMin = t; out.heatMin = t;
+    out.window = { min: Math.max(5, ceil5(t)), max: Math.max(5, ceil5(t)) + 15 };
+    out.notes.push(`Oven only: roast at ${OVEN_F}°F on a rack over a sheet pan and pull at ${out.pullF}°F on a probe thermometer; the sear lifts it to about ${targetF}°F. The time is a rough guide: trust the probe.`);
+    return out;
+  }
+  const raw = heatUpMin(thick, inp.start, targetF);
+  const eff = equipment === 'apo' ? raw * APO_FACTOR : raw;
+  const safe = safetyFor(cut.group, targetF);
+  let min = ceil5(eff), max;
+  if (!cut.tender) min = Math.max(min, cut.minMin);
+  if (safe.plusMin) min = Math.max(min, ceil5(eff + safe.plusMin));
+  if (min < 5) min = 5;
+  if (cut.maxBeyond != null) max = ceil5(eff) + cut.maxBeyond; else max = cut.maxMin;
+  if (safe.capMin != null) max = Math.min(max, safe.capMin);
+  if (max < min) { if (safe.capMin != null && min > safe.capMin) out.warns.push('A thick cut at this temperature needs more than 4 hours. Thaw it first, slice it thinner or pick a higher temperature.'); max = min; }
+  out.heatRawMin = raw; out.heatMin = eff; out.setTempF = targetF;
+  out.window = { min, max };
+  out.warns.push(...safe.notes);
+  if (equipment === 'apo') out.notes.push('Anova steam mode: set the temperature to the bath temperature, 100% humidity. Preheat 5–10 minutes, then cook. A real oven runs about 10% slower than a water bath, and that is included in the times shown.');
+  if (equipment === 'circ') out.notes.push('Bag the meat with the air pressed out (water-displacement or vacuum) and make sure it is fully submerged.');
+  if (!cut.tender) out.notes.push(`Tough cut: the long hold (${fmtDur(cut.minMin)} to ${fmtDur(cut.maxMin)}) is what tenderizes it. Longer is softer, not drier.`);
+  if (inp.cut === 'chickenbreast' && targetF < 160) out.notes.push('Texture: lower temperatures give a softer, silkier chicken breast; 160°F is the firm, traditional texture.');
+  if (inp.cut === 'salmon') out.notes.push('Fish cooks fast: take it out within the window and handle gently.');
+  return out;
+}
+
+/* ---- clock times ---- */
+const parseHHMM = s => { const m = /^(\d{1,2}):(\d{2})$/.exec(str(s).trim()); if (!m || +m[1] > 23 || +m[2] > 59) return null; return +m[1] * 60 + +m[2]; };
+function fmtClock(mins) {
+  const m = ((Math.round(mins) % 1440) + 1440) % 1440, h = Math.floor(m / 60), mm = m % 60;
+  return `${h % 12 || 12}:${pad(mm)} ${h < 12 ? 'AM' : 'PM'}`;
+}
+/* serve time -> when to start the cook. Steak is lifted from the bath finishMin before serving. */
+function clockPlan(mealHHMM, winMin, winMax, finishMin) {
+  const m = parseHHMM(mealHHMM);
+  if (m == null) return null;
+  const out = m - finishMin;
+  const mk = x => ({ text: fmtClock(x), dayShift: Math.floor(x / 1440) });
+  return { serve: mk(m), outOfBathBy: mk(out), startLatest: mk(out - winMin), startEarliest: mk(out - winMax) };
+}
+const clockText = c => `${c.text}${c.dayShift < 0 ? ' (the day before)' : ''}`;
+
+/* =====================================================================
+   Ingredients, styles, calories
+   ===================================================================== */
+/* n = name, u = unit, k = approximate kcal per one unit */
+const ING = {
+  salt: { n: 'kosher salt', u: 'tsp', k: 0 }, saltC: { n: 'coarse sea salt', u: 'tsp', k: 0 },
+  pepper: { n: 'black pepper, freshly ground', u: 'tsp', k: 6 }, peppercorn: { n: 'whole black peppercorns, coarsely cracked', u: 'tsp', k: 7 },
+  oil: { n: 'avocado oil', u: 'tsp', k: 40 }, olive: { n: 'extra-virgin olive oil', u: 'tsp', k: 40 },
+  butter: { n: 'unsalted butter', u: 'tbsp', k: 100 },
+  garlicS: { n: 'fresh garlic, lightly smashed', u: 'clove', k: 4 }, garlicF: { n: 'fresh garlic, finely minced', u: 'clove', k: 4 },
+  garlicG: { n: 'granulated garlic', u: 'tsp', k: 10 }, garlicP: { n: 'garlic powder', u: 'tsp', k: 9 },
+  thyme: { n: 'fresh thyme', u: 'sprig', k: 1 }, thymeD: { n: 'dried thyme', u: 'tsp', k: 3 },
+  rosem: { n: 'fresh rosemary', u: 'sprig', k: 2 }, oreg: { n: 'dried oregano', u: 'tsp', k: 3 },
+  shallot: { n: 'shallot, finely minced', u: 'tbsp', k: 7 },
+  paprikaS: { n: 'smoked paprika', u: 'tsp', k: 6 }, paprika: { n: 'sweet paprika', u: 'tsp', k: 6 },
+  cayenne: { n: 'cayenne pepper', u: 'tsp', k: 6 }, onionP: { n: 'onion powder', u: 'tsp', k: 8 },
+  chiliP: { n: 'chili powder', u: 'tsp', k: 8 }, cumin: { n: 'ground cumin', u: 'tsp', k: 8 },
+  bsugar: { n: 'brown sugar', u: 'tsp', k: 17 }, coffee: { n: 'finely ground coffee', u: 'tsp', k: 2 },
+  parsley: { n: 'fresh flat-leaf parsley, minced', u: 'tbsp', k: 1 }, lemonJ: { n: 'lemon juice', u: 'tbsp', k: 4 },
+  dijon: { n: 'Dijon mustard', u: 'tsp', k: 5 }, broth: { n: 'low-sodium beef broth', u: 'tbsp', k: 2 },
+  cream: { n: 'heavy cream', u: 'tbsp', k: 51 }, brandy: { n: 'brandy', u: 'tbsp', k: 33 },
+  blueC: { n: 'blue cheese crumbles', u: 'tbsp', k: 30 }, panko: { n: 'panko breadcrumbs', u: 'tbsp', k: 27 },
+  yolk: { n: 'egg yolk', pl: 'egg yolks', u: '', k: 55 },
+  vinW: { n: 'white wine vinegar', u: 'tbsp', k: 3 }, vinR: { n: 'red wine vinegar', u: 'tbsp', k: 3 },
+  tarragon: { n: 'fresh tarragon, minced', u: 'tbsp', k: 1 }, yogurt: { n: 'plain nonfat Greek yogurt', u: 'tbsp', k: 9 },
+  chiliF: { n: 'red pepper flakes', u: 'tsp', k: 6 }, worc: { n: 'Worcestershire sauce', u: 'tsp', k: 4 }
+};
+/* Style placeholders in text: {season} {sear} {baste} {top} {sauce} = ingredient lists by tag (amounts included), {noun} {nounP}.
+   ing = [id, amount per serving, tag]. `low` replaces any of ing/baste/sauce/top/seasonNote in the low-calorie version. */
+const STYLES = [
+  { key: 'butter', name: 'Butter-basted classic', blurb: 'Foaming butter, smashed garlic and thyme.',
+    ing: [['salt', 1, 'season'], ['pepper', 0.5, 'season'], ['oil', 1, 'sear'], ['butter', 1, 'baste'], ['garlicS', 1, 'baste'], ['thyme', 2, 'baste']],
+    baste: 'Reduce the heat to medium. Add {baste} to the pan, tilt it and spoon the foaming butter over the {nounP} for 30 seconds.',
+    sauce: null,
+    low: { ing: [['salt', 1, 'season'], ['pepper', 0.5, 'season'], ['oil', 1, 'sear'], ['olive', 1, 'baste'], ['garlicS', 1, 'baste'], ['thyme', 2, 'baste'], ['broth', 2, 'sauce'], ['shallot', 1, 'sauce']],
+      baste: 'Reduce the heat to medium. Add {baste} to the pan and spoon the hot oil over the {nounP} for 30 seconds, then lift them out to rest.',
+      sauce: { title: 'Quick pan sauce', text: 'Add {sauce} to the hot pan and simmer 1 minute, scraping up the browned bits. Spoon over or serve on the side.' } } },
+  { key: 'cowboy', name: 'Cowboy-butter ribeye', blurb: 'Garlic, herb and lemon butter melted over the top.',
+    ing: [['salt', 1, 'season'], ['pepper', 0.5, 'season'], ['oil', 1, 'sear'], ['butter', 2, 'sauce'], ['garlicF', 1, 'sauce'], ['parsley', 1, 'sauce'], ['lemonJ', 1, 'sauce'], ['dijon', 0.5, 'sauce'], ['cayenne', 0.25, 'sauce']],
+    baste: '', sauce: { title: 'Cowboy butter', text: 'While the {nounP} rest, mash {sauce} together with a fork. Spoon it over the hot {nounP} so it melts into the juices.' },
+    low: { ing: [['salt', 1, 'season'], ['pepper', 0.5, 'season'], ['oil', 1, 'sear'], ['olive', 1, 'sauce'], ['garlicF', 1, 'sauce'], ['parsley', 1, 'sauce'], ['lemonJ', 1, 'sauce'], ['dijon', 0.5, 'sauce'], ['cayenne', 0.25, 'sauce'], ['broth', 1, 'sauce']],
+      sauce: { title: 'Cowboy dressing', text: 'While the {nounP} rest, whisk {sauce} into a loose dressing. Spoon a little over the {nounP} and serve the rest on the side.' } } },
+  { key: 'peppercorn', name: 'Peppercorn crust and pan sauce', blurb: 'Cracked pepper crust with a brandy-cream pan sauce.',
+    ing: [['salt', 1, 'season'], ['peppercorn', 1, 'season'], ['oil', 1, 'sear'], ['butter', 1, 'sauce'], ['shallot', 1, 'sauce'], ['brandy', 1, 'sauce'], ['cream', 2, 'sauce']],
+    baste: '', seasonNote: 'Press the cracked peppercorns firmly into both faces so the crust holds.',
+    sauce: { title: 'Pan sauce', text: 'Pour off the oil, leaving the browned bits. Over medium heat melt in {sauce}, stirring until the sauce coats a spoon (about 2 minutes). Spoon over the {nounP}.' },
+    low: { ing: [['salt', 1, 'season'], ['peppercorn', 1, 'season'], ['oil', 1, 'sear'], ['shallot', 1, 'sauce'], ['brandy', 1, 'sauce'], ['broth', 3, 'sauce'], ['dijon', 0.5, 'sauce']],
+      sauce: { title: 'Lighter pan sauce', text: 'Pour off the oil, leaving the browned bits. Add {sauce} and simmer until reduced by about half (2 to 3 minutes). Serve on the side.' } } },
+  { key: 'bluecheese', name: 'Blue-cheese crusted filet', blurb: 'Broiled blue cheese and panko crust on a tender filet.',
+    ing: [['salt', 1, 'season'], ['pepper', 0.5, 'season'], ['oil', 1, 'sear'], ['blueC', 2, 'top'], ['panko', 1, 'top'], ['butter', 1, 'top'], ['parsley', 1, 'top']],
+    baste: '', top: 'Melt the butter and mix {top} into a crumbly paste. Press it onto the top of each seared {noun} and broil on high for 1 to 2 minutes, until browned and bubbling.', sauce: null,
+    low: { ing: [['salt', 1, 'season'], ['pepper', 0.5, 'season'], ['oil', 1, 'sear'], ['blueC', 1, 'top'], ['panko', 1, 'top'], ['olive', 1, 'top'], ['parsley', 1, 'top']],
+      top: 'Mix {top} into a crumbly paste. Press it onto the top of each seared {noun} and broil on high for 1 to 2 minutes, until browned.' } },
+  { key: 'garlicherb', name: 'Garlic-herb reverse-sear', blurb: 'Granulated-garlic rub, then a rosemary-garlic butter baste.',
+    ing: [['salt', 1, 'season'], ['pepper', 0.5, 'season'], ['garlicG', 0.5, 'season'], ['oil', 1, 'sear'], ['butter', 1, 'baste'], ['garlicF', 1, 'baste'], ['rosem', 1, 'baste'], ['thyme', 1, 'baste']],
+    baste: 'Reduce the heat to medium. Add {baste} and spoon the butter over the {nounP} for 30 seconds.', sauce: null,
+    low: { ing: [['salt', 1, 'season'], ['pepper', 0.5, 'season'], ['garlicG', 0.5, 'season'], ['oil', 1, 'sear'], ['olive', 1, 'baste'], ['garlicF', 1, 'baste'], ['rosem', 1, 'baste'], ['thyme', 1, 'baste']],
+      baste: 'Reduce the heat to medium. Add {baste} and spoon the warm oil over the {nounP} for 30 seconds.' } },
+  { key: 'cajun', name: 'Cajun blackened', blurb: 'Smoky, peppery blackening rub in a very hot pan.',
+    ing: [['salt', 1, 'season'], ['paprika', 1, 'season'], ['garlicP', 0.5, 'season'], ['onionP', 0.5, 'season'], ['cayenne', 0.25, 'season'], ['thymeD', 0.5, 'season'], ['oreg', 0.5, 'season'], ['pepper', 0.5, 'season'], ['oil', 1, 'sear'], ['butter', 1, 'baste']],
+    baste: 'Spoon {baste}, melted, over the {nounP} as they come out of the pan. Run the vent fan: blackening smokes.', sauce: null, seasonNote: 'Mix the rub, then press it onto every surface.',
+    low: { ing: [['salt', 1, 'season'], ['paprika', 1, 'season'], ['garlicP', 0.5, 'season'], ['onionP', 0.5, 'season'], ['cayenne', 0.25, 'season'], ['thymeD', 0.5, 'season'], ['oreg', 0.5, 'season'], ['pepper', 0.5, 'season'], ['oil', 1, 'sear'], ['olive', 1, 'baste']],
+      baste: 'Brush {baste} over the {nounP} as they come out of the pan. Run the vent fan: blackening smokes.' } },
+  { key: 'texas', name: 'Smoked-paprika Texas rub', blurb: 'Coarse pepper, smoked paprika and a touch of coffee.',
+    ing: [['salt', 1, 'season'], ['pepper', 1, 'season'], ['paprikaS', 1, 'season'], ['garlicG', 0.5, 'season'], ['onionP', 0.5, 'season'], ['chiliP', 0.5, 'season'], ['cumin', 0.25, 'season'], ['bsugar', 0.5, 'season'], ['coffee', 0.5, 'season'], ['oil', 1, 'sear'], ['butter', 1, 'baste']],
+    baste: 'Rest a pat of {baste} on top of each {noun} as it comes out of the pan so it melts over the rub.', sauce: null,
+    low: { ing: [['salt', 1, 'season'], ['pepper', 1, 'season'], ['paprikaS', 1, 'season'], ['garlicG', 0.5, 'season'], ['onionP', 0.5, 'season'], ['chiliP', 0.5, 'season'], ['cumin', 0.25, 'season'], ['bsugar', 0.5, 'season'], ['coffee', 0.5, 'season'], ['oil', 1, 'sear']],
+      baste: '' } },
+  { key: 'chimichurri', name: 'Chimichurri skirt', blurb: 'Bright parsley, garlic and vinegar sauce.',
+    ing: [['salt', 1, 'season'], ['pepper', 0.5, 'season'], ['oil', 1, 'sear'], ['parsley', 3, 'sauce'], ['oreg', 0.5, 'sauce'], ['garlicF', 1, 'sauce'], ['vinR', 1, 'sauce'], ['olive', 3, 'sauce'], ['chiliF', 0.25, 'sauce']],
+    baste: '', sauce: { title: 'Chimichurri', text: 'Stir {sauce} together and let it sit while the {nounP} cook. Spoon it over the sliced {nounP}.' },
+    low: { ing: [['salt', 1, 'season'], ['pepper', 0.5, 'season'], ['oil', 1, 'sear'], ['parsley', 3, 'sauce'], ['oreg', 0.5, 'sauce'], ['garlicF', 1, 'sauce'], ['vinR', 2, 'sauce'], ['olive', 1, 'sauce'], ['chiliF', 0.25, 'sauce']],
+      sauce: { title: 'Lighter chimichurri', text: 'Stir {sauce} together and let it sit while the {nounP} cook. Serve it on the side.' } } },
+  { key: 'bearnaise', name: 'Béarnaise filet', blurb: 'Classic tarragon-shallot butter sauce.',
+    ing: [['salt', 1, 'season'], ['pepper', 0.5, 'season'], ['oil', 1, 'sear'], ['yolk', 1, 'sauce'], ['butter', 2, 'sauce'], ['vinW', 1, 'sauce'], ['shallot', 1, 'sauce'], ['tarragon', 1, 'sauce'], ['lemonJ', 0.5, 'sauce']],
+    baste: '', sauce: { title: 'Béarnaise', text: 'Simmer the vinegar and shallot until nearly dry. In a bowl over barely simmering water whisk in the yolk, then the melted butter, a little at a time. Stir in the tarragon and lemon juice. Use {sauce} in total. Spoon over the {nounP}.' },
+    low: { ing: [['salt', 1, 'season'], ['pepper', 0.5, 'season'], ['oil', 1, 'sear'], ['yogurt', 2, 'sauce'], ['vinW', 1, 'sauce'], ['shallot', 1, 'sauce'], ['tarragon', 1, 'sauce'], ['lemonJ', 0.5, 'sauce']],
+      sauce: { title: 'Béarnaise-style yogurt sauce', text: 'Simmer the vinegar and shallot until nearly dry, cool 1 minute, then stir into the yogurt with the tarragon and lemon juice. Use {sauce} in total. Serve on the side.' } } },
+  { key: 'dryaged', name: 'Dry-aged-style salt crust', blurb: 'Salted ahead to concentrate flavor, finished with butter and thyme.',
+    ing: [['saltC', 2, 'season'], ['pepper', 0.5, 'season'], ['garlicG', 0.5, 'season'], ['oil', 1, 'sear'], ['butter', 1, 'baste'], ['thyme', 2, 'baste'], ['worc', 1, 'sauce']],
+    baste: 'Reduce the heat to medium. Add {baste} and spoon the butter over the {nounP} for 30 seconds.',
+    seasonNote: 'Salt the surface and leave the {nounP} uncovered on a rack in the fridge for 40 minutes or more (a quick dry-age effect), then blot off any moisture.',
+    sauce: { title: 'Finish', text: 'Splash {sauce} over the sliced {nounP}.' },
+    low: { ing: [['saltC', 2, 'season'], ['pepper', 0.5, 'season'], ['garlicG', 0.5, 'season'], ['oil', 1, 'sear'], ['olive', 1, 'baste'], ['thyme', 2, 'baste'], ['worc', 1, 'sauce']],
+      baste: 'Reduce the heat to medium. Add {baste} and spoon the warm oil over the {nounP} for 30 seconds.' } }
+];
+const STYLE_KEYS = STYLES.map(s => s.key);
+const styleOf = k => STYLES.find(s => s.key === k) || STYLES[0];
+/* the variant actually used: full or low-calorie (low overrides ing/baste/sauce/top/seasonNote) */
+function styleVariant(style, lowCal) {
+  const v = { ing: style.ing, baste: style.baste || '', sauce: style.sauce || null, top: style.top || '', seasonNote: style.seasonNote || '' };
+  if (lowCal && style.low) for (const k of ['ing', 'baste', 'sauce', 'top', 'seasonNote']) if (style.low[k] !== undefined) v[k] = style.low[k] || (k === 'ing' ? [] : k === 'sauce' ? null : '');
+  return v;
+}
+/* ---- calories (approximate; per serving) ----
+   protein = oz * kcalOz; low-cal trims the fat cap on cuts that have one (TRIM_FRAC of the cut's kcal);
+   extras = sum of ingredient amount * kcal per unit. */
+const TRIM_FRAC = 0.10;
+function kcalOf(styleKey, cutKey, lowCal) {
+  const c = CUTS[cutKey] || CUTS.ribeye, v = styleVariant(styleOf(styleKey), lowCal);
+  let protein = c.oz * c.kcalOz;
+  if (lowCal && c.fat) protein *= 1 - TRIM_FRAC;
+  const extras = v.ing.reduce((s, [id, amt]) => s + ING[id].k * amt, 0);
+  return { protein, extras, total: protein + extras };
+}
+function lowCalSavings(styleKey, cutKey) {
+  const a = kcalOf(styleKey, cutKey, false), b = kcalOf(styleKey, cutKey, true);
+  return Math.round(a.total - b.total);
+}
+/* lean-cut suggestion: how much more a leaner cut would save (shown as a hint only) */
+function leanSuggestion(styleKey, cutKey) {
+  const c = CUTS[cutKey];
+  if (!c || !c.lean) return null;
+  const now = kcalOf(styleKey, cutKey, true).total, alt = kcalOf(styleKey, c.lean, true).total;
+  return { cut: c.lean, label: CUTS[c.lean].label, saves: Math.round(now - alt) };
+}
+
+/* ---- recipe card ---- */
+const listAnd = a => (a.length <= 1 ? a.join('') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1]);
+function ingText(id, perServing, servings) {
+  const g = ING[id], t = normAmt(perServing * servings, g.u);
+  const amt = fmtQty(t.amt), over1 = t.amt > 1 + 1e-9;
+  if (g.u === '') return `${amt} ${over1 && g.pl ? g.pl : g.n}`;
+  const u = over1 && UNIT_PL[t.unit] ? UNIT_PL[t.unit] : t.unit;
+  return `${amt} ${u} ${g.n}`;
+}
+function buildRecipe(inp, S) {
+  S = S || {};
+  const equipment = EQUIP[S.equipment] ? S.equipment : 'apo', tu = S.tempUnit === 'C' ? 'C' : 'F', lu = S.lenUnit === 'cm' ? 'cm' : 'in';
+  const plan = planCook(inp, equipment);
+  if (!plan.ok) return plan;
+  const cut = CUTS[inp.cut], style = styleOf(inp.style), lowCal = !!inp.lowCal;
+  const n = Math.max(1, Math.round(inp.servings) || 1);
+  const v = styleVariant(style, lowCal);
+  const noFinish = inp.finish === 'none';
+  const items = v.ing.filter(([, , tag]) => !(noFinish && (tag === 'sear' || tag === 'baste')));
+  const tok = tag => listAnd(items.filter(i => i[2] === tag).map(([id, a]) => ingText(id, a, n)));
+  const noun = cut.noun, nounP = cut.nounP;
+  const fill = s => str(s).replace(/\{(season|sear|baste|top|sauce)\}/g, (_, t) => tok(t)).replace(/\{noun\}/g, noun).replace(/\{nounP\}/g, nounP);
+  const T = f => fmtTemp(f, tu);
+  const ozEach = cut.oz;
+  const ingredients = [{ text: `${n} ${n === 1 ? noun : nounP} (about ${ozEach} oz / ${Math.round(ozToG(ozEach))} g each, ${fmtLen(inp.thick, lu)} thick)`, tag: 'main' }];
+  if (equipment === 'circ') ingredients.push({ text: `${n} zip-top or vacuum-seal ${n === 1 ? 'bag' : 'bags'} (one per ${noun})`, tag: 'gear' });
+  for (const [id, a, tag] of items) ingredients.push({ text: ingText(id, a, n), tag, id });
+  const steps = [];
+  const add = (title, text, timer) => steps.push({ title, text, timer: timer || null });
+  const seasonList = tok('season');
+  let sText = `Pat the ${n === 1 ? noun : nounP} dry with paper towels. ${lowCal && cut.fat ? 'Trim the fat cap to about ¼ in (6 mm). ' : ''}Season all sides and the edges with ${seasonList}.`;
+  if (v.seasonNote) sText += ' ' + fill(v.seasonNote);
+  add('Season', sText);
+  const w = plan.window, tgt = plan.targetF, setT = T(plan.setTempF);
+  if (equipment === 'apo') {
+    add('Preheat the oven', `Make sure the bottom drip pan is installed. Set the Anova Precision Oven to steam mode (100% humidity) at ${setT}. Preheat 5–10 minutes until it signals ready.`);
+    add('Cook', `Place the ${nounP} directly on the rack, bagless and uncovered, with the drip pan below. Cook for ${fmtDur(w.min)} (up to ${fmtDur(w.max)} is fine) until the center reaches ${T(tgt)}.`, w.min * 60);
+  } else if (equipment === 'circ') {
+    add('Heat the bath', `Clip the immersion circulator onto a pot of water and heat it to ${setT}.`);
+    add('Bag', `Seal each ${noun} in its own bag (${n} ${n === 1 ? 'bag' : 'bags'}), pressing out the air, and lower them into the bath.`);
+    add('Cook', `Cook for ${fmtDur(w.min)} (up to ${fmtDur(w.max)} is fine) until the center reaches ${T(tgt)}.`, w.min * 60);
+  } else {
+    add('Preheat the oven', `Heat the oven to ${setT} and set a rack over a sheet pan.`);
+    add('Roast', `Roast the ${nounP} on the rack for about ${fmtDur(w.min)}, until a probe in the center reads ${T(plan.pullF)}.`, w.min * 60);
+  }
+  if (equipment !== 'oven') add('Dry', `Lift out the ${nounP} and pat them very dry with paper towels. A dry surface makes the crust.`);
+  const sp = plan.sear;
+  if (!noFinish) {
+    const F = FINISH[inp.finish], sear = tok('sear');
+    let t;
+    if (inp.finish === 'sear') t = `${F.pan}. Add ${sear}. Sear the ${nounP} ${sp.secPerSide} seconds per side${inp.thick >= 1.5 ? ', then sear the edges 15 seconds each' : ''}.`;
+    else t = `Brush the ${nounP} with ${sear}. ${F.pan}. ${inp.finish === 'torch' ? 'Torch' : inp.finish === 'broiler' ? 'Broil' : 'Grill'} ${sp.secPerSide} seconds per side.`;
+    add(F.label, t);
+    const b = fill(v.baste);
+    if (b && tok('baste')) add('Baste', b);
+  }
+  if (v.top) add('Top', fill(v.top));
+  if (v.sauce) add(v.sauce.title || 'Sauce', fill(v.sauce.text));
+  add('Rest and serve', `${sp.restMin ? `Rest the ${nounP} for ${sp.restMin} minutes. ` : ''}${cut.thin || inp.cut === 'tritip' || inp.cut === 'flatiron' ? 'Slice thinly against the grain and serve.' : 'Serve.'}`, sp.restMin ? sp.restMin * 60 : null);
+  const kc = kcalOf(inp.style, inp.cut, lowCal);
+  const timing = [
+    equipment === 'oven' ? `Roast: about ${fmtDur(w.min)}` : `Heat-up to the center: about ${fmtDur(Math.ceil(plan.heatMin))}`,
+    equipment === 'oven' ? `Pull at: ${T(plan.pullF)} on a probe` : `Hold window: ${fmtDur(w.min)} to ${fmtDur(w.max)}`,
+    noFinish ? 'Finish: none' : `Finish: ${sp.secPerSide} seconds per side (${FINISH[inp.finish].label.toLowerCase()})`,
+    `Rest: ${sp.restMin ? sp.restMin + ' minutes' : 'none'}`,
+    `Start to table (at the minimum time): about ${fmtDur(w.min + plan.finishMin)}`
+  ];
+  const title = `${style.name}: ${plan.donenessLabel.split(' (')[0].toLowerCase()} ${cut.label.toLowerCase()}${lowCal ? ' (lighter)' : ''}`;
+  const notes = [...plan.warns, ...plan.notes];
+  if (lowCal) notes.push('Lighter version: ' + (cut.fat ? 'fat cap trimmed, ' : '') + 'less butter and oil, sauce on the side where there is one.');
+  return { ok: true, title, equipment, equipmentLabel: EQUIP[equipment], servings: n, plan, ingredients, steps, timing, notes, kcal: { perServing: Math.round(kc.total), lowCal, saves: lowCal ? lowCalSavings(inp.style, inp.cut) : null } };
+}
+function recipeText(r) {
+  const L = [r.title, `Equipment: ${r.equipmentLabel}`, `Serves ${r.servings}`, '', 'Ingredients'];
+  for (const i of r.ingredients) L.push('- ' + (i.text || i));
+  L.push('', 'Steps');
+  r.steps.forEach((s, i) => L.push(`${i + 1}. ${s.title ? s.title + ': ' : ''}${s.text}`));
+  if (r.timing && r.timing.length) { L.push('', 'Timing'); for (const t of r.timing) L.push('- ' + t); }
+  if (r.kcal && r.kcal.perServing) L.push('', `About ${r.kcal.perServing} kcal per serving (approximate).`);
+  if (r.notes && r.notes.length) { L.push('', 'Notes'); for (const t of r.notes) L.push('- ' + t); }
+  return L.join('\n');
+}
+
+/* ---- timers (pure) ---- */
+const timerLeft = (t, now) => (t.state === 'run' ? Math.max(0, Math.ceil((t.end - now) / 1000)) : t.state === 'done' ? 0 : t.left);
+const newTimer = (label, secs, now, id) => ({ id: id || uid(), label: str(label).trim().slice(0, 40) || 'Timer', total: secs, left: secs, end: now + secs * 1000, state: 'run' });
+function pauseTimer(t, now) { if (t.state !== 'run') return t; return { ...t, left: timerLeft(t, now), end: null, state: 'pause' }; }
+function resumeTimer(t, now) { if (t.state !== 'pause' || !(t.left > 0)) return t; return { ...t, end: now + t.left * 1000, state: 'run' }; }
+const resetTimer = t => ({ ...t, left: t.total, end: null, state: 'pause' });
+
+/* ---- logs / best settings ---- */
+function bestFor(log, cut) {
+  const l = log.filter(e => e.cut === cut);
+  if (!l.length) return null;
+  return l.slice().sort((a, b) => b.stars - a.stars || b.date.localeCompare(a.date) || b.createdAt.localeCompare(a.createdAt))[0];
+}
+function bestLine(e, tu) {
+  const bits = [];
+  if (isNum(e.bathF)) bits.push(fmtTemp(e.bathF, tu));
+  if (isNum(e.mins)) bits.push(fmtDurShort(e.mins));
+  bits.push(e.stars + '★');
+  return bits.join(', ');
+}
+
+/* =====================================================================
+   Model / normalization
+   ===================================================================== */
+const SET_DEF = { tempUnit: 'F', lenUnit: 'in', equipment: 'apo', servings: 2 };
+const PLAN_DEF = { cut: 'ribeye', thick: 1.5, start: 'fridge', doneness: 'mr', finish: 'sear', servings: 2, style: 'butter', lowCal: false, meal: '' };
+const isoDT = v => { if (typeof v !== 'string' || !v) return null; const t = Date.parse(v); if (!isFinite(t)) return null; const y = new Date(t).getUTCFullYear(); return y >= 2000 && y <= 2100 ? new Date(t).toISOString() : null; };
+const flat = (v, n) => str(v).replace(/\s+/g, ' ').trim().slice(0, n);
+function normSettings(raw) {
+  raw = raw && typeof raw === 'object' ? raw : {};
+  const sv = numIn(raw.servings, 1, 20);
+  return {
+    tempUnit: raw.tempUnit === 'C' ? 'C' : 'F', lenUnit: raw.lenUnit === 'cm' ? 'cm' : 'in',
+    equipment: EQUIP[raw.equipment] ? raw.equipment : SET_DEF.equipment, servings: sv == null ? SET_DEF.servings : Math.round(sv)
+  };
+}
+function normPlan(raw, defServings) {
+  raw = raw && typeof raw === 'object' ? raw : {};
+  const o = { ...PLAN_DEF, servings: defServings || PLAN_DEF.servings };
+  if (CUTS[raw.cut]) o.cut = raw.cut;
+  const th = numIn(raw.thick, 0.25, 4);
+  if (th != null) o.thick = Math.round(th * 1000) / 1000;
+  if (START[raw.start]) o.start = raw.start;
+  if (FINISH[raw.finish]) o.finish = raw.finish;
+  const sv = numIn(raw.servings, 1, 20); if (sv != null) o.servings = Math.round(sv);
+  if (STYLE_KEYS.includes(raw.style)) o.style = raw.style;
+  o.lowCal = raw.lowCal === true;
+  if (parseHHMM(raw.meal) != null) o.meal = pad(Math.floor(parseHHMM(raw.meal) / 60)) + ':' + pad(parseHHMM(raw.meal) % 60);
+  o.doneness = donenessFor(o.cut, raw.doneness)[0];
+  return o;
+}
+function normStep(s) {
+  if (typeof s === 'string') { const t = s.trim().slice(0, 1500); return t ? { title: '', text: t, timer: detectTimer(t) } : null; }
+  if (!s || typeof s !== 'object') return null;
+  const text = str(s.text).trim().slice(0, 1500);
+  if (!text) return null;
+  const tm = numIn(s.timer, 5, 172800);
+  return { title: flat(s.title, 80), text, timer: tm != null ? Math.round(tm) : null };
+}
+function normRecipe(r) {
+  if (!r || typeof r !== 'object') return null;
+  const title = flat(r.title, 120);
+  if (!title) return null;
+  const lines = v => (Array.isArray(v) ? v : typeof v === 'string' ? v.split('\n') : []);
+  const ingredients = lines(r.ingredients).map(x => flat(typeof x === 'object' && x ? x.text : x, 300)).filter(Boolean).slice(0, 200);
+  const steps = lines(r.steps).map(normStep).filter(Boolean).slice(0, 200);
+  const seen = new Set(), tags = [];
+  for (const t of Array.isArray(r.tags) ? r.tags : []) { const x = flat(t, 30); if (x && !seen.has(x.toLowerCase())) { seen.add(x.toLowerCase()); tags.push(x); } if (tags.length >= 12) break; }
+  const sv = numIn(r.servings, 1, 100), kc = numIn(r.kcal, 0, 5000);
+  const plan = r.plan && typeof r.plan === 'object' ? { ...normPlan(r.plan), equipment: EQUIP[r.plan.equipment] ? r.plan.equipment : 'apo' } : null;
+  return {
+    id: str(r.id).slice(0, 60) || uid(), title, notes: str(r.notes).trim().slice(0, 3000), ingredients, steps, tags,
+    favorite: r.favorite === true, servings: sv == null ? 2 : Math.round(sv), source: r.source === 'plan' && plan ? 'plan' : 'manual', plan: r.source === 'plan' ? plan : null,
+    kcal: kc == null ? null : Math.round(kc), createdAt: isoDT(r.createdAt) || new Date().toISOString()
+  };
+}
+function normLog(e) {
+  if (!e || typeof e !== 'object') return null;
+  const stars = numIn(e.stars, 1, 5);
+  if (!isISO(e.date) || !CUTS[e.cut] || stars == null) return null;
+  const th = numIn(e.thick, 0.25, 4), b = numIn(e.bathF, 90, 212), m = numIn(e.mins, 1, 14400);
+  return {
+    id: str(e.id).slice(0, 60) || uid(), date: e.date, cut: e.cut, thick: th == null ? null : Math.round(th * 1000) / 1000,
+    bathF: b == null ? null : r1(b), mins: m == null ? null : Math.round(m), stars: Math.round(stars), notes: str(e.notes).trim().slice(0, 2000),
+    recipeId: str(e.recipeId).slice(0, 60), recipeTitle: flat(e.recipeTitle, 120), createdAt: isoDT(e.createdAt) || new Date().toISOString()
+  };
+}
+function normalizeData(raw) {
+  raw = raw && typeof raw === 'object' ? raw : {};
+  let dropped = 0;
+  const lists = {};
+  for (const [k, fn, mx] of [['recipes', normRecipe, MAX.recipes], ['log', normLog, MAX.log]]) {
+    const src = Array.isArray(raw[k]) ? raw[k] : [], seen = new Set(), list = [];
+    for (const x of src) {
+      const n = fn(x);
+      if (!n || seen.has(n.id)) { dropped++; continue; }
+      seen.add(n.id); list.push(n);
+    }
+    if (list.length > mx) { dropped += list.length - mx; list.length = mx; }
+    lists[k] = list;
+  }
+  const settings = normSettings(raw.settings);
+  return { data: { settings, plan: normPlan(raw.plan, settings.servings), recipes: lists.recipes, log: lists.log }, dropped };
+}
+const DATA_KEYS = ['settings', 'plan', 'recipes', 'log'];
+const defaultState = () => ({ schemaVersion: SCHEMA, meta: { lastBackup: null, lastChange: null }, ...normalizeData({}).data });
+function loadState(parsed) {
+  const { data } = normalizeData(parsed);
+  const m = (parsed && parsed.meta) || {};
+  return { schemaVersion: SCHEMA, meta: { lastBackup: isoDT(m.lastBackup), lastChange: isoDT(m.lastChange) }, ...data };
+}
+const exportData = () => { const o = {}; for (const k of DATA_KEYS) o[k] = state[k]; return o; };
+const isDefaultData = d => JSON.stringify(d.settings) === JSON.stringify(normSettings({})) && JSON.stringify(d.plan) === JSON.stringify(normPlan({}, 2));
+const hasAnyData = () => state.recipes.length > 0 || state.log.length > 0 || !isDefaultData(state);
+
+/* ---- persistence ---- */
+let state = defaultState(), db = null, saveFailed = false, persistAsked = false, saveChain = Promise.resolve();
+function persist({ touch = true } = {}) {
+  if (touch) state.meta.lastChange = new Date().toISOString();
+  if (!db) return Promise.resolve();
+  const snap = JSON.stringify(state);
+  saveChain = saveChain.then(() => idbPut(db, 'state', snap)).then(() => { saveFailed = false; }).catch(err => { console.error(err); saveFailed = true; });
+  if (!persistAsked && navigator.storage && navigator.storage.persist) { persistAsked = true; navigator.storage.persist().catch(() => {}); }
+  return saveChain;
+}
+const commit = () => { persist(); render(); };
+
+/* =====================================================================
+   UI state, timers, helpers
+   ===================================================================== */
+const view = $('#view');
+const ui = { tab: 'plan', recipe: null, scale: null, q: '', fav: false, cutFilter: '', cook: null };
+let timers = [], timerIv = null, actx = null;
+
+function primeAudio() {
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    if (!actx) actx = new AC();
+    if (actx.state === 'suspended' && actx.resume) actx.resume();
+  } catch { /* audio unavailable: the visual alert still works */ }
+}
+function beep() {
+  try {
+    if (!actx) primeAudio();
+    if (!actx) return;
+    for (let i = 0; i < 3; i++) {
+      const o = actx.createOscillator(), g = actx.createGain(), t0 = actx.currentTime + i * 0.35;
+      o.frequency.value = 880; g.gain.value = 0.2; o.connect(g); g.connect(actx.destination); o.start(t0); o.stop(t0 + 0.2);
+    }
+  } catch { /* ignore */ }
+}
+function vibrate() { try { if (navigator.vibrate) navigator.vibrate([300, 150, 300]); } catch { /* ignore */ } }
+function alarm(t) { beep(); vibrate(); toast(`${t.label}: time is up`); }
+function startTimer(label, secs) {
+  if (!(secs >= 1)) return;
+  primeAudio();
+  timers.push(newTimer(label, Math.round(secs), Date.now()));
+  ensureTick(); renderTimers();
+}
+function ensureTick() { if (!timerIv && timers.some(t => t.state === 'run')) timerIv = setInterval(() => timerTick(), 500); }
+function timerTick(now = Date.now()) {
+  for (const t of timers) if (t.state === 'run' && timerLeft(t, now) <= 0) { t.state = 'done'; t.end = null; t.left = 0; alarm(t); }
+  renderTimers(now);
+  if (!timers.some(t => t.state === 'run') && timerIv) { clearInterval(timerIv); timerIv = null; }
+}
+function renderTimers(now = Date.now()) {
+  const el = $('#timerbar'); if (!el) return;
+  el.innerHTML = timers.map(t => {
+    const left = timerLeft(t, now), done = t.state === 'done';
+    const toggle = done ? '' : t.state === 'run' ? `<button type="button" data-tact="pause" data-tid="${t.id}">Pause</button>` : `<button type="button" data-tact="resume" data-tid="${t.id}">${left === t.total ? 'Start' : 'Resume'}</button>`;
+    return `<div class="timer${done ? ' done' : ''}" data-tid="${t.id}"><span>${esc(t.label)}</span><b>${done ? 'Done' : fmtClockSecs(left)}</b>${toggle}<button type="button" data-tact="reset" data-tid="${t.id}">Reset</button><button type="button" data-tact="remove" data-tid="${t.id}" aria-label="Remove timer">✕</button></div>`;
+  }).join('');
+}
+$('#timerbar').addEventListener('click', e => {
+  const b = e.target.closest('[data-tact]'); if (!b) return;
+  const i = timers.findIndex(t => t.id === b.dataset.tid); if (i < 0) return;
+  const now = Date.now(), a = b.dataset.tact;
+  if (a === 'pause') timers[i] = pauseTimer(timers[i], now);
+  else if (a === 'resume') { primeAudio(); timers[i] = resumeTimer(timers[i], now); ensureTick(); }
+  else if (a === 'reset') timers[i] = resetTimer(timers[i]);
+  else if (a === 'remove') timers.splice(i, 1);
+  renderTimers(now);
+});
+
+async function copyText(text) {
+  try { if (navigator.clipboard && navigator.clipboard.writeText) { await navigator.clipboard.writeText(text); return true; } } catch { /* fall through */ }
+  try {
+    const ta = document.createElement('textarea'); ta.value = text; ta.style.cssText = 'position:fixed;opacity:0'; document.body.appendChild(ta); ta.select();
+    const ok = !!(document.execCommand && document.execCommand('copy')); ta.remove(); if (ok) return true;
+  } catch { /* fall through */ }
+  return false;
+}
+async function copyOrShow(text) {
+  if (await copyText(text)) return toast('Copied');
+  await askDialog({ title: 'Copy this text', body: `<textarea readonly rows="10" style="width:100%">${esc(text)}</textarea>`, buttons: [{ label: 'Close', value: true, kind: 'primary' }] });
+}
+function storageBannerHTML() {
+  if (saveFailed) return '<div class="banner bad">Couldn’t save to this device’s storage. Back up now so nothing is lost.</div>';
+  if (!db) return '<div class="banner bad">This browser isn’t allowing storage (private mode?). Changes won’t survive closing the app — use Backup.</div>';
+  return '';
+}
+const starsHTML = n => `<span class="stars" aria-label="${n} of 5 stars">${'★'.repeat(n)}${'☆'.repeat(5 - n)}</span>`;
+const opt = (v, label, cur) => `<option value="${esc(v)}"${String(v) === String(cur) ? ' selected' : ''}>${esc(label)}</option>`;
+const thickDisplay = (inch, lu) => (lu === 'cm' ? nz(r1(inToCm(inch))) : nz(inch));
+
+/* the recipe being shown for a saved recipe at n servings */
+function displayRecipe(r, n) {
+  n = n || r.servings;
+  if (r.plan && n !== r.servings) {
+    const card = buildRecipe({ ...r.plan, servings: n }, { ...state.settings, equipment: r.plan.equipment });
+    if (card.ok) return { title: r.title, servings: n, ingredients: card.ingredients.map(i => i.text), steps: card.steps, notes: [], timing: card.timing, kcal: card.kcal.perServing, equipmentLabel: card.equipmentLabel, scaledNote: '' };
+  }
+  const f = n / r.servings;
+  return { title: r.title, servings: n, ingredients: n === r.servings ? r.ingredients : r.ingredients.map(l => scaleLine(l, f)), steps: r.steps, notes: r.notes ? r.notes.split('\n') : [], timing: [], kcal: r.kcal, equipmentLabel: r.plan ? EQUIP[r.plan.equipment] : '', scaledNote: n !== r.servings ? 'Ingredient amounts are scaled. Amounts written inside the steps are not.' : '' };
+}
+
+/* =====================================================================
+   Screens
+   ===================================================================== */
+function currentCard() { return buildRecipe(state.plan, state.settings); }
+
+function renderPlan() {
+  const p = state.plan, S = state.settings, tu = S.tempUnit, lu = S.lenUnit;
+  const f = (label, ctl, cls = '') => `<div class="field ${cls}"><label>${esc(label)}</label>${ctl}</div>`;
+  const best = bestFor(state.log, p.cut);
+  const card = currentCard();
+  let html = storageBannerHTML() + `<div class="stack"><section class="card pad"><h3>Plan a cook</h3><div class="fields2" style="margin-top:10px">`
+    + f('Cut', `<select id="p_cut" data-plan="cut">${CUT_KEYS.map(k => opt(k, CUTS[k].label, p.cut)).join('')}</select>`)
+    + f('Doneness', `<select id="p_doneness" data-plan="doneness">${donenessList(p.cut).map(d => opt(d[0], `${d[1]} (${fmtTemp(d[2], tu)})`, p.doneness)).join('')}</select>`)
+    + f(`Thickness (${lu})`, `<input id="p_thick" data-plan="thick" type="number" inputmode="decimal" step="${lu === 'cm' ? 0.5 : 0.25}" min="${lu === 'cm' ? 0.6 : 0.25}" max="${lu === 'cm' ? 10 : 4}" value="${thickDisplay(p.thick, lu)}">`)
+    + f('Starting from', `<select id="p_start" data-plan="start">${Object.entries(START).map(([k, v]) => opt(k, v.label, p.start)).join('')}</select>`)
+    + f('Finish', `<select id="p_finish" data-plan="finish">${Object.entries(FINISH).map(([k, v]) => opt(k, v.label, p.finish)).join('')}</select>`)
+    + f('Servings', `<div class="stepper"><button type="button" data-action="serv" data-d="-1" aria-label="Fewer servings">−</button><b id="p_servings">${p.servings}</b><button type="button" data-action="serv" data-d="1" aria-label="More servings">+</button></div>`)
+    + f('Style', `<select id="p_style" data-plan="style">${STYLES.map(s => opt(s.key, s.name, p.style)).join('')}</select>`, 'wide')
+    + f('Serve at (optional)', `<input id="p_meal" data-plan="meal" type="time" value="${esc(p.meal)}">`, 'wide')
+    + `</div>`
+    + `<div class="chips" style="margin-top:12px"><button type="button" class="chip" data-action="lowcal" aria-pressed="${p.lowCal}">Low-calorie version</button></div>`
+    + (best ? `<div class="best" id="bestLine"><b>Best so far for ${esc(CUTS[p.cut].label)}:</b> ${esc(bestLine(best, tu))} <span class="muted">(${esc(fmtDate(best.date, false))})</span></div>` : '')
+    + `</section>`;
+  if (!card.ok) return html + `<div class="banner bad">${esc(card.error)}</div></div>`;
+  const pl = card.plan, oven = pl.mode === 'oven';
+  html += `<section class="card pad" id="planOut"><div class="fine">${esc(EQUIP[card.equipment])}</div>`
+    + `<div class="bigtemp" id="bathTemp">${esc(fmtTemp(pl.setTempF, tu))}</div>`
+    + `<div class="bigsub">${oven ? `Oven temperature. Pull at ${esc(fmtTemp(pl.pullF, tu))} on a probe` : `Bath temperature for ${esc(pl.donenessLabel.toLowerCase())} (center ${esc(fmtTemp(pl.targetF, tu))})`}</div>`
+    + `<div class="tiles3"><div class="tile"><div class="lbl">${oven ? 'Roast' : 'Heat-up'}</div><div class="val" id="heatUp">${esc(fmtDur(oven ? pl.window.min : Math.ceil(pl.heatMin)))}</div></div>`
+    + `<div class="tile"><div class="lbl">${oven ? 'Check by' : 'Hold window'}</div><div class="val" id="window">${esc(oven ? fmtDur(pl.window.max) : fmtDur(pl.window.min) + ' – ' + fmtDur(pl.window.max))}</div></div>`
+    + `<div class="tile"><div class="lbl">Finish</div><div class="val">${pl.sear.secPerSide ? pl.sear.secPerSide + ' s/side' : 'None'}</div></div></div>`;
+  for (const w of pl.warns) html += `<div class="safe">${esc(w)}</div>`;
+  if (pl.notes.length) html += `<ul class="notes">${pl.notes.map(n => `<li>${esc(n)}</li>`).join('')}</ul>`;
+  html += `</section>`;
+  const cp = p.meal ? clockPlan(p.meal, pl.window.min, pl.window.max, pl.finishMin) : null;
+  if (cp) html += `<section class="card pad" id="clockCard"><h3>Timing for ${esc(cp.serve.text)}</h3><div class="kv"><span>Start by (latest)</span><span id="startBy">${esc(clockText(cp.startLatest))}</span></div><div class="kv"><span>Start no earlier than</span><span>${esc(clockText(cp.startEarliest))}</span></div><div class="kv"><span>Out of the ${oven ? 'oven' : 'bath'} by</span><span>${esc(clockText(cp.outOfBathBy))}</span></div><div class="kv"><span>Ready at</span><span id="readyAt">${esc(clockText(cp.serve))}</span></div></section>`;
+  const sp = pl.sear;
+  html += `<section class="card pad" id="searCard"><h3>Finish and rest</h3>`
+    + (pl.finishKey === 'none' ? `<p class="muted" style="margin-top:6px">No sear. ${sp.restMin ? 'Rest ' + sp.restMin + ' minutes.' : 'Serve straight from the ' + (oven ? 'oven.' : 'bath after patting dry.')}</p>`
+      : `<div class="kv"><span>Prep</span><span>Pat dry with paper towels</span></div><div class="kv"><span>Pan / heat</span><span>${esc(FINISH[pl.finishKey].pan)}</span></div><div class="kv"><span>Fat</span><span>${esc(FINISH[pl.finishKey].fat)}</span></div><div class="kv"><span>Time</span><span>${sp.secPerSide} seconds per side</span></div><div class="kv"><span>Rest</span><span>${sp.restMin} minutes</span></div>`)
+    + `</section>`;
+  const sv = card.kcal.saves;
+  html += `<section class="card pad" id="recipeCard"><h3>${esc(card.title)}</h3>`
+    + `<p class="muted" id="kcalLine" style="margin-top:4px">About ${card.kcal.perServing} kcal per serving (approximate)${sv != null ? `. <b>Saves about ${sv} kcal/serving</b>` : ''}.</p>`
+    + (p.lowCal ? '' : '')
+    + `<h3 style="margin-top:12px">Ingredients</h3><ul class="ings">${card.ingredients.map(i => `<li>${esc(i.text)}</li>`).join('')}</ul>`
+    + `<h3 style="margin-top:12px">Steps</h3><ol class="stepl">${card.steps.map((s, i) => `<li><span class="n">${i + 1}</span><div class="b"><div class="t">${esc(s.title)}</div>${esc(s.text)}</div></li>`).join('')}</ol>`
+    + `<h3 style="margin-top:12px">Timing</h3><ul class="notes">${card.timing.map(t => `<li>${esc(t)}</li>`).join('')}</ul>`;
+  const lean = leanSuggestion(p.style, p.cut);
+  if (lean) html += `<p class="fine" id="leanLine">Going with ${esc(lean.label)} instead of ${esc(CUTS[p.cut].label)} would save about ${lean.saves} more kcal per serving.</p>`;
+  html += `<div class="btnrow"><button type="button" class="btn primary" data-action="save-plan">Save to Recipes</button><button type="button" class="btn" data-action="copy-plan">Copy as text</button><button type="button" class="btn" data-action="cook-plan">Cook mode</button><button type="button" class="btn" data-action="log-plan">Log this cook</button></div></section></div>`;
+  return html;
+}
+
+function recipeRows() {
+  const q = ui.q.trim().toLowerCase();
+  let list = state.recipes.slice();
+  if (ui.fav) list = list.filter(r => r.favorite);
+  if (q) list = list.filter(r => [r.title, r.notes, r.tags.join(' '), r.ingredients.join(' ')].join('\n').toLowerCase().includes(q));
+  list.sort((a, b) => (b.favorite ? 1 : 0) - (a.favorite ? 1 : 0) || b.createdAt.localeCompare(a.createdAt));
+  if (!list.length) return `<div class="empty"><h2>No matches</h2><p>Try a different search.</p></div>`;
+  return `<div class="card"><ul class="list">${list.map(r => `<li class="row" role="button" tabindex="0" data-action="open-recipe" data-id="${esc(r.id)}"><div class="row-main"><div class="row-title">${r.favorite ? '★ ' : ''}${esc(r.title)}</div><div class="row-sub">Serves ${r.servings}${r.kcal ? ' · ' + r.kcal + ' kcal' : ''}${r.source === 'plan' ? ' · from Plan' : ''}${r.tags.length ? ' · ' + esc(r.tags.join(', ')) : ''}</div></div></li>`).join('')}</ul></div>`;
+}
+function renderRecipes() {
+  if (ui.recipe) {
+    const r = state.recipes.find(x => x.id === ui.recipe);
+    if (!r) { ui.recipe = null; } else return renderRecipeDetail(r);
+  }
+  if (!state.recipes.length) return storageBannerHTML() + `<div class="empty"><div class="big">📖</div><h2>No saved recipes yet</h2><p>Build one on the Plan tab and save it, or write your own.</p><button type="button" class="btn primary" data-action="new-recipe">Add a recipe</button></div>`;
+  return storageBannerHTML() + `<div class="search"><input id="q" type="search" placeholder="Search recipes" value="${esc(ui.q)}" aria-label="Search recipes"></div><div class="chips" style="margin-bottom:12px"><button type="button" class="chip" data-action="fav-filter" aria-pressed="${ui.fav}">Favorites</button></div><div id="rlist">${recipeRows()}</div>`;
+}
+function renderRecipeDetail(r) {
+  const n = ui.scale || r.servings, d = displayRecipe(r, n);
+  return storageBannerHTML() + `<div class="stack"><button type="button" class="btn ghost" style="align-self:flex-start" data-action="close-recipe">‹ Recipes</button>
+    <section class="card pad"><div style="display:flex;gap:10px;align-items:flex-start;justify-content:space-between"><h2 style="font-size:20px;overflow-wrap:anywhere">${esc(r.title)}</h2><button type="button" class="btn small" data-action="fav" aria-pressed="${r.favorite}">${r.favorite ? '★ Favorite' : '☆ Favorite'}</button></div>
+    ${d.equipmentLabel ? `<div class="fine">${esc(d.equipmentLabel)}</div>` : ''}${r.tags.length ? `<div class="tags">${r.tags.map(t => `<span class="tag">${esc(t)}</span>`).join('')}</div>` : ''}
+    <div class="kv" style="margin-top:10px;align-items:center"><span>Servings</span><span class="stepper"><button type="button" data-action="rscale" data-d="-1" aria-label="Fewer servings">−</button><b id="rServ">${n}</b><button type="button" data-action="rscale" data-d="1" aria-label="More servings">+</button></span></div>
+    ${d.kcal ? `<p class="fine" style="margin-top:8px">About ${d.kcal} kcal per serving (approximate).</p>` : ''}
+    <h3 style="margin-top:12px">Ingredients</h3>${d.ingredients.length ? `<ul class="ings">${d.ingredients.map(i => `<li>${esc(i)}</li>`).join('')}</ul>` : '<p class="muted">None listed.</p>'}${d.scaledNote ? `<p class="fine">${esc(d.scaledNote)}</p>` : ''}
+    <h3 style="margin-top:12px">Steps</h3>${d.steps.length ? `<ol class="stepl">${d.steps.map((s, i) => `<li><span class="n">${i + 1}</span><div class="b">${s.title ? `<div class="t">${esc(s.title)}</div>` : ''}${esc(s.text)}</div></li>`).join('')}</ol>` : '<p class="muted">None listed.</p>'}
+    ${d.timing.length ? `<h3 style="margin-top:12px">Timing</h3><ul class="notes">${d.timing.map(t => `<li>${esc(t)}</li>`).join('')}</ul>` : ''}
+    ${d.notes.length ? `<h3 style="margin-top:12px">Notes</h3><ul class="notes">${d.notes.map(t => `<li>${esc(t)}</li>`).join('')}</ul>` : ''}
+    <div class="btnrow"><button type="button" class="btn primary" data-action="cook-recipe">Cook mode</button><button type="button" class="btn" data-action="copy-recipe">Copy as text</button><button type="button" class="btn" data-action="edit-recipe">Edit</button><button type="button" class="btn danger" data-action="del-recipe">Delete</button></div></section></div>`;
+}
+
+function bestSummaryHTML() {
+  const tu = state.settings.tempUnit, cuts = CUT_KEYS.filter(k => state.log.some(e => e.cut === k));
+  if (!cuts.length) return '';
+  return `<section class="card pad" id="bestCard"><h3>Your best settings</h3>${cuts.map(k => { const e = bestFor(state.log, k); return `<div class="kv"><span>${esc(CUTS[k].label)}</span><span>${esc(bestLine(e, tu))}</span></div>`; }).join('')}</section>`;
+}
+function renderLog() {
+  if (!state.log.length) return storageBannerHTML() + `<div class="empty"><div class="big">📝</div><h2>No cooks logged yet</h2><p>Log what you cooked and how it came out. Your best settings per cut show up on the Plan tab.</p><button type="button" class="btn primary" data-action="new-log">Log a cook</button></div>`;
+  const tu = state.settings.tempUnit, lu = state.settings.lenUnit;
+  const cuts = CUT_KEYS.filter(k => state.log.some(e => e.cut === k));
+  if (ui.cutFilter && !cuts.includes(ui.cutFilter)) ui.cutFilter = '';
+  const list = state.log.filter(e => !ui.cutFilter || e.cut === ui.cutFilter).sort((a, b) => b.date.localeCompare(a.date) || b.createdAt.localeCompare(a.createdAt));
+  return storageBannerHTML() + `<div class="stack">${bestSummaryHTML()}<div class="chips"><button type="button" class="chip" data-action="cut-filter" data-v="" aria-pressed="${!ui.cutFilter}">All</button>${cuts.map(k => `<button type="button" class="chip" data-action="cut-filter" data-v="${k}" aria-pressed="${ui.cutFilter === k}">${esc(CUTS[k].label)}</button>`).join('')}</div>
+    <div class="card"><ul class="list">${list.map(e => `<li class="row" role="button" tabindex="0" data-action="edit-log" data-id="${esc(e.id)}"><div class="row-main"><div class="row-title">${esc(CUTS[e.cut].label)} · ${starsHTML(e.stars)}</div><div class="row-sub">${esc(fmtDate(e.date))}${isNum(e.thick) ? ' · ' + esc(fmtLen(e.thick, lu)) : ''}${isNum(e.bathF) ? ' · ' + esc(fmtTemp(e.bathF, tu)) : ''}${isNum(e.mins) ? ' · ' + esc(fmtDur(e.mins)) : ''}${e.recipeTitle ? ' · ' + esc(e.recipeTitle) : ''}</div>${e.notes ? `<div class="row-sub">Change: ${esc(e.notes)}</div>` : ''}</div></li>`).join('')}</ul></div></div>`;
+}
+
+function renderSettings() {
+  const S = state.settings;
+  const last = state.meta.lastBackup ? `Last backup: ${esc(fmtDateTime(state.meta.lastBackup))}.` : 'No backup made yet.';
+  const canEncrypt = !!(window.crypto && crypto.subtle);
+  return storageBannerHTML() + `<div class="stack">
+    <section class="card pad"><h3>Settings</h3><div class="fields2" style="margin-top:10px">
+      <div class="field"><label for="s_tempUnit">Temperature</label><select id="s_tempUnit" data-set="tempUnit">${opt('F', '°F', S.tempUnit)}${opt('C', '°C', S.tempUnit)}</select></div>
+      <div class="field"><label for="s_lenUnit">Thickness</label><select id="s_lenUnit" data-set="lenUnit">${opt('in', 'Inches', S.lenUnit)}${opt('cm', 'Centimeters', S.lenUnit)}</select></div>
+      <div class="field wide"><label for="s_equipment">Equipment</label><select id="s_equipment" data-set="equipment">${Object.entries(EQUIP).map(([k, v]) => opt(k, v, S.equipment)).join('')}</select></div>
+      <div class="field"><label for="s_servings">Default servings</label><input id="s_servings" data-set="servings" type="number" inputmode="numeric" min="1" max="20" step="1" value="${S.servings}"></div></div>
+      <p class="hint">Changes save as you make them. Calories are approximate.</p></section>
+    ${installCardHTML()}
+    <section class="card pad"><h3>Back up</h3><p class="muted">${last}</p>
+      <p>Saves one file with your recipes, cook log and settings. On iPhone it opens the share sheet; save it to Files or OneDrive.</p>
+      ${canEncrypt ? `<div class="field"><label for="bkPass">Passphrase (optional — encrypts the file)</label><input id="bkPass" type="password" autocomplete="new-password"></div>
+      <div class="field" style="margin-top:8px"><label for="bkPass2">Repeat passphrase</label><input id="bkPass2" type="password" autocomplete="new-password"></div>
+      <p class="hint">If you set one, the file can’t be opened without it.</p>` : ''}
+      <button type="button" class="btn primary block" style="margin-top:12px" data-action="export">Back up now</button></section>
+    <section class="card pad"><h3>Restore</h3><p>Pick a backup file made by this app. You’ll choose whether to replace what’s here or merge it in.</p>
+      <button type="button" class="btn block" data-action="restore">Choose backup file…</button></section>
+    <section class="card pad"><h3>Danger zone</h3><p>Erases everything in this app on this device.</p>
+      <button type="button" class="btn danger block" data-action="wipe">Erase everything on this device</button></section>
+    <p class="hint" style="text-align:center">Your data lives only on this device. Nothing is sent anywhere.</p></div>`;
+}
+
+function renderCook() {
+  const c = ui.cook, s = c.steps[c.i], last = c.i === c.steps.length - 1;
+  const timer = s.timer || detectTimer(s.text);
+  return `<div class="cook"><button type="button" class="btn ghost" data-action="exit-cook">‹ Exit cook mode</button>
+    <div class="fine" style="margin-top:6px">${esc(c.title)}</div>
+    <div class="stt" id="cookStep">Step ${c.i + 1} of ${c.steps.length}${s.title ? ' · ' + esc(s.title) : ''}</div>
+    <div class="big" id="cookText">${esc(s.text)}</div>
+    <div class="btnrow">${timer ? `<button type="button" class="btn primary" data-action="step-timer" data-secs="${timer}">⏱ Start ${esc(fmtDur(timer / 60 < 1 ? 1 : timer / 60))} timer</button>` : ''}<button type="button" class="btn" data-action="custom-timer">+ Timer</button></div>
+    ${c.ings.length ? `<details class="ingd"><summary>Ingredients</summary><ul class="ings">${c.ings.map(i => `<li>${esc(i)}</li>`).join('')}</ul></details>` : ''}</div>
+    <div class="cookbar"><div class="wrap"><button type="button" class="btn" data-action="cook-prev"${c.i === 0 ? ' disabled' : ''}>‹ Back</button><button type="button" class="btn primary" data-action="cook-next">${last ? 'Done' : 'Next ›'}</button></div></div>`;
+}
+
+const SUBS = { plan: 'Plan a cook', recipes: 'Saved recipes', log: 'Cook log', settings: 'Settings and backup' };
+function render() {
+  const y = window.scrollY;
+  document.body.classList.toggle('cooking', !!ui.cook);
+  view.innerHTML = ui.cook ? renderCook() : { plan: renderPlan, recipes: renderRecipes, log: renderLog, settings: renderSettings }[ui.tab]();
+  $$('nav.tabs button').forEach(b => b.setAttribute('aria-current', b.dataset.tab === ui.tab ? 'page' : 'false'));
+  const add = $('#addBtn');
+  const label = ui.cook ? '' : ui.tab === 'recipes' && !ui.recipe && state.recipes.length ? '+ Recipe' : ui.tab === 'log' && state.log.length ? '+ Entry' : '';
+  add.classList.toggle('hide', !label); if (label) add.textContent = label;
+  $('#sub').textContent = ui.cook ? 'Cook mode' : SUBS[ui.tab];
+  window.scrollTo(0, y);
+}
+function go(t) { ui.tab = t; ui.recipe = null; ui.scale = null; ui.cook = null; render(); window.scrollTo(0, 0); }
+
+/* =====================================================================
+   Dialogs
+   ===================================================================== */
+function recipeDialog(id) {
+  const r = id ? state.recipes.find(x => x.id === id) : null;
+  formDialog({
+    title: r ? 'Edit recipe' : 'New recipe', grid: 'fields2',
+    fields: [
+      { name: 'title', label: 'Title', value: r ? r.title : '', required: true },
+      { name: 'servings', label: 'Servings', type: 'number', value: r ? r.servings : state.settings.servings, step: 1, min: 1, max: 100 },
+      { name: 'tags', label: 'Tags (comma separated)', value: r ? r.tags.join(', ') : '' },
+      { name: 'favorite', label: 'Favorite', type: 'checkbox', value: r ? r.favorite : false },
+      { name: 'ingredients', label: 'Ingredients (one per line, amounts first)', type: 'textarea', value: r ? r.ingredients.join('\n') : '' },
+      { name: 'steps', label: 'Steps (one per line)', type: 'textarea', value: r ? r.steps.map(s => s.text).join('\n') : '' },
+      { name: 'notes', label: 'Notes', type: 'textarea', value: r ? r.notes : '' }
+    ],
+    onSubmit: v => {
+      const sv = numIn(v.servings, 1, 100);
+      if (sv == null) return 'Servings must be a number from 1 to 100.';
+      const ing = v.ingredients.split('\n'), stp = v.steps.split('\n');
+      const edited = r && (ing.map(x => x.trim()).filter(Boolean).join('\n') !== r.ingredients.join('\n') || stp.map(x => x.trim()).filter(Boolean).join('\n') !== r.steps.map(s => s.text).join('\n'));
+      const base = r ? { ...r } : { source: 'manual', createdAt: new Date().toISOString() };
+      const keepSteps = r && !edited ? r.steps : stp;
+      const n = normRecipe({ ...base, title: v.title, servings: Math.round(sv), tags: v.tags.split(','), favorite: v.favorite, ingredients: ing, steps: keepSteps, notes: v.notes, source: r && !edited ? r.source : 'manual', plan: r && !edited ? r.plan : null });
+      if (!n) return 'Give the recipe a title.';
+      if (r) state.recipes[state.recipes.indexOf(r)] = n; else state.recipes.push(n);
+      ui.recipe = n.id; ui.scale = null; ui.tab = 'recipes';
+      commit(); toast(r ? 'Recipe updated' : 'Recipe added');
+    }
+  });
+}
+function logDialog(id, pre = {}) {
+  const e = id ? state.log.find(x => x.id === id) : null;
+  const S = state.settings, tu = S.tempUnit, lu = S.lenUnit;
+  const src = e || pre;
+  formDialog({
+    title: e ? 'Edit cook' : 'Log a cook', grid: 'fields2',
+    fields: [
+      { name: 'date', label: 'Date', type: 'date', value: src.date || todayISO() },
+      { name: 'cut', label: 'Cut', type: 'select', options: CUT_KEYS.map(k => [k, CUTS[k].label]), value: src.cut || state.plan.cut },
+      { name: 'thick', label: `Thickness (${lu})`, type: 'number', value: isNum(src.thick) ? thickDisplay(src.thick, lu) : '' },
+      { name: 'bath', label: `Bath temp (°${tu})`, type: 'number', value: isNum(src.bathF) ? nz(tu === 'C' ? r1(fToC(src.bathF)) : r1(src.bathF)) : '' },
+      { name: 'time', label: 'Time used (e.g. 2h, 90 min)', value: isNum(src.mins) ? fmtDurShort(src.mins) : '' },
+      { name: 'stars', label: 'Result', type: 'select', options: [[5, '5 stars'], [4, '4 stars'], [3, '3 stars'], [2, '2 stars'], [1, '1 star']], value: src.stars || 4 },
+      { name: 'recipe', label: 'Recipe', type: 'select', options: [['', 'None'], ...state.recipes.map(r => [r.id, r.title])], value: src.recipeId || '' },
+      { name: 'notes', label: 'What I’d change', type: 'textarea', value: src.notes || '' }
+    ],
+    onSubmit: v => {
+      if (!isISO(v.date)) return 'Pick a date.';
+      let thick = null, bathF = null, mins = null;
+      if (v.thick.trim() !== '') { const x = numIn(v.thick, 0, 1000); thick = x == null ? null : lenToIn(x, lu); if (thick == null || thick < 0.25 || thick > 4) return `Thickness must be between ${lu === 'cm' ? '0.6 and 10 cm' : '0.25 and 4 in'}.`; }
+      if (v.bath.trim() !== '') { const x = numIn(v.bath, 0, 500); bathF = x == null ? null : tempToF(x, tu); if (bathF == null || bathF < 90 || bathF > 212) return 'Bath temperature looks wrong.'; }
+      if (v.time.trim() !== '') { mins = parseDuration(v.time); if (mins == null) return 'Time: try 2h, 90 min or 1:30.'; }
+      const rec = state.recipes.find(r => r.id === v.recipe);
+      const n = normLog({ ...(e || {}), id: e ? e.id : uid(), date: v.date, cut: v.cut, thick, bathF, mins, stars: +v.stars, notes: v.notes, recipeId: rec ? rec.id : '', recipeTitle: rec ? rec.title : e && e.recipeId === v.recipe ? e.recipeTitle : '', createdAt: e ? e.createdAt : new Date().toISOString() });
+      if (!n) return 'Check the fields and try again.';
+      if (e) state.log[state.log.indexOf(e)] = n; else state.log.push(n);
+      commit(); toast(e ? 'Entry updated' : 'Cook logged');
+    },
+    onDelete: e ? async () => {
+      if (!(await confirmBox('Delete this entry?', 'This cook log entry will be removed.'))) return false;
+      state.log = state.log.filter(x => x.id !== e.id); commit(); toast('Entry deleted'); return true;
+    } : null
+  });
+}
+function timerDialog() {
+  formDialog({
+    title: 'New timer', fields: [{ name: 'label', label: 'Name', value: '', placeholder: 'Steaks resting' }, { name: 'time', label: 'Time (e.g. 5 min, 1:30)', value: '', required: true }],
+    submitLabel: 'Start',
+    onSubmit: v => { const m = parseDuration(v.time); if (m == null) return 'Time: try 5 min, 90 min or 1:30.'; startTimer(v.label, m * 60); }
+  });
+}
+
+/* =====================================================================
+   Actions
+   ===================================================================== */
+function startCook(title, steps, ings) {
+  if (!steps.length) return toast('This recipe has no steps to cook.');
+  ui.cook = { title, steps, ings, i: 0 }; render(); window.scrollTo(0, 0);
+}
+function savePlanRecipe() {
+  const card = currentCard(); if (!card.ok) return;
+  const n = normRecipe({
+    title: card.title, servings: card.servings, ingredients: card.ingredients.map(i => i.text), steps: card.steps,
+    notes: [...card.timing, ...card.notes].join('\n'), tags: [CUTS[state.plan.cut].label, styleOf(state.plan.style).name], source: 'plan',
+    plan: { ...state.plan, equipment: card.equipment }, kcal: card.kcal.perServing
+  });
+  state.recipes.push(n); persist();
+  toast('Saved to Recipes', { label: 'Open', fn: () => { ui.tab = 'recipes'; ui.recipe = n.id; ui.scale = null; render(); } });
+  render();
+}
+function setPlan(key, val) {
+  const p = { ...state.plan };
+  if (key === 'thick') {
+    const x = numIn(val, 0, 1000), inch = x == null ? null : lenToIn(x, state.settings.lenUnit);
+    if (inch == null || inch < 0.25 || inch > 4) { toast(`Thickness must be between ${state.settings.lenUnit === 'cm' ? '0.6 and 10 cm' : '0.25 and 4 inches'}.`); return render(); }
+    p.thick = state.settings.lenUnit === 'in' ? Math.round(inch * 4) / 4 : Math.round(inch * 1000) / 1000;
+  } else if (key === 'servings') p.servings = val;
+  else p[key] = val;
+  state.plan = normPlan(p, state.settings.servings);
+  commit();
+}
+function setSetting(key, val) {
+  const s = { ...state.settings, [key]: val };
+  const old = state.settings.servings;
+  state.settings = normSettings(s);
+  if (key === 'servings' && state.settings.servings !== old) state.plan = normPlan({ ...state.plan, servings: state.settings.servings }, state.settings.servings);
+  commit();
+}
+
+async function doExport() {
+  const pass = ($('#bkPass') || {}).value || '', pass2 = ($('#bkPass2') || {}).value || '';
+  if (pass) {
+    if (pass.length < 8) return toast('Use at least 8 characters for the passphrase.');
+    if (pass !== pass2) return toast('The two passphrases don’t match.');
+  }
+  const btn = $('[data-action="export"]'); if (btn) btn.disabled = true;
+  try {
+    const text = await Backup.build({ appId: APP_ID, schema: SCHEMA, data: exportData(), passphrase: pass || null });
+    const r = await deliverFile(`goobs-sousvide-backup-${todayISO()}${pass ? '-encrypted' : ''}.json`, text, 'application/json');
+    if (r !== 'cancelled') {
+      state.meta.lastBackup = new Date().toISOString();
+      await persist({ touch: false });
+      render();
+      toast(r === 'shared' ? 'Backup shared' : 'Backup saved to your downloads');
+    }
+  } catch (e) { toast('Backup failed: ' + e.message); }
+  finally { const b2 = $('[data-action="export"]'); if (b2) b2.disabled = false; }
+}
+async function restoreFromText(text) {
+  let parsed;
+  try { parsed = await Backup.parse(text, { appId: APP_ID, schema: SCHEMA }); }
+  catch (e) { await msgBox('Can’t restore that file', e.message); return false; }
+  if (!parsed) return false;
+  const { data, dropped } = normalizeData(parsed.data);
+  if (!data.recipes.length && !data.log.length && isDefaultData(data)) { await msgBox('Nothing to restore', 'That backup has no data in it.'); return false; }
+  const hasLocal = hasAnyData();
+  const sum = `${plural(data.recipes.length, 'recipe')}, ${plural(data.log.length, 'cook log entry').replace('entrys', 'entries')}`;
+  const when = parsed.exportedAt ? ` Backup made ${fmtDateTime(parsed.exportedAt)}.` : '';
+  const skipped = dropped ? ` ${plural(dropped, 'unreadable item')} will be skipped.` : '';
+  const body = `<p>${esc(sum + '.' + when + skipped)}</p>` + (hasLocal ? '<p class="muted"><b>Replace all</b> swaps everything here for the backup. <b>Merge</b> adds what isn’t here yet and keeps your current settings.</p>' : '');
+  const choice = await askDialog({
+    title: 'Restore this backup?', body,
+    buttons: hasLocal
+      ? [{ label: 'Cancel', value: 'cancel' }, { label: 'Merge', value: 'merge' }, { label: 'Replace all', value: 'replace', kind: 'danger' }]
+      : [{ label: 'Cancel', value: 'cancel' }, { label: 'Restore', value: 'replace', kind: 'primary' }]
+  });
+  if (choice === 'replace') {
+    const ts = parsed.exportedAt && !isNaN(Date.parse(parsed.exportedAt)) ? parsed.exportedAt : new Date().toISOString();
+    for (const k of DATA_KEYS) state[k] = data[k];
+    state.meta.lastBackup = ts; state.meta.lastChange = ts;
+    ui.recipe = null; ui.cook = null;
+    await persist({ touch: false });
+    render(); toast(`Restored ${sum}`); return true;
+  }
+  if (choice === 'merge') {
+    const merged = { settings: state.settings, plan: state.plan }; let added = 0;
+    for (const k of ['recipes', 'log']) { const ids = new Set(state[k].map(x => x.id)); merged[k] = [...state[k]]; for (const x of data[k]) if (!ids.has(x.id)) { merged[k].push(x); added++; } }
+    const n = normalizeData(merged).data;
+    for (const k of DATA_KEYS) state[k] = n[k];
+    await persist(); render(); toast(`Merged in ${plural(added, 'item')}`); return true;
+  }
+  return false;
+}
+async function doRestore() {
+  const f = await pickFile(); if (!f) return;
+  let text;
+  try { text = await readFileText(f); } catch { await msgBox('Couldn’t read that file', 'Try choosing it again.'); return; }
+  await restoreFromText(text);
+}
+async function doWipe() {
+  if (!(await confirmBox('Erase everything?', 'This permanently deletes all recipes, cook log entries and settings on this device.', 'Erase everything'))) return;
+  state = defaultState(); ui.recipe = null; ui.cook = null;
+  await persist({ touch: false });
+  render(); toast('Everything erased');
+}
+
+/* ---- wiring ---- */
+view.addEventListener('click', async e => {
+  const el = e.target.closest('[data-action]');
+  if (!el) return;
+  const id = el.dataset.id;
+  switch (el.dataset.action) {
+    case 'serv': setPlan('servings', clamp(state.plan.servings + (+el.dataset.d), 1, 20)); break;
+    case 'lowcal': setPlan('lowCal', !state.plan.lowCal); break;
+    case 'save-plan': savePlanRecipe(); break;
+    case 'copy-plan': { const c = currentCard(); if (c.ok) copyOrShow(recipeText(c)); break; }
+    case 'cook-plan': { const c = currentCard(); if (c.ok) startCook(c.title, c.steps, c.ingredients.map(i => i.text)); break; }
+    case 'log-plan': { const c = currentCard(); if (c.ok) logDialog(null, { cut: state.plan.cut, thick: state.plan.thick, bathF: c.plan.mode === 'bath' ? c.plan.targetF : null, mins: c.plan.window.min }); break; }
+    case 'new-recipe': recipeDialog(); break;
+    case 'open-recipe': ui.recipe = id; ui.scale = null; render(); window.scrollTo(0, 0); break;
+    case 'close-recipe': ui.recipe = null; ui.scale = null; render(); break;
+    case 'fav-filter': ui.fav = !ui.fav; render(); break;
+    case 'fav': { const r = state.recipes.find(x => x.id === ui.recipe); if (r) { r.favorite = !r.favorite; commit(); } break; }
+    case 'rscale': { const r = state.recipes.find(x => x.id === ui.recipe); if (r) { ui.scale = clamp((ui.scale || r.servings) + (+el.dataset.d), 1, 100); render(); } break; }
+    case 'edit-recipe': recipeDialog(ui.recipe); break;
+    case 'del-recipe': {
+      const r = state.recipes.find(x => x.id === ui.recipe); if (!r) break;
+      if (!(await confirmBox('Delete this recipe?', `“${r.title}” will be removed.`))) break;
+      state.recipes = state.recipes.filter(x => x.id !== r.id); ui.recipe = null; ui.scale = null; commit(); toast('Recipe deleted'); break;
+    }
+    case 'copy-recipe': {
+      const r = state.recipes.find(x => x.id === ui.recipe); if (!r) break;
+      const d = displayRecipe(r, ui.scale || r.servings);
+      copyOrShow(recipeText({ title: d.title, equipmentLabel: d.equipmentLabel || 'Any', servings: d.servings, ingredients: d.ingredients, steps: d.steps, timing: d.timing, notes: d.notes, kcal: { perServing: d.kcal } })); break;
+    }
+    case 'cook-recipe': { const r = state.recipes.find(x => x.id === ui.recipe); if (r) { const d = displayRecipe(r, ui.scale || r.servings); startCook(d.title, d.steps, d.ingredients); } break; }
+    case 'new-log': logDialog(); break;
+    case 'edit-log': logDialog(id); break;
+    case 'cut-filter': ui.cutFilter = el.dataset.v; render(); break;
+    case 'exit-cook': ui.cook = null; render(); break;
+    case 'cook-prev': if (ui.cook && ui.cook.i > 0) { ui.cook.i--; render(); window.scrollTo(0, 0); } break;
+    case 'cook-next': if (ui.cook) { if (ui.cook.i < ui.cook.steps.length - 1) { ui.cook.i++; render(); window.scrollTo(0, 0); } else { ui.cook = null; render(); } } break;
+    case 'step-timer': { const s = ui.cook.steps[ui.cook.i]; startTimer(s.title || `Step ${ui.cook.i + 1}`, +el.dataset.secs); break; }
+    case 'custom-timer': timerDialog(); break;
+    case 'export': doExport(); break;
+    case 'restore': doRestore(); break;
+    case 'wipe': doWipe(); break;
+    case 'install': runInstall(); break;
+  }
+});
+view.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('.row[role=button]')) { e.preventDefault(); e.target.click(); } });
+view.addEventListener('change', e => {
+  const pl = e.target.closest('[data-plan]');
+  if (pl) { const k = pl.dataset.plan; setPlan(k, pl.value); return; }
+  const st = e.target.closest('[data-set]');
+  if (st) { const k = st.dataset.set; setSetting(k, k === 'servings' ? numIn(st.value, 1, 20) : st.value); }
+});
+view.addEventListener('input', e => {
+  if (e.target.id === 'q') { ui.q = e.target.value; const l = $('#rlist'); if (l) l.innerHTML = recipeRows(); }
+});
+$('#addBtn').onclick = () => { if (ui.tab === 'recipes') recipeDialog(); else if (ui.tab === 'log') logDialog(); };
+$$('nav.tabs button').forEach(b => { b.onclick = () => go(b.dataset.tab); });
+document.addEventListener('visibilitychange', () => { if (!document.hidden && !$('dialog[open]')) { render(); renderTimers(); ensureTick(); } });
+
+(async function init() {
+  try { db = await openDB(DB_NAME); } catch (e) { console.error(e); db = null; }
+  if (db) {
+    try {
+      const raw = await idbGet(db, 'state');
+      if (raw) {
+        try { state = loadState(JSON.parse(raw)); }
+        catch (e) { console.error(e); await idbPut(db, 'state-damaged-' + Date.now(), raw); toast('Saved data looked damaged — a copy was kept aside.'); }
+      }
+    } catch (e) { console.error(e); db = null; }
+  }
+  render();
+})();
+</script>
+</body>
+</html>

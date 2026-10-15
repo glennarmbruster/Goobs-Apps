@@ -1,0 +1,29 @@
+{
+  "name": "Watch Log",
+  "short_name": "Watch Log",
+  "description": "Private TV and movie log: cast and crew you enter, who-was-in-what cross-reference, ratings, watchlist. Data stays on your device.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#faf5fb",
+  "theme_color": "#a21caf",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
