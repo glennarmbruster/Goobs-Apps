@@ -473,8 +473,8 @@ if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol))
 const APP_ID = 'goobs-bills', DB_NAME = 'goobs-bills-db', SCHEMA = 1;
 const FREQS = [['monthly', 'Monthly'], ['weekly', 'Weekly'], ['biweekly', 'Every 2 weeks'], ['bimonthly', 'Every 2 months'],
   ['quarterly', 'Every 3 months'], ['semiannual', 'Every 6 months'], ['annual', 'Yearly'], ['once', 'One time only']];
-const FREQ_LABEL = Object.fromEntries(FREQS);
-const PER_YEAR = { weekly: 52, biweekly: 26, monthly: 12, bimonthly: 6, quarterly: 4, semiannual: 2, annual: 1, once: 0 };
+const FREQ_LABEL = { ...Object.fromEntries(FREQS), semimonthly: 'Twice a month (15th & last day)' };
+const PER_YEAR = { semimonthly: 24, weekly: 52, biweekly: 26, monthly: 12, bimonthly: 6, quarterly: 4, semiannual: 2, annual: 1, once: 0 };
 const MONTH_STEP = { monthly: 1, bimonthly: 2, quarterly: 3, semiannual: 6, annual: 12 };
 const CATEGORIES = ['Housing', 'Utilities', 'Insurance', 'Subscriptions', 'Loans & credit', 'Phone & internet', 'Auto', 'Health', 'Taxes', 'Other'];
 
@@ -482,6 +482,11 @@ const CATEGORIES = ['Housing', 'Utilities', 'Insurance', 'Subscriptions', 'Loans
 function stepDate(b, dateISO) {
   if (b.frequency === 'weekly') return addDays(dateISO, 7);
   if (b.frequency === 'biweekly') return addDays(dateISO, 14);
+  if (b.frequency === 'semimonthly') { /* pay dates are the 15th and the last day of each month */
+    const end = monthEndISO(dateISO);
+    if (parseISO(dateISO).getDate() < 15) return dateISO.slice(0, 8) + '15';
+    return dateISO < end ? end : addMonths(dateISO.slice(0, 7) + '-01', 1).slice(0, 7) + '-15';
+  }
   if (MONTH_STEP[b.frequency]) return addMonths(dateISO, MONTH_STEP[b.frequency], b.anchorDay);
   return null; // one-time
 }
@@ -520,7 +525,8 @@ function normBal(x) {
   if (!isNum(amount) || Math.abs(amount) > 1e12) return null;
   return { id: str(x.id) || uid(), date: x.date, amount: Math.round(amount * 100) / 100, createdAt: isNum(x.createdAt) ? x.createdAt : Date.parse(x.date) };
 }
-const INC_FREQS = [['monthly', 'Monthly'], ['biweekly', 'Every 2 weeks'], ['weekly', 'Weekly'], ['once', 'One time only']];
+const INC_FREQS = [['semimonthly', 'Twice a month (15th & last day)'], ['biweekly', 'Every 2 weeks'], ['monthly', 'Monthly'], ['weekly', 'Weekly'], ['once', 'One time only']];
+const isPayDay = d => { const n = parseISO(d).getDate(); return n === 15 || d === monthEndISO(d); };
 function normalizeData(raw) {
   let dropped = 0, bills = [], history = [], income = [], incomeLog = [], balances = [];
   for (const b of Array.isArray(raw && raw.income) ? raw.income : []) { const n = normBill(b); if (n) income.push({ ...n, category: '', autopay: false }); else dropped++; }
@@ -657,8 +663,8 @@ function incomeDialog(id) {
     fields: [
       { name: 'name', label: 'Name', required: true, value: b ? b.name : 'Paycheck', placeholder: 'e.g. Paycheck' },
       { name: 'amount', label: 'Amount (take-home)', type: 'number', required: true, value: b ? b.amount : '', min: 0, placeholder: '0.00' },
-      { name: 'dueDate', label: b ? 'Next pay date' : 'First pay date', type: 'date', required: true, value: b ? b.dueDate : todayISO() },
-      { name: 'frequency', label: 'Repeats', type: 'select', options: INC_FREQS, value: b ? b.frequency : 'monthly' },
+      { name: 'dueDate', label: b ? 'Next pay date' : 'First pay date', type: 'date', required: true, value: b ? b.dueDate : (isPayDay(todayISO()) ? todayISO() : stepDate({ frequency: 'semimonthly' }, todayISO())), hint: '15th or last day of the month for “twice a month”' },
+      { name: 'frequency', label: 'Repeats', type: 'select', options: INC_FREQS, value: b ? b.frequency : 'semimonthly' },
       { name: 'notes', label: 'Notes', type: 'textarea', value: b && b.notes }
     ],
     submitLabel: b ? 'Save' : 'Add paycheck',
@@ -667,6 +673,7 @@ function incomeDialog(id) {
       const amount = parseFloat(v.amount);
       if (!(amount >= 0)) return 'Enter a valid amount.';
       if (!isISO(v.dueDate)) return 'Pick a valid pay date.';
+      if (v.frequency === 'semimonthly' && !isPayDay(v.dueDate)) return 'For twice a month, the pay date must be the 15th or the last day of a month.';
       const rec = { name: v.name.trim(), amount: Math.round(amount * 100) / 100, dueDate: v.dueDate, frequency: v.frequency, category: '', autopay: false, notes: v.notes.trim() };
       if (b) {
         const dateChanged = b.dueDate !== rec.dueDate;
