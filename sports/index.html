@@ -199,6 +199,8 @@ table.tbl{border-collapse:collapse;width:100%;font-size:14px}
 .pv th,.pv td{padding:6px 7px;font-size:12.5px;white-space:normal;text-align:left;vertical-align:top}
 .pv tr.bad td{color:var(--bad)} .pv tr.dup td{color:var(--muted)}
 .fine{font-size:13px;color:var(--muted)}
+.sr{position:absolute;left:-9999px}
+.more{margin-top:8px}
 .chips{display:flex;gap:8px;overflow-x:auto;margin-top:14px;padding-bottom:2px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
 .chips::-webkit-scrollbar{display:none}
 .chip{flex:none;min-height:38px;padding:0 14px;border-radius:19px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-weight:600;display:inline-flex;align-items:center;cursor:pointer;white-space:nowrap}
@@ -1063,7 +1065,7 @@ function espnTeamFor(st, path, info) {
   if (st.teams.length >= MAX.teams) return null;
   const cat = arr(obj(obj(obj(st.espn).catalogs)[path]).teams).find(x => x.id === info.id);
   const taken = st.teams.some(x => normName(x.name) === n);
-  t = normTeam({ id: uid(), name: taken ? `${info.name} (${leagueLabel(path)})` : info.name, short: info.abbr || (cat && cat.short), color: (cat && cat.color) || PALETTE[st.teams.length % PALETTE.length], league: leagueLabel(path), espnId: info.id, espnPath: path, espnSync: false });
+  t = normTeam({ id: uid(), name: taken ? `${info.name} (${leagueLabel(path)})` : info.name, short: info.abbr || (cat && cat.short), color: (cat && cat.color) || PALETTE[st.teams.length % PALETTE.length], league: leagueLabel(path), espnId: info.id, espnPath: path, espnSync: false, auto: true });
   st.teams.push(t);
   return t;
 }
@@ -1107,7 +1109,7 @@ function normTeam(t) {
 }
 function espnTeamFields(t) {
   const ok = /^\d{1,10}$/.test(str(t.espnId)) && LEAGUE_KEYS.includes(t.espnPath);
-  return ok ? { espnId: str(t.espnId), espnPath: t.espnPath, espnSync: t.espnSync === true } : { espnId: '', espnPath: '', espnSync: false };
+  return ok ? { espnId: str(t.espnId), espnPath: t.espnPath, espnSync: t.espnSync === true, auto: t.auto === true && t.espnSync !== true && t.mine !== true } : { espnId: '', espnPath: '', espnSync: false, auto: false };
 }
 function normGame(g) {
   if (!g || typeof g !== 'object') return null;
@@ -1228,7 +1230,7 @@ function setFTeam(v) { ui.fTeam = v; state.prefs.fTeam = v; persist({ touch: fal
 /* 'mine' = any of my teams, 'all' = everyone, otherwise one team id */
 function fTeamId() { return ui.fTeam !== 'all' && ui.fTeam !== 'mine' && tm(ui.fTeam) ? ui.fTeam : null; }
 function fMode() { const id = fTeamId(); if (id) return id; return ui.fTeam === 'all' || !myTeams().length ? 'all' : 'mine'; }
-const ui = { tab: 'schedule', fTeam: 'mine', stTried: {}, fSeason: null, sSeason: null, rA: null, rB: null, showAll: false, espn: { state: 'idle' }, espnTest: null, espnTry: 0, lastLeague: null };
+const ui = { tab: 'schedule', fTeam: 'mine', stTried: {}, stErr: {}, stLoading: null, fSeason: null, sSeason: null, rA: null, rB: null, showAll: false, espn: { state: 'idle' }, espnTest: null, espnTry: 0, lastLeague: null };
 function storageBannerHTML() {
   if (saveFailed) return '<div class="banner bad">Couldn’t save to this device’s storage. Back up now so nothing is lost.</div>';
   if (!db) return '<div class="banner bad">This browser isn’t allowing storage (private mode?). Changes won’t survive closing the app — use Backup.</div>';
@@ -1358,7 +1360,7 @@ function pickTeamDialog(n) {
       let t = state.teams.find(x => x.espnPath === n.path && x.espnId === c.id);
       if (t && t.espnSync) return `${t.name} is already added.`;
       if (!t) t = state.teams.find(x => normName(x.name) === normName(c.name) && (!x.espnId || x.espnId === c.id));
-      if (t) { t.espnId = c.id; t.espnPath = n.path; t.espnSync = true; if (v.mine) t.mine = true; if (!t.league) t.league = leagueLabel(n.path); }
+      if (t) { t.espnId = c.id; t.espnPath = n.path; t.espnSync = true; t.auto = false; if (v.mine) t.mine = true; if (!t.league) t.league = leagueLabel(n.path); }
       else {
         if (state.teams.length >= MAX.teams) return 'Team limit reached.';
         t = normTeam({ id: uid(), name: c.name, short: c.short, color: c.color || PALETTE[state.teams.length % PALETTE.length], league: leagueLabel(n.path), mine: v.mine, espnId: c.id, espnPath: n.path, espnSync: true });
@@ -1730,33 +1732,39 @@ function standingsLeagues() {
 }
 function curLeague(opts) {
   const k = state.prefs.sLeague;
-  if (typeof k === 'string' && opts.some(o => o.key === k)) return k;
+  if (typeof k === 'string' && (opts.some(o => o.key === k) || LEAGUES.some(l => l[1].toLowerCase() === k))) return k;
   const first = myTeams()[0], fk = first ? leagueKey(first) : null;
   return opts.some(o => o.key === fk) ? fk : opts[0] ? opts[0].key : '';
 }
 function leagueChipsHTML(opts, lg) {
-  if (opts.length < 2) return '';
-  return `<div class="chips" id="leagueChips" role="group" aria-label="League">${opts.map(o => `<button type="button" class="chip${o.key === lg ? ' on' : ''}" data-action="league" data-v="${esc(o.key)}" aria-pressed="${o.key === lg}">${esc(o.name)}</button>`).join('')}</div>`;
+  const extra = !opts.some(o => o.key === lg) && lg ? [{ key: lg, name: (LEAGUES.find(l => l[1].toLowerCase() === lg) || [0, lg])[1] }] : [];
+  const all = [...opts, ...extra];
+  const more = `<div class="field more"><label for="sel_moreLeague" class="sr">More leagues</label><select id="sel_moreLeague" data-sel="moreLeague"><option value="">More leagues…</option>${LEAGUES.map(([p, n]) => `<option value="${esc(p)}">${esc(n)}</option>`).join('')}</select></div>`;
+  return `<div class="chips" id="leagueChips" role="group" aria-label="League">${all.map(o => `<button type="button" class="chip${o.key === lg ? ' on' : ''}" data-action="league" data-v="${esc(o.key)}" aria-pressed="${o.key === lg}">${esc(o.name)}</button>`).join('')}</div>${more}`;
 }
 function renderStandings() {
   const lopts = standingsLeagues(), lg = curLeague(lopts), lgTeams = state.teams.filter(t => leagueKey(t) === lg), lgIds = new Set(lgTeams.map(t => t.id));
+  const lgName = (lopts.find(o => o.key === lg) || {}).name || (LEAGUES.find(l => l[1].toLowerCase() === lg) || [0, ''])[1];
   const real = state.games.filter(g => g.type === 'regular' && (lgIds.has(g.homeId) || lgIds.has(g.awayId)));
   const seasons = [...new Set(real.map(g => g.season))].sort((a, b) => seasonYear(b) - seasonYear(a) || b.localeCompare(a));
-  const chips = leagueChipsHTML(lopts, lg);
-  const official = renderEspnStandings(lg);
+  const controls = leagueChipsHTML(lopts, lg);
+  const official = renderEspnStandings(lg), hasOfficial = !!official && !!state.espn.standings[leaguePath(lg)];
   const optCard = `<section class="card pad" style="margin-top:14px"><div class="optrow"><input type="checkbox" id="optOtl" data-opt="otl"${state.settings.otl ? ' checked' : ''}><label for="optOtl">Count overtime losses separately (OTL, hockey style)</label></div><p class="hint">Standings use final regular-season games only. Ties count as half a win.</p></section>`;
-  if (!seasons.length) return storageBannerHTML() + chips + '<div class="empty"><div class="big">📊</div><h2>No standings yet</h2><p>Standings are computed from final regular-season scores. Add games on the Schedule tab.</p><button type="button" class="btn primary" data-action="add-game">Add a game</button></div>' + official + optCard;
+  let h = storageBannerHTML() + controls + official;
+  if (!lgTeams.length) return h + (official ? '' : '<div class="empty"><div class="big">📊</div><h2>No standings yet</h2><p>Add a team, or pick a league above to see its official standings.</p></div>') + (official ? '' : optCard);
+  const body = det => `<details class="card eg comp" id="computed"${hasOfficial ? '' : ' open'}><summary>From your games (partial)<span class="fine"> · ${esc(lgName || 'League')}</span></summary><div class="pad">${det}</div></details>`;
+  if (!seasons.length) return h + body('<div class="empty"><div class="big">📊</div><h2>No standings yet</h2><p>These are computed from final regular-season scores you have saved. Add games on the Schedule tab.</p><button type="button" class="btn primary" data-action="add-game">Add a game</button></div>') + optCard;
   let season = ui.sSeason === null ? autoSeason() : ui.sSeason;
   if (!seasons.includes(season)) season = seasons[0];
   const st = standings(state.games, lgTeams, season, { otl: state.settings.otl });
   const otl = state.settings.otl;
-  let h = storageBannerHTML() + chips + `<div class="filters" style="grid-template-columns:1fr">${selHTML('sSeason', 'Season', seasons.map(s => [s, s]), season)}</div>`;
+  let c = `<div class="filters" style="grid-template-columns:1fr;margin-top:0">${selHTML('sSeason', 'Season', seasons.map(s => [s, s]), season)}</div>`;
   const head = `<tr><th class="tm">Team</th><th>W</th><th>L</th>${otl ? '<th>OTL</th>' : ''}<th>T</th><th>PCT</th><th>GB</th><th>PF</th><th>PA</th><th>DIFF</th><th>STRK</th><th>L10</th><th>HOME</th><th>AWAY</th></tr>`;
-  if (!st.groups.length) h += '<div class="card pad muted" style="margin-top:14px">No games in this season yet.</div>';
+  if (!st.groups.length) c += '<div class="card pad muted" style="margin-top:14px">No games in this season yet.</div>';
   for (const gr of st.groups) {
-    h += `<div class="sec-h"><span>${esc(st.groups.length > 1 || gr.name ? gr.name || 'Other' : 'League')}</span></div><div class="card tscroll"><table class="tbl" data-group="${esc(gr.name)}"><thead>${head}</thead><tbody>${gr.rows.map(r => `<tr class="${r.rank === 1 && r.gp ? 'lead' : ''}" data-team="${esc(r.tid)}"><td class="tm">${dot(r.tid)}${esc(r.name)}</td><td>${r.w}</td><td>${r.l}</td>${otl ? `<td>${r.otl}</td>` : ''}<td>${r.t}</td><td>${fmtPct(r.num, r.gp ? r.den : 0)}</td><td>${fmtGB(r.gb)}</td><td>${r.pf}</td><td>${r.pa}</td><td>${r.diff > 0 ? '+' : ''}${r.diff}</td><td>${esc(fmtStreak(r.streak))}</td><td>${fmtRec(r.last10)}</td><td>${fmtRec(r.home)}</td><td>${fmtRec(r.away)}</td></tr>`).join('')}</tbody></table></div>`;
+    c += `<div class="sec-h"><span>${esc(gr.name || (st.groups.length > 1 ? 'Other' : lgName || 'League'))}</span></div><div class="card tscroll"><table class="tbl" data-group="${esc(gr.name)}"><thead>${head}</thead><tbody>${gr.rows.map(r => `<tr class="${r.rank === 1 && r.gp ? 'lead' : ''}" data-team="${esc(r.tid)}"><td class="tm">${dot(r.tid)}${esc(r.name)}</td><td>${r.w}</td><td>${r.l}</td>${otl ? `<td>${r.otl}</td>` : ''}<td>${r.t}</td><td>${fmtPct(r.num, r.gp ? r.den : 0)}</td><td>${fmtGB(r.gb)}</td><td>${r.pf}</td><td>${r.pa}</td><td>${r.diff > 0 ? '+' : ''}${r.diff}</td><td>${esc(fmtStreak(r.streak))}</td><td>${fmtRec(r.last10)}</td><td>${fmtRec(r.home)}</td><td>${fmtRec(r.away)}</td></tr>`).join('')}</tbody></table></div>`;
   }
-  return h + official + optCard;
+  return h + body(c) + optCard;
 }
 
 /* Official table straight from the cached ESPN reply; only columns that have data are shown */
@@ -1766,28 +1774,36 @@ function espnGroupHTML(gr, path, open) {
   const cols = ESPN_COLS.filter(([k]) => gr.rows.some(r => (k === 't' || k === 'otl') ? Number(r[k]) > 0 : r[k] !== '' && r[k] != null));
   return `<details class="card eg"${open ? ' open' : ''}><summary>${esc(gr.name || 'League')}<span class="fine"> · ${plural(gr.rows.length, 'team')}</span></summary><div class="tscroll"><table class="tbl etbl"><thead><tr><th class="tm">Team</th>${cols.map(([, h]) => `<th>${h}</th>`).join('')}</tr></thead><tbody>${gr.rows.map(r => `<tr class="${espnIsMy(path, r.id) ? 'lead' : ''}" data-eid="${esc(r.id)}"><td class="tm">${esc(r.name)}</td>${cols.map(([k]) => `<td>${esc(r[k] || '–')}</td>`).join('')}</tr>`).join('')}</tbody></table></div></details>`;
 }
-const leaguePath = lg => { const t = state.teams.find(x => x.espnSync && x.espnPath && leagueKey(x) === lg); return t ? t.espnPath : null; };
-async function ensureStandings(p) {
-  if (state.espn.standings[p] || ui.stTried[p] || navigator.onLine === false || espnBusy) return;
-  ui.stTried[p] = true;
+const leaguePath = lg => { const t = state.teams.find(x => x.espnSync && x.espnPath && leagueKey(x) === lg); if (t) return t.espnPath; const l = LEAGUES.find(x => x[1].toLowerCase() === lg); return l ? l[0] : null; };
+async function ensureStandings(p, force) {
+  if (!force && (state.espn.standings[p] || ui.stTried[p])) return;
+  if (espnBusy || ui.stLoading === p) return;
+  if (navigator.onLine === false) { ui.stErr[p] = 'You’re offline.'; if (force) render(); return; }
+  ui.stTried[p] = true; ui.stLoading = p; ui.stErr[p] = '';
   try {
     const groups = parseEspnStandings(await espnGet(espnStandingsUrl(p)));
-    if (groups.length) { state.espn.standings[p] = { at: new Date().toISOString(), groups }; await persist(); }
-  } catch (e) { /* the placeholder stays; Refresh retries */ }
+    if (groups.length) { state.espn.standings[p] = { at: new Date().toISOString(), groups }; await persist({ touch: false }); } else ui.stErr[p] = 'ESPN had no standings for this league.';
+  } catch (e) { ui.stErr[p] = e.message; }
+  ui.stLoading = null;
   if (ui.tab === 'standings') render();
 }
 function renderEspnStandings(lg) {
   const p = leaguePath(lg);
   if (!p) return '';
-  const c = state.espn.standings[p];
-  let h = `<div class="sec-h" style="margin-top:22px"><span>Official standings (ESPN)</span></div>${espnLineHTML()}`;
+  const c = state.espn.standings[p], synced = state.teams.some(t => t.espnSync && t.espnPath === p);
+  let h = `<div class="sec-h" style="margin-top:18px"><span>Official standings (ESPN)</span></div>`;
+  h += synced ? espnLineHTML() : `<div class="espn-line"><span class="fine">${c ? 'Read-only view — nothing is added to your teams.' : ''}</span><button type="button" class="btn small" data-action="league-refresh" data-p="${esc(p)}"${ui.stLoading === p ? ' disabled' : ''}>Reload</button></div>`;
   h += `<h3 class="eh" data-league="${esc(p)}">${esc(leagueLabel(p))}<span class="fine"> · ${c ? 'updated ' + esc(fmtAgo(c.at)) : 'nothing saved yet'}</span></h3>`;
-  if (!c || !c.groups.length) { setTimeout(() => ensureStandings(p), 0); return h + '<div class="card pad muted">No official standings saved yet. They download when you’re online, or with Refresh.</div>'; }
-  const total = c.groups.reduce((n, g) => n + g.rows.length, 0), pref = state.prefs.stMine[p], on = typeof pref === 'boolean' ? pref : total >= 30;
+  if (!c || !c.groups.length) {
+    setTimeout(() => ensureStandings(p), 0);
+    const err = ui.stErr[p];
+    return h + `<div class="card pad muted">${ui.stLoading === p ? 'Loading standings…' : err ? esc('Couldn’t load standings: ' + err) : 'No official standings saved yet. They download when you’re online.'}</div>`;
+  }
+  const total = c.groups.reduce((n, g) => n + g.rows.length, 0), pref = state.prefs.stMine[p], on = typeof pref === 'boolean' ? pref : false;
   h += `<div class="optrow" style="margin-top:8px"><input type="checkbox" id="optMy" data-opt="stMine" data-path="${esc(p)}"${on ? ' checked' : ''}><label for="optMy">Jump to my teams (${plural(total, 'team')} in this table)</label></div>`;
   if (!on) {
     const any = c.groups.some(g => g.rows.some(r => espnIsMy(p, r.id)));
-    return h + c.groups.map((gr, i) => espnGroupHTML(gr, p, any ? gr.rows.some(r => espnIsMy(p, r.id)) : i === 0)).join('');
+    return h + c.groups.map((gr, i) => espnGroupHTML(gr, p, total <= 40 || (any ? gr.rows.some(r => espnIsMy(p, r.id)) : i === 0))).join('');
   }
   const shown = c.groups.map(g => ({ name: g.name, rows: g.rows.filter(r => espnIsMy(p, r.id)) })).filter(g => g.rows.length);
   return h + (shown.length ? shown.map(gr => espnGroupHTML(gr, p, true)).join('') : '<div class="card pad muted">None of your teams are in this table.</div>');
@@ -1868,8 +1884,10 @@ function espnCardHTML() {
 function renderTeams() {
   if (!state.teams.length) return storageBannerHTML() + '<div class="empty"><div class="big">👥</div><h2>No teams yet</h2><p>Add your team and its opponents. Mark your own teams so the app knows whose point of view to use.</p><button type="button" class="btn primary" data-action="add-team">Add a team</button></div>' + espnCardHTML();
   const cnt = id => state.games.filter(g => g.homeId === id || g.awayId === id).length;
-  const sorted = [...state.teams].sort((a, b) => (b.mine - a.mine) || a.name.localeCompare(b.name));
-  return storageBannerHTML() + espnCardHTML() + `<ul class="card list" style="margin-top:14px" id="teamlist">${sorted.map(t => `<li class="row" data-action="edit-team" data-id="${esc(t.id)}"><span class="sw" style="background:${esc(t.color)};margin:0"></span><div class="row-main"><div class="row-title">${esc(t.name)}${t.mine ? '<span class="badge acc">My team</span>' : ''}${t.espnSync ? '<span class="badge">ESPN</span>' : ''}</div><div class="row-sub">${[t.short, t.league, t.division].filter(Boolean).map(esc).join(' · ')}</div></div><div class="when">${plural(cnt(t.id), 'game')}</div></li>`).join('')}</ul>`;
+  const byName = (a, b) => (b.mine - a.mine) || a.name.localeCompare(b.name);
+  const sorted = state.teams.filter(t => !t.auto || isMine(t)).sort(byName), opps = state.teams.filter(t => t.auto && !isMine(t)).sort(byName);
+  const li = t => `<li class="row" data-action="edit-team" data-id="${esc(t.id)}"><span class="sw" style="background:${esc(t.color)};margin:0"></span><div class="row-main"><div class="row-title">${esc(t.name)}${t.mine ? '<span class="badge acc">My team</span>' : ''}${t.espnSync ? '<span class="badge">ESPN</span>' : ''}</div><div class="row-sub">${[t.short, t.league, t.division].filter(Boolean).map(esc).join(' · ')}</div></div><div class="when">${plural(cnt(t.id), 'game')}</div></li>`;
+  return storageBannerHTML() + espnCardHTML() + (sorted.length ? `<ul class="card list" style="margin-top:14px" id="teamlist">${sorted.map(li).join('')}</ul>` : '') + (opps.length ? `<details class="card eg" id="oppsBox" style="margin-top:14px"><summary>Opponents (auto-added) <span class="fine"> · ${opps.length}</span></summary><ul class="list" id="opplist">${opps.map(li).join('')}</ul></details>` : '');
 }
 function teamDialog(id) {
   const t = id ? tm(id) : null;
@@ -1891,7 +1909,7 @@ function teamDialog(id) {
       const name = cleanTeamName(v.name); if (!name) return 'Team name is required.';
       if (state.teams.some(x => x.id !== (t && t.id) && normName(x.name) === normName(name))) return 'You already have a team with that name.';
       if (!t && state.teams.length >= MAX.teams) return 'Team limit reached.';
-      const rec = normTeam({ id: t ? t.id : uid(), name, short: v.short, league: v.league, division: v.division, color: v.color, mine: v.mine, notes: v.notes.trim(), espnId: t && t.espnId, espnPath: t && t.espnPath, espnSync: t && t.espnSync });
+      const rec = normTeam({ id: t ? t.id : uid(), name, short: v.short, league: v.league, division: v.division, color: v.color, mine: v.mine, notes: v.notes.trim(), espnId: t && t.espnId, espnPath: t && t.espnPath, espnSync: t && t.espnSync, auto: t && t.auto && !v.mine });
       if (t) Object.assign(t, rec); else state.teams.push(rec);
       commit(); toast(t ? 'Team updated' : 'Team added');
     },
@@ -2037,6 +2055,7 @@ view.addEventListener('click', e => {
     case 'wipe': doWipe(); break;
     case 'install': runInstall(); break;
     case 'chip': setFTeam(el.dataset.v); ui.showAll = false; render(); break;
+    case 'league-refresh': ensureStandings(el.dataset.p, true); break;
     case 'league': state.prefs.sLeague = el.dataset.v; ui.sSeason = null; commit(); break;
     case 'espn-add': addFromLeagueDialog(); break;
     case 'espn-refresh': refreshEspn(); break;
@@ -2051,6 +2070,7 @@ view.addEventListener('change', e => {
     if (el.dataset.sel === 'fTeam') setFTeam(v);
     else if (el.dataset.sel === 'fSeason') ui.fSeason = v;
     else if (el.dataset.sel === 'sSeason') ui.sSeason = v;
+    else if (el.dataset.sel === 'moreLeague') { if (!v) return; state.prefs.sLeague = leagueLabel(v).toLowerCase(); ui.sSeason = null; persist({ touch: false }); }
     else if (el.dataset.sel === 'rA') { ui.rA = v; if (ui.rB === v) ui.rB = null; }
     else if (el.dataset.sel === 'rB') ui.rB = v;
     ui.showAll = false; render();
