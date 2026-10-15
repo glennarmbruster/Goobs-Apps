@@ -924,7 +924,6 @@ let ESPN_TIMEOUT = 10000;
 const LEAGUES = [['football/nfl', 'NFL'], ['football/college-football', 'College football'], ['basketball/nba', 'NBA'], ['basketball/wnba', 'WNBA'], ['basketball/mens-college-basketball', 'Men’s college basketball'], ['basketball/womens-college-basketball', 'Women’s college basketball'], ['baseball/mlb', 'MLB'], ['hockey/nhl', 'NHL'], ['soccer/usa.1', 'MLS'], ['soccer/eng.1', 'English Premier League'], ['soccer/esp.1', 'La Liga'], ['soccer/ger.1', 'Bundesliga'], ['soccer/ita.1', 'Serie A'], ['soccer/fra.1', 'Ligue 1'], ['soccer/uefa.champions', 'UEFA Champions League']];
 const LEAGUE_KEYS = LEAGUES.map(l => l[0]);
 const leagueLabel = p => (LEAGUES.find(l => l[0] === p) || [0, str(p)])[1];
-const espnTeamsUrl = p => (LEAGUE_KEYS.includes(p) ? `${ESPN_HOST}apis/site/v2/sports/${p}/teams?limit=500` : null);
 const espnScheduleUrl = (p, id, season) => (LEAGUE_KEYS.includes(p) && /^\d{1,10}$/.test(String(id)) ? `${ESPN_HOST}apis/site/v2/sports/${p}/teams/${id}/schedule` + (/^\d{4}$/.test(String(season || '')) ? `?season=${season}` : '') : null);
 const espnStandingsUrl = p => (LEAGUE_KEYS.includes(p) ? `${ESPN_HOST}apis/v2/sports/${p}/standings` : null);
 const arr = v => (Array.isArray(v) ? v : []);
@@ -935,14 +934,20 @@ function espnScore(v) {
   const m = /^(\d{1,3})(\.0+)?$/.exec(String(v).trim());
   return m ? Number(m[1]) : null;
 }
+/* The league team list comes from the standings reply (the /teams endpoint isn't open to web pages): every object with .team.id, de-duplicated */
 function parseEspnTeams(json) {
   const out = [], seen = new Set();
-  for (const s of arr(obj(json).sports)) for (const l of arr(obj(s).leagues)) for (const e of arr(obj(l).teams)) {
-    const t = obj(obj(e).team || e), id = str(t.id), name = cleanTeamName(t.displayName || [t.location, t.name].filter(Boolean).join(' '));
-    if (!/^\d{1,10}$/.test(id) || !name || seen.has(id)) continue;
-    seen.add(id);
-    out.push({ id, name, short: str(t.abbreviation).trim().slice(0, 6) || shortOf(name), color: /^[0-9a-f]{6}$/i.test(str(t.color)) ? '#' + str(t.color).toLowerCase() : '' });
-  }
+  const walk = (node, depth) => {
+    if (!node || typeof node !== 'object' || depth > 12 || out.length >= 600) return;
+    if (Array.isArray(node)) { for (const x of node) walk(x, depth + 1); return; }
+    const t = obj(node.team), id = str(t.id), name = cleanTeamName(t.displayName || [t.location, t.name].filter(Boolean).join(' ') || t.shortDisplayName);
+    if (/^\d{1,10}$/.test(id) && name && !seen.has(id)) {
+      seen.add(id);
+      out.push({ id, name, short: str(t.abbreviation).trim().slice(0, 6) || shortOf(name), color: /^[0-9a-f]{6}$/i.test(str(t.color)) ? '#' + str(t.color).toLowerCase() : '' });
+    }
+    for (const k of Object.keys(node)) if (k !== 'team' && node[k] && typeof node[k] === 'object') walk(node[k], depth + 1);
+  };
+  walk(json, 0);
   return out.sort((a, b) => a.name.localeCompare(b.name));
 }
 function parseEspnEvent(ev) {
@@ -1277,24 +1282,29 @@ async function testEspn() {
   const set = (st, msg) => { ui.espnTest = { st, msg }; const el = $('#espnTest'); if (el) { el.textContent = msg; el.className = 'fine espn-test ' + st; } };
   set('wait', 'Testing…');
   try {
-    const teams = parseEspnTeams(await espnGet(espnTeamsUrl('football/nfl')));
-    set(teams.length ? 'ok' : 'bad', teams.length ? `OK — ESPN answered (${plural(teams.length, 'team')} found).` : 'Failed — ESPN answered, but the reply had no teams in it.');
-  } catch (e) { set('bad', `Failed — ESPN may be blocking requests from the browser. (${e.message})`); }
+    const teams = parseEspnTeams(await espnGet(espnStandingsUrl('football/nfl')));
+    set(teams.length ? 'ok' : 'bad', teams.length ? `OK — ESPN answered (${plural(teams.length, 'NFL team')} found).` : 'Failed — ESPN answered, but the reply had no teams in it. ESPN may have changed their feed.');
+  } catch (e) {
+    const why = { offline: 'You appear to be offline.', network: 'The browser or ESPN blocked the request (ESPN may be blocking requests from the browser).', timeout: 'ESPN didn’t answer in time.', http: 'ESPN answered with an error.', parse: 'ESPN may have changed their feed.' }[e.kind] || 'Something went wrong.';
+    set('bad', `Failed — ${why} (${e.message})`);
+  }
 }
 
 /* ---- add a team from a league catalog ---- */
 function addFromLeagueDialog() {
   let next = null;
   formDialog({
-    title: 'Add team from a league', intro: 'Pick a league. The team list is downloaded from ESPN, so you need a connection for this step.', submitLabel: 'Next',
+    title: 'Add team from a league', intro: 'Pick a league. The team list is downloaded from ESPN, so you need a connection for this step. College football lists top-division (FBS) teams only.', submitLabel: 'Next',
     fields: [{ name: 'league', label: 'League', type: 'select', options: LEAGUES, value: ui.lastLeague || LEAGUES[0][0] }],
     onSubmit: async v => {
       const path = v.league, err = $('#dlg .dlg-err'); if (err) err.textContent = 'Loading the team list…';
       ui.lastLeague = path;
       try {
-        const teams = parseEspnTeams(await espnGet(espnTeamsUrl(path)));
+        const raw = await espnGet(espnStandingsUrl(path)), teams = parseEspnTeams(raw), at = new Date().toISOString();
         if (!teams.length) throw espnErr('parse', 'ESPN sent an empty team list.');
-        state.espn.catalogs[path] = { at: new Date().toISOString(), teams }; persist();
+        state.espn.catalogs[path] = { at, teams };
+        const groups = parseEspnStandings(raw); if (groups.length) state.espn.standings[path] = { at, groups };
+        persist();
         next = { path, teams, cached: false };
       } catch (e) {
         const c = state.espn.catalogs[path];
