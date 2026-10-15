@@ -706,6 +706,7 @@ const CUTS = {
   chickenbreast: { label: 'Chicken breast', group: 'chicken', tender: true, maxMin: 240, oz: 7, kcalOz: 33, fat: false, done: 'chickenBreast', noun: 'chicken breast', nounP: 'chicken breasts' },
   chickenthigh: { label: 'Chicken thigh', group: 'chicken', tender: false, minMin: 240, maxMin: 720, oz: 6, kcalOz: 50, fat: false, done: 'chickenThigh', noun: 'chicken thigh', nounP: 'chicken thighs' },
   salmon: { label: 'Salmon', group: 'fish', tender: true, maxBeyond: 45, oz: 6, kcalOz: 58, fat: false, done: 'salmon', noun: 'salmon fillet', nounP: 'salmon fillets' },
+  picanha: { label: 'Picanha (top sirloin cap)', group: 'beef', tender: false, minMin: 180, maxMin: 720, oz: 8, kcalOz: 80, fat: true, done: 'beef', noun: 'picanha steak', nounP: 'picanha steaks', lean: 'sirloin' },
   lamb: { label: 'Lamb chop', group: 'lamb', tender: true, maxMin: 180, oz: 8, kcalOz: 75, fat: true, done: 'lamb', noun: 'lamb chop', nounP: 'lamb chops' }
 };
 const CUT_KEYS = Object.keys(CUTS);
@@ -726,12 +727,12 @@ function donenessFor(cut, key) {
 }
 
 /* ---- equipment + finishes ---- */
-const EQUIP = { apo: 'Anova Precision Oven (steam / bagless)', circ: 'Immersion circulator + bag', oven: 'Oven only (no sous vide)' };
+const EQUIP = { apo: 'Anova Precision Oven (steam / bagless)', circ: 'Immersion circulator + bag' };
 const FINISH = {
-  sear: { label: 'Cast-iron sear', pan: 'Preheat a cast-iron skillet 5 minutes over high heat until the oil just shimmers (about 450–500°F surface)', fat: '1 tsp high-smoke-point oil per steak', base: 45, perIn: 30, min: 30, max: 90 },
-  torch: { label: 'Torch', pan: 'Set the meat on a wire rack and hold a searing torch 1–2 inches off the surface', fat: 'brush with a little oil first', base: 40, perIn: 20, min: 30, max: 75 },
-  broiler: { label: 'Broiler', pan: 'Preheat the broiler on high for 10 minutes, with the rack 3–4 inches from the element', fat: 'brush with a little oil first', base: 90, perIn: 45, min: 60, max: 150 },
-  grill: { label: 'Grill', pan: 'Preheat the grill to high (500°F or more) with clean, oiled grates', fat: 'brush with a little oil first', base: 60, perIn: 30, min: 45, max: 120 },
+  sear: { label: 'Cast-iron sear', pan: 'Preheat a cast-iron skillet 5 minutes over high heat until the oil just shimmers (about 450–500°F surface)', fat: '1 tsp high-smoke-point oil per steak', base: 45, perIn: 30, min: 30, max: 90, oilInPan: true },
+  broiler: { label: 'Broiler', pan: 'Preheat the broiler on high for 10 minutes, with the rack 3–4 inches from the element', fat: 'brush with a little oil first', base: 90, perIn: 45, min: 60, max: 150, verb: 'Broil' },
+  bighorn: { label: 'Big Horn outdoor sear oven', pan: 'Light the Big Horn and preheat about 15 minutes until it is at full heat (about 1500°F)', fat: 'brush with a thin coat of high-smoke-point oil first', base: 30, perIn: 15, min: 20, max: 60, verb: 'Sear in the Big Horn' },
+  blackstone: { label: 'Blackstone griddle', pan: 'Preheat the Blackstone on high for 10 minutes (about 500–600°F surface), then wipe the griddle with oil', fat: '1 tsp high-smoke-point oil per steak', base: 60, perIn: 30, min: 45, max: 120, oilInPan: true },
   none: { label: 'No finish', pan: '', fat: '', base: 0, perIn: 0, min: 0, max: 0 }
 };
 function searPlan(finishKey, thickIn, equipment) {
@@ -983,15 +984,15 @@ function buildRecipe(inp, S) {
   if (!noFinish) {
     const F = FINISH[inp.finish], sear = tok('sear');
     let t;
-    if (inp.finish === 'sear') t = `${F.pan}. Add ${sear}. Sear the ${nounP} ${sp.secPerSide} seconds per side${inp.thick >= 1.5 ? ', then sear the edges 15 seconds each' : ''}.`;
-    else t = `Brush the ${nounP} with ${sear}. ${F.pan}. ${inp.finish === 'torch' ? 'Torch' : inp.finish === 'broiler' ? 'Broil' : 'Grill'} ${sp.secPerSide} seconds per side.`;
+    if (F.oilInPan) t = `${F.pan}. Add ${sear}${inp.finish === 'blackstone' ? ' to the griddle' : ''}. Sear the ${nounP} ${sp.secPerSide} seconds per side${inp.thick >= 1.5 ? ', then sear the edges 15 seconds each' : ''}.`;
+    else t = `Brush the ${nounP} with ${sear}. ${F.pan}. ${F.verb} ${sp.secPerSide} seconds per side${inp.finish === 'bighorn' && inp.thick >= 1.5 ? ', then stand the steaks on their edges for 10 seconds each' : ''}.`;
     add(F.label, t);
     const b = fill(v.baste);
     if (b && tok('baste')) add('Baste', b);
   }
   if (v.top) add('Top', fill(v.top));
   if (v.sauce) add(v.sauce.title || 'Sauce', fill(v.sauce.text));
-  add('Rest and serve', `${sp.restMin ? `Rest the ${nounP} for ${sp.restMin} minutes. ` : ''}${cut.thin || inp.cut === 'tritip' || inp.cut === 'flatiron' ? 'Slice thinly against the grain and serve.' : 'Serve.'}`, sp.restMin ? sp.restMin * 60 : null);
+  add('Rest and serve', `${sp.restMin ? `Rest the ${nounP} for ${sp.restMin} minutes. ` : ''}${cut.thin || inp.cut === 'picanha' || inp.cut === 'tritip' || inp.cut === 'flatiron' ? 'Slice thinly against the grain and serve.' : 'Serve.'}`, sp.restMin ? sp.restMin * 60 : null);
   const kc = kcalOf(inp.style, inp.cut, lowCal);
   const timing = [
     equipment === 'oven' ? `Roast: about ${fmtDur(w.min)}` : `Heat-up to the center: about ${fmtDur(Math.ceil(plan.heatMin))}`,
