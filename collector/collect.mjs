@@ -7,6 +7,19 @@
 // Env: TICKETMASTER_API_KEY, SEATGEEK_CLIENT_ID (either may be missing: that source
 // is skipped with error "key not configured" and its previous events are carried over).
 //
+// Contract additions (v1, additive; the app may ignore them):
+//  * event.series = { id, label, total }: total = occurrences of the series inside the collection window.
+//    Only the next `maxPerSeries` (default 8, per-feed override in sources.json) occurrences of each series from a
+//    free feed are kept; label is the pattern ("Daily", "Weekly on Saturdays") or "Repeats".
+//    Free-feed events with no source series are grouped by normalized title + venue when the title repeats >= 3 times.
+//  * event.watch = ["keyword", ...] only on events matched by the sources.json `watchlist` keyword queries.
+//  * event.removedAt (ISO UTC) only on removed events.
+//  * status.sources[]: optional `capped` (occurrences dropped by series/source caps) and `warning` (a source supplied more
+//    than maxEventsPerSource (default 600) events after series capping; the soonest 600 were kept; applies to free feeds,
+//    and to Ticketmaster/SeatGeek only if `maxEvents` is set for them).
+//  * status.sources[] gets a pseudo-source { id: "watchlist" } when the watchlist is non-empty: count of watch-matched
+//    events, error = failed watch queries. A failing watch query never fails the main source.
+//
 // Write policy (to keep git history quiet):
 //  * events.json is rewritten only when its content changes, ignoring `generatedAt`,
 //    `lastSeen` and `sources[].lastChecked` (those are refreshed whenever a write happens).
@@ -511,6 +524,64 @@ export async function collectSeatGeek({ clientId, cfg, window, fetchImpl, sleep,
 }
 //#endregion
 
+// ---------------------------------------------------------------- watch list
+//#region watch
+/**
+ * Keyword watch list: each keyword is queried against Ticketmaster (`keyword=`) and SeatGeek (`q=`) over the same
+ * center/radius/window as the main queries, with its own request budget (cfg.watchlistMaxRequests per source, default 40).
+ * Matches are tagged `watch: [keyword, ...]`. One failing keyword does not stop the others; errors are returned, never thrown.
+ * kind: 'ticketmaster' | 'seatgeek'.  Returns { events, errors }.
+ */
+export async function collectWatch({ kind, credential, keywords, cfg, window, fetchImpl, sleep, nowIso, log = () => {} }) {
+  const maxRequests = cfg.watchlistMaxRequests ?? 40;
+  const throttle = makeThrottle(cfg[kind]?.requestDelayMs ?? 250, sleep);
+  let requests = 0;
+  const byId = new Map();
+  const errors = [];
+  const spend = () => { if (++requests > maxRequests) throw new Error(`watch request budget exceeded (${maxRequests})`); };
+  const addEvent = (m, kw) => {
+    if (!m) return;
+    const sid = m.sources[0].sourceEventId;
+    const ex = byId.get(sid);
+    if (ex) ex.watch = [...new Set([...ex.watch, kw])].sort();
+    else { m.watch = [kw]; byId.set(sid, m); }
+  };
+  for (const kw of keywords) {
+    try {
+      if (kind === 'ticketmaster') {
+        for (let pg = 0; pg < 5; pg++) {
+          spend(); await throttle();
+          const q = new URLSearchParams({
+            apikey: credential, keyword: kw, latlong: `${cfg.center.lat},${cfg.center.lon}`, radius: String(cfg.radiusMiles), unit: 'miles',
+            startDateTime: tmStamp(window.startMs), endDateTime: tmStamp(window.endMs), sort: 'date,asc', size: '200', page: String(pg), locale: '*',
+          });
+          const json = await httpGet(`${TM_URL}?${q}`, { fetchImpl, sleep });
+          for (const ev of json?._embedded?.events || []) addEvent(mapTicketmasterEvent(ev, nowIso), kw);
+          if (pg + 1 >= (json?.page?.totalPages ?? 0)) break;
+        }
+      } else {
+        for (let pg = 1; ; pg++) {
+          spend(); await throttle();
+          const q = new URLSearchParams({
+            client_id: credential, q: kw, lat: String(cfg.center.lat), lon: String(cfg.center.lon), range: `${cfg.radiusMiles}mi`,
+            per_page: '100', page: String(pg), sort: 'datetime_local.asc',
+            'datetime_local.gte': centralDateOf(window.startMs), 'datetime_local.lt': addDaysYmd(centralDateOf(window.endMs), 1),
+          });
+          const json = await httpGet(`${SG_URL}?${q}`, { fetchImpl, sleep });
+          for (const ev of json?.events || []) addEvent(mapSeatGeekEvent(ev, nowIso), kw);
+          const per = json?.meta?.per_page || 100;
+          if (!(json?.events || []).length || pg * per >= (json?.meta?.total ?? 0)) break;
+        }
+      }
+    } catch (e) {
+      errors.push(`${kind} "${kw}": ${sanitizeError(e)}`);
+    }
+  }
+  log(`watchlist ${kind}: ${byId.size} events, ${errors.length} errors`);
+  return { events: [...byId.values()], errors };
+}
+//#endregion
+
 // ---------------------------------------------------------------- ICS parser
 //#region ics
 const WIN_TZ = {
@@ -960,7 +1031,27 @@ function nthWeekdayInMonth(dateStr) {
   const [y, mo, d] = dateStr.split('-').map(Number);
   return Math.floor((d - 1) / 7) + 1;
 }
-/** Group same-title/venue occurrences from one source and label a series only when the dates are strictly regular. */
+/** Label a list of dates when they follow a strictly regular pattern, else null. */
+function patternLabel(dates) {
+  if (dates.length < 3) return null;
+  const gaps = [];
+  for (let i = 1; i < dates.length; i++) gaps.push(dayNum(...ymdParts(dates[i])) - dayNum(...ymdParts(dates[i - 1])));
+  const dows = dates.map((d) => dowOfDayNum(dayNum(...ymdParts(d))));
+  const sameDow = dows.every((x) => x === dows[0]);
+  if (gaps.every((g) => g === 1)) return 'Daily';
+  if (sameDow && gaps.every((g) => g === 7)) return `Weekly on ${DOW_NAME[dows[0]]}s`;
+  if (sameDow && gaps.every((g) => g === 14)) return `Every 2 weeks on ${DOW_NAME[dows[0]]}s`;
+  if (sameDow && gaps.every((g) => g >= 28 && g <= 35) && dates.every((d) => nthWeekdayInMonth(d) === nthWeekdayInMonth(dates[0]))) {
+    return `Monthly on the ${ordinal(nthWeekdayInMonth(dates[0]))} ${DOW_NAME[dows[0]]}`;
+  }
+  if (gaps.every((g) => g >= 28 && g <= 31) && dates.every((d) => d.slice(8) === dates[0].slice(8))) return `Monthly on the ${ordinal(+dates[0].slice(8))}`;
+  return null;
+}
+/**
+ * Series for listings that carry none (Tribe feeds, ICS without RRULE): the same normalized title + venue from one
+ * source repeating >= 3 times. Label is the pattern when the dates are strictly regular, otherwise "Repeats".
+ * Sets series = { id, label, total } where total = occurrences in the window.
+ */
 export function detectSeries(listings) {
   const groups = new Map();
   for (const e of listings) {
@@ -970,29 +1061,41 @@ export function detectSeries(listings) {
     groups.get(key).push(e);
   }
   for (const [key, evs] of groups) {
+    if (evs.length < 3) continue;
     const dates = [...new Set(evs.map((e) => e.start.slice(0, 10)))].sort();
-    if (dates.length < 3) continue;
-    const gaps = [];
-    for (let i = 1; i < dates.length; i++) {
-      const a = ymdParts(dates[i - 1]); const b = ymdParts(dates[i]);
-      gaps.push(dayNum(...b) - dayNum(...a));
-    }
-    const dows = dates.map((d) => dowOfDayNum(dayNum(...ymdParts(d))));
-    const sameDow = dows.every((x) => x === dows[0]);
-    let label = null;
-    if (gaps.every((g) => g === 1)) label = 'Daily';
-    else if (sameDow && gaps.every((g) => g === 7)) label = `Weekly on ${DOW_NAME[dows[0]]}s`;
-    else if (sameDow && gaps.every((g) => g === 14)) label = `Every 2 weeks on ${DOW_NAME[dows[0]]}s`;
-    else if (sameDow && gaps.every((g) => g >= 28 && g <= 35) && dates.every((d) => nthWeekdayInMonth(d) === nthWeekdayInMonth(dates[0]))) {
-      label = `Monthly on the ${ordinal(nthWeekdayInMonth(dates[0]))} ${DOW_NAME[dows[0]]}`;
-    } else if (gaps.every((g) => g >= 28 && g <= 31) && dates.every((d) => d.slice(8) === dates[0].slice(8))) {
-      label = `Monthly on the ${ordinal(+dates[0].slice(8))}`;
-    }
-    if (!label) continue;
-    const series = { id: hash16(`series|${key}`), label };
-    for (const e of evs) e.series = series;
+    const label = patternLabel(dates) || 'Repeats';
+    const id = hash16(`series|${key}`);
+    for (const e of evs) e.series = { id, label, total: evs.length };
   }
   return listings;
+}
+/**
+ * Keep only the next `max` occurrences of every series (series.id). Sets series.total on every listing of a series
+ * (occurrences in the window, before capping). Returns { kept, dropped } (kept keeps the input order).
+ */
+export function capSeries(listings, max) {
+  const groups = new Map();
+  for (const e of listings) {
+    if (!e.series) continue;
+    if (!groups.has(e.series.id)) groups.set(e.series.id, []);
+    groups.get(e.series.id).push(e);
+  }
+  const drop = new Set();
+  for (const evs of groups.values()) {
+    for (const e of evs) e.series = { id: e.series.id, label: e.series.label || 'Repeats', total: evs.length };
+    if (Number.isFinite(max) && evs.length > max) {
+      const sorted = [...evs].sort((a, b) => Date.parse(a.start) - Date.parse(b.start) || String(a.sources[0].sourceEventId).localeCompare(String(b.sources[0].sourceEventId)));
+      for (const e of sorted.slice(max)) drop.add(e);
+    }
+  }
+  return { kept: listings.filter((e) => !drop.has(e)), dropped: listings.filter((e) => drop.has(e)) };
+}
+/** Safeguard: keep only the soonest `max` listings of a source. Returns { kept, dropped }. */
+export function capSource(listings, max) {
+  if (!Number.isFinite(max) || listings.length <= max) return { kept: listings, dropped: [] };
+  const sorted = [...listings].sort((a, b) => Date.parse(a.start) - Date.parse(b.start) || String(a.sources[0].sourceEventId).localeCompare(String(b.sources[0].sourceEventId)));
+  const keep = new Set(sorted.slice(0, max));
+  return { kept: listings.filter((e) => keep.has(e)), dropped: listings.filter((e) => !keep.has(e)) };
 }
 //#endregion
 
@@ -1044,6 +1147,7 @@ function absorb(base, other) {
   if (!base.series && other.series) base.series = other.series;
   if (base.category === 'other' && other.category !== 'other') base.category = other.category;
   if (SEVERITY[other.status] > SEVERITY[base.status]) base.status = other.status;
+  if (other.watch?.length) base.watch = [...new Set([...(base.watch || []), ...other.watch])].sort();
 }
 const TIME_TOL_MS = 3 * HOUR_MS;
 /**
@@ -1105,8 +1209,10 @@ const srcKey = (s) => `${s.id}|${s.sourceEventId}`;
  * current: merged events from sources that succeeded this run (firstSeen/lastSeen already = now).
  * Previous events: matched by id or shared (source id, sourceEventId); carried over if any of their sources FAILED;
  * marked removed only if all their (still configured) sources succeeded and none lists them any more.
+ * droppedKeys: (source id|sourceEventId) of listings dropped by a series/source cap this run: dropped quietly, not "removed".
+ * watchFailedIds: sources whose watch-list queries failed: previous watch-tagged events from them are carried over.
  */
-export function reconcile({ prevEvents, current, okIds, failedIds, nowIso }) {
+export function reconcile({ prevEvents, current, okIds, failedIds, nowIso, droppedKeys = new Set(), watchFailedIds = new Set() }) {
   const nowMs = Date.parse(nowIso);
   const byId = new Map(); const byKey = new Map();
   for (const n of current) { byId.set(n.id, n); for (const s of n.sources) byKey.set(srcKey(s), n); }
@@ -1121,11 +1227,13 @@ export function reconcile({ prevEvents, current, okIds, failedIds, nowIso }) {
       for (const s of p.sources) {
         if (failedIds.has(s.id) && !n.sources.some((x) => srcKey(x) === srcKey(s))) n.sources.push(s);
       }
+      if (p.watch?.length && p.sources.some((s) => watchFailedIds.has(s.id))) n.watch = [...new Set([...(n.watch || []), ...p.watch])].sort();
       continue;
     }
     const failed = p.sources.filter((s) => failedIds.has(s.id));
     const ok = p.sources.filter((s) => okIds.has(s.id));
-    if (failed.length) { out.push(p); continue; }
+    if (failed.length || (p.watch?.length && p.sources.some((x) => watchFailedIds.has(x.id)))) { out.push(p); continue; }
+    if (p.sources.some((x) => droppedKeys.has(srcKey(x)))) continue; // dropped by a cap this run: not a removal
     if (ok.length) {
       const removedAt = p.removedAt || nowIso;
       if (p.removed && nowMs - Date.parse(removedAt) > REMOVED_KEEP_MS) continue;
@@ -1173,6 +1281,10 @@ export function validateConfig(cfg) {
   if (!(Number.isFinite(cfg.center?.lat) && Number.isFinite(cfg.center?.lon))) errs.push('center.lat/lon must be numbers');
   if (!(cfg.radiusMiles > 0 && cfg.radiusMiles <= 200)) errs.push('radiusMiles must be 1..200');
   if (!(Number.isInteger(cfg.lookaheadDays) && cfg.lookaheadDays >= 1 && cfg.lookaheadDays <= 730)) errs.push('lookaheadDays must be an integer 1..730');
+  for (const k of ['maxPerSeries', 'maxEventsPerSource', 'watchlistMaxRequests']) {
+    if (cfg[k] != null && !(Number.isInteger(cfg[k]) && cfg[k] >= 1)) errs.push(`${k} must be an integer >= 1`);
+  }
+  if (cfg.watchlist != null && !(Array.isArray(cfg.watchlist) && cfg.watchlist.every((k) => typeof k === 'string' && k.trim()))) errs.push('watchlist must be an array of non-empty strings');
   if (!Array.isArray(cfg.feeds)) errs.push('feeds must be an array');
   else {
     const ids = new Set();
@@ -1183,6 +1295,7 @@ export function validateConfig(cfg) {
       if (!['ics', 'tribe'].includes(f.type)) errs.push(`feed ${f.id}: type must be ics or tribe`);
       if (!/^https:\/\//.test(f.url || '')) errs.push(`feed ${f.id}: url must be https`);
       if (!f.name) errs.push(`feed ${f.id}: name required`);
+      if (f.maxPerSeries != null && !(Number.isInteger(f.maxPerSeries) && f.maxPerSeries >= 1)) errs.push(`feed ${f.id}: maxPerSeries must be an integer >= 1`);
     }
   }
   if (errs.length) throw new Error(`sources.json invalid: ${errs.join('; ')}`);
@@ -1226,7 +1339,7 @@ export async function main(opts = {}) {
   const defs = [];
   if (cfg.ticketmaster?.enabled !== false) {
     defs.push({
-      id: 'ticketmaster', name: 'Ticketmaster', trust: 1,
+      id: 'ticketmaster', name: 'Ticketmaster', trust: 1, watchKind: 'ticketmaster', credential: env.TICKETMASTER_API_KEY, maxEvents: cfg.ticketmaster?.maxEvents ?? null,
       run: async () => {
         if (!env.TICKETMASTER_API_KEY) throw Object.assign(new Error('key not configured'), { keyMissing: true });
         return collectTicketmaster({ apiKey: env.TICKETMASTER_API_KEY, cfg, window, fetchImpl, sleep, nowIso, log });
@@ -1235,7 +1348,7 @@ export async function main(opts = {}) {
   }
   if (cfg.seatgeek?.enabled !== false) {
     defs.push({
-      id: 'seatgeek', name: 'SeatGeek', trust: 2,
+      id: 'seatgeek', name: 'SeatGeek', trust: 2, watchKind: 'seatgeek', credential: env.SEATGEEK_CLIENT_ID, maxEvents: cfg.seatgeek?.maxEvents ?? null,
       run: async () => {
         if (!env.SEATGEEK_CLIENT_ID) throw Object.assign(new Error('key not configured'), { keyMissing: true });
         return collectSeatGeek({ clientId: env.SEATGEEK_CLIENT_ID, cfg, window, fetchImpl, sleep, nowIso, log });
@@ -1245,17 +1358,31 @@ export async function main(opts = {}) {
   for (const f of cfg.feeds) {
     if (f.enabled === false) continue;
     defs.push({
-      id: f.id, name: f.name, trust: 0,
+      id: f.id, name: f.name, trust: 0, maxPerSeries: f.maxPerSeries ?? cfg.maxPerSeries ?? 8, maxEvents: f.maxEvents ?? cfg.maxEventsPerSource ?? 600,
       run: () => (f.type === 'ics' ? collectIcs : collectTribe)({ feed: f, window, fetchImpl, sleep, nowIso, log }),
     });
   }
 
   // ----- run (a failing source never breaks the run)
   const results = [];
+  const watchlist = (cfg.watchlist || []).map((k) => String(k).trim()).filter(Boolean);
+  const watchErrors = []; const watchFailedIds = new Set(); const droppedKeys = new Set();
   for (const d of defs) {
     const prevCount = prevEvents.filter((e) => (e.sources || []).some((s) => s.id === d.id)).length;
     try {
       let events = await d.run();
+      // watch-list matches: tag events the main query already returned, add the rest
+      if (d.watchKind && watchlist.length) {
+        const w = await collectWatch({ kind: d.watchKind, credential: d.credential, keywords: watchlist, cfg, window, fetchImpl, sleep, nowIso, log });
+        const bySid = new Map(events.map((e) => [e.sources[0].sourceEventId, e]));
+        for (const m of w.events) {
+          const ex = bySid.get(m.sources[0].sourceEventId);
+          if (ex) ex.watch = [...new Set([...(ex.watch || []), ...m.watch])].sort();
+          else { events.push(m); bySid.set(m.sources[0].sourceEventId, m); }
+        }
+        watchErrors.push(...w.errors);
+        if (w.errors.length) watchFailedIds.add(d.id);
+      }
       // keep only the window; drop duplicates of the same source event id
       const seen = new Set();
       events = events.filter((e) => {
@@ -1264,8 +1391,23 @@ export async function main(opts = {}) {
         return effectiveEndMs(e) >= nowMs && Date.parse(e.start) <= window.endMs + DAY_MS;
       });
       if (events.length === 0 && prevCount >= 5) throw new Error('empty result (suspicious: previous run had events)');
-      results.push({ ...d, ok: true, error: null, events });
-      log(`${d.id}: ok, ${events.length} events`);
+      // series: label repeats, keep the next N occurrences of each series, then the per-source safeguard
+      const dropped = [];
+      if (d.trust === 0) {
+        detectSeries(events);
+        const c = capSeries(events, d.maxPerSeries);
+        events = c.kept; dropped.push(...c.dropped);
+      }
+      let warning = null;
+      if (d.maxEvents != null && events.length > d.maxEvents) {
+        const total = events.length;
+        const c = capSource(events, d.maxEvents);
+        events = c.kept; dropped.push(...c.dropped);
+        warning = `source supplied ${total} events after series capping; kept the soonest ${d.maxEvents}`;
+      }
+      for (const e of dropped) droppedKeys.add(`${e.sources[0].id}|${e.sources[0].sourceEventId}`);
+      results.push({ ...d, ok: true, error: null, events, capped: dropped.length, warning });
+      log(`${d.id}: ok, ${events.length} events${dropped.length ? ` (${dropped.length} capped)` : ''}`);
     } catch (e) {
       const msg = e.keyMissing ? 'key not configured' : sanitizeError(e);
       results.push({ ...d, ok: false, error: msg, events: [] });
@@ -1287,19 +1429,32 @@ export async function main(opts = {}) {
     });
     e.firstSeen = nowIso; e.lastSeen = nowIso; e.removed = false;
   }
-  const finalEvents = sortEvents(reconcile({ prevEvents, current: merged, okIds, failedIds, nowIso }));
+  const finalEvents = sortEvents(reconcile({ prevEvents, current: merged, okIds, failedIds, nowIso, droppedKeys, watchFailedIds }));
 
   // ----- status
   const sources = results.map((r) => {
     const p = prevSrc.get(r.id) || {};
     const count = r.ok ? r.events.length : finalEvents.filter((e) => e.sources.some((s) => s.id === r.id)).length;
     const lastSuccess = r.ok ? nowIso : p.lastSuccess || null;
-    return {
+    const o = {
       id: r.id, name: r.name, ok: r.ok, lastAttempt: nowIso, lastSuccess, count,
       error: r.ok ? null : r.error, stale: !r.ok && lastSuccess !== null,
     };
+    if (r.capped > 0) o.capped = r.capped;
+    if (r.warning) o.warning = r.warning;
+    return o;
   });
   const everSucceeded = sources.some((s) => s.lastSuccess);
+  if (watchlist.length) {
+    const p = prevSrc.get('watchlist') || {};
+    const wok = watchErrors.length === 0;
+    const lastSuccess = wok ? nowIso : p.lastSuccess || null;
+    sources.push({
+      id: 'watchlist', name: 'Watch list', ok: wok, lastAttempt: nowIso, lastSuccess,
+      count: finalEvents.filter((e) => e.watch?.length && !e.removed).length,
+      error: wok ? null : watchErrors.join('; ').slice(0, 300), stale: !wok && lastSuccess !== null,
+    });
+  }
   const statusDoc = { schemaVersion: SCHEMA_VERSION, generatedAt: nowIso, demo: !everSucceeded, sources };
 
   // ----- write only when something meaningful changed

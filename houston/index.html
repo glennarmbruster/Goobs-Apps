@@ -192,6 +192,14 @@ header.top .wrap{gap:8px}
 .more{margin:14px 0}
 .hiddenline{font-size:14px;color:var(--muted);text-align:center;margin:14px 0}
 .hiddenline button{font:inherit;font-weight:700;color:var(--accent);background:none;border:0;padding:8px;cursor:pointer;min-height:36px}
+.addbtn{margin:4px 0 10px}
+.menubtn{flex:none;min-width:36px;padding:0 8px;font-size:20px;line-height:1}
+.series{margin-top:8px}
+.occs{margin-top:8px;border-top:1px solid var(--line)}
+.occ{padding:10px 0;border-bottom:1px solid var(--line)}
+.occ-when{font-weight:700}
+.occ-st{font-size:12px;font-weight:700;color:var(--warn)}
+.picks.sm{margin-top:8px}
 .rg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:8px 0}
 .rg input{min-width:0;padding:10px 8px}
 .scope{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 10px}
@@ -908,11 +916,46 @@ function normEvent(r) {
   const se = r.series && typeof r.series === 'object' && flat(r.series.label, 60) ? { id: flat(r.series.id, 80), label: flat(r.series.label, 60) } : null;
   return {
     id, title, cat: CAT_IDS.includes(r.category) ? r.category : 'other', startRaw: str(r.start), startMs, startDay, endMs, endDay, allDay, multiDay, lastDay, effEnd,
-    venue, cityKey: venue.city.toLowerCase(), price: priceInfo(r.price), desc: flat(r.description, 300),
+    venue, cityKey: venue.city.toLowerCase(), price: priceInfo(r.price), desc: flat(r.description, r.manual === true ? 1000 : 300), manual: r.manual === true, createdBy: r.manual === true ? whoClean(r.createdBy) : '',
     status: ['canceled', 'postponed', 'rescheduled'].includes(r.status) ? r.status : 'scheduled', series: se, sources, removed: r.removed === true,
     lastSeenMs: typeof r.lastSeen === 'string' && isNum(Date.parse(r.lastSeen)) ? Date.parse(r.lastSeen) : 0
   };
 }
+const evCmp = (a, b) => a.startMs - b.startMs || (a.title < b.title ? -1 : a.title > b.title ? 1 : 0) || (a.id < b.id ? -1 : 1);
+/* ---------------- events added by hand ---------------- */
+const CUSTOM_MAX = 500, COLL2 = 'houston-custom';
+function normCustom(c, idHint) {
+  if (!c || typeof c !== 'object') return null;
+  const id = cleanId(idHint || c.id); if (!id || id.includes('_')) return null;
+  const title = flat(c.title, 200), date = isISO(c.date) ? c.date : '';
+  if (!title || !date) return null;
+  return { id, title, date, time: /^([01]\d|2[0-3]):[0-5]\d$/.test(str(c.time)) ? c.time : '', endDate: isISO(c.endDate) && c.endDate > date ? c.endDate : '',
+    place: flat(c.place, 120), city: flat(c.city, 60), cat: CAT_IDS.includes(c.cat) ? c.cat : 'other', priceText: flat(c.priceText, 40), free: c.free === true,
+    url: safeUrl(c.url), notes: flat(c.notes, 600), createdBy: whoClean(c.createdBy), updatedAt: isNum(c.updatedAt) ? c.updatedAt : 0, deleted: c.deleted === true };
+}
+function normCustoms(raw) {
+  const out = {}; let n = 0;
+  const list = Array.isArray(raw) ? raw.map(c => [c && c.id, c]) : raw && typeof raw === 'object' ? Object.entries(raw) : [];
+  for (const [k, c] of list) { const x = normCustom(c, k); if (!x || out[x.id]) continue; if (!x.deleted && ++n > CUSTOM_MAX) continue; out[x.id] = x; }
+  return out;
+}
+function priceFromText(t) {
+  t = flat(t, 40); if (!t) return null;
+  if (/^free$/i.test(t)) return { free: true };
+  const m = /^\$?\s*(\d+(?:\.\d{1,2})?)(?:\s*(?:-|–|to)\s*\$?\s*(\d+(?:\.\d{1,2})?))?$/i.exec(t);
+  if (m) { const lo = +m[1], hi = m[2] != null ? +m[2] : lo; return { min: lo, max: hi, free: false }; }
+  return { text: t };
+}
+/* a hand-added event -> the same raw shape the feed uses (times are Central) */
+function customToRaw(c) {
+  const [h, mi] = c.time ? c.time.split(':').map(Number) : [0, 0];
+  const startMs = centralMs(c.date, h, mi);
+  const endMs = c.endDate ? (c.time ? centralMs(c.endDate, 23, 59) : centralMs(c.endDate, 0, 0)) : null;
+  return { id: c.id, manual: true, createdBy: c.createdBy, title: c.title, category: c.cat, start: new Date(startMs).toISOString(), end: endMs != null ? new Date(endMs).toISOString() : null, allDay: !c.time,
+    venue: { name: c.place, city: c.city, lat: null, lon: null }, price: c.free ? { free: true } : priceFromText(c.priceText), description: c.notes, status: 'scheduled',
+    sources: [{ id: 'manual', name: 'Added manually', url: c.url, ticketUrl: '' }] };
+}
+const canonMap = o => JSON.stringify(Object.keys(o).sort().map(k => [k, o[k]]));
 /* raw list -> sorted, de-duplicated normalised list */
 function normEvents(raw) {
   const by = new Map(); let skipped = 0;
@@ -923,7 +966,7 @@ function normEvents(raw) {
     if (old) { skipped++; if (e.lastSeenMs <= old.lastSeenMs) continue; }
     by.set(e.id, e);
   }
-  const events = [...by.values()].sort((a, b) => a.startMs - b.startMs || (a.title < b.title ? -1 : a.title > b.title ? 1 : 0) || (a.id < b.id ? -1 : 1));
+  const events = [...by.values()].sort(evCmp);
   return { events, skipped };
 }
 const eventLink = e => { for (const s of e.sources || []) { const u = s.ticketUrl || s.url; if (u) return u; } return ''; };
@@ -1118,7 +1161,7 @@ function feedBanners({ mode, savedAt, generatedAt, status, now }) {
 }
 
 /* ---------------- persistence ---------------- */
-const defaultState = () => ({ schemaVersion: SCHEMA, meta: { lastBackup: null, lastChange: null, who: '' }, prefs: defaultPrefs(), picks: {}, others: {} });
+const defaultState = () => ({ schemaVersion: SCHEMA, meta: { lastBackup: null, lastChange: null, who: '' }, prefs: defaultPrefs(), picks: {}, others: {}, custom: {} });
 function normPicks(raw) {
   const out = {}; let dropped = 0;
   for (const [id, p] of Object.entries(raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {})) {
@@ -1130,20 +1173,21 @@ function normPicks(raw) {
 }
 function normalizeData(raw) {
   const { picks, dropped } = normPicks(raw && raw.picks);
-  return { data: { prefs: normPrefs(raw && raw.prefs), picks }, dropped };
+  const custom = {}; for (const [k, c] of Object.entries(normCustoms(raw && raw.custom))) if (!c.deleted) custom[k] = c;
+  return { data: { prefs: normPrefs(raw && raw.prefs), picks, custom }, dropped };
 }
 const strOrNull = v => (typeof v === 'string' && v ? v : null);
 function loadState(parsed) {
   const { data } = normalizeData(parsed);
   const m = parsed && parsed.meta || {};
-  return { schemaVersion: SCHEMA, meta: { lastBackup: strOrNull(m.lastBackup), lastChange: strOrNull(m.lastChange), who: whoClean(m.who) }, prefs: data.prefs, picks: data.picks, others: {} };
+  return { schemaVersion: SCHEMA, meta: { lastBackup: strOrNull(m.lastBackup), lastChange: strOrNull(m.lastChange), who: whoClean(m.who) }, prefs: data.prefs, picks: data.picks, others: {}, custom: normCustoms(parsed && parsed.custom) };
 }
-const exportData = () => ({ prefs: state.prefs, picks: state.picks });
+const exportData = () => ({ prefs: state.prefs, picks: state.picks, custom: Object.fromEntries(Object.entries(state.custom).filter(([, c]) => !c.deleted)) });
 let state = defaultState(), db = null, saveFailed = false, persistAsked = false, saveChain = Promise.resolve();
 function persist({ touch = true } = {}) {
   if (touch) state.meta.lastChange = new Date().toISOString();
   if (!db) return Promise.resolve();
-  const snap = JSON.stringify({ schemaVersion: state.schemaVersion, meta: state.meta, prefs: state.prefs, picks: state.picks });
+  const snap = JSON.stringify({ schemaVersion: state.schemaVersion, meta: state.meta, prefs: state.prefs, picks: state.picks, custom: state.custom });
   saveChain = saveChain.then(() => idbPut(db, 'state', snap)).then(() => { saveFailed = false; }).catch(err => { console.error(err); saveFailed = true; });
   if (!persistAsked && navigator.storage && navigator.storage.persist) { persistAsked = true; navigator.storage.persist().catch(() => {}); }
   return saveChain;
@@ -1160,25 +1204,30 @@ const sharedNote = () => !syncOn() ? '' : Sync.user() ? ' Sharing is on, so your
 const pickStatus = id => (state.picks[id] ? state.picks[id].status : null);
 const othersFor = id => Object.values(state.others).filter(o => o.eventId === id);
 const syncModel = {
-  colls: [COLL],
+  colls: [COLL, COLL2],
   toEntities() {
     const out = [], me = currentWho();
     if (me) for (const [eventId, p] of Object.entries(state.picks)) out.push({ coll: COLL, id: docId(eventId, me), data: { eventId, status: p.status, who: me, updatedAt: p.updatedAt, snapshot: p.snapshot } });
     for (const [id, o] of Object.entries(state.others)) out.push({ coll: COLL, id, data: { eventId: o.eventId, status: o.status, who: o.who, updatedAt: o.updatedAt, snapshot: o.snapshot } });
+    for (const c of Object.values(state.custom)) { const { id, ...d } = c; out.push({ coll: COLL2, id, data: { ...d, createdBy: c.createdBy || me } }); }
     return out;
   },
   apply(out) {
-    const me = currentWho().toLowerCase(); if (!me) return;
-    const picks = {}, others = {};
-    for (const r of out[COLL] || []) {
-      const d = recPick(r); if (!d) continue;
-      if (d.who.toLowerCase() === me) picks[d.eventId] = { status: d.status, updatedAt: d.updatedAt, snapshot: d.snapshot };
-      else others[r.id] = d;
+    let changed = false;
+    const me = currentWho().toLowerCase();
+    if (me) {
+      const picks = {}, others = {};
+      for (const r of out[COLL] || []) {
+        const d = recPick(r); if (!d) continue;
+        if (d.who.toLowerCase() === me) picks[d.eventId] = { status: d.status, updatedAt: d.updatedAt, snapshot: d.snapshot };
+        else others[r.id] = d;
+      }
+      if (canonMap(picks) !== canonMap(state.picks) || canonMap(others) !== canonMap(state.others)) { state.picks = picks; state.others = others; changed = true; }
     }
-    if (JSON.stringify(picks) === JSON.stringify(state.picks) && JSON.stringify(others) === JSON.stringify(state.others)) return;
-    state.picks = picks; state.others = others;
-    persist({ touch: false });
-    renderIfSafe();
+    const custom = {};
+    for (const r of out[COLL2] || []) { const c = r && r.data ? normCustom(r.data, r.id) : null; if (c) custom[c.id] = c; }
+    if (canonMap(custom) !== canonMap(state.custom)) { state.custom = custom; rebuildAll(); changed = true; }
+    if (changed) { persist({ touch: false }); renderIfSafe(); }
   }
 };
 function setPick(id, status, { undo = true } = {}) {
@@ -1194,7 +1243,7 @@ function setPick(id, status, { undo = true } = {}) {
 }
 
 /* ---------------- feed state ---------------- */
-const feed = { loaded: false, mode: 'none', events: [], byId: new Map(), generatedAt: null, savedAt: null, status: null, version: 0, skipped: 0, cachedGen: null, fetchedAt: 0 };
+const feed = { loaded: false, mode: 'none', events: [], all: [], byId: new Map(), generatedAt: null, savedAt: null, status: null, version: 0, skipped: 0, cachedGen: null, fetchedAt: 0 };
 async function getJSON(url) {
   const r = await fetch(url, { cache: 'no-cache' });
   if (!r || !r.ok) throw new Error('HTTP ' + (r && r.status));
@@ -1224,9 +1273,20 @@ function applyFeed(r) {
   const { events, skipped } = normEvents(r.data.events);
   const g = typeof r.data.generatedAt === 'string' ? Date.parse(r.data.generatedAt) : NaN;
   const st = normStatus(r.status);
-  feed.mode = r.mode; feed.events = events; feed.byId = new Map(events.map(e => [e.id, e])); feed.skipped = skipped;
+  feed.mode = r.mode; feed.events = events; feed.skipped = skipped;
   feed.generatedAt = isNum(g) ? g : (st && st.generatedAt) || null; feed.savedAt = isNum(r.savedAt) ? r.savedAt : null; feed.status = r.mode === 'demo' ? null : st;
   feed.loaded = true; feed.version++; feed.fetchedAt = nowMs();
+  rebuildAll();
+}
+/* everything the lists use: the feed plus hand-added events (never alongside sample data) */
+function rebuildAll() {
+  let all = feed.events;
+  if (feed.mode !== 'demo') {
+    const feedIds = new Set(feed.events.map(e => e.id)), cust = [];
+    for (const c of Object.values(state.custom)) if (!c.deleted && !feedIds.has(c.id)) { const e = normEvent(customToRaw(c)); if (e) cust.push(e); }
+    if (cust.length) all = feed.events.concat(cust).sort(evCmp);
+  }
+  feed.all = all; feed.byId = new Map(all.map(e => [e.id, e]));
 }
 async function refreshFeed() {
   const r = await loadFeed();
@@ -1236,18 +1296,27 @@ async function refreshFeed() {
 
 /* ---------------- views ---------------- */
 const app = $('#app');
-const ui = { view: 'weekend', range: { from: '', to: '' }, limit: CHUNK, savedTab: 'going', savedScope: 'mine', expanded: new Set(), showPast: false };
+const ui = { openSeries: new Set(), view: 'weekend', range: { from: '', to: '' }, limit: CHUNK, savedTab: 'going', savedScope: 'mine', expanded: new Set(), showPast: false };
 const VIEWS = [['weekend', 'Weekend'], ['week', '7 days'], ['soon', 'Soon'], ['range', 'Dates'], ['saved', 'Saved']];
 function computeView() {
   const now = nowMs(), today = centralDay(now), p = state.prefs, origin = { lat: p.start.lat, lon: p.start.lon };
-  const w = viewWindow(ui.view, now, ui.range), shown = []; let hidden = 0, hiddenDefault = 0;
-  for (const e of feed.events) {
-    if (e.effEnd <= now || !inWindow(e, w)) continue;
+  const w = viewWindow(ui.view, now, ui.range), shown = [], smap = new Map(); let hidden = 0, hiddenDefault = 0;
+  for (const e of feed.all) {
+    if (e.effEnd <= now) continue;
+    const sid = e.series && e.series.id, inW = inWindow(e, w);
+    if (!inW && !sid) continue;
     const why = prefsReject(e, p, origin, pickStatus(e.id));
-    if (why) { if (why === 'canceled' || why === 'not-interested') hiddenDefault++; else hidden++; continue; }
-    shown.push(e);
+    if (why) { if (inW) { if (why === 'canceled' || why === 'not-interested') hiddenDefault++; else hidden++; } continue; }
+    if (sid) { let a = smap.get(sid); if (!a) smap.set(sid, a = []); a.push(e); }
+    if (inW) shown.push(e);
   }
-  return { shown, hidden, hiddenDefault, w, today, origin };
+  /* a repeating series with 3 or more upcoming dates becomes one card at its first date in this view */
+  const items = [], done = new Set();
+  for (const e of shown) {
+    const sid = e.series && e.series.id, all = sid ? smap.get(sid) : null;
+    if (all && all.length >= 3) { if (done.has(sid)) continue; done.add(sid); items.push({ e, all }); } else items.push({ e });
+  }
+  return { shown, items, hidden, hiddenDefault, w, today, origin };
 }
 /* saved picks: entries { id, mine, others:[{who,status}], e } */
 function savedEntries(tab, scope) {
@@ -1292,29 +1361,31 @@ function badgesHTML(e) {
   if (e.status === 'rescheduled') b.push('<span class="badge warn">Rescheduled</span>');
   if (e.removed) b.push('<span class="badge warn">No longer listed by source, check before going</span>');
   if (e.series) b.push(`<span class="badge">${esc(e.series.label)}</span>`);
+  if (e.manual) b.push(`<span class="badge acc">Added by ${esc(e.createdBy || currentWho() || 'you')}</span>`);
   return b.length ? `<div class="ev-badges">${b.join('')}</div>` : '';
 }
 function othersHTML(id) {
   const o = othersFor(id); if (!o.length) return '';
   return `<div class="othr">${o.map(x => `<span class="badge acc">${esc(x.who)}: ${esc(PICK_LABEL[x.status])}</span>`).join('')}</div>`;
 }
-function cardHTML(e, ctx) {
+function cardHTML(e, ctx, extra = '') {
   const mine = pickStatus(e.id), exp = ui.expanded.has(e.id), d = distanceMiles(ctx.origin, e.venue);
   const place = [e.venue.name, [e.venue.neighborhood, e.venue.city].filter(Boolean).join(', ')].filter(Boolean).join(' · ');
   const links = e.sources.filter(s => s.ticketUrl || s.url);
   const chk = newestChecked(e), id = esc(e.id);
   const linkBtns = links.map(s => `<a class="btn small" target="_blank" rel="noopener" href="${esc(s.ticketUrl || s.url)}">${esc(links.length > 1 ? s.name + ': Details / Tickets' : 'Details / Tickets')}</a>`).join('');
   return `<article class="card ev${e.status === 'canceled' ? ' canceled faded' : e.removed ? ' faded' : ''}" data-id="${id}">
-    <div class="ev-top"><h3 class="ev-title">${esc(e.title)}</h3><span class="badge acc cat">${esc(catLabel(e.cat))}</span></div>
+    <div class="ev-top"><h3 class="ev-title">${esc(e.title)}</h3><span class="badge acc cat">${esc(catLabel(e.cat))}</span>${e.manual ? `<button type="button" class="btn small ghost menubtn" data-action="custom-menu" data-id="${id}" aria-label="Edit or delete this event">⋯</button>` : ''}</div>
     ${badgesHTML(e)}
     <div class="ev-when">${esc(whenLabel(e, ctx.year))}</div>
-    <div class="ev-where">${esc(place || 'Venue not listed')}${d != null ? ` · <span class="num">${esc(distLabel(d))}</span>` : ''}</div>
+    <div class="ev-where">${esc(place || 'Venue not listed')}${d != null ? ` · <span class="num">${esc(distLabel(d))}</span>` : e.manual ? ' · <span class="muted">Distance unknown</span>' : ''}</div>
     ${priceHTML(e)}
     ${e.desc ? `<p class="ev-desc${exp ? '' : ' clamp'}" data-action="expand" data-id="${id}">${esc(e.desc)}</p>` : ''}
-    ${links.length || chk != null ? `<div class="ev-src">${linkBtns}</div>${chk != null ? `<div class="ev-checked">${esc(e.sources.length > 1 ? 'Checked' : (e.sources[0] && e.sources[0].name || 'Source') + ' · checked')} ${esc(relTime(chk, ctx.now))}</div>` : ''}` : ''}
+    ${e.manual ? `${linkBtns ? `<div class="ev-src">${linkBtns}</div>` : ''}<div class="ev-checked">Added manually</div>` : links.length || chk != null ? `<div class="ev-src">${linkBtns}</div>${chk != null ? `<div class="ev-checked">${esc(e.sources.length > 1 ? 'Checked' : (e.sources[0] && e.sources[0].name || 'Source') + ' · checked')} ${esc(relTime(chk, ctx.now))}</div>` : ''}` : ''}
     ${othersHTML(e.id)}
     <div class="picks" role="group" aria-label="Your pick">${PICK_STATUS.map(s => `<button type="button" class="btn small${s === 'not' ? ' nop' : ''}" data-action="pick" data-id="${id}" data-status="${s}" aria-pressed="${mine === s}">${esc(PICK_LABEL[s])}</button>`).join('')}</div>
     <div class="ev-act"><button type="button" class="btn small" data-action="ics" data-id="${id}">Add to calendar</button><a class="btn small" href="${esc(plannerHref(e))}">Add to Planner</a></div>
+  ${extra}
   </article>`;
 }
 function savedCardHTML(en, ctx) {
@@ -1331,9 +1402,10 @@ function savedCardHTML(en, ctx) {
     <div class="ev-act"><button type="button" class="btn small" data-action="ics" data-id="${id}">Add to calendar</button><a class="btn small" href="${esc(plannerHref(e))}">Add to Planner</a></div>
   </article>`;
 }
+const addBtnHTML = () => '<button type="button" class="btn primary block addbtn" data-action="add-event">+ Add event</button>';
 function filterSummaryHTML(hidden, count) {
   const n = activeFilters(state.prefs).length;
-  return `<div class="fsum"><button type="button" class="btn small" data-action="settings">Filters (${n} active)</button>${n ? '<button type="button" class="btn small ghost" data-action="reset-filters">Reset</button>' : ''}<span class="cnt">${esc(plural(count, 'event'))}</span></div>`;
+  return `<div class="fsum"><button type="button" class="btn small" data-action="settings">Filters (${n} active)</button>${n ? '<button type="button" class="btn small ghost" data-action="reset-filters">Reset</button>' : ''}<span class="cnt">${esc(plural(count, 'event'))}</span></div>${addBtnHTML()}`;
 }
 function quickChipsHTML() {
   const p = state.prefs, all = !p.interests.length;
@@ -1358,18 +1430,28 @@ function updatedLine() {
 }
 function listHTML(v) {
   const ctx = { now: nowMs(), year: centralParts(nowMs()).y, origin: v.origin };
-  const slice = v.shown.slice(0, ui.limit);
+  const slice = v.items.slice(0, ui.limit);
   let html = '', last = null;
-  for (const e of slice) {
-    const g = groupFor(ui.view, e, v.w, v.today);
+  for (const it of slice) {
+    const g = groupFor(ui.view, it.e, v.w, v.today);
     if (g.key !== last) { html += `<div class="dayh" data-group="${esc(g.key)}">${esc(g.label)}</div>`; last = g.key; }
-    html += cardHTML(e, ctx);
+    html += cardHTML(it.e, ctx, it.all ? seriesBlockHTML(it, ctx) : '');
   }
-  if (v.shown.length > slice.length) html += `<div class="more"><button type="button" class="btn block" data-action="more">Show ${Math.min(CHUNK, v.shown.length - slice.length)} more (${v.shown.length - slice.length} left)</button></div>`;
+  if (v.items.length > slice.length) html += `<div class="more"><button type="button" class="btn block" data-action="more">Show ${Math.min(CHUNK, v.items.length - slice.length)} more (${v.items.length - slice.length} left)</button></div>`;
   return html;
 }
+const OCC_MAX = 60;
+function seriesBlockHTML(it, ctx) {
+  const sid = it.e.series.id, others = it.all.filter(x => x.id !== it.e.id), open = ui.openSeries.has(sid);
+  let h = `<div class="series"><button type="button" class="btn small" data-action="series" data-sid="${esc(sid)}" aria-expanded="${open}">${esc(plural(others.length, 'more date'))} ${open ? '▴' : '▾'}</button></div>`;
+  if (open) {
+    h += `<div class="occs" role="group" aria-label="Other dates">` + others.slice(0, OCC_MAX).map(o => `<div class="occ" data-id="${esc(o.id)}"><div class="occ-when">${esc(whenLabel(o, ctx.year))}</div>${o.status !== 'scheduled' ? `<div class="occ-st">${esc(o.status[0].toUpperCase() + o.status.slice(1))}</div>` : ''}${othersHTML(o.id)}<div class="picks sm">${PICK_STATUS.map(st => `<button type="button" class="btn small${st === 'not' ? ' nop' : ''}" data-action="pick" data-id="${esc(o.id)}" data-status="${st}" aria-pressed="${pickStatus(o.id) === st}">${esc(PICK_LABEL[st])}</button>`).join('')}</div></div>`).join('')
+      + (others.length > OCC_MAX ? `<p class="hint">${esc(plural(others.length - OCC_MAX, 'later date'))} not listed here.</p>` : '') + '</div>';
+  }
+  return h;
+}
 function emptyHTML(v) {
-  if (feed.mode === 'none') return `<div class="empty"><div class="big">🎟️</div><h2>No events yet</h2><p>Nothing has been published yet. Listings are collected automatically, so check back a little later.</p></div>`;
+  if (feed.mode === 'none' && !feed.all.length) return `<div class="empty"><div class="big">🎟️</div><h2>No events yet</h2><p>Nothing has been published yet. Listings are collected automatically, so check back a little later.</p></div>`;
   if (v.hidden > 0) return `<div class="empty"><div class="big">🔍</div><h2>${esc(plural(v.hidden, 'event'))} hidden by your filters</h2><p>Nothing matches right now.</p><button type="button" class="btn primary" data-action="reset-filters">Reset filters</button></div>`;
   if (v.hiddenDefault > 0) return `<div class="empty"><div class="big">📅</div><h2>Nothing to show</h2><p>${esc(plural(v.hiddenDefault, 'canceled or not-interested event'))} hidden for these dates.</p><button type="button" class="btn" data-action="settings">Settings</button></div>`;
   return `<div class="empty"><div class="big">📅</div><h2>Nothing listed for this time</h2><p>No events are listed for these dates yet. Try another view.</p></div>`;
@@ -1383,7 +1465,7 @@ function savedHTML() {
   const { list } = savedEntries(ui.savedTab, ui.savedScope);
   const up = list.filter(x => !x.past), past = list.filter(x => x.past);
   const ctx = { now: nowMs(), year: centralParts(nowMs()).y, origin: { lat: state.prefs.start.lat, lon: state.prefs.start.lon } };
-  let html = `<div class="seg" role="group" aria-label="Saved lists"><button type="button" class="chip" data-action="saved-tab" data-v="going" aria-pressed="${ui.savedTab === 'going'}">Going (${counts.going})</button><button type="button" class="chip" data-action="saved-tab" data-v="interested" aria-pressed="${ui.savedTab === 'interested'}">Interested (${counts.interested})</button></div>`;
+  let html = addBtnHTML() + `<div class="seg" role="group" aria-label="Saved lists"><button type="button" class="chip" data-action="saved-tab" data-v="going" aria-pressed="${ui.savedTab === 'going'}">Going (${counts.going})</button><button type="button" class="chip" data-action="saved-tab" data-v="interested" aria-pressed="${ui.savedTab === 'interested'}">Interested (${counts.interested})</button></div>`;
   if (haveOthers) html += `<div class="scope" role="group" aria-label="Whose picks"><button type="button" class="chip" data-action="scope" data-v="mine" aria-pressed="${ui.savedScope === 'mine'}">Mine</button><button type="button" class="chip" data-action="scope" data-v="other" aria-pressed="${ui.savedScope === 'other'}">${esc(oname)}’s</button><button type="button" class="chip" data-action="scope" data-v="all" aria-pressed="${ui.savedScope === 'all'}">Both</button></div>`;
   else if (!signed) html += `<div class="sig">Sign in to see ${esc(other)}’s picks. <button type="button" data-action="sync-signin">Sign in</button></div>`;
   if (ui.savedTab === 'going' && ui.savedScope !== 'other') {
@@ -1409,8 +1491,8 @@ function mainHTML() {
   else {
     const v = computeView(), vt = viewTitle(v.w, v.today);
     const range = ui.view === 'range' ? `<div class="rg"><div class="field"><label for="rgFrom">From</label><input id="rgFrom" type="date" value="${esc(v.w.fromDay)}"></div><div class="field"><label for="rgTo">To</label><input id="rgTo" type="date" value="${esc(v.w.lastDay)}"></div></div>` : '';
-    body = `<div class="vtitle">${esc(vt.t)}</div><div class="vsub">${esc(vt.s)}</div>${range}${quickChipsHTML()}${filterSummaryHTML(v.hidden, v.shown.length)}`
-      + (v.shown.length ? listHTML(v) + (v.hidden ? `<div class="hiddenline">${esc(plural(v.hidden, 'event'))} hidden by your filters. <button type="button" data-action="reset-filters">Reset filters</button></div>` : '') + (v.hiddenDefault ? `<div class="hiddenline">${esc(plural(v.hiddenDefault, 'canceled or not-interested event'))} hidden. <button type="button" data-action="settings">Settings</button></div>` : '') : emptyHTML(v));
+    body = `<div class="vtitle">${esc(vt.t)}</div><div class="vsub">${esc(vt.s)}</div>${range}${quickChipsHTML()}${filterSummaryHTML(v.hidden, v.items.length)}`
+      + (v.items.length ? listHTML(v) + (v.hidden ? `<div class="hiddenline">${esc(plural(v.hidden, 'event'))} hidden by your filters. <button type="button" data-action="reset-filters">Reset filters</button></div>` : '') + (v.hiddenDefault ? `<div class="hiddenline">${esc(plural(v.hiddenDefault, 'canceled or not-interested event'))} hidden. <button type="button" data-action="settings">Settings</button></div>` : '') : emptyHTML(v));
   }
   return head + `<main class="wrap">${storageBannerHTML()}${bannersHTML()}${tabs}${stat}${body}</main>`;
 }
@@ -1419,13 +1501,13 @@ function backupScreen() {
   const canEncrypt = !!(window.crypto && crypto.subtle);
   return headerHTML({ back: '#/', title: 'Backup & sharing', sub: 'Your picks and settings live on this device' }) + `<main class="wrap">${storageBannerHTML()}<div class="stack">${syncCardHTML('Sign in on each phone to see each other’s picks. Only your picks are shared. The event listings themselves are never uploaded.')}${installCardHTML()}
     <section class="card pad"><h3>Back up</h3><p class="muted">${last}</p>
-      <p>Saves one file with your picks and settings. On iPhone it opens the share sheet — save it to Files or OneDrive. <b>Never put this file in your GitHub repo.</b></p>
+      <p>Saves one file with your picks, the events you added and your settings. On iPhone it opens the share sheet — save it to Files or OneDrive. <b>Never put this file in your GitHub repo.</b></p>
       ${canEncrypt ? `<div class="field"><label for="bkPass">Passphrase (optional — encrypts the file)</label><input id="bkPass" type="password" autocomplete="new-password"></div>
       <div class="field" style="margin-top:8px"><label for="bkPass2">Repeat passphrase</label><input id="bkPass2" type="password" autocomplete="new-password"></div>
       <p class="hint">If you set one, the file can’t be opened without it — not even by me.</p>` : ''}
       <button type="button" class="btn primary block" style="margin-top:12px" data-action="export">Back up now</button></section>
     <section class="card pad"><h3>Restore</h3><p>Pick a backup file made by this app. You’ll choose whether to replace what’s here or merge it in.</p><button type="button" class="btn block" data-action="restore">Choose backup file…</button></section>
-    <section class="card pad"><h3>Danger zone</h3><p>Erases your picks and resets your settings on this device.${esc(sharedNote())}</p><button type="button" class="btn danger block" data-action="wipe">Erase my picks and settings</button></section></div></main>`;
+    <section class="card pad"><h3>Danger zone</h3><p>Erases your picks and the events you added, and resets your settings.${esc(sharedNote())}</p><button type="button" class="btn danger block" data-action="wipe">Erase my picks and settings</button></section></div></main>`;
 }
 const route = () => (location.hash.replace(/^#\/?/, '').split('/')[0] === 'backup' ? { name: 'backup' } : { name: 'main' });
 let lastKey = '', pendingRender = false, renderTimer = null;
@@ -1468,7 +1550,7 @@ function toggleInterest(id) {
 function resetFilters() { const s = state.prefs.start; state.prefs = { ...defaultPrefs(), start: s }; savePrefs(); }
 function cityList() {
   const m = new Map();
-  for (const e of feed.events) if (e.cityKey) { const o = m.get(e.cityKey) || { key: e.cityKey, name: e.venue.city, n: 0 }; o.n++; m.set(e.cityKey, o); }
+  for (const e of feed.all) if (e.cityKey) { const o = m.get(e.cityKey) || { key: e.cityKey, name: e.venue.city, n: 0 }; o.n++; m.set(e.cityKey, o); }
   for (const k of state.prefs.cities) if (!m.has(k)) m.set(k, { key: k, name: k.replace(/\b\w/g, c => c.toUpperCase()), n: 0 });
   return [...m.values()].sort((a, b) => b.n - a.n || (a.name < b.name ? -1 : 1)).slice(0, 60);
 }
@@ -1540,6 +1622,51 @@ function useMyLocation(paint) {
   }, err => paint(err && err.code === 1 ? 'Location is turned off for this app, so I kept “' + keep + '”. You can pick a starting place above.' : 'Couldn’t get your location, so I kept “' + keep + '”.'), { timeout: 10000, maximumAge: 600000 });
 }
 
+/* ---------------- events added by hand ---------------- */
+function rebuildAndCommit() { rebuildAll(); commit(); }
+function customDialog(c) {
+  const live = () => Object.values(state.custom).filter(x => !x.deleted).length;
+  formDialog({
+    title: c ? 'Edit event' : 'Add an event', intro: Sync.user() || (syncOn()) ? 'Both of you will see this event.' : 'Saved on this phone. It is shared once you sign in.',
+    fields: [
+      { name: 'title', label: 'Title', required: true, value: c && c.title },
+      { name: 'date', label: 'Date', type: 'date', required: true, value: c && c.date },
+      { name: 'time', label: 'Start time (optional)', type: 'time', value: c ? c.time : '' },
+      { name: 'endDate', label: 'End date (optional, for more than one day)', type: 'date', value: c ? c.endDate : '' },
+      { name: 'place', label: 'Venue or place', value: c && c.place },
+      { name: 'city', label: 'City', value: c && c.city },
+      { name: 'cat', label: 'Category', type: 'select', options: CATS.map(([i, l]) => [i, l]), value: c ? c.cat : 'other' },
+      { name: 'free', label: 'Free', type: 'checkbox', value: !!(c && c.free) },
+      { name: 'priceText', label: 'Price (optional)', value: c && c.priceText, placeholder: 'e.g. $25 or $20–$40' },
+      { name: 'url', label: 'Details link (optional)', value: c && c.url, capitalize: 'none', placeholder: 'https://example.com/tickets' },
+      { name: 'notes', label: 'Notes (optional)', type: 'textarea', value: c && c.notes }
+    ],
+    submitLabel: c ? 'Save' : 'Add event',
+    onSubmit: v => {
+      const title = flat(v.title, 200); if (!title) return 'Give the event a title.';
+      if (!isISO(v.date)) return 'Pick a date.';
+      if (v.endDate && (!isISO(v.endDate) || v.endDate < v.date)) return 'The end date can’t be before the start date.';
+      const url = v.url.trim() ? safeUrl(v.url) : ''; if (v.url.trim() && !url) return 'The details link must start with http or https.';
+      if (!c && live() >= CUSTOM_MAX) return `You can add up to ${CUSTOM_MAX} events.`;
+      const rec = normCustom({ id: c ? c.id : 'm' + uid(), title, date: v.date, time: v.time, endDate: v.endDate, place: v.place, city: v.city, cat: v.cat, priceText: v.free ? '' : v.priceText, free: v.free, url, notes: v.notes,
+        createdBy: c ? c.createdBy : currentWho(), updatedAt: Math.max(nowMs(), c ? (c.updatedAt || 0) + 1 : 0), deleted: false });
+      if (!rec) return 'Check the title and date.';
+      state.custom[rec.id] = rec; rebuildAndCommit();
+      toast(feed.mode === 'demo' ? 'Saved. It will show once real listings are loaded.' : c ? 'Event saved' : 'Event added');
+    }
+  });
+}
+async function customMenu(id) {
+  const c = state.custom[id]; if (!c || c.deleted) return;
+  const r = await askDialog({ title: c.title, buttons: [{ label: 'Cancel', value: 'cancel' }, { label: 'Delete', value: 'delete', kind: 'danger' }, { label: 'Edit', value: 'edit', kind: 'primary' }] });
+  if (r === 'edit') return customDialog(c);
+  if (r === 'delete') {
+    if (!(await confirmBox(`Delete “${c.title}”?`, syncOn() ? 'It will be removed for both of you.' : 'It will be removed from this phone.', 'Delete event'))) return;
+    const cur = state.custom[id]; if (!cur) return;
+    cur.deleted = true; cur.updatedAt = nowMs(); rebuildAndCommit(); toast('Event deleted');
+  }
+}
+
 /* ---------------- calendar + planner actions ---------------- */
 async function doIcs(id) {
   const e = feed.byId.get(id) || (state.picks[id] && state.picks[id].snapshot.start ? eventFromSnap(id, state.picks[id].snapshot) : null);
@@ -1580,8 +1707,8 @@ async function restoreFromText(text) {
   catch (e) { await msgBox('Can’t restore that file', e.message); return false; }
   if (!parsed) return false;
   const { data, dropped } = normalizeData(parsed.data);
-  const nb = Object.keys(data.picks).length, hasLocal = Object.keys(state.picks).length > 0;
-  const sum = `${plural(nb, 'pick')} and your settings`;
+  const nb = Object.keys(data.picks).length, nc = Object.keys(data.custom).length, liveC = Object.values(state.custom).filter(c => !c.deleted).length, hasLocal = Object.keys(state.picks).length > 0 || liveC > 0;
+  const sum = `${plural(nb, 'pick')}, ${plural(nc, 'added event')} and your settings`;
   const when = parsed.exportedAt ? ` Backup made ${fmtDateTime(parsed.exportedAt)}.` : '';
   const skipped = dropped ? ` ${plural(dropped, 'unreadable entry')} will be skipped.` : '';
   const body = `<p>${esc(sum + '.' + when + skipped)}</p>` + (hasLocal ? '<p class="muted"><b>Replace all</b> swaps your picks and settings for the backup. <b>Merge</b> adds picks that aren’t here yet and keeps your settings.</p>' : '')
@@ -1595,6 +1722,9 @@ async function restoreFromText(text) {
   if (choice === 'replace') {
     const ts = parsed.exportedAt && !isNaN(Date.parse(parsed.exportedAt)) ? parsed.exportedAt : new Date().toISOString();
     state.picks = data.picks; state.prefs = data.prefs; state.meta.lastBackup = ts; state.meta.lastChange = ts;
+    for (const c of Object.values(state.custom)) if (!data.custom[c.id] && !c.deleted) { c.deleted = true; c.updatedAt = nowMs(); }
+    for (const c of Object.values(data.custom)) state.custom[c.id] = { ...c, updatedAt: nowMs() };
+    rebuildAll();
     await persist({ touch: false });
     committing = true; try { Sync.touch(); } finally { committing = false; }
     location.hash = '#/'; render(); toast(`Restored ${sum}`); return true;
@@ -1602,7 +1732,8 @@ async function restoreFromText(text) {
   if (choice === 'merge') {
     let n = 0;
     for (const [id, p] of Object.entries(data.picks)) { const cur = state.picks[id]; if (!cur || p.updatedAt > cur.updatedAt) { if (!cur) n++; state.picks[id] = p; } }
-    commit(); toast(`Merged in ${plural(n, 'pick')}`); return true;
+    let nc2 = 0; for (const c of Object.values(data.custom)) if (!state.custom[c.id]) { state.custom[c.id] = { ...c, updatedAt: nowMs() }; nc2++; }
+    rebuildAll(); commit(); toast(`Merged in ${plural(n, 'pick')}` + (nc2 ? ` and ${plural(nc2, 'event')}` : '')); return true;
   }
   return false;
 }
@@ -1613,9 +1744,10 @@ async function doRestore() {
   await restoreFromText(text);
 }
 async function doWipe() {
-  if (!(await confirmBox('Erase your picks and settings?', 'This deletes your picks and resets your settings on this device. Make a backup first if you might want them.' + sharedNote(), 'Erase'))) return;
-  const who = state.meta.who, others = state.others;
-  state = defaultState(); state.meta.who = who; state.others = others;
+  if (!(await confirmBox('Erase your picks and settings?', 'This deletes your picks and the events you added, and resets your settings. Make a backup first if you might want them.' + sharedNote() + (syncOn() ? ' Events you added are removed for both of you.' : ''), 'Erase'))) return;
+  const who = state.meta.who, others = state.others, custom = state.custom;
+  for (const c of Object.values(custom)) if (!c.deleted) { c.deleted = true; c.updatedAt = nowMs(); }
+  state = defaultState(); state.meta.who = who; state.others = others; state.custom = custom; rebuildAll();
   await persist({ touch: false });
   committing = true; try { Sync.touch(); } finally { committing = false; }
   location.hash = '#/'; render(); toast('Erased');
@@ -1641,6 +1773,9 @@ function handleAction(a, el) {
     case 'saved-tab': ui.savedTab = v; return render();
     case 'scope': ui.savedScope = v; return render();
     case 'show-past': ui.showPast = true; return render();
+    case 'add-event': return customDialog(null);
+    case 'custom-menu': return customMenu(id);
+    case 'series': { const sid = el.dataset.sid; if (ui.openSeries.has(sid)) ui.openSeries.delete(sid); else ui.openSeries.add(sid); return render(); }
     case 'export': return doExport();
     case 'restore': return doRestore();
     case 'wipe': return doWipe();

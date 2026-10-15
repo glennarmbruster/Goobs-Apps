@@ -1,5 +1,5 @@
 {
-  "_comment": "Houston events collector settings. center/radius/lookahead drive Ticketmaster and SeatGeek queries and the event window. 'feeds' are the enabled free feeds (type: tribe = WordPress The Events Calendar REST, ics = iCalendar URL). 'candidates' are never run; to try one, copy it into 'feeds' and set enabled true.",
+  "_comment": "Houston events collector settings. center/radius/lookahead drive Ticketmaster and SeatGeek queries and the event window. 'feeds' are the enabled free feeds (type: tribe = WordPress The Events Calendar REST, ics = iCalendar URL). 'candidates' are never run; to try one, copy it into 'feeds' and set enabled true. maxPerSeries (default 8; a feed may override it with its own maxPerSeries) keeps only the next N occurrences of each recurring series from the free feeds; maxEventsPerSource (default 600) is the per-feed safeguard (soonest events kept, warning in status.json).",
   "center": {
     "lat": 29.5294,
     "lon": -95.201,
@@ -7,6 +7,11 @@
   },
   "radiusMiles": 60,
   "lookaheadDays": 180,
+  "maxPerSeries": 8,
+  "maxEventsPerSource": 600,
+  "watchlistMaxRequests": 40,
+  "_watchlistComment": "Keywords queried every run against Ticketmaster (keyword=) and SeatGeek (q=) in the same area/window; matches are tagged event.watch and merged with the normal results. Matching is the sources' own fuzzy search, so use specific names. Empty by default. Examples (not active; copy into the watchlist array to enable): \"Whose Live Anyway\", \"Cullen Performance Hall\", \"Improv Houston\".",
+  "watchlist": [],
   "statusHeartbeatHours": 24,
   "ticketmaster": {
     "enabled": true,
