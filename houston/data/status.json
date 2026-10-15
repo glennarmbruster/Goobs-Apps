@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": null,
+  "demo": true,
+  "sources": [
+    { "id": "ticketmaster", "name": "Ticketmaster", "ok": false, "lastAttempt": null, "lastSuccess": null, "count": 0, "error": "not run yet", "stale": false },
+    { "id": "seatgeek", "name": "SeatGeek", "ok": false, "lastAttempt": null, "lastSuccess": null, "count": 0, "error": "not run yet", "stale": false }
+  ]
+}

@@ -1,0 +1,324 @@
+{
+  "_comment": "Houston events collector settings. center/radius/lookahead drive Ticketmaster and SeatGeek queries and the event window. 'feeds' are the enabled free feeds (type: tribe = WordPress The Events Calendar REST, ics = iCalendar URL). 'candidates' are never run; to try one, copy it into 'feeds' and set enabled true.",
+  "center": {
+    "lat": 29.5294,
+    "lon": -95.201,
+    "label": "Friendswood, TX"
+  },
+  "radiusMiles": 60,
+  "lookaheadDays": 180,
+  "statusHeartbeatHours": 24,
+  "ticketmaster": {
+    "enabled": true,
+    "requestDelayMs": 250,
+    "maxRequests": 600
+  },
+  "seatgeek": {
+    "enabled": true,
+    "requestDelayMs": 250,
+    "maxRequests": 400
+  },
+  "feeds": [
+    {
+      "id": "feed-houston-arboretum",
+      "name": "Houston Arboretum & Nature Center",
+      "type": "tribe",
+      "url": "https://houstonarboretum.org",
+      "enabled": true,
+      "category": "community",
+      "venue": {
+        "name": "Houston Arboretum & Nature Center",
+        "address": "4501 Woodway Dr",
+        "city": "Houston"
+      },
+      "homepage": "https://houstonarboretum.org",
+      "note": "verified 2026-10-15: /wp-json/tribe/events/v1/events returned valid Events Calendar JSON"
+    },
+    {
+      "id": "feed-hermann-park",
+      "name": "Hermann Park Conservancy",
+      "type": "tribe",
+      "url": "https://www.hermannpark.org",
+      "enabled": true,
+      "category": "community",
+      "venue": {
+        "name": "Hermann Park",
+        "city": "Houston"
+      },
+      "homepage": "https://www.hermannpark.org",
+      "note": "verified 2026-10-15: /wp-json/tribe/events/v1/events returned valid Events Calendar JSON"
+    },
+    {
+      "id": "feed-buffalo-bayou",
+      "name": "Buffalo Bayou Partnership",
+      "type": "tribe",
+      "url": "https://buffalobayou.org",
+      "enabled": true,
+      "category": "community",
+      "venue": {
+        "name": "Buffalo Bayou Park",
+        "city": "Houston"
+      },
+      "homepage": "https://buffalobayou.org",
+      "note": "verified 2026-10-15: /wp-json/tribe/events/v1/events returned valid Events Calendar JSON"
+    },
+    {
+      "id": "feed-space-center",
+      "name": "Space Center Houston",
+      "type": "tribe",
+      "url": "https://spacecenter.org",
+      "enabled": true,
+      "category": "family",
+      "venue": {
+        "name": "Space Center Houston",
+        "address": "1601 NASA Pkwy",
+        "city": "Houston"
+      },
+      "homepage": "https://spacecenter.org",
+      "note": "verified 2026-10-15: /wp-json/tribe/events/v1/events returned valid Events Calendar JSON"
+    },
+    {
+      "id": "feed-hobby-center",
+      "name": "Hobby Center for the Performing Arts",
+      "type": "tribe",
+      "url": "https://www.thehobbycenter.org",
+      "enabled": true,
+      "category": "theater",
+      "venue": {
+        "name": "Hobby Center for the Performing Arts",
+        "address": "800 Bagby St",
+        "city": "Houston"
+      },
+      "homepage": "https://www.thehobbycenter.org",
+      "note": "verified 2026-10-15: /wp-json/tribe/events/v1/events returned valid Events Calendar JSON"
+    },
+    {
+      "id": "feed-memorial-park",
+      "name": "Memorial Park Conservancy",
+      "type": "tribe",
+      "url": "https://www.memorialparkconservancy.org",
+      "enabled": true,
+      "category": "community",
+      "venue": {
+        "name": "Memorial Park",
+        "city": "Houston"
+      },
+      "homepage": "https://www.memorialparkconservancy.org",
+      "note": "verified 2026-10-15: /wp-json/tribe/events/v1/events returned valid Events Calendar JSON"
+    },
+    {
+      "id": "feed-galveston-historical",
+      "name": "Galveston Historical Foundation",
+      "type": "tribe",
+      "url": "https://www.galvestonhistory.org",
+      "enabled": true,
+      "category": "community",
+      "venue": {
+        "name": "Galveston Historical Foundation",
+        "city": "Galveston"
+      },
+      "homepage": "https://www.galvestonhistory.org",
+      "note": "verified 2026-10-15: /wp-json/tribe/events/v1/events returned valid Events Calendar JSON"
+    }
+  ],
+  "candidates": [
+    {
+      "id": "feed-hermann-park-ics",
+      "name": "Hermann Park Conservancy (iCal)",
+      "type": "ics",
+      "url": "https://hermannpark.org/events/?ical=1",
+      "enabled": false,
+      "category": "community",
+      "note": "verified 2026-10-15: valid iCalendar (11 VEVENTs, DTSTART;TZID=America/Chicago). Alternate to the enabled Tribe feed; do not enable both."
+    },
+    {
+      "id": "feed-houston-arboretum-ics",
+      "name": "Houston Arboretum & Nature Center (iCal)",
+      "type": "ics",
+      "url": "https://houstonarboretum.org/events/?ical=1",
+      "enabled": false,
+      "category": "community",
+      "note": "verified 2026-10-15: valid iCalendar. Alternate to the enabled Tribe feed; do not enable both."
+    },
+    {
+      "id": "feed-discovery-green",
+      "name": "Discovery Green",
+      "type": "tribe",
+      "url": "https://www.discoverygreen.com",
+      "enabled": false,
+      "category": "community",
+      "note": "unverified: site robots.txt disallows automated fetching in setup; skipped (we respect robots)"
+    },
+    {
+      "id": "feed-houston-zoo",
+      "name": "Houston Zoo",
+      "type": "tribe",
+      "url": "https://www.houstonzoo.org",
+      "enabled": false,
+      "category": "family",
+      "note": "unverified: could not be fetched during setup (HTTP error); try it and enable if it returns JSON"
+    },
+    {
+      "id": "feed-hmns",
+      "name": "Houston Museum of Natural Science",
+      "type": "tribe",
+      "url": "https://www.hmns.org",
+      "enabled": false,
+      "category": "exhibition",
+      "note": "unverified: could not be fetched during setup (HTTP error); try it and enable if it returns JSON"
+    },
+    {
+      "id": "feed-mfah",
+      "name": "Museum of Fine Arts, Houston",
+      "type": "tribe",
+      "url": "https://www.mfah.org",
+      "enabled": false,
+      "category": "exhibition",
+      "note": "unverified: site robots.txt disallows automated fetching in setup; skipped (we respect robots)"
+    },
+    {
+      "id": "feed-galveston-com",
+      "name": "Galveston.com",
+      "type": "tribe",
+      "url": "https://www.galveston.com",
+      "enabled": false,
+      "category": "community",
+      "note": "unverified: could not be fetched during setup (HTTP error); try it and enable if it returns JSON"
+    },
+    {
+      "id": "feed-galveston-park-board",
+      "name": "Galveston Island Park Board",
+      "type": "tribe",
+      "url": "https://www.galvestonparkboard.org",
+      "enabled": false,
+      "category": "community",
+      "note": "unverified: site robots.txt disallows automated fetching in setup; skipped (we respect robots)"
+    },
+    {
+      "id": "feed-sugar-land",
+      "name": "City of Sugar Land",
+      "type": "tribe",
+      "url": "https://www.sugarlandtx.gov",
+      "enabled": false,
+      "category": "community",
+      "note": "unverified: site robots.txt disallows automated fetching in setup; skipped (we respect robots)"
+    },
+    {
+      "id": "feed-pearland",
+      "name": "City of Pearland",
+      "type": "tribe",
+      "url": "https://www.cityofpearland.com",
+      "enabled": false,
+      "category": "community",
+      "note": "unverified: could not be fetched during setup (HTTP error); try it and enable if it returns JSON"
+    },
+    {
+      "id": "feed-league-city",
+      "name": "City of League City",
+      "type": "tribe",
+      "url": "https://www.leaguecitytx.gov",
+      "enabled": false,
+      "category": "community",
+      "note": "unverified: site robots.txt disallows automated fetching in setup; skipped (we respect robots)"
+    },
+    {
+      "id": "feed-friendswood",
+      "name": "City of Friendswood",
+      "type": "tribe",
+      "url": "https://www.friendswood.com",
+      "enabled": false,
+      "category": "community",
+      "note": "unverified: site robots.txt disallows automated fetching in setup; skipped (we respect robots)"
+    },
+    {
+      "id": "feed-katy",
+      "name": "City of Katy",
+      "type": "tribe",
+      "url": "https://www.cityofkaty.com",
+      "enabled": false,
+      "category": "community",
+      "note": "unverified: could not be fetched during setup (HTTP error); try it and enable if it returns JSON"
+    },
+    {
+      "id": "feed-woodlands-township",
+      "name": "The Woodlands Township",
+      "type": "tribe",
+      "url": "https://www.thewoodlandstownship-tx.gov",
+      "enabled": false,
+      "category": "community",
+      "note": "unverified: could not be fetched during setup (HTTP error); try it and enable if it returns JSON"
+    },
+    {
+      "id": "feed-houston-symphony",
+      "name": "Houston Symphony",
+      "type": "tribe",
+      "url": "https://www.houstonsymphony.org",
+      "enabled": false,
+      "category": "music",
+      "note": "unverified: could not be fetched during setup (HTTP error); try it and enable if it returns JSON"
+    },
+    {
+      "id": "feed-alley-theatre",
+      "name": "Alley Theatre",
+      "type": "tribe",
+      "url": "https://www.alleytheatre.org",
+      "enabled": false,
+      "category": "theater",
+      "note": "unverified: could not be fetched during setup (HTTP error); try it and enable if it returns JSON"
+    },
+    {
+      "id": "feed-houston-farmers-market",
+      "name": "Houston Farmers Market",
+      "type": "tribe",
+      "url": "https://www.houstonfarmersmarket.org",
+      "enabled": false,
+      "category": "market",
+      "note": "unverified: could not be fetched during setup (HTTP error); try it and enable if it returns JSON"
+    },
+    {
+      "id": "feed-livestock-show",
+      "name": "Houston Livestock Show & Rodeo",
+      "type": "tribe",
+      "url": "https://www.houstonlivestockshowandrodeo.com",
+      "enabled": false,
+      "category": "festival",
+      "note": "unverified: site robots.txt disallows automated fetching in setup; skipped (we respect robots)"
+    },
+    {
+      "id": "feed-childrens-museum",
+      "name": "Children's Museum Houston",
+      "type": "tribe",
+      "url": "https://www.cmhouston.org",
+      "enabled": false,
+      "category": "family",
+      "note": "unverified: could not be fetched during setup (HTTP error); try it and enable if it returns JSON"
+    },
+    {
+      "id": "feed-moody-gardens",
+      "name": "Moody Gardens",
+      "type": "tribe",
+      "url": "https://www.moodygardens.com",
+      "enabled": false,
+      "category": "family",
+      "note": "unverified: site robots.txt disallows automated fetching in setup; skipped (we respect robots)"
+    },
+    {
+      "id": "feed-houston-botanic",
+      "name": "Houston Botanic Garden",
+      "type": "tribe",
+      "url": "https://houstonbotanic.org",
+      "enabled": false,
+      "category": "community",
+      "note": "unverified: site robots.txt disallows automated fetching in setup; skipped (we respect robots)"
+    },
+    {
+      "id": "feed-houston-public-library",
+      "name": "Houston Public Library (LibCal)",
+      "type": "ics",
+      "url": "https://calendar.houstonlibrary.org/",
+      "enabled": false,
+      "category": "community",
+      "note": "unverified: calendar.houstonlibrary.org is Springshare LibCal but the per-calendar iCal URL (ical_subscribe.php?src=p&cid=...) was not found; get it from the page's iCal button and put it here"
+    }
+  ]
+}

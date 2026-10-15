@@ -1500,15 +1500,38 @@ function addCruiseTemplate(t) {
   return addPackItems(t, items, null);
 }
 /* ---- dialogs ---- */
-function eventDialog(t) {
+/* Houston Events hand-off: ?addEvent=<base64url JSON {title,date,time,place}>. Returns a clean, pre-fill-only record or null. Nothing is saved here. */
+function parseAddEvent(raw) {
+  try {
+    if (typeof raw !== 'string' || !raw || raw.length > 4000 || !/^[A-Za-z0-9_-]+$/.test(raw)) return null;
+    let b = raw.replace(/-/g, '+').replace(/_/g, '/'); while (b.length % 4) b += '=';
+    const bin = atob(b), bytes = Uint8Array.from(bin, c => c.charCodeAt(0));
+    const o = JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes));
+    if (!o || typeof o !== 'object' || Array.isArray(o)) return null;
+    const name = typeof o.title === 'string' ? o.title.replace(/\s+/g, ' ').trim().slice(0, 100) : '';
+    if (!name || !isISO(o.date)) return null;
+    return { name, startDate: o.date, time: typeof o.time === 'string' && /^([01]\d|2[0-3]):[0-5]\d$/.test(o.time) ? o.time : '', destination: typeof o.place === 'string' ? o.place.replace(/\s+/g, ' ').trim().slice(0, 120) : '' };
+  } catch (e) { return null; }
+}
+function takeAddEvent() {
+  let raw = null;
+  try {
+    const u = new URL(location.href);
+    if (!u.searchParams.has('addEvent')) return null;
+    raw = u.searchParams.get('addEvent'); u.searchParams.delete('addEvent');
+    history.replaceState(null, '', u.pathname + u.search + u.hash);
+  } catch (e) { return null; }
+  return parseAddEvent(raw);
+}
+function eventDialog(t, pre) {
   formDialog({
     title: t ? 'Edit event' : 'New event',
-    intro: 'For appointments and important dates. Keep the title general: events are shared with the other phone. Notes stay on this phone only.',
+    intro: pre ? 'From Houston Events. Check the details, then tap Add event to save it. Nothing is saved until you do.' : 'For appointments and important dates. Keep the title general: events are shared with the other phone. Notes stay on this phone only.',
     fields: [
-      { name: 'name', label: 'What', required: true, value: t && t.name, placeholder: 'e.g. Dr. appointment' },
-      { name: 'startDate', label: 'Date', type: 'date', required: true, value: t && t.startDate },
-      { name: 'time', label: 'Time (optional)', type: 'time', value: t ? t.time : '' },
-      { name: 'destination', label: 'Place (optional)', value: t && t.destination, placeholder: 'e.g. 123 Main St, Friendswood' },
+      { name: 'name', label: 'What', required: true, value: t ? t.name : pre && pre.name, placeholder: 'e.g. Dr. appointment' },
+      { name: 'startDate', label: 'Date', type: 'date', required: true, value: t ? t.startDate : pre && pre.startDate },
+      { name: 'time', label: 'Time (optional)', type: 'time', value: t ? t.time : pre ? pre.time : '' },
+      { name: 'destination', label: 'Place (optional)', value: t ? t.destination : pre && pre.destination, placeholder: 'e.g. 123 Main St, Friendswood' },
       { name: 'type', label: 'Type', type: 'select', value: 'event', options: [['event', 'Event (appointment or date)'], ['trip', 'Trip (packing, plan, budget…)']], hint: t ? 'Changing to Trip opens the trip form.' : '' }
     ],
     submitLabel: t ? 'Save' : 'Add event',
@@ -2734,9 +2757,11 @@ document.addEventListener('visibilitychange', () => { if (!document.hidden && !$
     } catch (e) { console.error(e); db = null; }
   }
   if (uniqueItemIds()) persist({ touch: false, sync: false });
+  const addEv = takeAddEvent();
   render();
   Sync.onChange(renderIfSafe);
   Sync.start({ db, key: 'sync', model: tripModel });
+  if (addEv) { if (location.hash && location.hash !== '#/') location.hash = '#/'; setTimeout(() => eventDialog(null, addEv), 0); }
 })();
 </script>
 </body>

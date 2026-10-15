@@ -1,0 +1,1076 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-15T12:00:00Z",
+  "demo": true,
+  "events": [
+    {
+      "id": "302279df843655e2",
+      "title": "SAMPLE: Example Farmers Market",
+      "category": "market",
+      "start": "2026-10-17T08:00:00-05:00",
+      "end": "2026-10-17T12:00:00-05:00",
+      "allDay": false,
+      "venue": {
+        "name": "Sample Plaza",
+        "address": "500 Test Way",
+        "city": "Friendswood",
+        "neighborhood": null,
+        "lat": 29.53,
+        "lon": -95.2
+      },
+      "price": {
+        "min": 0,
+        "max": 0,
+        "currency": "USD",
+        "free": true,
+        "text": "Free"
+      },
+      "description": "Sample weekly market.",
+      "status": "scheduled",
+      "series": {
+        "id": "sample-series-market",
+        "label": "Weekly on Saturdays"
+      },
+      "sources": [
+        {
+          "id": "sample-tickets",
+          "name": "Sample Ticketing",
+          "url": "https://example.com/sample/8",
+          "ticketUrl": "https://example.com/sample/8/tickets",
+          "lastChecked": "2026-10-15T12:00:00Z",
+          "sourceEventId": "sample-8"
+        }
+      ],
+      "firstSeen": "2026-10-15T12:00:00Z",
+      "lastSeen": "2026-10-15T12:00:00Z",
+      "removed": false
+    },
+    {
+      "id": "f213243373b05062",
+      "title": "SAMPLE: Fictional Symphony Night",
+      "category": "music",
+      "start": "2026-10-17T19:30:00-05:00",
+      "end": "2026-10-17T21:30:00-05:00",
+      "allDay": false,
+      "venue": {
+        "name": "Sample Hall",
+        "address": "100 Fictional Ave",
+        "city": "Houston",
+        "neighborhood": "Sample District",
+        "lat": 29.76,
+        "lon": -95.37
+      },
+      "price": {
+        "min": 25,
+        "max": 90,
+        "currency": "USD",
+        "free": false,
+        "text": "$25–$90"
+      },
+      "description": "Sample description for a made-up symphony concert.",
+      "status": "scheduled",
+      "series": null,
+      "sources": [
+        {
+          "id": "sample-feed",
+          "name": "Sample Venue Feed",
+          "url": "https://example.com/sample/1",
+          "ticketUrl": null,
+          "lastChecked": "2026-10-15T12:00:00Z",
+          "sourceEventId": "sample-1"
+        },
+        {
+          "id": "sample-resale",
+          "name": "Sample Resale",
+          "url": "https://example.com/resale/1",
+          "ticketUrl": "https://example.com/resale/1",
+          "lastChecked": "2026-10-15T12:00:00Z",
+          "sourceEventId": "resale-1"
+        }
+      ],
+      "firstSeen": "2026-10-15T12:00:00Z",
+      "lastSeen": "2026-10-15T12:00:00Z",
+      "removed": false
+    },
+    {
+      "id": "c61da7883818d84f",
+      "title": "SAMPLE: Fictional Art Exhibition",
+      "category": "exhibition",
+      "start": "2026-10-20T00:00:00-05:00",
+      "end": "2026-12-31T23:59:59-06:00",
+      "allDay": true,
+      "venue": {
+        "name": "Sample Gallery",
+        "address": "400 Example Rd",
+        "city": "Houston",
+        "neighborhood": "Sample Heights",
+        "lat": 29.8,
+        "lon": -95.4
+      },
+      "price": {
+        "min": 10,
+        "max": 10,
+        "currency": "USD",
+        "free": false,
+        "text": "$10"
+      },
+      "description": "Sample exhibition running for months.",
+      "status": "scheduled",
+      "series": null,
+      "sources": [
+        {
+          "id": "sample-feed",
+          "name": "Sample Venue Feed",
+          "url": "https://example.com/sample/13",
+          "ticketUrl": null,
+          "lastChecked": "2026-10-15T12:00:00Z",
+          "sourceEventId": "sample-13"
+        }
+      ],
+      "firstSeen": "2026-10-15T12:00:00Z",
+      "lastSeen": "2026-10-15T12:00:00Z",
+      "removed": false
+    },
+    {
+      "id": "973c0f4989a3ba30",
+      "title": "SAMPLE: Imaginary Storytime",
+      "category": "family",
+      "start": "2026-10-21T10:30:00-05:00",
+      "end": "2026-10-21T11:15:00-05:00",
+      "allDay": false,
+      "venue": {
+        "name": "Sample Plaza",
+        "address": "500 Test Way",
+        "city": "Friendswood",
+        "neighborhood": null,
+        "lat": 29.53,
+        "lon": -95.2
+      },
+      "price": {
+        "min": 0,
+        "max": 0,
+        "currency": "USD",
+        "free": true,
+        "text": "Free"
+      },
+      "description": "Sample library-style storytime.",
+      "status": "scheduled",
+      "series": {
+        "id": "sample-series-story",
+        "label": "Weekly on Wednesdays"
+      },
+      "sources": [
+        {
+          "id": "sample-tickets",
+          "name": "Sample Ticketing",
+          "url": "https://example.com/sample/17",
+          "ticketUrl": "https://example.com/sample/17/tickets",
+          "lastChecked": "2026-10-15T12:00:00Z",
+          "sourceEventId": "sample-17"
+        }
+      ],
+      "firstSeen": "2026-10-15T12:00:00Z",
+      "lastSeen": "2026-10-15T12:00:00Z",
+      "removed": false
+    },
+    {
+      "id": "7a6e13b8a92383ba",
+      "title": "SAMPLE: Pretend Band Live",
+      "category": "music",
+      "start": "2026-10-23T20:00:00-05:00",
+      "end": null,
+      "allDay": false,
+      "venue": {
+        "name": "Sample Arena",
+        "address": "200 Pretend Blvd",
+        "city": "Houston",
+        "neighborhood": null,
+        "lat": 29.75,
+        "lon": -95.36
+      },
+      "price": {
+        "min": 45,
+        "max": 45,
+        "currency": "USD",
+        "free": false,
+        "text": "$45"
+      },
+      "description": null,
+      "status": "scheduled",
+      "series": null,
+      "sources": [
+        {
+          "id": "sample-tickets",
+          "name": "Sample Ticketing",
+          "url": "https://example.com/sample/2",
+          "ticketUrl": "https://example.com/sample/2/tickets",
+          "lastChecked": "2026-10-15T12:00:00Z",
+          "sourceEventId": "sample-2"
+        }
+      ],
+      "firstSeen": "2026-10-15T12:00:00Z",
+      "lastSeen": "2026-10-15T12:00:00Z",
+      "removed": false
+    },
+    {
+      "id": "af2b73ba459208cd",
+      "title": "SAMPLE: Example Farmers Market",
+      "category": "market",
+      "start": "2026-10-24T08:00:00-05:00",
+      "end": "2026-10-24T12:00:00-05:00",
+      "allDay": false,
+      "venue": {
+        "name": "Sample Plaza",
+        "address": "500 Test Way",
+        "city": "Friendswood",
+        "neighborhood": null,
+        "lat": 29.53,
+        "lon": -95.2
+      },
+      "price": {
+        "min": 0,
+        "max": 0,
+        "currency": "USD",
+        "free": true,
+        "text": "Free"
+      },
+      "description": "Sample weekly market.",
+      "status": "scheduled",
+      "series": {
+        "id": "sample-series-market",
+        "label": "Weekly on Saturdays"
+      },
+      "sources": [
+        {
+          "id": "sample-tickets",
+          "name": "Sample Ticketing",
+          "url": "https://example.com/sample/9",
+          "ticketUrl": "https://example.com/sample/9/tickets",
+          "lastChecked": "2026-10-15T12:00:00Z",
+          "sourceEventId": "sample-9"
+        }
+      ],
+      "firstSeen": "2026-10-15T12:00:00Z",
+      "lastSeen": "2026-10-15T12:00:00Z",
+      "removed": false
+    },
+    {
+      "id": "f1a4488fbe4cf891",
+      "title": "SAMPLE: Make-Believe Musical",
+      "category": "theater",
+      "start": "2026-10-24T14:00:00-05:00",
+      "end": "2026-10-24T16:30:00-05:00",
+      "allDay": false,
+      "venue": {
+        "name": "Sample Playhouse",
+        "address": "300 Make-Believe St",
+        "city": "Galveston",
+        "neighborhood": null,
+        "lat": 29.3,
+        "lon": -94.8
+      },
+      "price": {
+        "min": 30,
+        "max": 120,
+        "currency": "USD",
+        "free": false,
+        "text": "$30–$120"
+      },
+      "description": "Sample musical, matinee performance.",
+      "status": "scheduled",
+      "series": {
+        "id": "sample-series-musical",
+        "label": "Weekly on Saturdays"
+      },
+      "sources": [
+        {
+          "id": "sample-tickets",
+          "name": "Sample Ticketing",
+          "url": "https://example.com/sample/3",
+          "ticketUrl": "https://example.com/sample/3/tickets",
+          "lastChecked": "2026-10-15T12:00:00Z",
+          "sourceEventId": "sample-3"
+        }
+      ],
+      "firstSeen": "2026-10-15T12:00:00Z",
+      "lastSeen": "2026-10-15T12:00:00Z",
+      "removed": false
+    },
+    {
+      "id": "e64fc7f8e7c018b2",
+      "title": "SAMPLE: Imaginary Storytime",
+      "category": "family",
+      "start": "2026-10-28T10:30:00-05:00",
+      "end": "2026-10-28T11:15:00-05:00",
+      "allDay": false,
+      "venue": {
+        "name": "Sample Plaza",
+        "address": "500 Test Way",
+        "city": "Friendswood",
+        "neighborhood": null,
+        "lat": 29.53,
+        "lon": -95.2
+      },
+      "price": {
+        "min": 0,
+        "max": 0,
+        "currency": "USD",
+        "free": true,
+        "text": "Free"
+      },
+      "description": "Sample library-style storytime.",
+      "status": "scheduled",
+      "series": {
+        "id": "sample-series-story",
+        "label": "Weekly on Wednesdays"
+      },
+      "sources": [
+        {
+          "id": "sample-tickets",
+          "name": "Sample Ticketing",
+          "url": "https://example.com/sample/18",
+          "ticketUrl": "https://example.com/sample/18/tickets",
+          "lastChecked": "2026-10-15T12:00:00Z",
+          "sourceEventId": "sample-18"
+        }
+      ],
+      "firstSeen": "2026-10-15T12:00:00Z",
+      "lastSeen": "2026-10-15T12:00:00Z",
+      "removed": false
+    },
+    {
+      "id": "9b17c7bfab836f20",
+      "title": "SAMPLE: Imaginary Comedian",
+      "category": "comedy",
+      "start": "2026-10-30T20:00:00-05:00",
+      "end": "2026-10-30T22:00:00-05:00",
+      "allDay": false,
+      "venue": {
+        "name": "Sample Comedy Club",
+        "address": "600 Demo Dr",
+        "city": "Katy",
+        "neighborhood": null,
+        "lat": 29.79,
+        "lon": -95.82
+      },
+      "price": {
+        "min": 20,
+        "max": 35,
+        "currency": "USD",
+        "free": false,
+        "text": "$20–$35"
+      },
+      "description": "Sample stand-up show.",
+      "status": "scheduled",
+      "series": null,
+      "sources": [
+        {
+          "id": "sample-tickets",
+          "name": "Sample Ticketing",
+          "url": "https://example.com/sample/6",
+          "ticketUrl": "https://example.com/sample/6/tickets",
+          "lastChecked": "2026-10-15T12:00:00Z",
+          "sourceEventId": "sample-6"
+        },
+        {
+          "id": "sample-resale",
+          "name": "Sample Resale",
+          "url": "https://example.com/resale/6",
+          "ticketUrl": "https://example.com/resale/6",
+          "lastChecked": "2026-10-15T12:00:00Z",
+          "sourceEventId": "resale-6"
+        }
+      ],
+      "firstSeen": "2026-10-15T12:00:00Z",
+      "lastSeen": "2026-10-15T12:00:00Z",
+      "removed": false
+    },
+    {
+      "id": "ade2363358e8eabd",
+      "title": "SAMPLE: Make-Believe Musical",
+      "category": "theater",
+      "start": "2026-10-31T14:00:00-05:00",
+      "end": "2026-10-31T16:30:00-05:00",
+      "allDay": false,
+      "venue": {
+        "name": "Sample Playhouse",
+        "address": "300 Make-Believe St",
+        "city": "Galveston",
+        "neighborhood": null,
+        "lat": 29.3,
+        "lon": -94.8
+      },
+      "price": {
+        "min": 30,
+        "max": 120,
+        "currency": "USD",
+        "free": false,
+        "text": "$30–$120"
+      },
+      "description": "Sample musical, matinee performance.",
+      "status": "scheduled",
+      "series": {
+        "id": "sample-series-musical",
+        "label": "Weekly on Saturdays"
+      },
+      "sources": [
+        {
+          "id": "sample-feed",
+          "name": "Sample Venue Feed",
+          "url": "https://example.com/sample/4",
+          "ticketUrl": null,
+          "lastChecked": "2026-10-15T12:00:00Z",
+          "sourceEventId": "sample-4"
+        }
+      ],
+      "firstSeen": "2026-10-15T12:00:00Z",
+      "lastSeen": "2026-10-15T12:00:00Z",
+      "removed": false
+    },
+    {
+      "id": "591dbb598d4eb407",
+      "title": "SAMPLE: Make-Believe Family Fun Day",
+      "category": "family",
+      "start": "2026-11-01T10:00:00-06:00",
+      "end": "2026-11-01T15:00:00-06:00",
+      "allDay": false,
+      "venue": {
+        "name": "Sample Park",
+        "address": "1 Imaginary Ln",
+        "city": "Sugar Land",
+        "neighborhood": null,
+        "lat": 29.62,
+        "lon": -95.63
+      },
+      "price": {
+        "min": 0,
+        "max": 0,
+        "currency": "USD",
+        "free": true,
+        "text": "Free"
+      },
+      "description": "Sample kids activities (starts before the Nov 1 clock change; ends after it).",
+      "status": "scheduled",
+      "series": null,
+      "sources": [
+        {
+          "id": "sample-feed",
+          "name": "Sample Venue Feed",
+          "url": "https://example.com/sample/16",
+          "ticketUrl": null,
+          "lastChecked": "2026-10-15T12:00:00Z",
+          "sourceEventId": "sample-16"
+        },
+        {
+          "id": "sample-resale",
+          "name": "Sample Resale",
+          "url": "https://example.com/resale/16",
+          "ticketUrl": "https://example.com/resale/16",
+          "lastChecked": "2026-10-15T12:00:00Z",
+          "sourceEventId": "resale-16"
+        }
+      ],
+      "firstSeen": "2026-10-15T12:00:00Z",
+      "lastSeen": "2026-10-15T12:00:00Z",
+      "removed": false
+    },
+    {
+      "id": "f7ba4da77f05d5c1",
+      "title": "SAMPLE: Pretend Town Hall Meeting",
+      "category": "community",
+      "start": "2026-11-03T18:30:00-06:00",
+      "end": "2026-11-03T20:00:00-06:00",
+      "allDay": false,
+      "venue": {
+        "name": "Sample Plaza",
+        "address": "500 Test Way",
+        "city": "Friendswood",
+        "neighborhood": null,
+        "lat": 29.53,
+        "lon": -95.2
+      },
+      "price": {
+        "min": 0,
+        "max": 0,
+        "currency": "USD",
+        "free": true,
+        "text": "Free"
+      },
+      "description": "Sample community meeting.",
+      "status": "scheduled",
+      "series": null,
+      "sources": [
+        {
+          "id": "sample-feed",
+          "name": "Sample Venue Feed",
+          "url": "https://example.com/sample/19",
+          "ticketUrl": null,
+          "lastChecked": "2026-10-15T12:00:00Z",
+          "sourceEventId": "sample-19"
+        }
+      ],
+      "firstSeen": "2026-10-15T12:00:00Z",
+      "lastSeen": "2026-10-15T12:00:00Z",
+      "removed": false
+    },
+    {
+      "id": "b4c9782716865130",
+      "title": "SAMPLE: Cancelled Sample Concert",
+      "category": "music",
+      "start": "2026-11-05T20:00:00-06:00",
+      "end": null,
+      "allDay": false,
+      "venue": {
+        "name": "Sample Hall",
+        "address": "100 Fictional Ave",
+        "city": "Houston",
+        "neighborhood": "Sample District",
+        "lat": 29.76,
+        "lon": -95.37
+      },
+      "price": {
+        "min": 30,
+        "max": 60,
+        "currency": "USD",
+        "free": false,
+        "text": "$30–$60"
+      },
+      "description": "This sample event shows how a cancelled listing looks.",
+      "status": "canceled",
+      "series": null,
+      "sources": [
+        {
+          "id": "sample-tickets",
+          "name": "Sample Ticketing",
+          "url": "https://example.com/sample/21",
+          "ticketUrl": "https://example.com/sample/21/tickets",
+          "lastChecked": "2026-10-15T12:00:00Z",
+          "sourceEventId": "sample-21"
+        },
+        {
+          "id": "sample-resale",
+          "name": "Sample Resale",
+          "url": "https://example.com/resale/21",
+          "ticketUrl": "https://example.com/resale/21",
+          "lastChecked": "2026-10-15T12:00:00Z",
+          "sourceEventId": "resale-21"
+        }
+      ],
+      "firstSeen": "2026-10-15T12:00:00Z",
+      "lastSeen": "2026-10-15T12:00:00Z",
+      "removed": false
+    },
+    {
+      "id": "e424a1fae2fc53aa",
+      "title": "SAMPLE: Fictional Harvest Festival",
+      "category": "festival",
+      "start": "2026-11-06T00:00:00-06:00",
+      "end": "2026-11-08T23:59:59-06:00",
+      "allDay": true,
+      "venue": {
+        "name": "Sample Park",
+        "address": "1 Imaginary Ln",
+        "city": "Sugar Land",
+        "neighborhood": null,
+        "lat": 29.62,
+        "lon": -95.63
+      },
+      "price": {
+        "min": 0,
+        "max": 0,
+        "currency": "USD",
+        "free": true,
+        "text": "Free"
+      },
+      "description": "Sample three-day festival with made-up food, music and rides.",
+      "status": "scheduled",
+      "series": null,
+      "sources": [
+        {
+          "id": "sample-feed",
+          "name": "Sample Venue Feed",
+          "url": "https://example.com/sample/7",
+          "ticketUrl": null,
+          "lastChecked": "2026-10-15T12:00:00Z",
+          "sourceEventId": "sample-7"
+        }
+      ],
+      "firstSeen": "2026-10-15T12:00:00Z",
+      "lastSeen": "2026-10-15T12:00:00Z",
+      "removed": false
+    },
+    {
+      "id": "1bccc583c5d634ac",
+      "title": "SAMPLE: Example Farmers Market",
+      "category": "market",
+      "start": "2026-11-07T08:00:00-06:00",
+      "end": "2026-11-07T12:00:00-06:00",
+      "allDay": false,
+      "venue": {
+        "name": "Sample Plaza",
+        "address": "500 Test Way",
+        "city": "Friendswood",
+        "neighborhood": null,
+        "lat": 29.53,
+        "lon": -95.2
+      },
+      "price": {
+        "min": 0,
+        "max": 0,
+        "currency": "USD",
+        "free": true,
+        "text": "Free"
+      },
+      "description": "Sample weekly market.",
+      "status": "scheduled",
+      "series": {
+        "id": "sample-series-market",
+        "label": "Weekly on Saturdays"
+      },
+      "sources": [
+        {
+          "id": "sample-feed",
+          "name": "Sample Venue Feed",
+          "url": "https://example.com/sample/10",
+          "ticketUrl": null,
+          "lastChecked": "2026-10-15T12:00:00Z",
+          "sourceEventId": "sample-10"
+        }
+      ],
+      "firstSeen": "2026-10-15T12:00:00Z",
+      "lastSeen": "2026-10-15T12:00:00Z",
+      "removed": false
+    },
+    {
+      "id": "fd01b7e6c93ccd2e",
+      "title": "SAMPLE: Make-Believe Musical",
+      "category": "theater",
+      "start": "2026-11-07T14:00:00-06:00",
+      "end": "2026-11-07T16:30:00-06:00",
+      "allDay": false,
+      "venue": {
+        "name": "Sample Playhouse",
+        "address": "300 Make-Believe St",
+        "city": "Galveston",
+        "neighborhood": null,
+        "lat": 29.3,
+        "lon": -94.8
+      },
+      "price": {
+        "min": 30,
+        "max": 120,
+        "currency": "USD",
+        "free": false,
+        "text": "$30–$120"
+      },
+      "description": "Sample musical, matinee performance.",
+      "status": "scheduled",
+      "series": {
+        "id": "sample-series-musical",
+        "label": "Weekly on Saturdays"
+      },
+      "sources": [
+        {
+          "id": "sample-tickets",
+          "name": "Sample Ticketing",
+          "url": "https://example.com/sample/5",
+          "ticketUrl": "https://example.com/sample/5/tickets",
+          "lastChecked": "2026-10-15T12:00:00Z",
+          "sourceEventId": "sample-5"
+        }
+      ],
+      "firstSeen": "2026-10-15T12:00:00Z",
+      "lastSeen": "2026-10-15T12:00:00Z",
+      "removed": false
+    },
+    {
+      "id": "88c9416b157766b2",
+      "title": "SAMPLE: Pretend Rockets vs Imaginary Lakers",
+      "category": "sports",
+      "start": "2026-11-12T19:00:00-06:00",
+      "end": null,
+      "allDay": false,
+      "venue": {
+        "name": "Sample Arena",
+        "address": "200 Pretend Blvd",
+        "city": "Houston",
+        "neighborhood": null,
+        "lat": 29.75,
+        "lon": -95.36
+      },
+      "price": {
+        "min": 40,
+        "max": 400,
+        "currency": "USD",
+        "free": false,
+        "text": "$40–$400"
+      },
+      "description": null,
+      "status": "scheduled",
+      "series": null,
+      "sources": [
+        {
+          "id": "sample-tickets",
+          "name": "Sample Ticketing",
+          "url": "https://example.com/sample/14",
+          "ticketUrl": "https://example.com/sample/14/tickets",
+          "lastChecked": "2026-10-15T12:00:00Z",
+          "sourceEventId": "sample-14"
+        }
+      ],
+      "firstSeen": "2026-10-15T12:00:00Z",
+      "lastSeen": "2026-10-15T12:00:00Z",
+      "removed": false
+    },
+    {
+      "id": "2d3cb783db8d606a",
+      "title": "SAMPLE: Postponed Sample Show",
+      "category": "theater",
+      "start": "2026-11-13T19:30:00-06:00",
+      "end": null,
+      "allDay": false,
+      "venue": {
+        "name": "Sample Playhouse",
+        "address": "300 Make-Believe St",
+        "city": "Galveston",
+        "neighborhood": null,
+        "lat": 29.3,
+        "lon": -94.8
+      },
+      "price": {
+        "min": 25,
+        "max": 70,
+        "currency": "USD",
+        "free": false,
+        "text": "$25–$70"
+      },
+      "description": "This sample event shows how a postponed listing looks.",
+      "status": "postponed",
+      "series": null,
+      "sources": [
+        {
+          "id": "sample-feed",
+          "name": "Sample Venue Feed",
+          "url": "https://example.com/sample/22",
+          "ticketUrl": null,
+          "lastChecked": "2026-10-15T12:00:00Z",
+          "sourceEventId": "sample-22"
+        }
+      ],
+      "firstSeen": "2026-10-15T12:00:00Z",
+      "lastSeen": "2026-10-15T12:00:00Z",
+      "removed": false
+    },
+    {
+      "id": "b02daa903988c433",
+      "title": "SAMPLE: Pretend Taco Crawl",
+      "category": "food",
+      "start": "2026-11-14T17:00:00-06:00",
+      "end": "2026-11-14T21:00:00-06:00",
+      "allDay": false,
+      "venue": {
+        "name": "Sample Plaza",
+        "address": "500 Test Way",
+        "city": "Friendswood",
+        "neighborhood": null,
+        "lat": 29.53,
+        "lon": -95.2
+      },
+      "price": {
+        "min": 15,
+        "max": 15,
+        "currency": "USD",
+        "free": false,
+        "text": "$15"
+      },
+      "description": "Sample tasting event.",
+      "status": "scheduled",
+      "series": null,
+      "sources": [
+        {
+          "id": "sample-tickets",
+          "name": "Sample Ticketing",
+          "url": "https://example.com/sample/11",
+          "ticketUrl": "https://example.com/sample/11/tickets",
+          "lastChecked": "2026-10-15T12:00:00Z",
+          "sourceEventId": "sample-11"
+        },
+        {
+          "id": "sample-resale",
+          "name": "Sample Resale",
+          "url": "https://example.com/resale/11",
+          "ticketUrl": "https://example.com/resale/11",
+          "lastChecked": "2026-10-15T12:00:00Z",
+          "sourceEventId": "resale-11"
+        }
+      ],
+      "firstSeen": "2026-10-15T12:00:00Z",
+      "lastSeen": "2026-10-15T12:00:00Z",
+      "removed": false
+    },
+    {
+      "id": "6d4f648a0b4306cb",
+      "title": "SAMPLE: Formerly Listed Sample Event",
+      "category": "other",
+      "start": "2026-11-18T19:00:00-06:00",
+      "end": null,
+      "allDay": false,
+      "venue": {
+        "name": "Sample Hall",
+        "address": "100 Fictional Ave",
+        "city": "Houston",
+        "neighborhood": "Sample District",
+        "lat": 29.76,
+        "lon": -95.37
+      },
+      "price": null,
+      "description": "Marked removed: a source that succeeded no longer lists it.",
+      "status": "scheduled",
+      "series": null,
+      "sources": [
+        {
+          "id": "sample-tickets",
+          "name": "Sample Ticketing",
+          "url": "https://example.com/sample/26",
+          "ticketUrl": "https://example.com/sample/26/tickets",
+          "lastChecked": "2026-10-15T12:00:00Z",
+          "sourceEventId": "sample-26"
+        },
+        {
+          "id": "sample-resale",
+          "name": "Sample Resale",
+          "url": "https://example.com/resale/26",
+          "ticketUrl": "https://example.com/resale/26",
+          "lastChecked": "2026-10-15T12:00:00Z",
+          "sourceEventId": "resale-26"
+        }
+      ],
+      "firstSeen": "2026-10-15T12:00:00Z",
+      "lastSeen": "2026-10-15T12:00:00Z",
+      "removed": true,
+      "removedAt": "2026-10-14T12:00:00Z"
+    },
+    {
+      "id": "0cf871b199585136",
+      "title": "SAMPLE: Imaginary Craft Beer Tasting",
+      "category": "food",
+      "start": "2026-11-20T18:00:00-06:00",
+      "end": null,
+      "allDay": false,
+      "venue": {
+        "name": "Sample Pavilion",
+        "address": "700 Placeholder Pkwy",
+        "city": "The Woodlands",
+        "neighborhood": null,
+        "lat": 30.16,
+        "lon": -95.46
+      },
+      "price": null,
+      "description": null,
+      "status": "scheduled",
+      "series": null,
+      "sources": [
+        {
+          "id": "sample-tickets",
+          "name": "Sample Ticketing",
+          "url": "https://example.com/sample/12",
+          "ticketUrl": "https://example.com/sample/12/tickets",
+          "lastChecked": "2026-10-15T12:00:00Z",
+          "sourceEventId": "sample-12"
+        }
+      ],
+      "firstSeen": "2026-10-15T12:00:00Z",
+      "lastSeen": "2026-10-15T12:00:00Z",
+      "removed": false
+    },
+    {
+      "id": "a891a5dd4408cd59",
+      "title": "SAMPLE: Example Volunteer Day",
+      "category": "community",
+      "start": "2026-11-21T09:00:00-06:00",
+      "end": "2026-11-21T12:00:00-06:00",
+      "allDay": false,
+      "venue": {
+        "name": "Sample Park",
+        "address": "1 Imaginary Ln",
+        "city": "Sugar Land",
+        "neighborhood": null,
+        "lat": 29.62,
+        "lon": -95.63
+      },
+      "price": {
+        "min": 0,
+        "max": 0,
+        "currency": "USD",
+        "free": true,
+        "text": "Free"
+      },
+      "description": null,
+      "status": "scheduled",
+      "series": null,
+      "sources": [
+        {
+          "id": "sample-tickets",
+          "name": "Sample Ticketing",
+          "url": "https://example.com/sample/20",
+          "ticketUrl": "https://example.com/sample/20/tickets",
+          "lastChecked": "2026-10-15T12:00:00Z",
+          "sourceEventId": "sample-20"
+        }
+      ],
+      "firstSeen": "2026-10-15T12:00:00Z",
+      "lastSeen": "2026-10-15T12:00:00Z",
+      "removed": false
+    },
+    {
+      "id": "5f16e37ef280a259",
+      "title": "SAMPLE: Holiday Lights Opening Night",
+      "category": "festival",
+      "start": "2026-11-27T18:00:00-06:00",
+      "end": "2026-11-27T21:00:00-06:00",
+      "allDay": false,
+      "venue": {
+        "name": "Sample Plaza",
+        "address": "500 Test Way",
+        "city": "Friendswood",
+        "neighborhood": null,
+        "lat": 29.53,
+        "lon": -95.2
+      },
+      "price": {
+        "min": 0,
+        "max": 0,
+        "currency": "USD",
+        "free": true,
+        "text": "Free"
+      },
+      "description": "Sample holiday event after the clock change (CST).",
+      "status": "scheduled",
+      "series": null,
+      "sources": [
+        {
+          "id": "sample-tickets",
+          "name": "Sample Ticketing",
+          "url": "https://example.com/sample/24",
+          "ticketUrl": "https://example.com/sample/24/tickets",
+          "lastChecked": "2026-10-15T12:00:00Z",
+          "sourceEventId": "sample-24"
+        }
+      ],
+      "firstSeen": "2026-10-15T12:00:00Z",
+      "lastSeen": "2026-10-15T12:00:00Z",
+      "removed": false
+    },
+    {
+      "id": "6dfd6abf616ccf4f",
+      "title": "SAMPLE: Rescheduled Sample Talk",
+      "category": "other",
+      "start": "2026-12-01T18:00:00-06:00",
+      "end": null,
+      "allDay": false,
+      "venue": {
+        "name": "Sample Gallery",
+        "address": "400 Example Rd",
+        "city": "Houston",
+        "neighborhood": "Sample Heights",
+        "lat": 29.8,
+        "lon": -95.4
+      },
+      "price": null,
+      "description": "This sample event shows how a rescheduled listing looks.",
+      "status": "rescheduled",
+      "series": null,
+      "sources": [
+        {
+          "id": "sample-tickets",
+          "name": "Sample Ticketing",
+          "url": "https://example.com/sample/23",
+          "ticketUrl": "https://example.com/sample/23/tickets",
+          "lastChecked": "2026-10-15T12:00:00Z",
+          "sourceEventId": "sample-23"
+        }
+      ],
+      "firstSeen": "2026-10-15T12:00:00Z",
+      "lastSeen": "2026-10-15T12:00:00Z",
+      "removed": false
+    },
+    {
+      "id": "70342033e0b64224",
+      "title": "SAMPLE: Example Marathon",
+      "category": "sports",
+      "start": "2026-12-06T07:00:00-06:00",
+      "end": null,
+      "allDay": false,
+      "venue": {
+        "name": "Sample Park",
+        "address": "1 Imaginary Ln",
+        "city": "Sugar Land",
+        "neighborhood": null,
+        "lat": 29.62,
+        "lon": -95.63
+      },
+      "price": {
+        "min": 60,
+        "max": 60,
+        "currency": "USD",
+        "free": false,
+        "text": "$60"
+      },
+      "description": "Sample charity run.",
+      "status": "scheduled",
+      "series": null,
+      "sources": [
+        {
+          "id": "sample-tickets",
+          "name": "Sample Ticketing",
+          "url": "https://example.com/sample/15",
+          "ticketUrl": "https://example.com/sample/15/tickets",
+          "lastChecked": "2026-10-15T12:00:00Z",
+          "sourceEventId": "sample-15"
+        }
+      ],
+      "firstSeen": "2026-10-15T12:00:00Z",
+      "lastSeen": "2026-10-15T12:00:00Z",
+      "removed": false
+    },
+    {
+      "id": "12696d5c74593e8c",
+      "title": "SAMPLE: Midnight Sample Party",
+      "category": "music",
+      "start": "2026-12-31T22:00:00-06:00",
+      "end": "2027-01-01T01:00:00-06:00",
+      "allDay": false,
+      "venue": {
+        "name": "Sample Hall",
+        "address": "100 Fictional Ave",
+        "city": "Houston",
+        "neighborhood": "Sample District",
+        "lat": 29.76,
+        "lon": -95.37
+      },
+      "price": {
+        "min": 50,
+        "max": 150,
+        "currency": "USD",
+        "free": false,
+        "text": "$50–$150"
+      },
+      "description": "Sample event that crosses midnight.",
+      "status": "scheduled",
+      "series": null,
+      "sources": [
+        {
+          "id": "sample-feed",
+          "name": "Sample Venue Feed",
+          "url": "https://example.com/sample/25",
+          "ticketUrl": null,
+          "lastChecked": "2026-10-15T12:00:00Z",
+          "sourceEventId": "sample-25"
+        }
+      ],
+      "firstSeen": "2026-10-15T12:00:00Z",
+      "lastSeen": "2026-10-15T12:00:00Z",
+      "removed": false
+    }
+  ]
+}

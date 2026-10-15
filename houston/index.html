@@ -1,0 +1,1689 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Houston Events</title>
+<meta name="description" content="Houston-area concerts, theater, comedy, festivals, markets and more, collected automatically. Pick favorites to share with each other.">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#f2f8f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0c1413" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Houston Events">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<style>
+:root{
+  --bg:#f5f4ef; --card:#ffffff; --ink:#1b2420; --muted:#66736d; --line:#e2e0d6; --soft:#efede5;
+  --accent:#0f766e; --accent-ink:#ffffff; --accent-soft:#d9f0ec;
+  --bad:#b42318; --bad-soft:#fde8e6; --warn:#9a5b00; --warn-soft:#fdf0d5; --ok:#166534; --ok-soft:#dcf5e3;
+  --radius:14px; --shadow:0 1px 2px rgba(16,24,20,.06),0 6px 18px rgba(16,24,20,.06);
+  color-scheme:light dark;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0e1311; --card:#171f1c; --ink:#e7eeeb; --muted:#97a69f; --line:#27332e; --soft:#1e2824;
+    --accent:#2dd4bf; --accent-ink:#06211d; --accent-soft:#12332e;
+    --bad:#ff8a80; --bad-soft:#3a1a18; --warn:#f6c26b; --warn-soft:#3a2c12; --ok:#7ee2a0; --ok-soft:#14301f;
+    --shadow:none;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation;
+  padding-bottom:calc(92px + env(safe-area-inset-bottom));
+}
+a{color:var(--accent)}
+h1,h2,h3{margin:0;line-height:1.2}
+h3{font-size:16px}
+p{margin:0 0 8px}
+.wrap{max-width:720px;margin:0 auto;padding:0 16px}
+.muted{color:var(--muted)} .bad{color:var(--bad)} .warn{color:var(--warn)} .ok{color:var(--ok)}
+.num{font-variant-numeric:tabular-nums}
+.hide{display:none!important}
+.pad{padding:14px 16px}
+.hint{font-size:13px;color:var(--muted);margin-top:4px}
+
+/* header */
+header.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top)}
+header.top .wrap{display:flex;align-items:center;gap:12px;min-height:58px}
+header.top .grow{flex:1;min-width:0}
+header.top h1{font-size:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+header.top .sub{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.back{display:inline-flex;align-items:center;min-height:44px;padding-right:6px;text-decoration:none;font-weight:600}
+
+/* cards, tiles, lists */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+.tile{padding:12px}
+.tile .lbl{font-size:12px;color:var(--muted);font-weight:600}
+.tile .val{font-size:20px;font-weight:700;margin-top:2px}
+.sec-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin:22px 4px 8px;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700}
+.sec-h .btn{text-transform:none;letter-spacing:0}
+.list{list-style:none;margin:0;padding:0}
+.row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-top:1px solid var(--line);cursor:pointer}
+.row:first-child{border-top:0}
+.row.static{cursor:default}
+.row-main{flex:1;min-width:0}
+.row-title{font-weight:600;overflow-wrap:anywhere}
+.row-sub{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.row-amt{font-weight:700;white-space:nowrap}
+.row.faded{opacity:.6}
+.badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 7px;border-radius:999px;background:var(--soft);color:var(--muted);vertical-align:middle;margin-left:6px}
+.badge.ok{background:var(--ok-soft);color:var(--ok)} .badge.warn{background:var(--warn-soft);color:var(--warn)} .badge.bad{background:var(--bad-soft);color:var(--bad)} .badge.acc{background:var(--accent-soft);color:var(--accent)}
+.empty{text-align:center;padding:40px 20px;color:var(--muted)}
+.empty .big{font-size:40px;line-height:1;margin-bottom:10px}
+.empty h2{color:var(--ink);font-size:18px;margin-bottom:6px}
+.empty .btn{margin-top:14px}
+.banner{padding:12px 14px;border-radius:12px;background:var(--warn-soft);color:var(--warn);font-size:14px;margin:14px 0;display:flex;gap:10px;justify-content:space-between;align-items:center}
+.banner.bad{background:var(--bad-soft);color:var(--bad)}
+.bar{height:8px;border-radius:99px;background:var(--soft);overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--accent);border-radius:99px}
+.bar.over>i{background:var(--bad)}
+
+/* buttons */
+.btn{white-space:nowrap;appearance:none;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-weight:600;min-height:44px;padding:0 16px;border-radius:12px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.danger{color:var(--bad)}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--accent)}
+.btn.small{min-height:36px;padding:0 12px;font-size:14px;border-radius:10px}
+.btn.block{width:100%}
+.btn:active{transform:translateY(1px)}
+.btn:disabled{opacity:.5;cursor:default}
+.btn:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible,.chip:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 14px;min-height:36px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+
+/* bottom nav + fab */
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+nav.tabs .wrap{display:flex;padding:0}
+nav.tabs a,nav.tabs button{flex:1;min-height:58px;border:0;background:none;color:var(--muted);font:inherit;font-size:11px;font-weight:600;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;text-decoration:none}
+nav.tabs .ico{font-size:20px;line-height:1}
+nav.tabs [aria-current="page"]{color:var(--accent)}
+.fab{position:fixed;right:max(16px,calc(50vw - 344px));bottom:calc(74px + env(safe-area-inset-bottom));z-index:7;width:56px;height:56px;border-radius:50%;border:0;background:var(--accent);color:var(--accent-ink);font-size:30px;line-height:1;box-shadow:0 6px 18px rgba(0,0,0,.28);cursor:pointer}
+.fab:active{transform:scale(.96)}
+
+/* forms + dialogs */
+input,select,textarea{width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-height:44px}
+textarea{min-height:92px;resize:vertical}
+input[type=checkbox]{width:22px;height:22px;min-height:0;padding:0;accent-color:var(--accent);flex:none}
+.field label{display:block;font-size:13px;font-weight:600;color:var(--muted);margin-bottom:4px}
+.field.check{display:flex;align-items:center;gap:10px}
+.field.check label{margin:0;color:var(--ink);font-size:16px;font-weight:500}
+.fields2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+dialog{border:0;border-radius:18px;padding:0;width:calc(100vw - 24px);max-width:520px;background:var(--card);color:var(--ink);box-shadow:0 20px 60px rgba(0,0,0,.35)}
+dialog::backdrop{background:rgba(10,15,12,.55)}
+.dlg-form{padding:20px;display:flex;flex-direction:column;gap:12px;max-height:85vh;max-height:85dvh;overflow:auto}
+.dlg-form h2{font-size:19px}
+.dlg-actions{display:flex;gap:8px;align-items:center;margin-top:6px;flex-wrap:wrap}
+.dlg-actions .spacer{flex:1}
+.ask-actions{justify-content:flex-end}
+.dlg-err{color:var(--bad);font-size:14px}
+.dlg-err:empty{display:none}
+.ask-body{font-size:15px;color:var(--ink)}
+.ask-body p{margin:0 0 8px}
+.checkgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px}
+.checkgrid .field.check label{font-size:15px}
+
+/* toast */
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom));background:#1b2420;color:#fff;padding:12px 16px;border-radius:12px;display:flex;gap:14px;align-items:center;z-index:60;max-width:calc(100vw - 24px);box-shadow:0 8px 24px rgba(0,0,0,.35);font-size:15px}
+.toast button{background:none;border:0;color:#7dd3c8;font:inherit;font-weight:700;cursor:pointer;min-height:36px}
+
+@media (prefers-reduced-motion:no-preference){.btn,.fab{transition:transform .08s}}
+
+.syncbadge{flex:none;white-space:nowrap;border:1px solid var(--line,#d5dbe0);background:var(--card,#fff);color:inherit;border-radius:999px;padding:4px 10px;font:inherit;font-size:.82rem;cursor:pointer;white-space:nowrap}
+.syncbadge.ok{color:#15803d}.syncbadge.bad{color:#b91c1c}
+.seg{display:flex;gap:8px;margin-top:6px}.seg .chip{flex:1;text-align:center}
+
+:root{--bg:#f2f8f7;--accent:#0b7f74;--accent-ink:#fff;--accent-soft:#d3efeb;--line:#d9e4e1;--soft:#e5eeec}
+@media (prefers-color-scheme:dark){:root{--bg:#0c1413;--card:#14201e;--line:#22342f;--soft:#1a2a27;--accent:#2dd4bf;--accent-ink:#04201c;--accent-soft:#103430}}
+.stack{display:flex;flex-direction:column;gap:14px;margin-top:14px}
+header.top .wrap{flex-wrap:nowrap}
+header.top .btn.small{flex:none}
+header.top .syncbadge{min-height:36px}
+header.top h1{white-space:normal;font-size:18px;line-height:1.1}
+header.top .wrap{gap:8px}
+.demobar{background:var(--bad-soft);color:var(--bad);border-top:2px solid var(--bad);border-bottom:2px solid var(--bad);padding:8px 16px;text-align:center;font-weight:800;font-size:14px;line-height:1.3}
+.demobar span{display:block;font-weight:600;font-size:12px}
+.views{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin:12px 0 8px;background:var(--soft);padding:4px;border-radius:14px}
+.views button{appearance:none;border:0;background:transparent;color:var(--ink);font:inherit;font-size:13px;font-weight:700;min-height:44px;padding:0 2px;border-radius:10px;cursor:pointer;min-width:0}
+.views button[aria-selected="true"]{background:var(--card);color:var(--accent);box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.statusline{appearance:none;border:0;background:none;font:inherit;font-size:13px;color:var(--muted);padding:6px 0;text-align:left;cursor:pointer;min-height:36px;width:100%}
+.statusline u{text-decoration:underline}
+.vtitle{font-weight:800;font-size:17px;margin:6px 2px 2px}
+.vsub{font-size:13px;color:var(--muted);margin:0 2px 8px}
+.chiprow{display:flex;gap:8px;overflow-x:auto;padding:2px 0 8px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.chiprow::-webkit-scrollbar{display:none}
+.chiprow .chip{flex:none}
+.fsum{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:2px 0 6px}
+.fsum .cnt{margin-left:auto;font-size:13px;color:var(--muted)}
+.dayh{position:sticky;top:var(--hh,58px);z-index:3;background:var(--bg);padding:10px 4px 6px;margin-top:6px;font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);border-bottom:1px solid var(--line)}
+.ev{padding:14px 16px;margin:10px 0}
+.ev.faded{opacity:.72}
+.ev-top{display:flex;gap:8px;align-items:flex-start;justify-content:space-between}
+.ev-title{font-size:17px;font-weight:700;line-height:1.25;overflow-wrap:anywhere;margin:0}
+.ev.canceled .ev-title{text-decoration:line-through}
+.ev .cat{flex:none;margin-left:0;font-size:12px}
+.ev-badges{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.ev-badges .badge{margin-left:0;white-space:normal}
+.ev-when{font-weight:700;margin-top:8px}
+.ev-where{color:var(--ink);margin-top:2px;overflow-wrap:anywhere}
+.ev-price{margin-top:4px;font-weight:600}
+.ev-price.none{color:var(--muted);font-weight:500}
+.ev-desc{margin:8px 0 0;font-size:14px;color:var(--muted);cursor:pointer;overflow-wrap:anywhere}
+.ev-desc.clamp{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ev-src{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+.ev-src .btn{white-space:normal;text-align:center;height:auto;padding-top:6px;padding-bottom:6px}
+.ev-checked{font-size:12px;color:var(--muted);margin-top:6px}
+.picks{display:grid;grid-template-columns:1fr 1fr 1.25fr;gap:6px;margin-top:12px}
+.picks .btn{padding:0 4px;font-size:13px;min-width:0;white-space:normal;line-height:1.15;text-align:center}
+.btn[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.nop[aria-pressed="true"]{background:var(--soft);border-color:var(--line);color:var(--ink)}
+.ev-act{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.ev-act .btn{flex:1;min-width:120px}
+.othr{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.othr .badge{margin-left:0}
+.more{margin:14px 0}
+.hiddenline{font-size:14px;color:var(--muted);text-align:center;margin:14px 0}
+.hiddenline button{font:inherit;font-weight:700;color:var(--accent);background:none;border:0;padding:8px;cursor:pointer;min-height:36px}
+.rg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:8px 0}
+.rg input{min-width:0;padding:10px 8px}
+.scope{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 10px}
+.sig{font-size:13px;color:var(--muted);margin:2px 2px 10px}
+.sig button{font:inherit;font-size:13px;font-weight:700;color:var(--accent);background:none;border:0;padding:6px 2px;cursor:pointer;min-height:36px}
+.srcrow{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--line)}
+.srcrow:first-child{border-top:0}
+.srcrow .nm{font-weight:700}
+.srcrow .dt{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.set-form h3{margin-top:6px}
+.set-form .chips{margin:8px 0 4px}
+.set-form .seclbl{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:800;margin-top:10px}
+.set-form .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.set-form select{margin-top:4px}
+@media print{header.top,nav,.picks,.ev-act{display:none}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+'use strict';
+/* ===================== shared helpers (identical in every Goobs app) ===================== */
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => Array.from(el.querySelectorAll(s));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const isNum = v => typeof v === 'number' && Number.isFinite(v);
+const str = v => (typeof v === 'string' ? v : v == null ? '' : String(v));
+
+/* ---- dates: always local calendar dates stored as 'YYYY-MM-DD' ---- */
+const pad = n => String(n).padStart(2, '0');
+const fmtISO = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const parseISO = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+const isISO = s => typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s) && fmtISO(parseISO(s)) === s;
+const todayISO = () => fmtISO(new Date());
+const daysBetween = (a, b) => Math.round((parseISO(b) - parseISO(a)) / 86400000);
+const addDays = (s, n) => { const d = parseISO(s); d.setDate(d.getDate() + n); return fmtISO(d); };
+function addMonths(s, n, anchorDay) {
+  const d = parseISO(s);
+  const day = anchorDay || d.getDate();
+  const first = new Date(d.getFullYear(), d.getMonth() + n, 1);
+  const last = new Date(first.getFullYear(), first.getMonth() + 1, 0).getDate();
+  first.setDate(Math.min(day, last));
+  return fmtISO(first);
+}
+const monthEndISO = s => { const d = parseISO(s); return fmtISO(new Date(d.getFullYear(), d.getMonth() + 1, 0)); };
+
+function fmtDate(s, withWeekday = true) {
+  const d = parseISO(s);
+  const o = { month: 'short', day: 'numeric' };
+  if (withWeekday) o.weekday = 'short';
+  if (d.getFullYear() !== new Date().getFullYear()) o.year = 'numeric';
+  return d.toLocaleDateString(undefined, o);
+}
+function fmtDateTime(iso) {
+  const d = new Date(iso);
+  return isNaN(d) ? 'unknown date' : d.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+}
+const _mf = {};
+function money(n, cur = 'USD') {
+  if (!_mf[cur]) {
+    try { _mf[cur] = new Intl.NumberFormat(undefined, { style: 'currency', currency: cur }); }
+    catch { _mf[cur] = new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }); }
+  }
+  return _mf[cur].format(n);
+}
+const csvCell = v => {
+  let s = String(v ?? '');
+  if (/^[=+\-@\t\r]/.test(s)) s = "'" + s; // neutralise spreadsheet formula injection
+  return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+};
+function safeUrl(u) {
+  let s = String(u ?? '').trim();
+  if (!s) return '';
+  if (!/^[a-z][a-z0-9+.-]*:/i.test(s)) s = 'https://' + s;
+  try { const x = new URL(s); return /^https?:$/.test(x.protocol) ? x.href : ''; } catch { return ''; }
+}
+
+/* ---- storage: one JSON string under one key in IndexedDB ---- */
+function openDB(name) {
+  return new Promise((res, rej) => {
+    if (!window.indexedDB) return rej(new Error('IndexedDB unavailable'));
+    const r = indexedDB.open(name, 1);
+    r.onupgradeneeded = () => { r.result.createObjectStore('kv'); };
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+    r.onblocked = () => rej(new Error('Database blocked'));
+  });
+}
+function idbGet(db, key) {
+  return new Promise((res, rej) => {
+    const q = db.transaction('kv').objectStore('kv').get(key);
+    q.onsuccess = () => res(q.result);
+    q.onerror = () => rej(q.error);
+  });
+}
+function idbPut(db, key, val) {
+  return new Promise((res, rej) => {
+    const tx = db.transaction('kv', 'readwrite');
+    tx.objectStore('kv').put(val, key);
+    tx.oncomplete = () => res();
+    tx.onerror = () => rej(tx.error);
+    tx.onabort = () => rej(tx.error || new Error('Write aborted'));
+  });
+}
+
+/* ---- toast ---- */
+function toast(msg, action) {
+  const old = $('.toast'); if (old) old.remove();
+  const t = document.createElement('div');
+  t.className = 'toast'; t.setAttribute('role', 'status');
+  t.innerHTML = `<span>${esc(msg)}</span>` + (action ? `<button type="button">${esc(action.label)}</button>` : '');
+  if (action) t.querySelector('button').onclick = () => { t.remove(); action.fn(); };
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), action ? 8000 : 3200);
+}
+
+/* ---- dialogs ---- */
+if (!$('#dlg')) document.body.insertAdjacentHTML('beforeend', '<dialog id="dlg"></dialog><dialog id="ask"></dialog>');
+{
+  const dlg = $('#dlg'); let down = false;
+  dlg.addEventListener('pointerdown', e => { down = e.target === dlg; });
+  dlg.addEventListener('click', e => { if (e.target === dlg && down) dlg.close(); });
+}
+
+function fieldHTML(f) {
+  const id = 'f_' + f.name, v = f.value ?? '';
+  if (f.type === 'checkbox')
+    return `<div class="field check"><input type="checkbox" id="${id}" name="${f.name}"${f.value ? ' checked' : ''}><label for="${id}">${esc(f.label)}</label></div>`;
+  let ctl;
+  if (f.type === 'select') {
+    ctl = `<select id="${id}" name="${f.name}">${f.options.map(o => {
+      const [val, label] = Array.isArray(o) ? o : [o, o];
+      return `<option value="${esc(val)}"${String(val) === String(v) ? ' selected' : ''}>${esc(label)}</option>`;
+    }).join('')}</select>`;
+  } else if (f.type === 'textarea') {
+    ctl = `<textarea id="${id}" name="${f.name}" placeholder="${esc(f.placeholder || '')}">${esc(v)}</textarea>`;
+  } else {
+    const t = f.type || 'text';
+    const extra = t === 'number' ? ` inputmode="decimal" step="${f.step || 'any'}"` : '';
+    ctl = `<input id="${id}" name="${f.name}" type="${t}" value="${esc(v)}" placeholder="${esc(f.placeholder || '')}"${extra}${f.min != null ? ` min="${f.min}"` : ''}${f.max != null ? ` max="${f.max}"` : ''} autocomplete="${f.autocomplete || 'off'}" autocapitalize="${f.capitalize || (t === 'email' || t === 'password' ? 'none' : 'sentences')}">`;
+  }
+  return `<div class="field"><label for="${id}">${esc(f.label)}${f.required ? ' *' : ''}</label>${ctl}${f.hint ? `<div class="hint">${esc(f.hint)}</div>` : ''}</div>`;
+}
+
+/* formDialog: fields -> values. onSubmit(values) may return an error string (keeps dialog open).
+   onDelete() may return true to close. extra: [{label, kind, onClick}] extra buttons. */
+function formDialog({ title, intro = '', fields, submitLabel = 'Save', onSubmit, onDelete, deleteLabel = 'Delete', extra = [], onClose, grid = '' }) {
+  const dlg = $('#dlg');
+  const body = grid ? `<div class="${grid}">${fields.map(fieldHTML).join('')}</div>` : fields.map(fieldHTML).join('');
+  dlg.innerHTML = `<form class="dlg-form" novalidate>
+    <h2>${esc(title)}</h2>${intro ? `<p class="muted">${esc(intro)}</p>` : ''}${body}
+    <div class="dlg-err" role="alert"></div>
+    <div class="dlg-actions">
+      ${onDelete ? `<button type="button" class="btn danger" data-k="del">${esc(deleteLabel)}</button>` : ''}
+      ${extra.map((x, i) => `<button type="button" class="btn ${x.kind || ''}" data-x="${i}">${esc(x.label)}</button>`).join('')}
+      <span class="spacer"></span>
+      <button type="button" class="btn ghost" data-k="cancel">Cancel</button>
+      <button type="submit" class="btn primary">${esc(submitLabel)}</button>
+    </div></form>`;
+  const form = $('form', dlg), err = $('.dlg-err', dlg);
+  const collect = () => {
+    const vals = {};
+    for (const f of fields) { const el = form.elements[f.name]; vals[f.name] = f.type === 'checkbox' ? el.checked : el.value; }
+    return vals;
+  };
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const vals = collect();
+    for (const f of fields) if (f.required && !String(vals[f.name]).trim()) { err.textContent = `${f.label} is required.`; return; }
+    err.textContent = '';
+    let msg;
+    try { msg = await onSubmit(vals); } catch (ex) { msg = ex.message || 'Something went wrong.'; }
+    if (msg) err.textContent = msg; else dlg.close();
+  });
+  $('[data-k="cancel"]', dlg).onclick = () => dlg.close();
+  if (onDelete) $('[data-k="del"]', dlg).onclick = async () => { if (await onDelete()) dlg.close(); };
+  $$('[data-x]', dlg).forEach(b => { b.onclick = () => extra[+b.dataset.x].onClick(collect()); });
+  dlg.onclose = () => { dlg.onclose = null; if (onClose) onClose(); };
+  dlg.showModal();
+  const first = form.querySelector('input:not([type=checkbox]),textarea');
+  if (first && !first.value) first.focus(); // new-item forms open ready to type; edit forms don't pop the keyboard
+}
+
+function askDialog({ title, body = '', buttons }) {
+  return new Promise(resolve => {
+    const d = $('#ask'); let done = false;
+    d.innerHTML = `<div class="dlg-form"><h2>${esc(title)}</h2>${body ? `<div class="ask-body">${body}</div>` : ''}
+      <div class="dlg-actions ask-actions">${buttons.map((b, i) => `<button type="button" class="btn ${b.kind || ''}" data-i="${i}">${esc(b.label)}</button>`).join('')}</div></div>`;
+    const finish = v => { if (done) return; done = true; d.close(); resolve(v); };
+    $$('button', d).forEach(btn => { btn.onclick = () => finish(buttons[+btn.dataset.i].value); });
+    d.oncancel = () => { done = true; resolve(undefined); };
+    d.showModal();
+  });
+}
+const confirmBox = async (title, bodyText, okLabel = 'Delete', danger = true) =>
+  (await askDialog({ title, body: bodyText ? `<p>${esc(bodyText)}</p>` : '', buttons: [{ label: 'Cancel', value: false }, { label: okLabel, value: true, kind: danger ? 'danger' : 'primary' }] })) === true;
+const msgBox = (title, bodyText) =>
+  askDialog({ title, body: `<p>${esc(bodyText)}</p>`, buttons: [{ label: 'OK', value: true, kind: 'primary' }] });
+
+/* ---- backup: optional AES-GCM passphrase encryption (Web Crypto, PBKDF2-SHA256) ---- */
+const b64 = buf => { let s = ''; const b = new Uint8Array(buf); for (let i = 0; i < b.length; i += 0x8000) s += String.fromCharCode.apply(null, b.subarray(i, i + 0x8000)); return btoa(s); };
+const unb64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+async function deriveKey(pass, salt, iterations) {
+  const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(pass), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey({ name: 'PBKDF2', salt, iterations, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+}
+async function encryptPayload(obj, pass) {
+  const salt = crypto.getRandomValues(new Uint8Array(16)), iv = crypto.getRandomValues(new Uint8Array(12));
+  const iterations = 250000;
+  const key = await deriveKey(pass, salt, iterations);
+  const ct = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, new TextEncoder().encode(JSON.stringify(obj)));
+  return { encrypted: true, kdf: 'PBKDF2-SHA256', iterations, salt: b64(salt), iv: b64(iv), data: b64(ct) };
+}
+async function decryptPayload(env, pass) {
+  const key = await deriveKey(pass, unb64(env.salt), env.iterations);
+  try {
+    const pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: unb64(env.iv) }, key, unb64(env.data));
+    return JSON.parse(new TextDecoder().decode(pt));
+  } catch { throw new Error('Wrong passphrase, or the file is damaged.'); }
+}
+function promptDecrypt(env) {
+  return new Promise(resolve => {
+    let result = null;
+    formDialog({
+      title: 'Encrypted backup', intro: 'Enter the passphrase you chose when you made this backup.',
+      fields: [{ name: 'pass', label: 'Passphrase', type: 'password', required: true }], submitLabel: 'Unlock',
+      onSubmit: async v => { try { result = await decryptPayload(env, v.pass); } catch (e) { return e.message; } },
+      onClose: () => resolve(result)
+    });
+  });
+}
+const Backup = {
+  async build({ appId, schema, data, passphrase }) {
+    const head = { app: appId, schemaVersion: schema, exportedAt: new Date().toISOString() };
+    if (passphrase) return JSON.stringify({ ...head, ...(await encryptPayload(data, passphrase)) });
+    return JSON.stringify({ ...head, encrypted: false, data }, null, 2);
+  },
+  /* returns {data, exportedAt, schemaVersion}, or null if the user cancelled the passphrase prompt; throws Error with a friendly message */
+  async parse(text, { appId, schema }) {
+    let env;
+    try { env = JSON.parse(text); } catch { throw new Error('That file isn’t a valid backup (it isn’t JSON).'); }
+    if (!env || typeof env !== 'object' || env.app !== appId)
+      throw new Error(env && typeof env === 'object' && env.app ? `That backup belongs to a different app (${String(env.app).slice(0, 40)}).` : 'That file isn’t a backup from this app.');
+    if (!Number.isInteger(env.schemaVersion) || env.schemaVersion < 1) throw new Error('The backup is missing its version number.');
+    if (env.schemaVersion > schema) throw new Error('That backup was made by a newer version of the app. Close and reopen this app to update it, then try again.');
+    let data;
+    if (env.encrypted) {
+      if (!(window.crypto && crypto.subtle)) throw new Error('Encrypted backups need a secure (https) connection.');
+      if (!(env.iterations >= 1000 && env.iterations <= 2000000) || typeof env.salt !== 'string' || typeof env.iv !== 'string' || typeof env.data !== 'string')
+        throw new Error('The encrypted backup is damaged.');
+      data = await promptDecrypt(env);
+      if (data === null) return null;
+    } else data = env.data;
+    if (!data || typeof data !== 'object') throw new Error('The backup contains no data.');
+    return { data, exportedAt: typeof env.exportedAt === 'string' ? env.exportedAt : null, schemaVersion: env.schemaVersion };
+  }
+};
+
+/* share sheet when the platform supports sharing files (iPhone), otherwise a normal download */
+async function deliverFile(filename, text, mime = 'application/json') {
+  const file = new File([text], filename, { type: mime });
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try { await navigator.share({ files: [file], title: filename }); return 'shared'; }
+    catch (e) { if (e && e.name === 'AbortError') return 'cancelled'; /* otherwise fall back to a download */ }
+  }
+  const url = URL.createObjectURL(file);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.style.display = 'none';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 15000);
+  return 'downloaded';
+}
+function pickFile(accept = '.json,application/json') {
+  return new Promise(resolve => {
+    const i = document.createElement('input');
+    i.type = 'file'; i.accept = accept; i.style.display = 'none';
+    document.body.appendChild(i);
+    let done = false;
+    const fin = f => { if (done) return; done = true; i.remove(); resolve(f); };
+    i.addEventListener('change', () => fin((i.files && i.files[0]) || null));
+    i.addEventListener('cancel', () => fin(null));
+    i.click();
+  });
+}
+const readFileText = f => (f.text ? f.text() : new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = () => rej(r.error); r.readAsText(f); }));
+
+/* nag banner: only when there is data and no recent backup */
+function backupNag(meta, hasData) {
+  if (!hasData) return null;
+  if (!meta.lastBackup) return 'You have data but no backup yet. Make one so you can restore it if this device loses it.';
+  const age = (Date.now() - Date.parse(meta.lastBackup)) / 86400000;
+  const changed = meta.lastChange && Date.parse(meta.lastChange) > Date.parse(meta.lastBackup) + 1000;
+  if (changed && age >= 7) return `Your last backup was ${Math.floor(age)} days ago and you’ve made changes since.`;
+  return null;
+}
+
+/* ---- install helper ---- */
+let deferredInstall = null;
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferredInstall = e; if (typeof render === 'function') render(); });
+const isStandalone = () => (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+function installCardHTML() {
+  if (isStandalone()) return '';
+  const ios = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const msg = deferredInstall
+    ? '<p>Install it for its own window and full offline use.</p><button class="btn primary" data-action="install">Install app</button>'
+    : ios
+      ? '<p>In Safari tap <b>Share</b> → <b>Add to Home Screen</b>. <b>Do this before entering data</b> — the home-screen app keeps its own separate storage from the Safari tab. Then open it from the new icon.</p>'
+      : '<p>Use your browser’s menu → <b>Install app</b> (or <b>Add to Home Screen</b>).</p>';
+  return `<section class="card pad"><h3>Install on this device</h3>${msg}</section>`;
+}
+async function runInstall() { if (!deferredInstall) return; deferredInstall.prompt(); try { await deferredInstall.userChoice; } catch {} deferredInstall = null; if (typeof render === 'function') render(); }
+
+
+
+if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol))
+  window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
+
+/* Exit link: every app's top bar gets "‹ Apps" (back to the main apps page) unless that screen already has its own back link. */
+(function () {
+  const add = () => {
+    const w = document.querySelector('header.top .wrap');
+    if (!w || w.querySelector('a.back')) return;
+    const a = document.createElement('a');
+    a.className = 'back exit'; a.href = '../'; a.textContent = '‹ Apps'; a.setAttribute('aria-label', 'Exit to all apps');
+    w.insertBefore(a, w.firstChild);
+  };
+  const start = () => { add(); new MutationObserver(add).observe(document.body, { childList: true, subtree: true }); };
+  if (document.body) start(); else document.addEventListener('DOMContentLoaded', start);
+})();
+
+/* ---- Sync: optional shared database for two people (Firebase Auth + Firestore) ----
+   The app always works from its own on-device copy. This layer pushes local changes
+   (per item, last write wins) and merges in changes made on the other phone.
+   The Firebase calls live in firebaseBackend() only; everything else is plain logic. */
+const SYNC_CONFIG = {
+  apiKey: 'AIzaSyCztAn5kfhZ1yLjvia17D0dEsnDBvFzuKA',
+  authDomain: 'goobs-apps-aa819.firebaseapp.com',
+  projectId: 'goobs-apps-aa819',
+  storageBucket: 'goobs-apps-aa819.firebasestorage.app',
+  messagingSenderId: '1080769702714',
+  appId: '1:1080769702714:web:70a664d22a62ee9492fe03'
+};
+const SYNC_SDK = 'https://www.gstatic.com/firebasejs/12.19.0/';
+
+async function firebaseBackend() {
+  const [appM, authM, fsM] = await Promise.all([
+    import(SYNC_SDK + 'firebase-app.js'), import(SYNC_SDK + 'firebase-auth.js'), import(SYNC_SDK + 'firebase-firestore.js')
+  ]);
+  const app = appM.initializeApp(SYNC_CONFIG), auth = authM.getAuth(app), fs = fsM.getFirestore(app);
+  return {
+    onAuth: cb => authM.onAuthStateChanged(auth, u => cb(u ? { uid: u.uid, email: u.email || '' } : null)),
+    signIn: (email, pw) => authM.signInWithEmailAndPassword(auth, email, pw),
+    signOut: () => authM.signOut(auth),
+    watch: (coll, onDocs, onErr) => fsM.onSnapshot(fsM.collection(fs, coll),
+      snap => { if (!snap.metadata.fromCache) onDocs(snap.docs.map(d => ({ id: d.id, data: d.data() }))); },   // ignore cache-only snapshots: an empty one would look like "everything was deleted"
+      onErr),
+    // Last write wins: skip the write when the stored copy is newer than this change.
+    // First-time uploads (ts 0) never overwrite a copy that already exists.
+    write: op => {
+      const ref = fsM.doc(fs, op.coll, op.id);
+      return fsM.runTransaction(fs, async tx => {
+        const cur = await tx.get(ref);
+        if (cur.exists() && (op.ts === 0 || (cur.data()._u || 0) > op.ts)) return;
+        if (op.op === 'del') tx.delete(ref);
+        else tx.set(ref, { ...op.data, _u: op.ts, _n: op.n });
+      });
+    }
+  };
+}
+
+const Sync = (() => {
+  const ACK_MS = 120000;
+  let model = null, db = null, dbKey = 'sync', backend = null, user = null, state0 = 'off';
+  let st = { v: 1, enabled: false, joined: false, seen: {}, outbox: {}, order: {} };
+  let unsubs = [], remote = {}, ready = {}, flushing = false, retryTimer = null, retries = 0, lastTs = 0, lastN = 0, denied = false, errored = false;
+  const acked = new Map(), listeners = [];
+
+  const canon = v => JSON.stringify(v, (k, x) => (x && typeof x === 'object' && !Array.isArray(x)) ? Object.fromEntries(Object.keys(x).sort().map(y => [y, x[y]])) : x);
+  const nextTs = () => (lastTs = Math.max(Date.now(), lastTs + 1));
+  const nextN = () => (lastN = Math.max(Date.now() * 1000, lastN + 1));
+  const keyOf = (c, id) => c + '/' + id;
+  const pending = () => Object.keys(st.outbox).length;
+  const emit = () => { for (const f of listeners) try { f(); } catch (e) { console.error(e); } };
+  let saveChain = Promise.resolve();
+  function save() { if (!db) return; const s = JSON.stringify(st); saveChain = saveChain.then(() => idbPut(db, dbKey, s)).catch(e => console.error(e)); }
+
+  function status() {
+    if (!model) return 'off';
+    if (state0 === 'unavailable') return 'unavailable';
+    if (!user) return backend ? 'signed-out' : 'connecting';
+    if (denied) return 'denied';
+    if (errored) return 'error';
+    if (!model.colls.every(c => ready[c])) return 'connecting';
+    return pending() ? 'syncing' : 'live';
+  }
+
+  /* what changed on this device since we last synced -> queue it */
+  function localDiff() {
+    if (!st.enabled || !model) return;
+    const present = new Set(); let dirty = false;
+    for (const e of model.toEntities()) {
+      const k = keyOf(e.coll, e.id); present.add(k);
+      const j = canon(e.data);
+      if (st.seen[k] === j) continue;
+      st.seen[k] = j;
+      if (!(k in st.order)) st.order[k] = nextN();
+      st.outbox[k] = { op: 'set', coll: e.coll, id: e.id, data: JSON.parse(j), ts: st.joined ? nextTs() : 0, n: st.order[k] };
+      dirty = true;
+    }
+    for (const k of Object.keys(st.seen)) {
+      if (present.has(k)) continue;
+      delete st.seen[k];
+      const i = k.indexOf('/');
+      st.outbox[k] = { op: 'del', coll: k.slice(0, i), id: k.slice(i + 1), ts: st.joined ? nextTs() : 0 };
+      dirty = true;
+    }
+    if (dirty) save();
+  }
+
+  /* combine the other phone's data with ours and hand the result to the app */
+  function reconcile() {
+    if (!model || !user || !model.colls.every(c => ready[c])) return;
+    localDiff();
+    const now = Date.now(), out = {}, remoteKeys = new Set();
+    model.colls.forEach(c => { out[c] = []; });
+    for (const c of model.colls) for (const d of remote[c] || []) {
+      const k = keyOf(c, d.id), op = st.outbox[k], u = d.data._u || 0, a = acked.get(k);
+      remoteKeys.add(k);
+      if (op && op.ts > u) { if (op.op === 'set') out[c].push({ id: d.id, data: op.data, n: op.n }); continue; }
+      if (op) delete st.outbox[k];
+      if (a && a.op === 'del' && now - a.at < ACK_MS && u <= a.ts) continue;   // our delete just landed; the list is a moment behind
+      const { _u, _n, ...data } = d.data;
+      if (_n) st.order[k] = _n;
+      out[c].push({ id: d.id, data, n: _n || st.order[k] || 0 });
+    }
+    for (const e of model.toEntities()) {
+      const k = keyOf(e.coll, e.id);
+      if (remoteKeys.has(k)) continue;
+      const op = st.outbox[k], a = acked.get(k);
+      if ((op && op.op === 'set') || (a && a.op === 'set' && now - a.at < ACK_MS)) out[e.coll].push({ id: e.id, data: e.data, n: st.order[k] || 0 });
+      // otherwise it was deleted on the other phone: leave it out
+    }
+    for (const [k, a] of acked) if (now - a.at >= ACK_MS || (a.op === 'set') === remoteKeys.has(k)) acked.delete(k);
+    for (const c of model.colls) out[c].sort((x, y) => (x.n || 0) - (y.n || 0));
+    model.apply(out);
+    const inOut = new Set();
+    for (const c of model.colls) for (const o of out[c]) inOut.add(keyOf(c, o.id));
+    const seen = {};
+    for (const e of model.toEntities()) { const k = keyOf(e.coll, e.id); if (inOut.has(k)) seen[k] = canon(e.data); }
+    st.seen = seen; st.joined = true;
+    localDiff();            // anything the app created while merging (e.g. a starter list) gets queued
+    save(); emit(); flush();
+  }
+
+  async function flush() {
+    if (flushing || !backend || !user || !st.enabled) return;
+    if (!st.joined && !model.colls.every(c => ready[c])) return;   // first sign-in: read what is there before writing
+    flushing = true; let failed = false;
+    try {
+      for (const k of Object.keys(st.outbox)) {
+        const op = st.outbox[k];
+        await backend.write(op);
+        if (st.outbox[k] === op) delete st.outbox[k];
+        acked.set(k, { op: op.op, ts: op.ts, at: Date.now() });
+        retries = 0; errored = false;
+      }
+    } catch (e) {
+      failed = true; errored = !(typeof navigator !== 'undefined' && navigator.onLine === false);
+      console.warn('sync write failed', e && e.code || e);
+      if (e && e.code === 'permission-denied') { denied = true; errored = false; }
+      else { clearTimeout(retryTimer); retryTimer = setTimeout(flush, Math.min(60000, 3000 * 2 ** Math.min(retries++, 5))); }
+    }
+    flushing = false; save(); emit();
+    if (!failed && pending()) flush();
+  }
+
+  function watch() {
+    unwatch();
+    for (const c of model.colls) {
+      unsubs.push(backend.watch(c, docs => { remote[c] = docs; ready[c] = true; denied = false; reconcile(); },
+        e => { if (e && e.code === 'permission-denied') denied = true; else errored = true; emit(); }));
+    }
+  }
+  function unwatch() { unsubs.forEach(u => { try { u(); } catch {} }); unsubs = []; remote = {}; ready = {}; }
+
+  async function connect() {
+    try {
+      const injected = typeof window !== 'undefined' && window.__SYNC_BACKEND__;
+      backend = injected || await firebaseBackend();
+      state0 = 'ok';
+    } catch (e) { backend = null; state0 = 'unavailable'; emit(); return; }
+    backend.onAuth(u => {
+      user = u; denied = false; errored = false;
+      if (u) { if (!st.enabled) { st.enabled = true; save(); } localDiff(); watch(); flush(); }
+      else unwatch();
+      emit();
+    });
+  }
+
+  return {
+    /* the app gives us: db (IndexedDB handle), key, and a model { colls, toEntities(), apply(map) } */
+    async start({ db: d, key, model: m }) {
+      db = d; dbKey = key || 'sync'; model = m;
+      if (db) { try { const raw = await idbGet(db, dbKey); if (raw) { const p = JSON.parse(raw); if (p && p.v === 1) st = { ...st, ...p }; } } catch (e) { console.error(e); } }
+      if (typeof window !== 'undefined') window.addEventListener('online', () => { if (!backend) connect(); else { errored = false; flush(); } });
+      await connect();
+      emit();
+    },
+    touch() { if (!st.enabled) return; localDiff(); flush(); emit(); },
+    onChange(f) { listeners.push(f); },
+    status, pending, enabled: () => st.enabled, user: () => user,
+    async signIn(email, pw) { if (!backend) throw Object.assign(new Error('offline'), { code: 'auth/network-request-failed' }); await backend.signIn(email, pw); },
+    async signOut() { if (backend) await backend.signOut(); }
+  };
+})();
+
+/* ---- sign-in UI shared by every synced app ---- */
+function syncText() {
+  const s = Sync.status(), n = Sync.pending();
+  switch (s) {
+    case 'live': return { icon: '☁️', text: 'Shared and up to date', cls: 'ok' };
+    case 'syncing': return { icon: '🔄', text: `Syncing ${n} change${n === 1 ? '' : 's'}…`, cls: '' };
+    case 'connecting': return { icon: '🔄', text: 'Connecting…', cls: '' };
+    case 'signed-out': return { icon: '👤', text: 'Not signed in — only on this device', cls: '' };
+    case 'denied': return { icon: '⛔', text: 'This account isn’t allowed to use the shared data', cls: 'bad' };
+    case 'error': return { icon: '⚠️', text: 'Sync problem — will retry. Your changes are saved here.', cls: 'bad' };
+    case 'unavailable': return { icon: '📴', text: Sync.enabled() ? 'Offline — changes are saved here and will sync later' : 'Sharing isn’t available right now (no connection)', cls: '' };
+    default: return { icon: '', text: '', cls: '' };
+  }
+}
+function syncBadgeHTML() {
+  const s = Sync.status(); if (s === 'off') return '';
+  const t = syncText();
+  return `<button type="button" class="syncbadge ${t.cls}" data-action="sync-info" aria-label="Sharing status: ${esc(t.text)}">${t.icon} <span>${esc({ live: 'Shared', 'signed-out': 'Sign in', unavailable: 'Offline', connecting: 'Connecting', syncing: 'Syncing', denied: 'Not allowed', error: 'Sync issue' }[s] || 'Sharing')}</span></button>`;
+}
+function syncCardHTML(blurb = '') {
+  const s = Sync.status(); if (s === 'off') return '';
+  const t = syncText(), u = Sync.user();
+  const btn = s === 'signed-out' || s === 'unavailable' && !u
+    ? '<button type="button" class="btn primary block" data-action="sync-signin">Sign in to share</button>'
+    : u ? `<button type="button" class="btn block" data-action="sync-signout">Sign out (${esc(u.email)})</button>` : '';
+  return `<section class="card pad" id="syncCard"><h3>Sharing</h3><p>${t.icon} ${esc(t.text)}</p>${blurb ? `<p class="muted">${esc(blurb)}</p>` : ''}${btn}</section>`;
+}
+function syncSignInDialog() {
+  formDialog({
+    title: 'Sign in to share', intro: 'Use the email and password for this app’s shared account. You only have to do this once on each phone.',
+    fields: [
+      { name: 'email', label: 'Email', type: 'email', required: true, autocomplete: 'username' },
+      { name: 'password', label: 'Password', type: 'password', required: true, autocomplete: 'current-password' }
+    ], submitLabel: 'Sign in',
+    onSubmit: async v => {
+      try { await Sync.signIn(v.email.trim(), v.password); }
+      catch (e) {
+        const c = e && e.code || '';
+        if (/invalid-credential|wrong-password|user-not-found|invalid-email|missing-password/.test(c)) return 'That email or password isn’t right.';
+        if (/network/.test(c) || e.message === 'offline') return 'Can’t reach the sign-in service. Check your connection and try again.';
+        if (/too-many-requests/.test(c)) return 'Too many tries. Wait a few minutes and try again.';
+        return 'Couldn’t sign in' + (c ? ` (${c})` : '') + '.';
+      }
+    }
+  });
+}
+async function syncAction(a) {
+  if (a === 'sync-signin') { syncSignInDialog(); return true; }
+  if (a === 'sync-signout') {
+    if (await confirmBox('Sign out?', 'This phone keeps its own copy, but stops sharing until you sign in again.', 'Sign out', false)) await Sync.signOut();
+    return true;
+  }
+  if (a === 'sync-info') {
+    if (Sync.status() === 'signed-out') { syncSignInDialog(); return true; }   // the "Sign in" badge opens the sign-in form directly
+    const t = syncText();
+    await msgBox('Sharing', t.text);
+    return true;
+  }
+  return false;
+}
+
+
+/* ===================== Houston Events ===================== */
+const APP_ID = 'goobs-houston', DB_NAME = 'goobs-houston-db', SCHEMA = 1, COLL = 'houston-picks';
+const TZ = 'America/Chicago', CHUNK = 40, STALE_MS = 24 * 3600000, MAX_PICKS = 5000;
+const CATS = [['music', 'Music'], ['theater', 'Theater'], ['comedy', 'Comedy'], ['festival', 'Festivals'], ['market', 'Markets'], ['food', 'Food'], ['exhibition', 'Exhibits'], ['sports', 'Sports'], ['family', 'Family'], ['community', 'Community'], ['other', 'Other']];
+const CAT_IDS = CATS.map(c => c[0]);
+const catLabel = id => (CATS.find(c => c[0] === id) || CATS[CATS.length - 1])[1];
+const PRESETS = [
+  { id: 'friendswood', name: 'Friendswood', lat: 29.5294, lon: -95.2010 },
+  { id: 'downtown', name: 'Houston Downtown', lat: 29.7604, lon: -95.3698 },
+  { id: 'galveston', name: 'Galveston', lat: 29.3013, lon: -94.7977 },
+  { id: 'woodlands', name: 'The Woodlands', lat: 30.1658, lon: -95.4613 },
+  { id: 'katy', name: 'Katy', lat: 29.7858, lon: -95.8245 },
+  { id: 'sugarland', name: 'Sugar Land', lat: 29.6197, lon: -95.6349 },
+  { id: 'pearland', name: 'Pearland', lat: 29.5636, lon: -95.2860 },
+  { id: 'clearlake', name: 'Clear Lake / Webster', lat: 29.5377, lon: -95.1183 },
+  { id: 'cypress', name: 'Cypress', lat: 29.9691, lon: -95.6972 },
+  { id: 'spring', name: 'Spring', lat: 30.0799, lon: -95.4172 },
+  { id: 'humble', name: 'Humble', lat: 29.9988, lon: -95.2622 }
+];
+const DIST_CHOICES = [5, 10, 15, 25, 50, 0];
+const PRICE_CHOICES = [['any', 'Any'], ['free', 'Free only'], ['u25', 'Under $25'], ['u50', 'Under $50'], ['u100', 'Under $100']];
+const PRICE_LIMIT = { u25: 25, u50: 50, u100: 100 };
+const PICK_STATUS = ['interested', 'going', 'not'];
+const PICK_LABEL = { interested: 'Interested', going: 'Going', not: 'Not interested' };
+const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
+const nowMs = () => Date.now();
+
+/* ---------------- Central-time helpers (never use the phone's time zone) ---------------- */
+const _dtf = {};
+const dtf = (k, o) => _dtf[k] || (_dtf[k] = new Intl.DateTimeFormat('en-US', { timeZone: TZ, ...o }));
+function centralParts(ms) {
+  const o = {};
+  for (const p of dtf('parts', { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', hourCycle: 'h23' }).formatToParts(new Date(ms))) o[p.type] = p.value;
+  return { y: +o.year, m: +o.month, d: +o.day, h: +o.hour % 24, mi: +o.minute, s: +o.second };
+}
+const isoOf = (y, m, d) => `${y}-${pad(m)}-${pad(d)}`;
+const centralDay = ms => { const p = centralParts(ms); return isoOf(p.y, p.m, p.d); };
+const utcOf = iso => { const [y, m, d] = iso.split('-').map(Number); return Date.UTC(y, m - 1, d); };
+const cAddDays = (iso, n) => { const t = new Date(utcOf(iso) + n * 86400000); return isoOf(t.getUTCFullYear(), t.getUTCMonth() + 1, t.getUTCDate()); };
+const cDow = iso => new Date(utcOf(iso)).getUTCDay();            // 0 = Sunday
+const cDiff = (a, b) => Math.round((utcOf(b) - utcOf(a)) / 86400000);
+/* wall-clock time in Central -> epoch ms (DST-safe) */
+function centralMs(iso, h = 0, mi = 0) {
+  const [y, m, d] = iso.split('-').map(Number);
+  const naive = Date.UTC(y, m - 1, d, h, mi);
+  let g = naive;
+  for (let i = 0; i < 3; i++) { const p = centralParts(g); g += naive - Date.UTC(p.y, p.m - 1, p.d, p.h, p.mi, p.s); }
+  return g;
+}
+const fmtTime = ms => dtf('time', { hour: 'numeric', minute: '2-digit' }).format(new Date(ms)).replace(/\u202f/g, ' ');
+const hhmm = ms => { const p = centralParts(ms); return pad(p.h) + ':' + pad(p.mi); };
+const _udf = {};
+const udf = (k, o) => _udf[k] || (_udf[k] = new Intl.DateTimeFormat('en-US', { timeZone: 'UTC', ...o }));
+const fmtMD = iso => udf('md', { month: 'short', day: 'numeric' }).format(new Date(utcOf(iso)));
+const fmtWMD = iso => udf('wmd', { weekday: 'short', month: 'short', day: 'numeric' }).format(new Date(utcOf(iso)));
+const fmtMonthYear = iso => udf('my', { month: 'long', year: 'numeric' }).format(new Date(utcOf(iso)));
+const fmtStamp = ms => dtf('stamp', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }).format(new Date(ms)).replace(/\u202f/g, ' ');
+function relTime(ms, now = nowMs()) {
+  if (!isNum(ms)) return 'unknown';
+  const d = now - ms;
+  if (d < 90000) return 'just now';
+  if (d < 3600000) return Math.round(d / 60000) + ' min ago';
+  if (d < 86400000) return Math.floor(d / 3600000) + ' hr ago';
+  const days = Math.floor(d / 86400000);
+  return days < 14 ? plural(days, 'day') + ' ago' : fmtMD(centralDay(ms));
+}
+
+/* ---------------- viewing windows ---------------- */
+function viewWindow(view, now, range = {}) {
+  const today = centralDay(now);
+  if (view === 'weekend') {
+    const dow = cDow(today); let from, endDay;
+    if (dow === 6) { from = now; endDay = cAddDays(today, 2); }
+    else if (dow === 0) { from = now; endDay = cAddDays(today, 1); }
+    else { const fri = cAddDays(today, 5 - dow); from = Math.max(now, centralMs(fri, 16, 0)); endDay = cAddDays(fri, 3); }
+    return { mode: 'overlap', from, to: centralMs(endDay), fromDay: centralDay(from), lastDay: cAddDays(endDay, -1), nowStart: from === now };
+  }
+  if (view === 'week') return { mode: 'overlap', from: now, to: centralMs(cAddDays(today, 7)), fromDay: today, lastDay: cAddDays(today, 6) };
+  if (view === 'soon') { const d = cAddDays(today, 7); return { mode: 'start', from: centralMs(d), to: Infinity, fromDay: d, lastDay: null }; }
+  if (view === 'range') {
+    let a = isISO(range.from) ? range.from : today, b = isISO(range.to) ? range.to : cAddDays(a, 30);
+    if (b < a) [a, b] = [b, a];
+    return { mode: 'overlap', from: centralMs(a), to: centralMs(cAddDays(b, 1)), fromDay: a, lastDay: b };
+  }
+  return { mode: 'overlap', from: now, to: Infinity, fromDay: today, lastDay: null };
+}
+const inWindow = (e, w) => w.mode === 'start' ? (e.startMs >= w.from && e.startMs < w.to) : (e.startMs < w.to && e.effEnd > w.from);
+
+/* ---------------- price, distance ---------------- */
+const fmtMoney = n => '$' + (Number.isInteger(n) ? n.toLocaleString('en-US') : n.toFixed(2));
+function priceInfo(p) {
+  const unknown = { kind: 'unknown', min: null, max: null, text: 'Price not listed' };
+  if (!p || typeof p !== 'object') return unknown;
+  let min = isNum(p.min) && p.min >= 0 ? p.min : null, max = isNum(p.max) && p.max >= 0 ? p.max : null;
+  if (min != null && max != null && min > max) [min, max] = [max, min];
+  const txt = str(p.text).replace(/\s+/g, ' ').trim().slice(0, 40);
+  if (p.free === true || (max === 0 && (min === 0 || min == null)) || (min == null && max == null && /^free$/i.test(txt))) return { kind: 'free', min: 0, max: 0, text: 'Free' };
+  if (min != null || max != null) {
+    const lo = min != null ? min : max, hi = max != null ? max : min;
+    const text = min != null && max != null ? (lo === hi ? fmtMoney(lo) : fmtMoney(lo) + '–' + fmtMoney(hi)) : min != null ? 'From ' + fmtMoney(min) : 'Up to ' + fmtMoney(max);
+    return { kind: 'range', min: lo, max: hi, text };
+  }
+  if (txt && !/^price not listed$/i.test(txt)) return { kind: 'text', min: null, max: null, text: txt };
+  return unknown;
+}
+function distanceMiles(a, b) {
+  if (!a || !b || !isNum(a.lat) || !isNum(a.lon) || !isNum(b.lat) || !isNum(b.lon)) return null;
+  const R = 3958.7613, rad = x => x * Math.PI / 180;
+  const dLat = rad(b.lat - a.lat), dLon = rad(b.lon - a.lon);
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.sin(dLon / 2) ** 2;
+  return 2 * R * Math.asin(Math.min(1, Math.sqrt(h)));
+}
+const distLabel = mi => mi == null ? '' : mi < 1 ? '<1 mi' : Math.round(mi) + ' mi';
+
+/* ---------------- event normalisation ---------------- */
+const flat = (v, n) => str(v).replace(/\s+/g, ' ').trim().slice(0, n).trim();
+const cleanId = v => { const s = str(v).trim(); return /^[A-Za-z0-9_-]{1,64}$/.test(s) ? s : ''; };
+const okLat = v => isNum(v) && v >= -90 && v <= 90, okLon = v => isNum(v) && v >= -180 && v <= 180;
+function normEvent(r) {
+  if (!r || typeof r !== 'object') return null;
+  const id = cleanId(r.id), title = flat(r.title, 200), startMs = typeof r.start === 'string' ? Date.parse(r.start) : NaN;
+  if (!id || !title || !isNum(startMs)) return null;
+  const allDay = r.allDay === true, startDay = centralDay(startMs);
+  let endMs = typeof r.end === 'string' ? Date.parse(r.end) : NaN; endMs = isNum(endMs) && endMs >= startMs ? endMs : null;
+  const endDay = endMs != null ? centralDay(endMs) : startDay;
+  const multiDay = endDay > startDay && (allDay || endMs - startMs >= 18 * 3600000);
+  const lastDay = multiDay ? endDay : startDay;
+  const effEnd = multiDay ? (allDay ? centralMs(cAddDays(endDay, 1)) : endMs) : allDay ? centralMs(cAddDays(startDay, 1)) : (endMs != null ? endMs : startMs + 4 * 3600000);
+  const v = r.venue && typeof r.venue === 'object' ? r.venue : {};
+  const venue = { name: flat(v.name, 120), address: flat(v.address, 200), city: flat(v.city, 60), neighborhood: flat(v.neighborhood, 60), lat: okLat(v.lat) && okLon(v.lon) ? v.lat : null, lon: okLat(v.lat) && okLon(v.lon) ? v.lon : null };
+  const sources = (Array.isArray(r.sources) ? r.sources : []).filter(s => s && typeof s === 'object').slice(0, 8).map(s => {
+    const lc = typeof s.lastChecked === 'string' ? Date.parse(s.lastChecked) : NaN;
+    return { id: flat(s.id, 40), name: flat(s.name, 40) || 'Source', url: safeUrl(s.url), ticketUrl: safeUrl(s.ticketUrl), lastChecked: isNum(lc) ? lc : null };
+  });
+  const se = r.series && typeof r.series === 'object' && flat(r.series.label, 60) ? { id: flat(r.series.id, 80), label: flat(r.series.label, 60) } : null;
+  return {
+    id, title, cat: CAT_IDS.includes(r.category) ? r.category : 'other', startRaw: str(r.start), startMs, startDay, endMs, endDay, allDay, multiDay, lastDay, effEnd,
+    venue, cityKey: venue.city.toLowerCase(), price: priceInfo(r.price), desc: flat(r.description, 300),
+    status: ['canceled', 'postponed', 'rescheduled'].includes(r.status) ? r.status : 'scheduled', series: se, sources, removed: r.removed === true,
+    lastSeenMs: typeof r.lastSeen === 'string' && isNum(Date.parse(r.lastSeen)) ? Date.parse(r.lastSeen) : 0
+  };
+}
+/* raw list -> sorted, de-duplicated normalised list */
+function normEvents(raw) {
+  const by = new Map(); let skipped = 0;
+  for (const r of Array.isArray(raw) ? raw : []) {
+    const e = normEvent(r);
+    if (!e) { skipped++; continue; }
+    const old = by.get(e.id);
+    if (old) { skipped++; if (e.lastSeenMs <= old.lastSeenMs) continue; }
+    by.set(e.id, e);
+  }
+  const events = [...by.values()].sort((a, b) => a.startMs - b.startMs || (a.title < b.title ? -1 : a.title > b.title ? 1 : 0) || (a.id < b.id ? -1 : 1));
+  return { events, skipped };
+}
+const eventLink = e => { for (const s of e.sources || []) { const u = s.ticketUrl || s.url; if (u) return u; } return ''; };
+const newestChecked = e => (e.sources || []).reduce((m, s) => (s.lastChecked != null && (m == null || s.lastChecked > m) ? s.lastChecked : m), null);
+
+/* ---------------- preferences + filtering ---------------- */
+const presetById = id => PRESETS.find(p => p.id === id);
+const defaultPrefs = () => ({ interests: [], cities: [], start: { preset: 'friendswood', lat: 29.5294, lon: -95.2010, label: 'Friendswood' }, maxMiles: 0, price: 'any', unknownPrice: true, hideNot: true, hideCanceled: true });
+function normPrefs(p) {
+  const d = defaultPrefs(); if (!p || typeof p !== 'object') return d;
+  const o = d;
+  o.interests = [...new Set((Array.isArray(p.interests) ? p.interests : []).filter(x => CAT_IDS.includes(x)))];
+  if (o.interests.length === CAT_IDS.length) o.interests = [];
+  o.cities = [...new Set((Array.isArray(p.cities) ? p.cities : []).filter(x => typeof x === 'string').map(x => flat(x, 60).toLowerCase()).filter(Boolean))].slice(0, 80);
+  const s = p.start;
+  if (s && typeof s === 'object') {
+    const pr = presetById(s.preset);
+    if (pr) o.start = { preset: pr.id, lat: pr.lat, lon: pr.lon, label: pr.name };
+    else if ((s.preset === 'geo' || s.preset === 'custom') && okLat(s.lat) && okLon(s.lon)) o.start = { preset: s.preset, lat: s.lat, lon: s.lon, label: s.preset === 'geo' ? 'My location' : 'Custom location' };
+  }
+  o.maxMiles = DIST_CHOICES.includes(p.maxMiles) ? p.maxMiles : 0;
+  o.price = PRICE_CHOICES.some(c => c[0] === p.price) ? p.price : 'any';
+  o.unknownPrice = p.unknownPrice !== false; o.hideNot = p.hideNot !== false; o.hideCanceled = p.hideCanceled !== false;
+  return o;
+}
+/* the filters that differ from the defaults (start location is not a filter) */
+function activeFilters(p) {
+  const out = [];
+  if (p.interests.length) out.push('interests'); if (p.cities.length) out.push('area');
+  if (p.maxMiles > 0) out.push('distance'); if (p.price !== 'any') out.push('price');
+  if (!p.unknownPrice) out.push('unpriced'); if (!p.hideNot) out.push('shownot'); if (!p.hideCanceled) out.push('showcanceled');
+  return out;
+}
+function priceOk(info, price, unknownPrice) {
+  if (info.kind === 'unknown' || info.kind === 'text') return !!unknownPrice;
+  if (price === 'any') return true;
+  if (price === 'free') return info.kind === 'free';
+  const lim = PRICE_LIMIT[price]; if (!lim) return true;
+  return info.kind === 'free' || info.min < lim;
+}
+/* null = show it; otherwise the reason it is hidden */
+function prefsReject(e, p, origin, pickStatus) {
+  if (p.interests.length && !p.interests.includes(e.cat)) return 'interest';
+  if (p.cities.length && e.cityKey && !p.cities.includes(e.cityKey)) return 'area';
+  if (p.maxMiles > 0) { const d = distanceMiles(origin, e.venue); if (d != null && d > p.maxMiles) return 'distance'; }
+  if (!priceOk(e.price, p.price, p.unknownPrice)) return 'price';
+  if (p.hideNot && pickStatus === 'not') return 'not-interested';
+  if (p.hideCanceled && e.status === 'canceled') return 'canceled';
+  return null;
+}
+
+/* ---------------- groups ---------------- */
+function dayLabel(iso, today) {
+  const t = cDiff(today, iso);
+  return t === 0 ? 'Today · ' + fmtWMD(iso) : t === 1 ? 'Tomorrow · ' + fmtWMD(iso) : fmtWMD(iso) + (iso.slice(0, 4) !== today.slice(0, 4) ? ', ' + iso.slice(0, 4) : '');
+}
+function groupFor(view, e, w, today) {
+  if (view === 'soon') {
+    if (cDiff(today, e.startDay) < 7 + 35) { const mon = cAddDays(e.startDay, -((cDow(e.startDay) + 6) % 7)); return { key: 'w' + mon, label: 'Week of ' + fmtMD(mon) }; }
+    return { key: 'm' + e.startDay.slice(0, 7), label: fmtMonthYear(e.startDay) };
+  }
+  const d = e.startDay < w.fromDay ? w.fromDay : e.startDay;
+  return { key: d, label: dayLabel(d, today) };
+}
+function whenLabel(e, nowYear) {
+  const yr = iso => (iso.slice(0, 4) !== String(nowYear) ? ', ' + iso.slice(0, 4) : '');
+  if (e.multiDay) {
+    const sameMonth = e.startDay.slice(0, 7) === e.endDay.slice(0, 7);
+    const span = sameMonth ? fmtMD(e.startDay) + '–' + +e.endDay.slice(8) : fmtMD(e.startDay) + ' – ' + fmtMD(e.endDay);
+    return span + yr(e.endDay) + (e.allDay ? '' : ' · from ' + fmtTime(e.startMs));
+  }
+  return fmtWMD(e.startDay) + yr(e.startDay) + ' · ' + (e.allDay ? 'All day' : fmtTime(e.startMs));
+}
+
+/* ---------------- calendar (.ics) ---------------- */
+const icsEsc = s => String(s).replace(/\\/g, '\\\\').replace(/\r?\n/g, '\\n').replace(/;/g, '\\;').replace(/,/g, '\\,');
+function icsFold(line) {
+  const enc = new TextEncoder();
+  if (enc.encode(line).length <= 75) return line;
+  const out = []; let cur = '', len = 0, limit = 75;
+  for (const ch of line) {
+    const l = enc.encode(ch).length;
+    if (len + l > limit) { out.push(cur); cur = ''; len = 0; limit = 74; }
+    cur += ch; len += l;
+  }
+  out.push(cur);
+  return out.join('\r\n ');
+}
+const icsLocal = ms => { const p = centralParts(ms); return `${p.y}${pad(p.m)}${pad(p.d)}T${pad(p.h)}${pad(p.mi)}${pad(p.s)}`; };
+const icsUtc = ms => new Date(ms).toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+const icsDate = iso => iso.replace(/-/g, '');
+const ICS_TZ = ['BEGIN:VTIMEZONE', 'TZID:America/Chicago', 'BEGIN:DAYLIGHT', 'TZOFFSETFROM:-0600', 'TZOFFSETTO:-0500', 'TZNAME:CDT', 'DTSTART:19700308T020000', 'RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=2SU', 'END:DAYLIGHT',
+  'BEGIN:STANDARD', 'TZOFFSETFROM:-0500', 'TZOFFSETTO:-0600', 'TZNAME:CST', 'DTSTART:19701101T020000', 'RRULE:FREQ=YEARLY;BYMONTH=11;BYDAY=1SU', 'END:STANDARD', 'END:VTIMEZONE'];
+function icsEvent(e, stamp) {
+  const L = ['BEGIN:VEVENT', `UID:${e.id}@houston.goobs-apps`, `DTSTAMP:${icsUtc(stamp)}`];
+  if (e.allDay) { L.push(`DTSTART;VALUE=DATE:${icsDate(e.startDay)}`, `DTEND;VALUE=DATE:${icsDate(cAddDays(e.multiDay ? e.endDay : e.startDay, 1))}`); }
+  else { L.push(`DTSTART;TZID=America/Chicago:${icsLocal(e.startMs)}`, `DTEND;TZID=America/Chicago:${icsLocal(e.endMs != null && e.endMs > e.startMs ? e.endMs : e.startMs + 2 * 3600000)}`); }
+  L.push('SUMMARY:' + icsEsc((e.status === 'canceled' ? 'CANCELED: ' : e.status === 'postponed' ? 'POSTPONED: ' : '') + e.title));
+  const loc = [e.venue.name, e.venue.address, e.venue.city].filter(Boolean).join(', ');
+  if (loc) L.push('LOCATION:' + icsEsc(loc));
+  const url = eventLink(e); if (url) L.push('URL:' + url);
+  const desc = [e.desc, url ? 'Details: ' + url : '', 'From Houston Events. Check times, prices and availability with the source before you go.'].filter(Boolean).join('\n\n');
+  L.push('DESCRIPTION:' + icsEsc(desc));
+  if (e.status === 'canceled') L.push('STATUS:CANCELLED');
+  L.push('END:VEVENT');
+  return L;
+}
+function buildICS(events, stamp = nowMs()) {
+  const L = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Goobs Apps//Houston Events//EN', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH', 'X-WR-TIMEZONE:America/Chicago', ...ICS_TZ];
+  for (const e of events) L.push(...icsEvent(e, stamp));
+  L.push('END:VCALENDAR');
+  return L.map(icsFold).join('\r\n') + '\r\n';
+}
+const slug = s => str(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40) || 'event';
+
+/* ---------------- hand-off to the Planner ---------------- */
+const placeOf = e => [e.venue.name, e.venue.city].filter(Boolean).join(', ');
+function plannerPayload(e) {
+  const o = { title: flat(e.title, 100), date: e.startDay, time: e.allDay ? '' : hhmm(e.startMs), place: placeOf(e).slice(0, 120) };
+  const u = eventLink(e); if (u && u.length <= 500) o.notes = u;
+  return o;
+}
+const b64url = obj => b64(new TextEncoder().encode(JSON.stringify(obj))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+const plannerHref = e => '../travel/?addEvent=' + b64url(plannerPayload(e));
+
+/* ---------------- picks (mine + the other person's) ---------------- */
+function normSnap(s) {
+  s = s && typeof s === 'object' ? s : {};
+  const st = str(s.start);
+  return { title: flat(s.title, 200), start: isNum(Date.parse(st)) ? st : '', venue: flat(s.venue, 120), url: safeUrl(s.url), allDay: s.allDay === true };
+}
+function normPick(p) {
+  if (!p || typeof p !== 'object' || !PICK_STATUS.includes(p.status)) return null;
+  return { status: p.status, updatedAt: isNum(p.updatedAt) ? p.updatedAt : 0, snapshot: normSnap(p.snapshot) };
+}
+const whoClean = w => flat(w, 20).replace(/[^A-Za-z' -]/g, '').trim();
+const docId = (eventId, who) => eventId + '_' + whoClean(who).toLowerCase().replace(/[^a-z]/g, '');
+function whoFromEmail(email) {
+  const l = str(email).toLowerCase();
+  if (l.includes('cindy')) return 'Cindy';
+  if (l.includes('glenn')) return 'Glenn';
+  const w = (l.split('@')[0].split(/[^a-z]+/).filter(Boolean)[0] || '').slice(0, 20);
+  return w ? w[0].toUpperCase() + w.slice(1) : '';
+}
+const otherNameFor = me => (me === 'Cindy' ? 'Glenn' : 'Cindy');
+function recPick(r) {
+  if (!r || typeof r !== 'object' || !r.data || typeof r.data !== 'object' || !cleanId(r.id)) return null;
+  const d = r.data, eventId = cleanId(d.eventId), who = whoClean(d.who), p = normPick(d);
+  if (!eventId || !who || !p || eventId.includes('_')) return null;
+  return { eventId, who, status: p.status, updatedAt: p.updatedAt, snapshot: p.snapshot };
+}
+function snapOf(e) { return { title: e.title, start: e.startRaw, venue: e.venue.name, url: eventLink(e), allDay: e.allDay }; }
+/* a stand-in event built from a saved pick whose event has left the feed */
+function eventFromSnap(id, s) {
+  const startMs = Date.parse(s.start), startDay = centralDay(startMs);
+  return { id, title: s.title || 'Saved event', startRaw: s.start, startMs, startDay, endMs: null, endDay: startDay, allDay: !!s.allDay, multiDay: false, lastDay: startDay, effEnd: s.allDay ? centralMs(cAddDays(startDay, 1)) : startMs + 4 * 3600000,
+    venue: { name: s.venue, address: '', city: '', neighborhood: '', lat: null, lon: null }, desc: '', status: 'scheduled', sources: s.url ? [{ id: '', name: 'Source', url: s.url, ticketUrl: '', lastChecked: null }] : [], snapOnly: true };
+}
+
+/* ---------------- feed selection + banners ---------------- */
+const hasEvents = d => !!(d && Array.isArray(d.events) && d.events.length > 0);
+/* live data wins, then the last good copy saved on this device, then the demo file. These are never mixed. */
+function chooseFeed({ live, cache, demo }) {
+  if (hasEvents(live) && live.demo !== true) return { mode: 'live', data: live };
+  if (hasEvents(live) && live.demo === true) return { mode: 'demo', data: live };
+  if (cache && hasEvents(cache.data)) return { mode: 'cache', data: cache.data };
+  if (hasEvents(demo)) return { mode: 'demo', data: demo };
+  return { mode: 'none', data: { events: [] } };
+}
+function normStatus(s) {
+  if (!s || typeof s !== 'object' || !Array.isArray(s.sources)) return null;
+  const t = v => { const m = typeof v === 'string' ? Date.parse(v) : NaN; return isNum(m) ? m : null; };
+  return {
+    generatedAt: t(s.generatedAt),
+    sources: s.sources.filter(x => x && typeof x === 'object').slice(0, 40).map(x => {
+      const error = flat(x.error, 200), lastAttempt = t(x.lastAttempt), lastSuccess = t(x.lastSuccess);
+      let state = 'ok';
+      if (/not configured/i.test(error) || (x.ok === false && lastAttempt == null && lastSuccess == null && !error)) state = 'notconfigured';
+      else if (x.stale === true || x.ok === false) state = 'stale';
+      return { id: flat(x.id, 40), name: flat(x.name, 40) || flat(x.id, 40) || 'Source', state, lastSuccess, lastAttempt, count: isNum(x.count) ? x.count : null, error };
+    })
+  };
+}
+const staleSources = st => (st ? st.sources.filter(s => s.state === 'stale') : []);
+function feedBanners({ mode, savedAt, generatedAt, status, now }) {
+  const out = [];
+  if (mode === 'demo') { out.push({ kind: 'demo', text: 'SAMPLE DATA, not real events.' }); return out; }
+  if (mode === 'cache') out.push({ kind: 'offline', text: `Offline: showing listings saved ${relTime(savedAt, now)}. Availability, times and prices may have changed.` });
+  else if (mode === 'live' && isNum(generatedAt) && now - generatedAt > STALE_MS) out.push({ kind: 'old', text: `These listings were last collected ${relTime(generatedAt, now)}. Availability, times and prices may have changed.` });
+  if (mode !== 'none' && staleSources(status).length) out.push({ kind: 'sources', text: 'Some sources are out of date. Their events may be missing recent changes. This is separate from events marked canceled or no longer listed.' });
+  return out;
+}
+
+/* ---------------- persistence ---------------- */
+const defaultState = () => ({ schemaVersion: SCHEMA, meta: { lastBackup: null, lastChange: null, who: '' }, prefs: defaultPrefs(), picks: {}, others: {} });
+function normPicks(raw) {
+  const out = {}; let dropped = 0;
+  for (const [id, p] of Object.entries(raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {})) {
+    const k = cleanId(id), n = normPick(p);
+    if (!k || k.includes('_') || !n || Object.keys(out).length >= MAX_PICKS) { dropped++; continue; }
+    out[k] = n;
+  }
+  return { picks: out, dropped };
+}
+function normalizeData(raw) {
+  const { picks, dropped } = normPicks(raw && raw.picks);
+  return { data: { prefs: normPrefs(raw && raw.prefs), picks }, dropped };
+}
+const strOrNull = v => (typeof v === 'string' && v ? v : null);
+function loadState(parsed) {
+  const { data } = normalizeData(parsed);
+  const m = parsed && parsed.meta || {};
+  return { schemaVersion: SCHEMA, meta: { lastBackup: strOrNull(m.lastBackup), lastChange: strOrNull(m.lastChange), who: whoClean(m.who) }, prefs: data.prefs, picks: data.picks, others: {} };
+}
+const exportData = () => ({ prefs: state.prefs, picks: state.picks });
+let state = defaultState(), db = null, saveFailed = false, persistAsked = false, saveChain = Promise.resolve();
+function persist({ touch = true } = {}) {
+  if (touch) state.meta.lastChange = new Date().toISOString();
+  if (!db) return Promise.resolve();
+  const snap = JSON.stringify({ schemaVersion: state.schemaVersion, meta: state.meta, prefs: state.prefs, picks: state.picks });
+  saveChain = saveChain.then(() => idbPut(db, 'state', snap)).then(() => { saveFailed = false; }).catch(err => { console.error(err); saveFailed = true; });
+  if (!persistAsked && navigator.storage && navigator.storage.persist) { persistAsked = true; navigator.storage.persist().catch(() => {}); }
+  return saveChain;
+}
+let committing = false;
+function commit() {
+  persist();
+  committing = true; try { Sync.touch(); } finally { committing = false; }
+  render();
+}
+const syncOn = () => Sync.status() !== 'off' && Sync.enabled();
+const currentWho = () => { const u = Sync.user(); return (u && whoFromEmail(u.email)) || state.meta.who || ''; };
+const sharedNote = () => !syncOn() ? '' : Sync.user() ? ' Sharing is on, so your picks are removed from the shared copy too.' : ' Sharing is set up, so this also changes your shared picks the next time you sign in.';
+const pickStatus = id => (state.picks[id] ? state.picks[id].status : null);
+const othersFor = id => Object.values(state.others).filter(o => o.eventId === id);
+const syncModel = {
+  colls: [COLL],
+  toEntities() {
+    const out = [], me = currentWho();
+    if (me) for (const [eventId, p] of Object.entries(state.picks)) out.push({ coll: COLL, id: docId(eventId, me), data: { eventId, status: p.status, who: me, updatedAt: p.updatedAt, snapshot: p.snapshot } });
+    for (const [id, o] of Object.entries(state.others)) out.push({ coll: COLL, id, data: { eventId: o.eventId, status: o.status, who: o.who, updatedAt: o.updatedAt, snapshot: o.snapshot } });
+    return out;
+  },
+  apply(out) {
+    const me = currentWho().toLowerCase(); if (!me) return;
+    const picks = {}, others = {};
+    for (const r of out[COLL] || []) {
+      const d = recPick(r); if (!d) continue;
+      if (d.who.toLowerCase() === me) picks[d.eventId] = { status: d.status, updatedAt: d.updatedAt, snapshot: d.snapshot };
+      else others[r.id] = d;
+    }
+    if (JSON.stringify(picks) === JSON.stringify(state.picks) && JSON.stringify(others) === JSON.stringify(state.others)) return;
+    state.picks = picks; state.others = others;
+    persist({ touch: false });
+    renderIfSafe();
+  }
+};
+function setPick(id, status, { undo = true } = {}) {
+  const e = feed.byId.get(id), cur = state.picks[id], prev = cur ? JSON.parse(JSON.stringify(cur)) : null;
+  if (cur && cur.status === status) delete state.picks[id];
+  else {
+    if (!cur && Object.keys(state.picks).length >= MAX_PICKS) return toast('That’s the most picks this app can hold.');
+    const snap = e ? snapOf(e) : cur ? cur.snapshot : normSnap({});
+    state.picks[id] = { status, updatedAt: nowMs(), snapshot: snap };
+  }
+  commit();
+  if (undo && status === 'not' && state.picks[id] && state.prefs.hideNot) toast('Hidden from your lists', { label: 'Undo', fn: () => { if (prev) state.picks[id] = { ...prev, updatedAt: nowMs() }; else delete state.picks[id]; commit(); } });
+}
+
+/* ---------------- feed state ---------------- */
+const feed = { loaded: false, mode: 'none', events: [], byId: new Map(), generatedAt: null, savedAt: null, status: null, version: 0, skipped: 0, cachedGen: null, fetchedAt: 0 };
+async function getJSON(url) {
+  const r = await fetch(url, { cache: 'no-cache' });
+  if (!r || !r.ok) throw new Error('HTTP ' + (r && r.status));
+  return r.json();
+}
+async function readCache() {
+  if (!db) return null;
+  try { const raw = await idbGet(db, 'cache'); return raw ? JSON.parse(raw) : null; } catch (e) { console.error(e); return null; }
+}
+async function loadFeed() {
+  let live = null, status = null;
+  try { live = await getJSON('data/events.json'); } catch (e) { live = null; }
+  try { status = await getJSON('data/status.json'); } catch (e) { status = null; }
+  let cache = null, demo = null;
+  if (!(hasEvents(live) && live.demo !== true)) {
+    cache = await readCache();
+    if (!(cache && hasEvents(cache.data))) { try { demo = await getJSON('data/demo.json'); } catch (e) { demo = null; } }
+  }
+  const pick = chooseFeed({ live, cache, demo });
+  if (pick.mode === 'live' && db && (feed.cachedGen !== pick.data.generatedAt || feed.mode !== 'live')) {
+    feed.cachedGen = pick.data.generatedAt;
+    try { await idbPut(db, 'cache', JSON.stringify({ data: { generatedAt: pick.data.generatedAt, events: pick.data.events }, status, savedAt: nowMs() })); } catch (e) { console.error(e); }
+  }
+  return { mode: pick.mode, data: pick.data, status: pick.mode === 'cache' ? cache.status : pick.mode === 'live' ? status : null, savedAt: pick.mode === 'cache' ? cache.savedAt : null };
+}
+function applyFeed(r) {
+  const { events, skipped } = normEvents(r.data.events);
+  const g = typeof r.data.generatedAt === 'string' ? Date.parse(r.data.generatedAt) : NaN;
+  const st = normStatus(r.status);
+  feed.mode = r.mode; feed.events = events; feed.byId = new Map(events.map(e => [e.id, e])); feed.skipped = skipped;
+  feed.generatedAt = isNum(g) ? g : (st && st.generatedAt) || null; feed.savedAt = isNum(r.savedAt) ? r.savedAt : null; feed.status = r.mode === 'demo' ? null : st;
+  feed.loaded = true; feed.version++; feed.fetchedAt = nowMs();
+}
+async function refreshFeed() {
+  const r = await loadFeed();
+  applyFeed(r);
+  renderIfSafe();
+}
+
+/* ---------------- views ---------------- */
+const app = $('#app');
+const ui = { view: 'weekend', range: { from: '', to: '' }, limit: CHUNK, savedTab: 'going', savedScope: 'mine', expanded: new Set(), showPast: false };
+const VIEWS = [['weekend', 'Weekend'], ['week', '7 days'], ['soon', 'Soon'], ['range', 'Dates'], ['saved', 'Saved']];
+function computeView() {
+  const now = nowMs(), today = centralDay(now), p = state.prefs, origin = { lat: p.start.lat, lon: p.start.lon };
+  const w = viewWindow(ui.view, now, ui.range), shown = []; let hidden = 0, hiddenDefault = 0;
+  for (const e of feed.events) {
+    if (e.effEnd <= now || !inWindow(e, w)) continue;
+    const why = prefsReject(e, p, origin, pickStatus(e.id));
+    if (why) { if (why === 'canceled' || why === 'not-interested') hiddenDefault++; else hidden++; continue; }
+    shown.push(e);
+  }
+  return { shown, hidden, hiddenDefault, w, today, origin };
+}
+/* saved picks: entries { id, mine, others:[{who,status}], e } */
+function savedEntries(tab, scope) {
+  const ids = new Set(Object.keys(state.picks)); for (const o of Object.values(state.others)) ids.add(o.eventId);
+  const meName = currentWho(), out = [], now = nowMs(), dayStart = centralMs(centralDay(now));
+  for (const id of ids) {
+    const mine = state.picks[id] ? state.picks[id].status : null, others = othersFor(id).map(o => ({ who: o.who, status: o.status, snapshot: o.snapshot }));
+    const okMine = mine === tab, okOther = others.some(o => o.status === tab);
+    if (!(scope === 'mine' ? okMine : scope === 'other' ? okOther : okMine || okOther)) continue;
+    let e = feed.byId.get(id);
+    if (!e) { const snap = (state.picks[id] && state.picks[id].snapshot) || (others[0] && others[0].snapshot); if (!snap || !snap.start) continue; e = eventFromSnap(id, snap); }
+    out.push({ id, mine, others, e, past: e.effEnd < dayStart });
+  }
+  out.sort((a, b) => a.e.startMs - b.e.startMs || (a.id < b.id ? -1 : 1));
+  return { list: out, me: meName };
+}
+const headerHTML = ({ back, title, sub, right = '', after = '' }) => `<header class="top"><div class="wrap">${back ? `<a class="back" href="${back}">‹ Events</a>` : ''}<div class="grow"><h1>${esc(title)}</h1>${sub ? `<div class="sub">${esc(sub)}</div>` : ''}</div>${right}</div>${after}</header>`;
+function storageBannerHTML() {
+  if (saveFailed) return '<div class="banner bad">Couldn’t save to this device’s storage. Your picks and settings may not be kept.</div>';
+  if (!db) return '<div class="banner bad">This browser isn’t allowing storage (private mode?). Picks and settings won’t survive closing the app.</div>';
+  return '';
+}
+function srcStateLabel(s) { return s.state === 'ok' ? 'OK' : s.state === 'stale' ? 'Out of date' : 'Not set up'; }
+function sourcesHTML() {
+  const st = feed.status;
+  if (feed.mode === 'demo') return '<p>These are made-up sample events. Real listings haven’t been published yet.</p>';
+  if (!st || !st.sources.length) return '<p>No source information is available yet.</p>';
+  const stale = staleSources(st).length;
+  return (stale ? `<p><b>Some sources are out of date.</b> Events from them are shown as last collected. That’s different from an event being canceled.</p>` : '') + st.sources.map(s =>
+    `<div class="srcrow"><div style="flex:1;min-width:0"><div class="nm">${esc(s.name)} <span class="badge ${s.state === 'ok' ? 'ok' : s.state === 'stale' ? 'warn' : ''}">${esc(srcStateLabel(s))}</span></div>
+    <div class="dt">${s.state === 'notconfigured' ? 'Not set up yet.' : s.lastSuccess != null ? 'Last success: ' + esc(fmtStamp(s.lastSuccess)) + ' (' + esc(relTime(s.lastSuccess)) + ')' : 'No successful check yet.'}${s.count != null && s.state !== 'notconfigured' ? ' · ' + plural(s.count, 'event') : ''}</div>
+    ${s.error && s.state !== 'ok' ? `<div class="dt">Error: ${esc(s.error)}</div>` : ''}</div></div>`).join('');
+}
+function priceHTML(e) {
+  const none = e.price.kind === 'unknown';
+  return `<div class="ev-price${none ? ' none' : ''}">${esc(e.price.text)}</div>`;
+}
+function badgesHTML(e) {
+  const b = [];
+  if (e.status === 'canceled') b.push('<span class="badge bad">Canceled</span>');
+  if (e.status === 'postponed') b.push('<span class="badge warn">Postponed</span>');
+  if (e.status === 'rescheduled') b.push('<span class="badge warn">Rescheduled</span>');
+  if (e.removed) b.push('<span class="badge warn">No longer listed by source, check before going</span>');
+  if (e.series) b.push(`<span class="badge">${esc(e.series.label)}</span>`);
+  return b.length ? `<div class="ev-badges">${b.join('')}</div>` : '';
+}
+function othersHTML(id) {
+  const o = othersFor(id); if (!o.length) return '';
+  return `<div class="othr">${o.map(x => `<span class="badge acc">${esc(x.who)}: ${esc(PICK_LABEL[x.status])}</span>`).join('')}</div>`;
+}
+function cardHTML(e, ctx) {
+  const mine = pickStatus(e.id), exp = ui.expanded.has(e.id), d = distanceMiles(ctx.origin, e.venue);
+  const place = [e.venue.name, [e.venue.neighborhood, e.venue.city].filter(Boolean).join(', ')].filter(Boolean).join(' · ');
+  const links = e.sources.filter(s => s.ticketUrl || s.url);
+  const chk = newestChecked(e), id = esc(e.id);
+  const linkBtns = links.map(s => `<a class="btn small" target="_blank" rel="noopener" href="${esc(s.ticketUrl || s.url)}">${esc(links.length > 1 ? s.name + ': Details / Tickets' : 'Details / Tickets')}</a>`).join('');
+  return `<article class="card ev${e.status === 'canceled' ? ' canceled faded' : e.removed ? ' faded' : ''}" data-id="${id}">
+    <div class="ev-top"><h3 class="ev-title">${esc(e.title)}</h3><span class="badge acc cat">${esc(catLabel(e.cat))}</span></div>
+    ${badgesHTML(e)}
+    <div class="ev-when">${esc(whenLabel(e, ctx.year))}</div>
+    <div class="ev-where">${esc(place || 'Venue not listed')}${d != null ? ` · <span class="num">${esc(distLabel(d))}</span>` : ''}</div>
+    ${priceHTML(e)}
+    ${e.desc ? `<p class="ev-desc${exp ? '' : ' clamp'}" data-action="expand" data-id="${id}">${esc(e.desc)}</p>` : ''}
+    ${links.length || chk != null ? `<div class="ev-src">${linkBtns}</div>${chk != null ? `<div class="ev-checked">${esc(e.sources.length > 1 ? 'Checked' : (e.sources[0] && e.sources[0].name || 'Source') + ' · checked')} ${esc(relTime(chk, ctx.now))}</div>` : ''}` : ''}
+    ${othersHTML(e.id)}
+    <div class="picks" role="group" aria-label="Your pick">${PICK_STATUS.map(s => `<button type="button" class="btn small${s === 'not' ? ' nop' : ''}" data-action="pick" data-id="${id}" data-status="${s}" aria-pressed="${mine === s}">${esc(PICK_LABEL[s])}</button>`).join('')}</div>
+    <div class="ev-act"><button type="button" class="btn small" data-action="ics" data-id="${id}">Add to calendar</button><a class="btn small" href="${esc(plannerHref(e))}">Add to Planner</a></div>
+  </article>`;
+}
+function savedCardHTML(en, ctx) {
+  if (!en.e.snapOnly) return cardHTML(en.e, ctx);
+  const e = en.e, id = esc(e.id), u = eventLink(e);
+  return `<article class="card ev faded" data-id="${id}">
+    <div class="ev-top"><h3 class="ev-title">${esc(e.title)}</h3></div>
+    <div class="ev-badges"><span class="badge warn">Not in the current listings, check before going</span></div>
+    <div class="ev-when">${esc(whenLabel(e, ctx.year))}</div>
+    <div class="ev-where">${esc(e.venue.name || 'Venue not listed')}</div>
+    ${u ? `<div class="ev-src"><a class="btn small" target="_blank" rel="noopener" href="${esc(u)}">Details / Tickets</a></div>` : ''}
+    ${othersHTML(e.id)}
+    <div class="picks" role="group" aria-label="Your pick">${PICK_STATUS.map(s => `<button type="button" class="btn small${s === 'not' ? ' nop' : ''}" data-action="pick" data-id="${id}" data-status="${s}" aria-pressed="${en.mine === s}">${esc(PICK_LABEL[s])}</button>`).join('')}</div>
+    <div class="ev-act"><button type="button" class="btn small" data-action="ics" data-id="${id}">Add to calendar</button><a class="btn small" href="${esc(plannerHref(e))}">Add to Planner</a></div>
+  </article>`;
+}
+function filterSummaryHTML(hidden, count) {
+  const n = activeFilters(state.prefs).length;
+  return `<div class="fsum"><button type="button" class="btn small" data-action="settings">Filters (${n} active)</button>${n ? '<button type="button" class="btn small ghost" data-action="reset-filters">Reset</button>' : ''}<span class="cnt">${esc(plural(count, 'event'))}</span></div>`;
+}
+function quickChipsHTML() {
+  const p = state.prefs, all = !p.interests.length;
+  return `<div class="chiprow" role="group" aria-label="Quick filters"><button type="button" class="chip" data-action="qi" data-v="" aria-pressed="${all}">All</button>${CATS.map(([id, l]) => `<button type="button" class="chip" data-action="qi" data-v="${id}" aria-pressed="${p.interests.includes(id)}">${esc(l)}</button>`).join('')}</div>
+    <div class="chiprow" role="group" aria-label="More quick filters"><button type="button" class="chip" data-action="qfree" aria-pressed="${p.price === 'free'}">Free</button><button type="button" class="chip" data-action="qdist" data-v="15" aria-pressed="${p.maxMiles === 15}">Within 15 mi</button></div>`;
+}
+function viewTitle(w, today) {
+  if (ui.view === 'weekend') return { t: 'This weekend', s: w.nowStart ? `Now through ${fmtWMD(w.lastDay)}` : `${fmtWMD(w.fromDay)}, 4 PM through ${fmtWMD(w.lastDay)}` };
+  if (ui.view === 'week') return { t: 'Next 7 days', s: `${fmtWMD(w.fromDay)} through ${fmtWMD(w.lastDay)}` };
+  if (ui.view === 'soon') return { t: 'Coming soon', s: `Starting ${fmtWMD(w.fromDay)} and later` };
+  return { t: 'Pick dates', s: `${fmtWMD(w.fromDay)} through ${fmtWMD(w.lastDay)}` };
+}
+function bannersHTML() {
+  const bs = feedBanners({ mode: feed.mode, savedAt: feed.savedAt, generatedAt: feed.generatedAt, status: feed.status, now: nowMs() });
+  return bs.filter(b => b.kind !== 'demo').map(b => `<div class="banner" data-banner="${b.kind}"><span>${esc(b.text)}</span>${b.kind === 'sources' ? '<button type="button" class="btn small" data-action="sources">Details</button>' : ''}</div>`).join('');
+}
+function updatedLine() {
+  if (!feed.loaded) return 'Loading…';
+  if (feed.mode === 'demo') return 'Sample data only';
+  if (feed.mode === 'none') return 'No listings yet';
+  return `Last updated ${fmtStamp(feed.generatedAt != null ? feed.generatedAt : feed.savedAt)}`;
+}
+function listHTML(v) {
+  const ctx = { now: nowMs(), year: centralParts(nowMs()).y, origin: v.origin };
+  const slice = v.shown.slice(0, ui.limit);
+  let html = '', last = null;
+  for (const e of slice) {
+    const g = groupFor(ui.view, e, v.w, v.today);
+    if (g.key !== last) { html += `<div class="dayh" data-group="${esc(g.key)}">${esc(g.label)}</div>`; last = g.key; }
+    html += cardHTML(e, ctx);
+  }
+  if (v.shown.length > slice.length) html += `<div class="more"><button type="button" class="btn block" data-action="more">Show ${Math.min(CHUNK, v.shown.length - slice.length)} more (${v.shown.length - slice.length} left)</button></div>`;
+  return html;
+}
+function emptyHTML(v) {
+  if (feed.mode === 'none') return `<div class="empty"><div class="big">🎟️</div><h2>No events yet</h2><p>Nothing has been published yet. Listings are collected automatically, so check back a little later.</p></div>`;
+  if (v.hidden > 0) return `<div class="empty"><div class="big">🔍</div><h2>${esc(plural(v.hidden, 'event'))} hidden by your filters</h2><p>Nothing matches right now.</p><button type="button" class="btn primary" data-action="reset-filters">Reset filters</button></div>`;
+  if (v.hiddenDefault > 0) return `<div class="empty"><div class="big">📅</div><h2>Nothing to show</h2><p>${esc(plural(v.hiddenDefault, 'canceled or not-interested event'))} hidden for these dates.</p><button type="button" class="btn" data-action="settings">Settings</button></div>`;
+  return `<div class="empty"><div class="big">📅</div><h2>Nothing listed for this time</h2><p>No events are listed for these dates yet. Try another view.</p></div>`;
+}
+function savedHTML() {
+  const me = currentWho(), other = otherNameFor(me), signed = !!Sync.user(), haveOthers = Object.keys(state.others).length > 0;
+  if (!['mine', 'other', 'all'].includes(ui.savedScope) || (!haveOthers && ui.savedScope !== 'mine')) ui.savedScope = 'mine';
+  const names = [...new Set(Object.values(state.others).map(o => o.who))], oname = names.length === 1 ? names[0] : other;
+  const counts = {};
+  for (const t of ['interested', 'going']) counts[t] = savedEntries(t, ui.savedScope).list.filter(x => !x.past).length;
+  const { list } = savedEntries(ui.savedTab, ui.savedScope);
+  const up = list.filter(x => !x.past), past = list.filter(x => x.past);
+  const ctx = { now: nowMs(), year: centralParts(nowMs()).y, origin: { lat: state.prefs.start.lat, lon: state.prefs.start.lon } };
+  let html = `<div class="seg" role="group" aria-label="Saved lists"><button type="button" class="chip" data-action="saved-tab" data-v="going" aria-pressed="${ui.savedTab === 'going'}">Going (${counts.going})</button><button type="button" class="chip" data-action="saved-tab" data-v="interested" aria-pressed="${ui.savedTab === 'interested'}">Interested (${counts.interested})</button></div>`;
+  if (haveOthers) html += `<div class="scope" role="group" aria-label="Whose picks"><button type="button" class="chip" data-action="scope" data-v="mine" aria-pressed="${ui.savedScope === 'mine'}">Mine</button><button type="button" class="chip" data-action="scope" data-v="other" aria-pressed="${ui.savedScope === 'other'}">${esc(oname)}’s</button><button type="button" class="chip" data-action="scope" data-v="all" aria-pressed="${ui.savedScope === 'all'}">Both</button></div>`;
+  else if (!signed) html += `<div class="sig">Sign in to see ${esc(other)}’s picks. <button type="button" data-action="sync-signin">Sign in</button></div>`;
+  if (ui.savedTab === 'going' && ui.savedScope !== 'other') {
+    const n = list.filter(x => x.mine === 'going' && !x.past).length;
+    if (n) html += `<button type="button" class="btn block" data-action="export-going" style="margin-bottom:6px">Export all Going (${n}) to calendar</button>`;
+  }
+  if (!up.length && !past.length) html += `<div class="empty"><div class="big">⭐</div><h2>Nothing here yet</h2><p>Tap <b>${ui.savedTab === 'going' ? 'Going' : 'Interested'}</b> on an event and it will show up here.</p></div>`;
+  else if (!up.length) html += `<p class="muted" style="text-align:center;margin:18px 0">Nothing coming up here.</p>`;
+  html += up.map(x => savedCardHTML(x, ctx)).join('');
+  if (past.length) html += ui.showPast ? `<div class="dayh">Past</div>` + past.map(x => savedCardHTML(x, ctx)).join('') : `<div class="hiddenline">${esc(plural(past.length, 'past pick'))} hidden. <button type="button" data-action="show-past">Show</button></div>`;
+  return html;
+}
+function mainHTML() {
+  const demo = feed.mode === 'demo';
+  const after = demo ? '<div class="demobar" role="alert">SAMPLE DATA, not real events<span>Real listings haven’t been published yet. Don’t plan around these.</span></div>' : '';
+  const sub = updatedLine();
+  const head = headerHTML({ title: 'Houston Events', sub: '', right: syncBadgeHTML() + '<button type="button" class="btn small" data-action="settings" aria-label="Settings" style="min-width:44px;font-size:18px">⚙</button>', after });
+  const tabs = `<div class="views" role="tablist" aria-label="Views">${VIEWS.map(([k, l]) => `<button type="button" role="tab" data-action="view" data-v="${k}" aria-selected="${ui.view === k}">${l}</button>`).join('')}</div>`;
+  const stat = feed.loaded && feed.mode !== 'none' ? `<button type="button" class="statusline" data-action="sources">${esc(updatedLine())}${demo ? '' : staleSources(feed.status).length ? ' · <b>some sources out of date</b>' : ''} · <u>Sources</u></button>` : '';
+  let body;
+  if (!feed.loaded) body = '<div class="empty"><div class="big">⏳</div><h2>Loading events…</h2></div>';
+  else if (ui.view === 'saved') body = savedHTML();
+  else {
+    const v = computeView(), vt = viewTitle(v.w, v.today);
+    const range = ui.view === 'range' ? `<div class="rg"><div class="field"><label for="rgFrom">From</label><input id="rgFrom" type="date" value="${esc(v.w.fromDay)}"></div><div class="field"><label for="rgTo">To</label><input id="rgTo" type="date" value="${esc(v.w.lastDay)}"></div></div>` : '';
+    body = `<div class="vtitle">${esc(vt.t)}</div><div class="vsub">${esc(vt.s)}</div>${range}${quickChipsHTML()}${filterSummaryHTML(v.hidden, v.shown.length)}`
+      + (v.shown.length ? listHTML(v) + (v.hidden ? `<div class="hiddenline">${esc(plural(v.hidden, 'event'))} hidden by your filters. <button type="button" data-action="reset-filters">Reset filters</button></div>` : '') + (v.hiddenDefault ? `<div class="hiddenline">${esc(plural(v.hiddenDefault, 'canceled or not-interested event'))} hidden. <button type="button" data-action="settings">Settings</button></div>` : '') : emptyHTML(v));
+  }
+  return head + `<main class="wrap">${storageBannerHTML()}${bannersHTML()}${tabs}${stat}${body}</main>`;
+}
+function backupScreen() {
+  const last = state.meta.lastBackup ? `Last backup: ${esc(fmtDateTime(state.meta.lastBackup))}.` : 'No backup made yet.';
+  const canEncrypt = !!(window.crypto && crypto.subtle);
+  return headerHTML({ back: '#/', title: 'Backup & sharing', sub: 'Your picks and settings live on this device' }) + `<main class="wrap">${storageBannerHTML()}<div class="stack">${syncCardHTML('Sign in on each phone to see each other’s picks. Only your picks are shared. The event listings themselves are never uploaded.')}${installCardHTML()}
+    <section class="card pad"><h3>Back up</h3><p class="muted">${last}</p>
+      <p>Saves one file with your picks and settings. On iPhone it opens the share sheet — save it to Files or OneDrive. <b>Never put this file in your GitHub repo.</b></p>
+      ${canEncrypt ? `<div class="field"><label for="bkPass">Passphrase (optional — encrypts the file)</label><input id="bkPass" type="password" autocomplete="new-password"></div>
+      <div class="field" style="margin-top:8px"><label for="bkPass2">Repeat passphrase</label><input id="bkPass2" type="password" autocomplete="new-password"></div>
+      <p class="hint">If you set one, the file can’t be opened without it — not even by me.</p>` : ''}
+      <button type="button" class="btn primary block" style="margin-top:12px" data-action="export">Back up now</button></section>
+    <section class="card pad"><h3>Restore</h3><p>Pick a backup file made by this app. You’ll choose whether to replace what’s here or merge it in.</p><button type="button" class="btn block" data-action="restore">Choose backup file…</button></section>
+    <section class="card pad"><h3>Danger zone</h3><p>Erases your picks and resets your settings on this device.${esc(sharedNote())}</p><button type="button" class="btn danger block" data-action="wipe">Erase my picks and settings</button></section></div></main>`;
+}
+const route = () => (location.hash.replace(/^#\/?/, '').split('/')[0] === 'backup' ? { name: 'backup' } : { name: 'main' });
+let lastKey = '', pendingRender = false, renderTimer = null;
+function render() {
+  const r = route(), key = r.name + (r.name === 'main' ? ui.view : ''), y = window.scrollY;
+  const keep = ['#bkPass', '#bkPass2'].map(s => [s, ($(s, app) || {}).value || '']);
+  pendingRender = false;
+  app.innerHTML = r.name === 'backup' ? backupScreen() : mainHTML();
+  document.title = r.name === 'backup' ? 'Backup & sharing' : 'Houston Events';
+  if (key === lastKey) for (const [s, v] of keep) { const el = v && $(s, app); if (el) el.value = v; }
+  const h = $('header.top', app); if (h) document.documentElement.style.setProperty('--hh', h.offsetHeight + 'px');
+  window.scrollTo(0, key === lastKey ? y : 0); lastKey = key;
+}
+function renderBlocked() {
+  if ($('dialog[open]')) return true;
+  const a = document.activeElement;
+  return !!(a && app.contains(a) && /^(INPUT|TEXTAREA)$/.test(a.tagName) && a.type !== 'checkbox' && a.type !== 'date' && a.value);
+}
+function renderIfSafe() {
+  if (committing) return;
+  if (renderBlocked()) { pendingRender = true; return; }
+  render();
+}
+const flushPending = () => { if (pendingRender && !renderBlocked()) render(); };
+document.addEventListener('close', () => { if (pendingRender) setTimeout(flushPending, 0); }, true);
+document.addEventListener('focusout', e => {
+  if (!pendingRender || (e.relatedTarget && app.contains(e.relatedTarget))) return;
+  clearTimeout(renderTimer); renderTimer = setTimeout(flushPending, 250);
+});
+
+/* ---------------- settings sheet ---------------- */
+function savePrefs() { state.prefs = normPrefs(state.prefs); persist(); ui.limit = CHUNK; }
+function toggleInterest(id) {
+  const p = state.prefs;
+  if (!id) p.interests = [];
+  else if (!p.interests.length) p.interests = [id];
+  else p.interests = p.interests.includes(id) ? p.interests.filter(x => x !== id) : [...p.interests, id];
+  savePrefs();
+}
+function resetFilters() { const s = state.prefs.start; state.prefs = { ...defaultPrefs(), start: s }; savePrefs(); }
+function cityList() {
+  const m = new Map();
+  for (const e of feed.events) if (e.cityKey) { const o = m.get(e.cityKey) || { key: e.cityKey, name: e.venue.city, n: 0 }; o.n++; m.set(e.cityKey, o); }
+  for (const k of state.prefs.cities) if (!m.has(k)) m.set(k, { key: k, name: k.replace(/\b\w/g, c => c.toUpperCase()), n: 0 });
+  return [...m.values()].sort((a, b) => b.n - a.n || (a.name < b.name ? -1 : 1)).slice(0, 60);
+}
+function settingsHTML(err = '') {
+  const p = state.prefs, chip = (attrs, label, on) => `<button type="button" class="chip" ${attrs} aria-pressed="${on}">${label}</button>`;
+  const cities = cityList();
+  return `<h2>Settings</h2>
+    <div class="seclbl">Interests</div><div class="chips">${chip('data-set="interest" data-v=""', 'All', !p.interests.length)}${CATS.map(([id, l]) => chip(`data-set="interest" data-v="${id}"`, esc(l), p.interests.includes(id))).join('')}</div>
+    <div class="seclbl">Area</div>${cities.length ? `<div class="chips">${chip('data-set="city" data-v=""', 'All areas', !p.cities.length)}${cities.map(c => chip(`data-set="city" data-v="${esc(c.key)}"`, esc(c.name), p.cities.includes(c.key))).join('')}</div><p class="hint">Events with no city listed are always shown.</p>` : '<p class="hint">Cities appear here once listings are loaded.</p>'}
+    <div class="seclbl">Starting from</div>
+    <div class="field"><label for="stPreset">Starting place</label><select id="stPreset" data-set="preset">${p.start.preset === 'geo' || p.start.preset === 'custom' ? `<option value="${p.start.preset}" selected>${esc(p.start.label)} (${p.start.lat.toFixed(3)}, ${p.start.lon.toFixed(3)})</option>` : ''}${PRESETS.map(x => `<option value="${x.id}"${p.start.preset === x.id ? ' selected' : ''}>${esc(x.name)}</option>`).join('')}</select></div>
+    <button type="button" class="btn" data-sact="geo">Use my current location</button>
+    <div class="grid2"><div class="field"><label for="stLat">Latitude</label><input id="stLat" inputmode="decimal" placeholder="29.5294"></div><div class="field"><label for="stLon">Longitude</label><input id="stLon" inputmode="decimal" placeholder="-95.2010"></div></div>
+    <button type="button" class="btn small" data-sact="manual">Use these coordinates</button><div class="dlg-err" id="stErr" role="alert">${esc(err)}</div>
+    <div class="seclbl">Max distance</div><div class="chips">${DIST_CHOICES.map(m => chip(`data-set="dist" data-v="${m}"`, m ? m + ' mi' : 'Any', p.maxMiles === m)).join('')}</div><p class="hint">Events with no map location are always shown.</p>
+    <div class="seclbl">Price</div><div class="chips">${PRICE_CHOICES.map(([k, l]) => chip(`data-set="price" data-v="${k}"`, esc(l), p.price === k)).join('')}</div>
+    <div class="field check" style="margin-top:8px"><input type="checkbox" id="stUnk" data-set="unk"${p.unknownPrice ? ' checked' : ''}><label for="stUnk">Include events with price not listed</label></div>
+    <div class="seclbl">Hide</div>
+    <div class="field check"><input type="checkbox" id="stNot" data-set="hidenot"${p.hideNot ? ' checked' : ''}><label for="stNot">Events I marked not interested</label></div>
+    <div class="field check"><input type="checkbox" id="stCan" data-set="hidecan"${p.hideCanceled ? ' checked' : ''}><label for="stCan">Canceled events</label></div>
+    <div class="dlg-actions"><button type="button" class="btn danger" data-sact="reset">Reset filters</button><span class="spacer"></span><a class="btn" href="#/backup" data-sact="backup">Backup &amp; sharing</a><button type="button" class="btn primary" data-sact="done">Done</button></div>`;
+}
+function setStart(s) { state.prefs.start = s; savePrefs(); }
+function openSettings() {
+  const dlg = $('#dlg');
+  dlg.innerHTML = '<div class="dlg-form set-form"></div>';
+  const root = $('.dlg-form', dlg);
+  const paint = err => { const y = root.scrollTop; root.innerHTML = settingsHTML(err); root.scrollTop = y; };
+  const p = () => state.prefs;
+  root.addEventListener('click', e => {
+    const b = e.target.closest('[data-set],[data-sact]'); if (!b || b.matches('select,input')) return;
+    if (b.dataset.sact) {
+      const a = b.dataset.sact;
+      if (a === 'done') return dlg.close();
+      if (a === 'backup') { dlg.close(); return; }
+      if (a === 'reset') { resetFilters(); return paint(); }
+      if (a === 'geo') return useMyLocation(paint);
+      if (a === 'manual') {
+        const lat = parseFloat($('#stLat', root).value), lon = parseFloat($('#stLon', root).value);
+        if (!okLat(lat) || !okLon(lon)) return paint('Enter a latitude between -90 and 90 and a longitude between -180 and 180.');
+        setStart({ preset: 'custom', lat: Math.round(lat * 10000) / 10000, lon: Math.round(lon * 10000) / 10000, label: 'Custom location' }); return paint();
+      }
+      return;
+    }
+    const k = b.dataset.set, v = b.dataset.v;
+    if (k === 'interest') toggleInterest(v);
+    else if (k === 'city') { if (!v) p().cities = []; else p().cities = p().cities.includes(v) ? p().cities.filter(x => x !== v) : [...p().cities, v]; savePrefs(); }
+    else if (k === 'dist') { p().maxMiles = +v; savePrefs(); }
+    else if (k === 'price') { p().price = v; savePrefs(); }
+    paint();
+  });
+  root.addEventListener('change', e => {
+    const t = e.target, k = t.dataset && t.dataset.set; if (!k) return;
+    if (k === 'preset') { const pr = presetById(t.value); if (pr) setStart({ preset: pr.id, lat: pr.lat, lon: pr.lon, label: pr.name }); }
+    else if (k === 'unk') { p().unknownPrice = t.checked; savePrefs(); }
+    else if (k === 'hidenot') { p().hideNot = t.checked; savePrefs(); }
+    else if (k === 'hidecan') { p().hideCanceled = t.checked; savePrefs(); }
+  });
+  dlg.onclose = () => { dlg.onclose = null; render(); };
+  paint(); dlg.showModal();
+}
+function useMyLocation(paint) {
+  const keep = state.prefs.start.label;
+  if (!navigator.geolocation) return paint('This device can’t share its location. Pick a starting place instead.');
+  navigator.geolocation.getCurrentPosition(pos => {
+    const lat = pos.coords.latitude, lon = pos.coords.longitude;
+    if (!okLat(lat) || !okLon(lon)) return paint('Couldn’t read your location. Kept “' + keep + '”.');
+    setStart({ preset: 'geo', lat: Math.round(lat * 10000) / 10000, lon: Math.round(lon * 10000) / 10000, label: 'My location' }); paint();
+  }, err => paint(err && err.code === 1 ? 'Location is turned off for this app, so I kept “' + keep + '”. You can pick a starting place above.' : 'Couldn’t get your location, so I kept “' + keep + '”.'), { timeout: 10000, maximumAge: 600000 });
+}
+
+/* ---------------- calendar + planner actions ---------------- */
+async function doIcs(id) {
+  const e = feed.byId.get(id) || (state.picks[id] && state.picks[id].snapshot.start ? eventFromSnap(id, state.picks[id].snapshot) : null);
+  if (!e) return toast('That event isn’t available any more.');
+  const r = await deliverFile(`houston-${slug(e.title)}.ics`, buildICS([e]), 'text/calendar');
+  if (r !== 'cancelled') toast(r === 'shared' ? 'Calendar file shared' : 'Calendar file saved to your downloads');
+}
+async function doExportGoing() {
+  const list = savedEntries('going', 'mine').list.filter(x => x.mine === 'going' && !x.past).map(x => x.e);
+  if (!list.length) return toast('Nothing marked Going yet.');
+  const r = await deliverFile(`houston-going-${centralDay(nowMs())}.ics`, buildICS(list), 'text/calendar');
+  if (r !== 'cancelled') toast(r === 'shared' ? 'Calendar file shared' : 'Calendar file saved to your downloads');
+}
+
+/* ---------------- backup / restore ---------------- */
+async function doExport() {
+  const pass = ($('#bkPass') || {}).value || '', pass2 = ($('#bkPass2') || {}).value || '';
+  if (pass) {
+    if (pass.length < 8) return toast('Use at least 8 characters for the passphrase.');
+    if (pass !== pass2) return toast('The two passphrases don’t match.');
+  }
+  const btn = $('[data-action="export"]'); if (btn) btn.disabled = true;
+  try {
+    const text = await Backup.build({ appId: APP_ID, schema: SCHEMA, data: exportData(), passphrase: pass || null });
+    const r = await deliverFile(`goobs-houston-backup-${todayISO()}${pass ? '-encrypted' : ''}.json`, text, 'application/json');
+    if (r !== 'cancelled') {
+      state.meta.lastBackup = new Date().toISOString();
+      await persist({ touch: false });
+      render();
+      toast(r === 'shared' ? 'Backup shared' : 'Backup saved to your downloads');
+    }
+  } catch (e) { toast('Backup failed: ' + e.message); }
+  finally { const b2 = $('[data-action="export"]'); if (b2) b2.disabled = false; }
+}
+async function restoreFromText(text) {
+  let parsed;
+  try { parsed = await Backup.parse(text, { appId: APP_ID, schema: SCHEMA }); }
+  catch (e) { await msgBox('Can’t restore that file', e.message); return false; }
+  if (!parsed) return false;
+  const { data, dropped } = normalizeData(parsed.data);
+  const nb = Object.keys(data.picks).length, hasLocal = Object.keys(state.picks).length > 0;
+  const sum = `${plural(nb, 'pick')} and your settings`;
+  const when = parsed.exportedAt ? ` Backup made ${fmtDateTime(parsed.exportedAt)}.` : '';
+  const skipped = dropped ? ` ${plural(dropped, 'unreadable entry')} will be skipped.` : '';
+  const body = `<p>${esc(sum + '.' + when + skipped)}</p>` + (hasLocal ? '<p class="muted"><b>Replace all</b> swaps your picks and settings for the backup. <b>Merge</b> adds picks that aren’t here yet and keeps your settings.</p>' : '')
+    + (syncOn() ? '<p class="warn">Your picks are shared, so this also changes your shared picks.</p>' : '');
+  const choice = await askDialog({
+    title: 'Restore this backup?', body,
+    buttons: hasLocal
+      ? [{ label: 'Cancel', value: 'cancel' }, { label: 'Merge', value: 'merge' }, { label: 'Replace all', value: 'replace', kind: 'danger' }]
+      : [{ label: 'Cancel', value: 'cancel' }, { label: 'Restore', value: 'replace', kind: 'primary' }]
+  });
+  if (choice === 'replace') {
+    const ts = parsed.exportedAt && !isNaN(Date.parse(parsed.exportedAt)) ? parsed.exportedAt : new Date().toISOString();
+    state.picks = data.picks; state.prefs = data.prefs; state.meta.lastBackup = ts; state.meta.lastChange = ts;
+    await persist({ touch: false });
+    committing = true; try { Sync.touch(); } finally { committing = false; }
+    location.hash = '#/'; render(); toast(`Restored ${sum}`); return true;
+  }
+  if (choice === 'merge') {
+    let n = 0;
+    for (const [id, p] of Object.entries(data.picks)) { const cur = state.picks[id]; if (!cur || p.updatedAt > cur.updatedAt) { if (!cur) n++; state.picks[id] = p; } }
+    commit(); toast(`Merged in ${plural(n, 'pick')}`); return true;
+  }
+  return false;
+}
+async function doRestore() {
+  const f = await pickFile(); if (!f) return;
+  let text;
+  try { text = await readFileText(f); } catch { await msgBox('Couldn’t read that file', 'Try choosing it again.'); return; }
+  await restoreFromText(text);
+}
+async function doWipe() {
+  if (!(await confirmBox('Erase your picks and settings?', 'This deletes your picks and resets your settings on this device. Make a backup first if you might want them.' + sharedNote(), 'Erase'))) return;
+  const who = state.meta.who, others = state.others;
+  state = defaultState(); state.meta.who = who; state.others = others;
+  await persist({ touch: false });
+  committing = true; try { Sync.touch(); } finally { committing = false; }
+  location.hash = '#/'; render(); toast('Erased');
+}
+
+/* ---------------- events ---------------- */
+function handleAction(a, el) {
+  if (a.startsWith('sync-')) return syncAction(a);
+  const id = el.dataset.id, v = el.dataset.v;
+  switch (a) {
+    case 'view': ui.view = v; ui.limit = CHUNK; return render();
+    case 'more': ui.limit += CHUNK; return render();
+    case 'settings': return openSettings();
+    case 'sources': return askDialog({ title: 'Where listings come from', body: `<p class="muted">${esc(updatedLine())}</p>` + sourcesHTML(), buttons: [{ label: 'OK', value: true, kind: 'primary' }] });
+    case 'qi': toggleInterest(v); return render();
+    case 'qfree': state.prefs.price = state.prefs.price === 'free' ? 'any' : 'free'; savePrefs(); return render();
+    case 'qdist': state.prefs.maxMiles = state.prefs.maxMiles === +v ? 0 : +v; savePrefs(); return render();
+    case 'reset-filters': resetFilters(); return render();
+    case 'pick': return setPick(id, el.dataset.status);
+    case 'expand': if (ui.expanded.has(id)) ui.expanded.delete(id); else ui.expanded.add(id); el.classList.toggle('clamp', !ui.expanded.has(id)); return;
+    case 'ics': return doIcs(id);
+    case 'export-going': return doExportGoing();
+    case 'saved-tab': ui.savedTab = v; return render();
+    case 'scope': ui.savedScope = v; return render();
+    case 'show-past': ui.showPast = true; return render();
+    case 'export': return doExport();
+    case 'restore': return doRestore();
+    case 'wipe': return doWipe();
+    case 'install': return runInstall();
+  }
+}
+app.addEventListener('click', e => {
+  if (e.target.closest('a')) return;
+  const el = e.target.closest('[data-action]');
+  if (!el) return;
+  handleAction(el.dataset.action, el);
+});
+app.addEventListener('change', e => {
+  if (e.target.id === 'rgFrom' || e.target.id === 'rgTo') {
+    ui.range = { from: ($('#rgFrom', app) || {}).value || '', to: ($('#rgTo', app) || {}).value || '' }; ui.limit = CHUNK; render();
+  }
+});
+window.addEventListener('hashchange', render);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) { if (nowMs() - feed.fetchedAt > 600000) refreshFeed().catch(e => console.error(e)); else renderIfSafe(); } });
+window.addEventListener('online', () => { refreshFeed().catch(e => console.error(e)); });
+
+(async function init() {
+  try { db = await openDB(DB_NAME); } catch (e) { console.error(e); db = null; }
+  if (db) {
+    try {
+      const raw = await idbGet(db, 'state');
+      if (raw) {
+        try { state = loadState(JSON.parse(raw)); }
+        catch (e) { console.error(e); await idbPut(db, 'state-damaged-' + Date.now(), raw); toast('Saved data looked damaged — a copy was kept aside.'); }
+      }
+    } catch (e) { console.error(e); db = null; }
+  }
+  Sync.onChange(() => {
+    const u = Sync.user(), w = u ? whoFromEmail(u.email) : '';
+    if (w && state.meta.who !== w) { state.meta.who = w; persist({ touch: false }); }
+    renderIfSafe();
+  });
+  render();
+  Sync.start({ db, key: 'sync', model: syncModel }).catch(e => console.error(e));
+  try { await refreshFeed(); } catch (e) { console.error(e); feed.loaded = true; render(); }
+  /* the service worker may answer with a saved copy first and refresh it in the background: look again shortly after */
+  if (navigator.serviceWorker && navigator.serviceWorker.controller) setTimeout(() => { refreshFeed().catch(() => {}); }, 2500);
+})();
+</script>
+</body>
+</html>
