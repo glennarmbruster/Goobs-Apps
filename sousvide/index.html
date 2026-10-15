@@ -698,6 +698,7 @@ const CUTS = {
   strip: { label: 'NY strip', group: 'beef', tender: true, maxMin: 180, oz: 10, kcalOz: 65, fat: true, done: 'beef', noun: 'NY strip steak', nounP: 'NY strip steaks', lean: 'sirloin' },
   filet: { label: 'Filet / tenderloin', group: 'beef', tender: true, maxMin: 180, oz: 8, kcalOz: 60, fat: false, done: 'beef', noun: 'filet mignon', nounP: 'filets mignons' },
   sirloin: { label: 'Sirloin', group: 'beef', tender: true, maxMin: 180, oz: 8, kcalOz: 52, fat: false, done: 'beef', noun: 'sirloin steak', nounP: 'sirloin steaks' },
+  picanha: { label: 'Picanha (top sirloin cap)', group: 'beef', tender: false, minMin: 180, maxMin: 720, oz: 8, kcalOz: 80, fat: true, done: 'beef', noun: 'picanha steak', nounP: 'picanha steaks', lean: 'sirloin' },
   tbone: { label: 'T-bone / porterhouse', group: 'beef', tender: true, maxMin: 240, oz: 16, kcalOz: 70, fat: true, done: 'beef', noun: 'T-bone steak', nounP: 'T-bone steaks', lean: 'filet' },
   flatiron: { label: 'Flat iron', group: 'beef', tender: false, minMin: 240, maxMin: 1440, oz: 8, kcalOz: 62, fat: false, done: 'beefTough', noun: 'flat iron steak', nounP: 'flat iron steaks' },
   skirt: { label: 'Skirt / flank', group: 'beef', tender: false, minMin: 240, maxMin: 1440, oz: 8, kcalOz: 68, fat: false, done: 'beefTough', noun: 'skirt steak', nounP: 'skirt steaks', thin: true },
@@ -706,7 +707,6 @@ const CUTS = {
   chickenbreast: { label: 'Chicken breast', group: 'chicken', tender: true, maxMin: 240, oz: 7, kcalOz: 33, fat: false, done: 'chickenBreast', noun: 'chicken breast', nounP: 'chicken breasts' },
   chickenthigh: { label: 'Chicken thigh', group: 'chicken', tender: false, minMin: 240, maxMin: 720, oz: 6, kcalOz: 50, fat: false, done: 'chickenThigh', noun: 'chicken thigh', nounP: 'chicken thighs' },
   salmon: { label: 'Salmon', group: 'fish', tender: true, maxBeyond: 45, oz: 6, kcalOz: 58, fat: false, done: 'salmon', noun: 'salmon fillet', nounP: 'salmon fillets' },
-  picanha: { label: 'Picanha (top sirloin cap)', group: 'beef', tender: false, minMin: 180, maxMin: 720, oz: 8, kcalOz: 80, fat: true, done: 'beef', noun: 'picanha steak', nounP: 'picanha steaks', lean: 'sirloin' },
   lamb: { label: 'Lamb chop', group: 'lamb', tender: true, maxMin: 180, oz: 8, kcalOz: 75, fat: true, done: 'lamb', noun: 'lamb chop', nounP: 'lamb chops' }
 };
 const CUT_KEYS = Object.keys(CUTS);
@@ -730,7 +730,6 @@ function donenessFor(cut, key) {
 const EQUIP = { apo: 'Anova Precision Oven (steam / bagless)', circ: 'Immersion circulator + bag' };
 const FINISH = {
   sear: { label: 'Cast-iron sear', pan: 'Preheat a cast-iron skillet 5 minutes over high heat until the oil just shimmers (about 450–500°F surface)', fat: '1 tsp high-smoke-point oil per steak', base: 45, perIn: 30, min: 30, max: 90, oilInPan: true },
-  broiler: { label: 'Broiler', pan: 'Preheat the broiler on high for 10 minutes, with the rack 3–4 inches from the element', fat: 'brush with a little oil first', base: 90, perIn: 45, min: 60, max: 150, verb: 'Broil' },
   bighorn: { label: 'Big Horn outdoor sear oven', pan: 'Light the Big Horn and preheat about 15 minutes until it is at full heat (about 1500°F)', fat: 'brush with a thin coat of high-smoke-point oil first', base: 30, perIn: 15, min: 20, max: 60, verb: 'Sear in the Big Horn' },
   blackstone: { label: 'Blackstone griddle', pan: 'Preheat the Blackstone on high for 10 minutes (about 500–600°F surface), then wipe the griddle with oil', fat: '1 tsp high-smoke-point oil per steak', base: 60, perIn: 30, min: 45, max: 120, oilInPan: true },
   none: { label: 'No finish', pan: '', fat: '', base: 0, perIn: 0, min: 0, max: 0 }

@@ -199,6 +199,14 @@ table.tbl{border-collapse:collapse;width:100%;font-size:14px}
 .pv th,.pv td{padding:6px 7px;font-size:12.5px;white-space:normal;text-align:left;vertical-align:top}
 .pv tr.bad td{color:var(--bad)} .pv tr.dup td{color:var(--muted)}
 .fine{font-size:13px;color:var(--muted)}
+.espn-line{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-top:12px}
+.espn-line .fine{flex:1;min-width:0;overflow-wrap:anywhere}
+.espn-test{margin-top:8px;overflow-wrap:anywhere}.espn-test:empty{display:none}.espn-test.ok{color:var(--ok,#15803d);font-weight:600}.espn-test.bad{color:var(--bad,#b91c1c);font-weight:600}
+.espn-card{margin-top:14px}
+.eh{margin:16px 2px 6px;font-size:15px}
+details.eg{margin-top:8px;padding:0}
+details.eg>summary{padding:12px 14px;font-weight:700;cursor:pointer;min-height:44px;box-sizing:border-box;display:flex;align-items:center;flex-wrap:wrap;gap:4px}
+.pbar{height:10px;border-radius:5px;background:var(--soft);overflow:hidden;margin-top:6px}.pbar i{display:block;height:100%;background:var(--accent);transition:width .2s}
 .sw{display:inline-block;width:14px;height:14px;border-radius:50%;vertical-align:-2px;margin-right:6px}
 </style>
 </head>
@@ -909,6 +917,162 @@ function buildICS(games, teams, opts = {}) {
 }
 
 /* =====================================================================
+   ESPN (unofficial public JSON). The ONLY network this app ever uses: site.api.espn.com
+   ===================================================================== */
+const ESPN_HOST = 'https://site.api.espn.com/';
+let ESPN_TIMEOUT = 10000;
+const LEAGUES = [['football/nfl', 'NFL'], ['football/college-football', 'College football'], ['basketball/nba', 'NBA'], ['basketball/wnba', 'WNBA'], ['basketball/mens-college-basketball', 'Men’s college basketball'], ['basketball/womens-college-basketball', 'Women’s college basketball'], ['baseball/mlb', 'MLB'], ['hockey/nhl', 'NHL'], ['soccer/usa.1', 'MLS'], ['soccer/eng.1', 'English Premier League'], ['soccer/esp.1', 'La Liga'], ['soccer/ger.1', 'Bundesliga'], ['soccer/ita.1', 'Serie A'], ['soccer/fra.1', 'Ligue 1'], ['soccer/uefa.champions', 'UEFA Champions League']];
+const LEAGUE_KEYS = LEAGUES.map(l => l[0]);
+const leagueLabel = p => (LEAGUES.find(l => l[0] === p) || [0, str(p)])[1];
+const espnTeamsUrl = p => (LEAGUE_KEYS.includes(p) ? `${ESPN_HOST}apis/site/v2/sports/${p}/teams?limit=500` : null);
+const espnScheduleUrl = (p, id, season) => (LEAGUE_KEYS.includes(p) && /^\d{1,10}$/.test(String(id)) ? `${ESPN_HOST}apis/site/v2/sports/${p}/teams/${id}/schedule` + (/^\d{4}$/.test(String(season || '')) ? `?season=${season}` : '') : null);
+const espnStandingsUrl = p => (LEAGUE_KEYS.includes(p) ? `${ESPN_HOST}apis/v2/sports/${p}/standings` : null);
+const arr = v => (Array.isArray(v) ? v : []);
+const obj = v => (v && typeof v === 'object' ? v : {});
+function espnScore(v) {
+  if (v && typeof v === 'object') v = v.displayValue != null && v.displayValue !== '' ? v.displayValue : v.value;
+  if (v == null) return null;
+  const m = /^(\d{1,3})(\.0+)?$/.exec(String(v).trim());
+  return m ? Number(m[1]) : null;
+}
+function parseEspnTeams(json) {
+  const out = [], seen = new Set();
+  for (const s of arr(obj(json).sports)) for (const l of arr(obj(s).leagues)) for (const e of arr(obj(l).teams)) {
+    const t = obj(obj(e).team || e), id = str(t.id), name = cleanTeamName(t.displayName || [t.location, t.name].filter(Boolean).join(' '));
+    if (!/^\d{1,10}$/.test(id) || !name || seen.has(id)) continue;
+    seen.add(id);
+    out.push({ id, name, short: str(t.abbreviation).trim().slice(0, 6) || shortOf(name), color: /^[0-9a-f]{6}$/i.test(str(t.color)) ? '#' + str(t.color).toLowerCase() : '' });
+  }
+  return out.sort((a, b) => a.name.localeCompare(b.name));
+}
+function parseEspnEvent(ev) {
+  ev = obj(ev);
+  const comp = obj(arr(ev.competitions)[0]), id = str(ev.id || comp.id);
+  if (!/^\d{1,15}$/.test(id)) return null;
+  const comps = arr(comp.competitors);
+  const home = comps.find(c => obj(c).homeAway === 'home'), away = comps.find(c => obj(c).homeAway === 'away');
+  if (!home || !away) return null;
+  const ti = c => { const t = obj(obj(c).team); return { id: str(t.id || obj(c).id), name: cleanTeamName(t.displayName || [t.location, t.name].filter(Boolean).join(' ') || t.shortDisplayName), abbr: str(t.abbreviation).trim().slice(0, 6) }; };
+  const h = ti(home), a = ti(away);
+  if (!/^\d{1,10}$/.test(h.id) || !/^\d{1,10}$/.test(a.id) || !h.name || !a.name || h.id === a.id) return null;
+  const raw = str(comp.date || ev.date), d = new Date(raw);
+  if (!raw || isNaN(d)) return null;
+  let date, time = '';
+  if (comp.timeValid !== false && ev.timeValid !== false) { date = fmtISO(d); time = pad(d.getHours()) + ':' + pad(d.getMinutes()); } else date = raw.slice(0, 10);
+  if (!isISO(date)) return null;
+  const st = obj(obj(comp.status || ev.status).type), nm = str(st.name).toUpperCase(), stt = str(st.state).toLowerCase();
+  let status = 'scheduled';
+  if (/POSTPONED/.test(nm)) status = 'postponed';
+  else if (/CANCEL/.test(nm)) status = 'cancelled';
+  else if (st.completed === true || stt === 'post' || /FINAL|FORFEIT/.test(nm)) status = 'final';
+  let hs = espnScore(home.score), as = espnScore(away.score);
+  if (status !== 'final') { hs = null; as = null; }
+  const det = [st.detail, st.shortDetail, st.description].map(str).join(' ');
+  const ot = status === 'final' && hs != null && as != null && hs !== as && /\b(\d?OT|SO|AET|Extra|Pens|Penalties|Shootout)\b/i.test(det);
+  const chans = [...new Set(arr(comp.broadcasts).map(b => str(obj(obj(b).media).shortName || arr(obj(b).names)[0]).trim()).filter(Boolean))];
+  const stype = Number(obj(ev.seasonType).type != null ? obj(ev.seasonType).type : obj(ev.seasonType).id);
+  const type = stype === 1 ? 'preseason' : stype === 3 ? 'playoff' : /post|play/i.test(str(obj(ev.seasonType).name)) ? 'playoff' : 'regular';
+  return { externalId: id, date, time, season: str(obj(ev.season).year) || date.slice(0, 4), home: h, away: a, venue: str(obj(comp.venue).fullName).trim().slice(0, 120), channel: chans.join(', ').slice(0, 40), status, homeScore: hs, awayScore: as, ot, type, neutral: comp.neutralSite === true };
+}
+function parseEspnSchedule(json) {
+  const j = obj(json), out = { games: [], skipped: 0, year: Number(obj(j.season).year) || Number(obj(j.requestedSeason).year) || null };
+  for (const ev of arr(j.events)) { const g = parseEspnEvent(ev); if (g) out.games.push(g); else out.skipped++; }
+  return out;
+}
+function espnStandRow(e) {
+  e = obj(e);
+  const t = obj(e.team), id = str(t.id), name = cleanTeamName(t.displayName || [t.location, t.name].filter(Boolean).join(' '));
+  if (!id || !name) return null;
+  const S = {}; for (const s of arr(e.stats)) { const n = str(obj(s).name); if (n && !(n in S)) S[n] = s; }
+  const dv = (...ns) => { for (const n of ns) { const s = S[n]; if (!s) continue; const v = s.displayValue != null && s.displayValue !== '' ? str(s.displayValue) : s.value != null ? str(s.value) : ''; if (v !== '') return v.slice(0, 12); } return ''; };
+  const nv = (...ns) => { const v = parseFloat(dv(...ns)); return isFinite(v) ? v : null; };
+  return { id, name, abbr: str(t.abbreviation).slice(0, 6), w: dv('wins'), l: dv('losses'), t: dv('ties', 'draws'), otl: dv('otLosses'), pct: dv('winPercent'), gb: dv('gamesBehind'), pf: dv('pointsFor'), pa: dv('pointsAgainst'), diff: dv('pointDifferential', 'differential', 'pointsDifferential'), streak: dv('streak'), pts: dv('points'), gp: dv('gamesPlayed'), _rank: nv('rank'), _pts: nv('points'), _pct: nv('winPercent'), _w: nv('wins'), _diff: nv('pointDifferential', 'differential') };
+}
+function parseEspnStandings(json) {
+  const groups = [];
+  const walk = (node, trail, depth) => {
+    node = obj(node); if (depth > 4) return;
+    const entries = arr(obj(node.standings).entries), name = cleanTeamName(node.name || node.abbreviation);
+    if (entries.length) {
+      const rows = entries.map(espnStandRow).filter(Boolean);
+      const cmp = rows.every(r => r._rank != null) ? (a, b) => a._rank - b._rank : rows.some(r => r._pts != null) ? (a, b) => (b._pts ?? -1) - (a._pts ?? -1) || (b._diff ?? 0) - (a._diff ?? 0) : (a, b) => (b._pct ?? -1) - (a._pct ?? -1) || (b._w ?? 0) - (a._w ?? 0);
+      rows.sort(cmp); rows.forEach(r => { for (const k of Object.keys(r)) if (k[0] === '_') delete r[k]; });
+      if (rows.length) groups.push({ name: name || trail, rows: rows.slice(0, 100) });
+    }
+    for (const c of arr(node.children)) walk(c, name || trail, depth + 1);
+  };
+  walk(json, '', 0);
+  return groups.slice(0, 60);
+}
+const fmtAgo = (iso, now = Date.now()) => {
+  const t = Date.parse(iso); if (!isFinite(t)) return 'never';
+  const m = Math.floor((now - t) / 60000);
+  return m < 1 ? 'just now' : m < 60 ? `${m} min ago` : m < 1440 ? `${Math.floor(m / 60)} h ago` : `${Math.floor(m / 1440)} d ago`;
+};
+const espnErr = (kind, msg) => Object.assign(new Error(msg), { kind });
+/* one guarded GET: only site.api.espn.com, 10 s timeout, no retries */
+async function espnGet(url, ext) {
+  if (!url || !url.startsWith(ESPN_HOST)) throw espnErr('blocked', 'Blocked: this app only talks to site.api.espn.com.');
+  if (ext && ext.aborted) throw espnErr('cancelled', 'Cancelled.');
+  if (navigator.onLine === false) throw espnErr('offline', 'You’re offline.');
+  const ctl = new AbortController(), timer = setTimeout(() => ctl.abort(), ESPN_TIMEOUT);
+  const onExt = () => ctl.abort();
+  if (ext) ext.addEventListener('abort', onExt);
+  try {
+    let res;
+    try { res = await fetch(url, { signal: ctl.signal, credentials: 'omit', referrerPolicy: 'no-referrer' }); }
+    catch (e) {
+      if (ext && ext.aborted) throw espnErr('cancelled', 'Cancelled.');
+      if (e && e.name === 'AbortError') throw espnErr('timeout', `ESPN didn’t answer within ${Math.round(ESPN_TIMEOUT / 1000)} seconds.`);
+      throw espnErr('network', 'Couldn’t reach ESPN. Either you’re offline, or the browser blocked the request (ESPN may not allow requests from web pages).');
+    }
+    if (!res.ok) throw espnErr('http', `ESPN answered with an error (${res.status}).`);
+    let txt;
+    try { txt = await res.text(); } catch (e) { throw espnErr(e && e.name === 'AbortError' ? 'timeout' : 'network', 'The ESPN reply was cut off.'); }
+    try { return JSON.parse(txt); } catch { throw espnErr('parse', 'ESPN sent something the app couldn’t read.'); }
+  } finally { clearTimeout(timer); if (ext) ext.removeEventListener('abort', onExt); }
+}
+
+/* ---- merge parsed ESPN data into a state-like object { teams, games, espn } ---- */
+function espnTeamFor(st, path, info) {
+  let t = st.teams.find(x => x.espnPath === path && x.espnId === info.id);
+  if (t) return t;
+  const n = normName(info.name);
+  t = st.teams.find(x => normName(x.name) === n && (!x.espnId || x.espnId === info.id));
+  if (t) { if (!t.espnId) { t.espnId = info.id; t.espnPath = path; } return t; } // adopt a hand-entered team with the same name
+  if (st.teams.length >= MAX.teams) return null;
+  const cat = arr(obj(obj(obj(st.espn).catalogs)[path]).teams).find(x => x.id === info.id);
+  const taken = st.teams.some(x => normName(x.name) === n);
+  t = normTeam({ id: uid(), name: taken ? `${info.name} (${leagueLabel(path)})` : info.name, short: info.abbr || (cat && cat.short), color: (cat && cat.color) || PALETTE[st.teams.length % PALETTE.length], league: leagueLabel(path), espnId: info.id, espnPath: path, espnSync: false });
+  st.teams.push(t);
+  return t;
+}
+/* New games are added; games already synced (same externalId) are updated in place and keep their notes;
+   hand-entered games are never touched (an identical hand-entered game blocks the synced duplicate). */
+function mergeEspnGames(st, path, parsed) {
+  const res = { added: 0, updated: 0, same: 0, skipped: 0, teamsAdded: 0 }, t0 = st.teams.length;
+  const byExt = new Map(st.games.filter(g => g.source === 'espn').map(g => [g.externalId, g]));
+  const manual = new Set(st.games.filter(g => g.source !== 'espn').map(g => `${g.date}|${g.homeId}|${g.awayId}`));
+  for (const pg of arr(parsed && parsed.games)) {
+    const h = espnTeamFor(st, path, pg.home), a = espnTeamFor(st, path, pg.away);
+    if (!h || !a || h.id === a.id) { res.skipped++; continue; }
+    const f = { season: pg.season, date: pg.date, time: pg.time, homeId: h.id, awayId: a.id, venue: pg.venue, channel: pg.channel, status: pg.status, homeScore: pg.homeScore, awayScore: pg.awayScore, ot: pg.ot, type: pg.type, neutral: pg.neutral };
+    const ex = byExt.get(pg.externalId);
+    if (ex) {
+      const next = normGame({ ...ex, ...f });
+      if (JSON.stringify(next) === JSON.stringify(ex)) res.same++; else { Object.assign(ex, next); res.updated++; }
+    } else {
+      if (manual.has(`${f.date}|${f.homeId}|${f.awayId}`) || st.games.length >= MAX.games) { res.skipped++; continue; }
+      const g = normGame({ ...f, id: uid(), notes: '', source: 'espn', externalId: pg.externalId });
+      if (!g) { res.skipped++; continue; }
+      st.games.push(g); byExt.set(pg.externalId, g); res.added++;
+    }
+  }
+  res.teamsAdded = st.teams.length - t0;
+  return res;
+}
+
+/* =====================================================================
    MODEL / NORMALIZATION
    ===================================================================== */
 const shortOf = name => {
@@ -919,7 +1083,11 @@ const shortOf = name => {
 function normTeam(t) {
   if (!t || typeof t !== 'object') return null;
   const name = cleanTeamName(t.name); if (!name) return null;
-  return { id: str(t.id).slice(0, 60) || uid(), name, short: str(t.short).trim().slice(0, 6) || shortOf(name), league: str(t.league).trim().slice(0, 40), division: str(t.division).trim().slice(0, 40), color: HEX.test(str(t.color)) ? t.color.toLowerCase() : PALETTE[0], mine: t.mine === true, notes: str(t.notes).slice(0, 1000) };
+  return { id: str(t.id).slice(0, 60) || uid(), name, short: str(t.short).trim().slice(0, 6) || shortOf(name), league: str(t.league).trim().slice(0, 40), division: str(t.division).trim().slice(0, 40), color: HEX.test(str(t.color)) ? t.color.toLowerCase() : PALETTE[0], mine: t.mine === true, notes: str(t.notes).slice(0, 1000), ...espnTeamFields(t) };
+}
+function espnTeamFields(t) {
+  const ok = /^\d{1,10}$/.test(str(t.espnId)) && LEAGUE_KEYS.includes(t.espnPath);
+  return ok ? { espnId: str(t.espnId), espnPath: t.espnPath, espnSync: t.espnSync === true } : { espnId: '', espnPath: '', espnSync: false };
 }
 function normGame(g) {
   if (!g || typeof g !== 'object') return null;
@@ -932,8 +1100,26 @@ function normGame(g) {
     id: str(g.id).slice(0, 60) || uid(), season: str(g.season).trim().slice(0, 20) || date.slice(0, 4), date, time: validTime(str(g.time)) ? g.time : '',
     homeId, awayId, venue: str(g.venue).trim().slice(0, 120), channel: str(g.channel).trim().slice(0, 40), status, homeScore: hs, awayScore: as,
     ot: g.ot === true && hs != null && hs !== as, type: TYPE_KEYS.includes(g.type) ? g.type : 'regular', notes: str(g.notes).slice(0, 1000),
-    neutral: g.neutral === true, approx: g.approx === true
+    neutral: g.neutral === true, approx: g.approx === true,
+    source: g.source === 'espn' && /^[\w./:-]{1,80}$/.test(str(g.externalId)) ? 'espn' : '', externalId: g.source === 'espn' && /^[\w./:-]{1,80}$/.test(str(g.externalId)) ? str(g.externalId) : ''
   };
+}
+function normEspn(raw) {
+  const r = obj(raw), out = { catalogs: {}, standings: {}, lastRefresh: null };
+  const iso = v => (isFinite(Date.parse(str(v))) ? str(v) : null);
+  for (const [p, c] of Object.entries(obj(r.catalogs))) {
+    if (!LEAGUE_KEYS.includes(p) || !iso(obj(c).at)) continue;
+    const teams = arr(c.teams).map(x => obj(x)).filter(x => /^\d{1,10}$/.test(str(x.id)) && cleanTeamName(x.name)).slice(0, 600).map(x => ({ id: str(x.id), name: cleanTeamName(x.name), short: str(x.short).slice(0, 6), color: HEX.test(str(x.color)) ? x.color : '' }));
+    out.catalogs[p] = { at: c.at, teams };
+  }
+  for (const [p, c] of Object.entries(obj(r.standings))) {
+    if (!LEAGUE_KEYS.includes(p) || !iso(obj(c).at)) continue;
+    const keys = ['id', 'name', 'abbr', 'w', 'l', 't', 'otl', 'pct', 'gb', 'pf', 'pa', 'diff', 'streak', 'pts', 'gp'];
+    const groups = arr(c.groups).slice(0, 60).map(g => ({ name: cleanTeamName(obj(g).name), rows: arr(obj(g).rows).slice(0, 100).map(x => { const o = {}; for (const k of keys) o[k] = str(obj(x)[k]).slice(0, k === 'name' ? 60 : 12); return o; }).filter(x => x.id && x.name) })).filter(g => g.rows.length);
+    out.standings[p] = { at: c.at, groups };
+  }
+  out.lastRefresh = iso(r.lastRefresh);
+  return out;
 }
 const normSettings = s => ({ otl: !!(s && typeof s === 'object' && s.otl === true) });
 function normalizeData(raw) {
@@ -958,9 +1144,9 @@ function normalizeData(raw) {
       if (ids.length === 2 && tseen.has(ids[0]) && tseen.has(ids[1]) && ids[0] < ids[1] && typeof v === 'string' && v.trim()) rn[k] = v.slice(0, 2000);
     }
   }
-  return { data: { teams, games, settings: normSettings(raw.settings), rivalNotes: rn }, dropped };
+  return { data: { teams, games, settings: normSettings(raw.settings), rivalNotes: rn, espn: normEspn(raw.espn) }, dropped };
 }
-const DATA_KEYS = ['teams', 'games', 'settings', 'rivalNotes'];
+const DATA_KEYS = ['teams', 'games', 'settings', 'rivalNotes', 'espn'];
 const defaultState = () => ({ schemaVersion: SCHEMA, meta: { lastBackup: null, lastChange: null }, ...normalizeData({}).data });
 function loadState(parsed) {
   const { data } = normalizeData(parsed);
@@ -1009,13 +1195,215 @@ const perspective = (g, pref) => {
 
 /* ---- UI state ---- */
 const view = $('#view');
-const ui = { tab: 'schedule', fTeam: 'all', fSeason: null, sSeason: null, rA: null, rB: null, showAll: false };
+const ui = { tab: 'schedule', fTeam: 'all', fSeason: null, sSeason: null, rA: null, rB: null, showAll: false, espn: { state: 'idle' }, espnTest: null, espnTry: 0, lastLeague: null };
 function storageBannerHTML() {
   if (saveFailed) return '<div class="banner bad">Couldn’t save to this device’s storage. Back up now so nothing is lost.</div>';
   if (!db) return '<div class="banner bad">This browser isn’t allowing storage (private mode?). Changes won’t survive closing the app — use Backup.</div>';
   return '';
 }
 const selHTML = (name, label, opts, val) => `<div class="field"><label for="sel_${name}">${esc(label)}</label><select id="sel_${name}" data-sel="${name}">${opts.map(([v, l]) => `<option value="${esc(v)}"${String(v) === String(val) ? ' selected' : ''}>${esc(l)}</option>`).join('')}</select></div>`;
+
+/* ===================== ESPN SYNC (the only network use; site.api.espn.com) ===================== */
+const AUTO_MS = 3600000, AUTO_COOLDOWN_MS = 300000;
+const syncedTeams = () => state.teams.filter(t => t.espnSync && t.espnId && t.espnPath);
+const fmtClock = iso => new Date(iso).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+let espnBusy = null;
+function espnStatusText() {
+  const e = ui.espn || {}, at = state.espn.lastRefresh, saved = at ? ` (updated ${fmtAgo(at)})` : '';
+  if (e.state === 'updating') return 'Updating…';
+  if (navigator.onLine === false) return at ? `Offline — showing saved data${saved}` : 'Offline — no saved data yet';
+  if (e.state === 'ok') return `Updated ${fmtClock(e.at)}` + (e.note ? ' — ' + e.note : '');
+  if (e.state === 'offline') return at ? `Offline — showing saved data${saved}` : 'Offline — no saved data yet';
+  if (e.state === 'error') return `Couldn’t update: ${e.msg} Showing saved data${saved}.`;
+  return at ? `Saved copy — updated ${fmtAgo(at)}` : 'Not updated yet';
+}
+function paintEspnStatus() {
+  const txt = espnStatusText(), busy = !!espnBusy;
+  $$('[data-espn-status]').forEach(el => { el.textContent = txt; });
+  $$('[data-action="espn-refresh"]').forEach(b => { b.disabled = busy; });
+}
+const espnLineHTML = () => `<div class="espn-line"><span class="fine" data-espn-status role="status">${esc(espnStatusText())}</span><button type="button" class="btn small" data-action="espn-refresh"${espnBusy ? ' disabled' : ''}>Refresh</button></div>`;
+const espnViewTab = () => ['schedule', 'standings', 'teams'].includes(ui.tab);
+
+/* Fetch schedule(s) and standings for the synced teams. One request at a time. A dead connection stops the run. */
+function refreshEspn({ auto = false, only = null } = {}) {
+  if (espnBusy) return espnBusy;
+  const teams = syncedTeams().filter(t => !only || t.id === only);
+  if (!teams.length) return Promise.resolve(null);
+  ui.espnTry = Date.now();
+  if (navigator.onLine === false) { ui.espn = { state: 'offline' }; paintEspnStatus(); return Promise.resolve(null); }
+  ui.espn = { state: 'updating' };
+  espnBusy = (async () => {
+    const errs = []; let okCount = 0, stop = false, added = 0, updated = 0;
+    for (const t of teams) {
+      if (stop) break;
+      try {
+        const parsed = parseEspnSchedule(await espnGet(espnScheduleUrl(t.espnPath, t.espnId)));
+        const r = mergeEspnGames(state, t.espnPath, parsed);
+        added += r.added; updated += r.updated; okCount++;
+      } catch (e) { errs.push(e); if (['offline', 'timeout', 'network'].includes(e.kind)) stop = true; }
+    }
+    for (const p of [...new Set(teams.map(t => t.espnPath))]) {
+      if (stop) break;
+      try {
+        const groups = parseEspnStandings(await espnGet(espnStandingsUrl(p)));
+        if (groups.length) state.espn.standings[p] = { at: new Date().toISOString(), groups };
+        okCount++;
+      } catch (e) { errs.push(e); if (['offline', 'timeout', 'network'].includes(e.kind)) stop = true; }
+    }
+    if (okCount) {
+      state.espn.lastRefresh = new Date().toISOString();
+      ui.espn = { state: 'ok', at: state.espn.lastRefresh, note: errs.length ? `${plural(errs.length, 'request')} failed (${errs[0].message})` : '' };
+      await persist();
+    } else {
+      const e = errs[0] || {};
+      ui.espn = e.kind === 'offline' ? { state: 'offline' } : { state: 'error', msg: e.message || 'Unknown problem.' };
+    }
+    return { ok: okCount, errors: errs.length, added, updated };
+  })();
+  paintEspnStatus();
+  espnBusy = espnBusy.catch(e => { ui.espn = { state: 'error', msg: (e && e.message) || 'Unknown problem.' }; return null; })
+    .finally(() => { espnBusy = null; if (espnViewTab()) render(); else paintEspnStatus(); });
+  return espnBusy;
+}
+function maybeAutoRefresh() {
+  if (!syncedTeams().length || espnBusy || navigator.onLine === false) return;
+  const at = Date.parse(state.espn.lastRefresh || '');
+  if (isFinite(at) && Date.now() - at < AUTO_MS) return;
+  if (ui.espnTry && Date.now() - ui.espnTry < AUTO_COOLDOWN_MS) return;
+  refreshEspn({ auto: true });
+}
+async function testEspn() {
+  const set = (st, msg) => { ui.espnTest = { st, msg }; const el = $('#espnTest'); if (el) { el.textContent = msg; el.className = 'fine espn-test ' + st; } };
+  set('wait', 'Testing…');
+  try {
+    const teams = parseEspnTeams(await espnGet(espnTeamsUrl('football/nfl')));
+    set(teams.length ? 'ok' : 'bad', teams.length ? `OK — ESPN answered (${plural(teams.length, 'team')} found).` : 'Failed — ESPN answered, but the reply had no teams in it.');
+  } catch (e) { set('bad', `Failed — ESPN may be blocking requests from the browser. (${e.message})`); }
+}
+
+/* ---- add a team from a league catalog ---- */
+function addFromLeagueDialog() {
+  let next = null;
+  formDialog({
+    title: 'Add team from a league', intro: 'Pick a league. The team list is downloaded from ESPN, so you need a connection for this step.', submitLabel: 'Next',
+    fields: [{ name: 'league', label: 'League', type: 'select', options: LEAGUES, value: ui.lastLeague || LEAGUES[0][0] }],
+    onSubmit: async v => {
+      const path = v.league, err = $('#dlg .dlg-err'); if (err) err.textContent = 'Loading the team list…';
+      ui.lastLeague = path;
+      try {
+        const teams = parseEspnTeams(await espnGet(espnTeamsUrl(path)));
+        if (!teams.length) throw espnErr('parse', 'ESPN sent an empty team list.');
+        state.espn.catalogs[path] = { at: new Date().toISOString(), teams }; persist();
+        next = { path, teams, cached: false };
+      } catch (e) {
+        const c = state.espn.catalogs[path];
+        if (c && c.teams.length) next = { path, teams: c.teams, cached: true, at: c.at, why: e.message };
+        else return e.kind === 'offline' ? 'You’re offline, and no team list for this league is saved yet. Connect once to download it, or add the team by hand.' : e.message;
+      }
+    },
+    onClose: () => { if (next) { const n = next; next = null; pickTeamDialog(n); } }
+  });
+}
+function pickTeamDialog(n) {
+  const opts = ts => ts.map(t => [t.id, t.name]);
+  const intro = n.cached ? `Showing the saved ${leagueLabel(n.path)} list (updated ${fmtAgo(n.at)}). ${n.why}` : `${plural(n.teams.length, 'team')} in ${leagueLabel(n.path)}.`;
+  formDialog({
+    title: 'Pick a team', intro, submitLabel: 'Add team',
+    fields: [
+      { name: 'q', label: 'Filter the list', value: '', placeholder: 'type part of a name' },
+      { name: 'team', label: 'Team', type: 'select', options: opts(n.teams), value: n.teams[0].id },
+      { name: 'mine', label: 'This is my team', type: 'checkbox', value: !state.teams.some(x => x.mine) }
+    ],
+    onSubmit: v => {
+      const c = n.teams.find(x => x.id === v.team); if (!c) return 'Pick a team.';
+      let t = state.teams.find(x => x.espnPath === n.path && x.espnId === c.id);
+      if (t && t.espnSync) return `${t.name} is already added.`;
+      if (!t) t = state.teams.find(x => normName(x.name) === normName(c.name) && (!x.espnId || x.espnId === c.id));
+      if (t) { t.espnId = c.id; t.espnPath = n.path; t.espnSync = true; if (v.mine) t.mine = true; if (!t.league) t.league = leagueLabel(n.path); }
+      else {
+        if (state.teams.length >= MAX.teams) return 'Team limit reached.';
+        t = normTeam({ id: uid(), name: c.name, short: c.short, color: c.color || PALETTE[state.teams.length % PALETTE.length], league: leagueLabel(n.path), mine: v.mine, espnId: c.id, espnPath: n.path, espnSync: true });
+        state.teams.push(t);
+      }
+      ui.tab = 'schedule'; ui.fTeam = 'all'; ui.fSeason = null; commit(); toast(`Added ${t.name} — downloading its schedule…`);
+      refreshEspn({ only: t.id });
+    }
+  });
+  const f = $('#dlg form'), q = f.elements.q, sel = f.elements.team;
+  q.addEventListener('input', () => {
+    const k = normName(q.value), list = n.teams.filter(t => !k || normName(t.name).includes(k) || t.short.toLowerCase() === k);
+    sel.innerHTML = opts(list.length ? list : n.teams).map(([id, nm]) => `<option value="${esc(id)}">${esc(nm)}</option>`).join('');
+  });
+}
+
+/* ---- past seasons (one request at a time, with progress and cancel) ---- */
+function latestSeasonYear(t) {
+  const ys = state.games.filter(g => g.source === 'espn' && g.type === 'regular' && (g.homeId === t.id || g.awayId === t.id)).map(g => seasonYear(g.season));
+  return ys.length ? Math.max(...ys) : new Date().getFullYear();
+}
+function progressDialog(title) {
+  const d = $('#ask'), ctl = new AbortController();
+  d.innerHTML = `<div class="dlg-form"><h2>${esc(title)}</h2><div class="ask-body"><p id="progTxt" role="status">Starting…</p><div class="pbar"><i id="progBar" style="width:0%"></i></div></div><div class="dlg-actions ask-actions"><button type="button" class="btn" data-k="stop">Cancel</button></div></div>`;
+  $('[data-k="stop"]', d).onclick = () => { ctl.abort(); const p = $('#progTxt', d); if (p) p.textContent = 'Cancelling…'; };
+  d.oncancel = () => ctl.abort();
+  d.showModal();
+  return { signal: ctl.signal, update(txt, frac) { const p = $('#progTxt', d), b = $('#progBar', d); if (p) p.textContent = txt; if (b) b.style.width = Math.round(frac * 100) + '%'; }, close() { d.oncancel = null; if (d.hasAttribute('open')) d.close(); } };
+}
+async function importPastSeasons(tid, count) {
+  const t = tm(tid); if (!t || !t.espnId) return null;
+  const base = latestSeasonYear(t), years = []; for (let i = 1; i <= count; i++) years.push(base - i);
+  const prog = progressDialog(`Past seasons — ${t.name}`), out = { years: [], done: [], failed: [], cancelled: false, added: 0, updated: 0 };
+  try {
+    for (let i = 0; i < years.length; i++) {
+      const y = years[i];
+      prog.update(`Season ${y} (${i + 1} of ${years.length})…`, i / years.length);
+      if (prog.signal.aborted) { out.cancelled = true; break; }
+      try {
+        const parsed = parseEspnSchedule(await espnGet(espnScheduleUrl(t.espnPath, t.espnId, y), prog.signal));
+        const r = mergeEspnGames(state, t.espnPath, parsed);
+        out.added += r.added; out.updated += r.updated; out.done.push({ year: y, games: parsed.games.length });
+        await persist();
+      } catch (e) {
+        if (e.kind === 'cancelled') { out.cancelled = true; break; }
+        out.failed.push({ year: y, why: e.message });
+        if (e.kind === 'offline') break;
+      }
+    }
+    if (out.done.length) { state.espn.lastRefresh = state.espn.lastRefresh || new Date().toISOString(); await persist(); }
+  } finally { prog.close(); }
+  render();
+  return out;
+}
+function pastDialog(preId) {
+  const syn = syncedTeams();
+  if (!syn.length) { msgBox('No synced teams', 'Add a team from a league first; past seasons are downloaded for synced teams.'); return; }
+  let go2 = null;
+  formDialog({
+    title: 'Import past seasons', intro: 'Downloads earlier seasons one at a time and saves the games, so rivalry records and the matrix fill in. Seasons that fail are skipped.', submitLabel: 'Import',
+    fields: [
+      { name: 'team', label: 'Team', type: 'select', options: syn.map(t => [t.id, t.name]), value: preId && syn.some(t => t.id === preId) ? preId : syn[0].id },
+      { name: 'n', label: 'How many past seasons', type: 'select', options: Array.from({ length: 10 }, (_, i) => [String(i + 1), i === 0 ? '1 season' : `${i + 1} seasons`]), value: '3' }
+    ],
+    onSubmit: v => { const n = Number(v.n); if (!(n >= 1 && n <= 10)) return 'Pick 1 to 10 seasons.'; if (navigator.onLine === false) return 'You’re offline. Try again when you have a connection.'; go2 = { tid: v.team, n }; },
+    onClose: async () => {
+      if (!go2) return; const g = go2; go2 = null;
+      const r = await importPastSeasons(g.tid, g.n); if (!r) return;
+      const bits = [];
+      if (r.done.length) bits.push(`Saved ${plural(r.added, 'new game')} (${plural(r.updated, 'update')}) from ${r.done.map(d => d.year).join(', ')}.`);
+      if (r.failed.length) bits.push(`Skipped: ${r.failed.map(f => `${f.year} (${f.why})`).join('; ')}`);
+      if (r.cancelled) bits.push('Cancelled before finishing.');
+      await msgBox(r.cancelled ? 'Import cancelled' : r.failed.length && !r.done.length ? 'Nothing imported' : 'Import finished', bits.join(' ') || 'Nothing to do.');
+    }
+  });
+}
+
+/* ---- drop cached data no synced team needs any more ---- */
+function pruneEspn() {
+  const paths = new Set(syncedTeams().map(t => t.espnPath));
+  for (const p of Object.keys(state.espn.standings)) if (!paths.has(p)) delete state.espn.standings[p];
+  if (!paths.size) state.espn.lastRefresh = null;
+}
 
 /* ===================== SCHEDULE ===================== */
 function curSeason() { return ui.fSeason === null ? autoSeason() : ui.fSeason; }
@@ -1050,14 +1438,14 @@ function gameRowHTML(g, pref) {
   return `<li class="row${g.status === 'cancelled' ? ' faded' : ''}" data-action="edit-game" data-id="${esc(g.id)}">${cal}<div class="row-main"><div class="row-title">${mine(g.awayId)} <span class="muted">@</span> ${mine(g.homeId)}${badges}</div><div class="row-sub">${sub}</div></div>${right}</li>`;
 }
 function renderSchedule() {
-  if (!state.teams.length) return storageBannerHTML() + '<div class="empty"><div class="big">🏟️</div><h2>Add your team first</h2><p>Enter your team, then its schedule, and the app does the countdown, standings and rivalry math.</p><button type="button" class="btn primary" data-action="add-team">Add a team</button></div>';
+  if (!state.teams.length) return storageBannerHTML() + '<div class="empty"><div class="big">🏟️</div><h2>Add your team first</h2><p>Enter your team, then its schedule, and the app does the countdown, standings and rivalry math.</p><button type="button" class="btn primary" data-action="add-team">Add a team</button><button type="button" class="btn" style="margin-top:10px" data-action="espn-add">Add from a league (online)</button></div>';
   const season = curSeason(), vis = visibleGames(), today = todayISO(), pref = ui.fTeam === 'all' ? null : ui.fTeam;
   const seasons = seasonsList(); if (season !== 'all' && !seasons.includes(season)) seasons.unshift(season);
   const next = nextGame();
   let h = storageBannerHTML();
   h += next ? `<div class="card hero" id="hero" data-action="edit-game" data-id="${esc(next.id)}" style="border-left-color:${esc(tColor(perspective(next, pref) || next.homeId))}">${heroInner(next)}</div>` : '';
   h += `<div class="filters">${selHTML('fTeam', 'Team', [['all', 'All teams'], ...state.teams.map(t => [t.id, t.name])], ui.fTeam)}${selHTML('fSeason', 'Season', [['all', 'All seasons'], ...seasons.map(s => [s, s])], season)}</div>`;
-  h += `<div class="ctl"><button type="button" class="btn" data-action="import">Paste schedule</button><button type="button" class="btn" data-action="export-ics">Export .ics</button></div>`;
+  h += `<div class="ctl"><button type="button" class="btn" data-action="import">Paste schedule</button><button type="button" class="btn" data-action="export-ics">Export .ics</button></div>` + (syncedTeams().length ? espnLineHTML() : '');
   if (!state.games.length) return h + '<div class="empty"><div class="big">📅</div><h2>No games yet</h2><p>Add one game, or paste a whole schedule.</p><button type="button" class="btn primary" data-action="add-game">Add a game</button></div>';
   const needs = vis.filter(g => g.status === 'scheduled' && g.date < today).sort((a, b) => gameCmp(b, a));
   const upcoming = vis.filter(g => g.status === 'scheduled' && g.date >= today).sort(gameCmp);
@@ -1099,6 +1487,7 @@ function gameDialog(id, preset = {}) {
   const opts = state.teams.map(t => [t.id, t.name]);
   formDialog({
     title: g ? 'Edit game' : 'Add game', submitLabel: g ? 'Save' : 'Add game', grid: 'fields2',
+    intro: g && g.source === 'espn' ? 'Synced from ESPN: a refresh can overwrite the date, time, score and status. Your notes are kept.' : '',
     fields: [
       { name: 'awayId', label: 'Away team', type: 'select', options: opts, value: b.awayId },
       { name: 'homeId', label: 'Home team', type: 'select', options: opts, value: b.homeId },
@@ -1126,7 +1515,7 @@ function gameDialog(id, preset = {}) {
         if (v.ot && hs === as) return 'An overtime game needs a winner. For a shootout, give the winner the extra goal.';
       }
       if (!g && state.games.length >= MAX.games) return 'Game limit reached.';
-      const rec = normGame({ id: g ? g.id : uid(), season: v.season, date, time, homeId: v.homeId, awayId: v.awayId, venue: v.venue, channel: v.channel, status: v.status, homeScore: hs, awayScore: as, ot: v.ot, type: v.type, notes: v.notes.trim(), neutral: v.neutral, approx: g ? g.approx && g.date === date : false });
+      const rec = normGame({ id: g ? g.id : uid(), season: v.season, date, time, homeId: v.homeId, awayId: v.awayId, venue: v.venue, channel: v.channel, status: v.status, homeScore: hs, awayScore: as, ot: v.ot, type: v.type, notes: v.notes.trim(), neutral: v.neutral, approx: g ? g.approx && g.date === date : false, source: g ? g.source : '', externalId: g ? g.externalId : '' });
       if (g) Object.assign(g, rec); else state.games.push(rec);
       commit(); toast(g ? 'Game updated' : 'Game added');
     },
@@ -1270,8 +1659,9 @@ async function exportICS() {
 function renderStandings() {
   const real = state.games.filter(g => g.type === 'regular');
   const seasons = [...new Set(real.map(g => g.season))].sort((a, b) => seasonYear(b) - seasonYear(a) || b.localeCompare(a));
+  const official = renderEspnStandings();
   const optCard = `<section class="card pad" style="margin-top:14px"><div class="optrow"><input type="checkbox" id="optOtl" data-opt="otl"${state.settings.otl ? ' checked' : ''}><label for="optOtl">Count overtime losses separately (OTL, hockey style)</label></div><p class="hint">Standings use final regular-season games only. Ties count as half a win.</p></section>`;
-  if (!seasons.length) return storageBannerHTML() + '<div class="empty"><div class="big">📊</div><h2>No standings yet</h2><p>Standings are computed from final regular-season scores. Add games on the Schedule tab.</p><button type="button" class="btn primary" data-action="add-game">Add a game</button></div>' + optCard;
+  if (!seasons.length) return storageBannerHTML() + '<div class="empty"><div class="big">📊</div><h2>No standings yet</h2><p>Standings are computed from final regular-season scores. Add games on the Schedule tab.</p><button type="button" class="btn primary" data-action="add-game">Add a game</button></div>' + official + optCard;
   let season = ui.sSeason === null ? autoSeason() : ui.sSeason;
   if (!seasons.includes(season)) season = seasons[0];
   const st = standings(state.games, state.teams, season, { otl: state.settings.otl });
@@ -1282,7 +1672,29 @@ function renderStandings() {
   for (const gr of st.groups) {
     h += `<div class="sec-h"><span>${esc(st.groups.length > 1 || gr.name ? gr.name || 'Other' : 'League')}</span></div><div class="card tscroll"><table class="tbl" data-group="${esc(gr.name)}"><thead>${head}</thead><tbody>${gr.rows.map(r => `<tr class="${r.rank === 1 && r.gp ? 'lead' : ''}" data-team="${esc(r.tid)}"><td class="tm">${dot(r.tid)}${esc(r.name)}</td><td>${r.w}</td><td>${r.l}</td>${otl ? `<td>${r.otl}</td>` : ''}<td>${r.t}</td><td>${fmtPct(r.num, r.gp ? r.den : 0)}</td><td>${fmtGB(r.gb)}</td><td>${r.pf}</td><td>${r.pa}</td><td>${r.diff > 0 ? '+' : ''}${r.diff}</td><td>${esc(fmtStreak(r.streak))}</td><td>${fmtRec(r.last10)}</td><td>${fmtRec(r.home)}</td><td>${fmtRec(r.away)}</td></tr>`).join('')}</tbody></table></div>`;
   }
-  return h + optCard;
+  return h + official + optCard;
+}
+
+/* Official table straight from the cached ESPN reply; only columns that have data are shown */
+const ESPN_COLS = [['gp', 'GP'], ['w', 'W'], ['l', 'L'], ['t', 'T'], ['otl', 'OTL'], ['pts', 'PTS'], ['pct', 'PCT'], ['gb', 'GB'], ['pf', 'PF'], ['pa', 'PA'], ['diff', 'DIFF'], ['streak', 'STRK']];
+function espnGroupHTML(gr, path, open) {
+  const cols = ESPN_COLS.filter(([k]) => gr.rows.some(r => (k === 't' || k === 'otl') ? Number(r[k]) > 0 : r[k] !== '' && r[k] != null));
+  const mineRow = r => state.teams.some(t => t.espnSync && t.espnPath === path && t.espnId === r.id);
+  return `<details class="card eg"${open ? ' open' : ''}><summary>${esc(gr.name || 'League')}<span class="fine"> · ${plural(gr.rows.length, 'team')}</span></summary><div class="tscroll"><table class="tbl etbl"><thead><tr><th class="tm">Team</th>${cols.map(([, h]) => `<th>${h}</th>`).join('')}</tr></thead><tbody>${gr.rows.map(r => `<tr class="${mineRow(r) ? 'lead' : ''}" data-eid="${esc(r.id)}"><td class="tm">${esc(r.name)}</td>${cols.map(([k]) => `<td>${esc(r[k] || '–')}</td>`).join('')}</tr>`).join('')}</tbody></table></div></details>`;
+}
+function renderEspnStandings() {
+  const paths = [...new Set(syncedTeams().map(t => t.espnPath))];
+  if (!paths.length) return '';
+  let h = `<div class="sec-h" style="margin-top:22px"><span>Official standings (ESPN)</span></div>${espnLineHTML()}`;
+  for (const p of paths) {
+    const c = state.espn.standings[p];
+    h += `<h3 class="eh" data-league="${esc(p)}">${esc(leagueLabel(p))}<span class="fine"> · ${c ? 'updated ' + esc(fmtAgo(c.at)) : 'nothing saved yet'}</span></h3>`;
+    if (!c || !c.groups.length) { h += '<div class="card pad muted">No official standings saved yet. They download with the next refresh.</div>'; continue; }
+    const hasMine = gr => gr.rows.some(r => state.teams.some(t => t.espnSync && t.espnPath === p && t.espnId === r.id));
+    let any = c.groups.some(hasMine);
+    h += c.groups.map((gr, i) => espnGroupHTML(gr, p, any ? hasMine(gr) : i === 0)).join('');
+  }
+  return h;
 }
 
 /* ===================== RIVALRIES ===================== */
@@ -1350,17 +1762,23 @@ function noteDialog() {
 }
 
 /* ===================== TEAMS ===================== */
+function espnCardHTML() {
+  const syn = syncedTeams().length, tst = ui.espnTest;
+  return `<section class="card pad espn-card" id="espnCard"><h3>Add from a league (online)</h3><p class="fine" style="margin:4px 0 0">Pick a league and a team. The app downloads its schedule and standings from ESPN and keeps a copy on this device. Offline, you see the saved copy. Hand-entered teams and games still work as before.</p><div class="ctl"><button type="button" class="btn primary" data-action="espn-add">Add team from a league</button>${syn ? '<button type="button" class="btn" data-action="espn-past">Past seasons</button>' : ''}<button type="button" class="btn" data-action="espn-test">Test connection</button></div>${syn ? espnLineHTML() : ''}<div class="fine espn-test ${tst ? tst.st : ''}" id="espnTest" role="status">${tst ? esc(tst.msg) : ''}</div></section>`;
+}
 function renderTeams() {
-  if (!state.teams.length) return storageBannerHTML() + '<div class="empty"><div class="big">👥</div><h2>No teams yet</h2><p>Add your team and its opponents. Mark your own teams so the app knows whose point of view to use.</p><button type="button" class="btn primary" data-action="add-team">Add a team</button></div>';
+  if (!state.teams.length) return storageBannerHTML() + '<div class="empty"><div class="big">👥</div><h2>No teams yet</h2><p>Add your team and its opponents. Mark your own teams so the app knows whose point of view to use.</p><button type="button" class="btn primary" data-action="add-team">Add a team</button></div>' + espnCardHTML();
   const cnt = id => state.games.filter(g => g.homeId === id || g.awayId === id).length;
   const sorted = [...state.teams].sort((a, b) => (b.mine - a.mine) || a.name.localeCompare(b.name));
-  return storageBannerHTML() + `<ul class="card list" style="margin-top:14px" id="teamlist">${sorted.map(t => `<li class="row" data-action="edit-team" data-id="${esc(t.id)}"><span class="sw" style="background:${esc(t.color)};margin:0"></span><div class="row-main"><div class="row-title">${esc(t.name)}${t.mine ? '<span class="badge acc">My team</span>' : ''}</div><div class="row-sub">${[t.short, t.league, t.division].filter(Boolean).map(esc).join(' · ')}</div></div><div class="when">${plural(cnt(t.id), 'game')}</div></li>`).join('')}</ul>`;
+  return storageBannerHTML() + espnCardHTML() + `<ul class="card list" style="margin-top:14px" id="teamlist">${sorted.map(t => `<li class="row" data-action="edit-team" data-id="${esc(t.id)}"><span class="sw" style="background:${esc(t.color)};margin:0"></span><div class="row-main"><div class="row-title">${esc(t.name)}${t.mine ? '<span class="badge acc">My team</span>' : ''}${t.espnSync ? '<span class="badge">ESPN</span>' : ''}</div><div class="row-sub">${[t.short, t.league, t.division].filter(Boolean).map(esc).join(' · ')}</div></div><div class="when">${plural(cnt(t.id), 'game')}</div></li>`).join('')}</ul>`;
 }
 function teamDialog(id) {
   const t = id ? tm(id) : null;
   if (id && !t) return;
   formDialog({
     title: t ? 'Edit team' : 'Add team', submitLabel: t ? 'Save' : 'Add team', grid: 'fields2',
+    intro: t && t.espnSync ? `Synced from ESPN (${leagueLabel(t.espnPath)}). Its games refresh automatically.` : '',
+    extra: t && t.espnSync ? [{ label: 'Past seasons', onClick: () => { $('#dlg').close(); pastDialog(t.id); } }] : [],
     fields: [
       { name: 'name', label: 'Team name', required: true, value: t ? t.name : '', capitalize: 'words' },
       { name: 'short', label: 'Abbreviation', value: t ? t.short : '', placeholder: 'auto', capitalize: 'characters' },
@@ -1374,20 +1792,27 @@ function teamDialog(id) {
       const name = cleanTeamName(v.name); if (!name) return 'Team name is required.';
       if (state.teams.some(x => x.id !== (t && t.id) && normName(x.name) === normName(name))) return 'You already have a team with that name.';
       if (!t && state.teams.length >= MAX.teams) return 'Team limit reached.';
-      const rec = normTeam({ id: t ? t.id : uid(), name, short: v.short, league: v.league, division: v.division, color: v.color, mine: v.mine, notes: v.notes.trim() });
+      const rec = normTeam({ id: t ? t.id : uid(), name, short: v.short, league: v.league, division: v.division, color: v.color, mine: v.mine, notes: v.notes.trim(), espnId: t && t.espnId, espnPath: t && t.espnPath, espnSync: t && t.espnSync });
       if (t) Object.assign(t, rec); else state.teams.push(rec);
       commit(); toast(t ? 'Team updated' : 'Team added');
     },
     onDelete: t ? async () => {
       const gs = state.games.filter(g => g.homeId === t.id || g.awayId === t.id);
       const fin = gs.filter(isScored).length;
-      const body = gs.length ? `${t.name} is in ${plural(gs.length, 'game')} (${fin} with a final score, ${gs.length - fin} without). Deleting the team also deletes those games and their results.` : `${t.name} has no games.`;
-      if (!(await confirmBox(gs.length ? `Delete ${t.name} and ${plural(gs.length, 'game')}?` : `Delete ${t.name}?`, body, gs.length ? `Delete team and ${plural(gs.length, 'game')}` : 'Delete'))) return false;
+      if (t.espnSync) {
+        const sy = gs.filter(g => g.source === 'espn').length;
+        const choice = await askDialog({ title: `Remove ${t.name}?`, body: `<p>${esc(`${t.name} is synced from ESPN and is in ${plural(gs.length, 'game')} (${sy} synced, ${fin} with a final score). Keep the games, or delete them along with the team?`)}</p><p class="muted">Keeping stops the sync: the team and its games stay, but nothing refreshes.</p>`, buttons: [{ label: 'Cancel', value: 'cancel' }, { label: 'Keep games', value: 'keep', kind: 'primary' }, { label: `Delete team and ${plural(gs.length, 'game')}`, value: 'delete', kind: 'danger' }] });
+        if (choice === 'keep') { t.espnSync = false; pruneEspn(); commit(); toast(`${t.name} is no longer synced; games kept`); return true; }
+        if (choice !== 'delete') return false;
+      } else {
+        const body = gs.length ? `${t.name} is in ${plural(gs.length, 'game')} (${fin} with a final score, ${gs.length - fin} without). Deleting the team also deletes those games and their results.` : `${t.name} has no games.`;
+        if (!(await confirmBox(gs.length ? `Delete ${t.name} and ${plural(gs.length, 'game')}?` : `Delete ${t.name}?`, body, gs.length ? `Delete team and ${plural(gs.length, 'game')}` : 'Delete'))) return false;
+      }
       state.games = state.games.filter(g => g.homeId !== t.id && g.awayId !== t.id);
       state.teams = state.teams.filter(x => x.id !== t.id);
       for (const k of Object.keys(state.rivalNotes)) if (k.split('|').includes(t.id)) delete state.rivalNotes[k];
       if (ui.fTeam === t.id) ui.fTeam = 'all';
-      commit(); toast(gs.length ? `Deleted ${t.name} and ${plural(gs.length, 'game')}` : 'Team deleted'); return true;
+      pruneEspn(); commit(); toast(gs.length ? `Deleted ${t.name} and ${plural(gs.length, 'game')}` : 'Team deleted'); return true;
     } : null
   });
 }
@@ -1456,7 +1881,7 @@ async function restoreFromText(text) {
     render(); toast(`Restored ${sum}`); return true;
   }
   if (choice === 'merge') {
-    const merged = { settings: state.settings, rivalNotes: { ...data.rivalNotes, ...state.rivalNotes } }; let added = 0;
+    const merged = { settings: state.settings, espn: state.espn.lastRefresh ? state.espn : data.espn, rivalNotes: { ...data.rivalNotes, ...state.rivalNotes } }; let added = 0;
     for (const k of ['teams', 'games']) { const ids = new Set(state[k].map(x => x.id)); merged[k] = [...state[k]]; for (const x of data[k]) if (!ids.has(x.id)) { merged[k].push(x); added++; } }
     const n = normalizeData(merged).data;
     for (const k of DATA_KEYS) state[k] = n[k];
@@ -1512,6 +1937,10 @@ view.addEventListener('click', e => {
     case 'restore': doRestore(); break;
     case 'wipe': doWipe(); break;
     case 'install': runInstall(); break;
+    case 'espn-add': addFromLeagueDialog(); break;
+    case 'espn-refresh': refreshEspn(); break;
+    case 'espn-past': pastDialog(); break;
+    case 'espn-test': testEspn(); break;
   }
 });
 view.addEventListener('change', e => {
@@ -1528,7 +1957,9 @@ view.addEventListener('change', e => {
 });
 $('#addBtn').onclick = () => { if (ui.tab === 'rivalries') meetingDialog(); else if (ui.tab === 'teams') teamDialog(null); else gameDialog(null); };
 $$('nav.tabs button').forEach(b => { b.onclick = () => go(b.dataset.tab); });
-document.addEventListener('visibilitychange', () => { if (!document.hidden && !$('dialog[open]')) render(); });
+document.addEventListener('visibilitychange', () => { if (!document.hidden && !$('dialog[open]')) { render(); maybeAutoRefresh(); } });
+window.addEventListener('online', () => { paintEspnStatus(); maybeAutoRefresh(); });
+window.addEventListener('offline', paintEspnStatus);
 setInterval(tickCountdown, 30000);
 
 (async function init() {
@@ -1543,6 +1974,7 @@ setInterval(tickCountdown, 30000);
     } catch (e) { console.error(e); db = null; }
   }
   render();
+  maybeAutoRefresh();
 })();
 </script>
 </body>

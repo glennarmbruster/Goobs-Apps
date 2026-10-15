@@ -185,6 +185,12 @@ dialog::backdrop{background:rgba(10,15,12,.55)}
 .cchar{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
 .row .btn.small{flex:none}
 .dots{letter-spacing:2px}
+.orow{width:100%;text-align:left;background:none;border:0;border-top:1px solid var(--line);font:inherit;color:inherit;display:block;padding:12px 4px;min-height:44px;cursor:pointer}
+.orow:first-child{border-top:0}
+.orow .ot{font-weight:600;overflow-wrap:anywhere}
+.orow .ov{font-size:13px;color:var(--muted);margin-top:2px;overflow-wrap:anywhere}
+.keyrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.keyrow .btn{flex:1 1 auto}
 </style>
 </head>
 <body>
@@ -888,6 +894,134 @@ function titlesCsv(data) {
   return '\ufeff' + rows.map(r => r.map(csvCell).join(',')).join('\r\n');
 }
 
+/* ===================== ONLINE LOOKUP (TMDB / TVMaze) =====================
+   The only network code in the app. Nothing but the search text or a title id is ever sent, and only to the two hosts below. */
+const ALLOWED_HOSTS = ['api.themoviedb.org', 'api.tvmaze.com'];
+let NET_TIMEOUT = 10000;
+const CREW_CAP = 6; /* directors / creators / writers taken per title */
+const WRITER_JOBS = ['writer', 'screenplay', 'story', 'novel', 'teleplay'];
+const arr = x => (Array.isArray(x) ? x : []);
+const obj = x => (x && typeof x === 'object' ? x : {});
+const yearOf = d => { const m = str(d).match(/^(\d{4})/); return m ? +m[1] : null; };
+const stripHtml = s => cleanName(str(s).replace(/<[^>]*>/g, ' ').replace(/&nbsp;/g, ' ').replace(/&quot;/g, '"').replace(/&#39;|&#x27;|&rsquo;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&'));
+const trimText = (s, n = 140) => (s.length > n ? s.slice(0, n - 1).trimEnd() + '…' : s);
+const extIdOk = s => /^(tmdb:(movie|tv):\d{1,9}|tvmaze:\d{1,9})$/.test(str(s));
+const isTmdbToken = k => /^eyJ/.test(str(k).trim());
+/* v3 key -> ?api_key=..., v4 read-access token (starts with eyJ) -> Authorization: Bearer */
+function tmdbRequest(path, params, key) {
+  key = str(key).trim();
+  const q = Object.entries(params || {}).map(([k, v]) => k + '=' + encodeURIComponent(v).replace(/%2C/g, ','));
+  const headers = {};
+  if (isTmdbToken(key)) headers.Authorization = 'Bearer ' + key; else q.push('api_key=' + encodeURIComponent(key));
+  return { url: 'https://api.themoviedb.org/3' + path + (q.length ? '?' + q.join('&') : ''), headers };
+}
+function parseTmdbSearch(j) {
+  const out = [];
+  for (const r0 of arr(obj(j).results)) {
+    const r = obj(r0);
+    if (r.media_type !== 'movie' && r.media_type !== 'tv') continue;
+    const id = intIn(r.id, 1, 999999999), name = cleanName(r.title || r.name);
+    if (id == null || !name) continue;
+    out.push({ source: 'tmdb', kind: r.media_type === 'tv' ? 'series' : 'movie', extId: `tmdb:${r.media_type}:${id}`, name, year: yearOf(r.release_date || r.first_air_date), overview: trimText(cleanName(r.overview)) });
+  }
+  return out.slice(0, 15);
+}
+function parseTvmazeSearch(j) {
+  const out = [];
+  for (const r0 of arr(j)) {
+    const sh = obj(obj(r0).show), id = intIn(sh.id, 1, 999999999), name = cleanName(sh.name);
+    if (id == null || !name) continue;
+    out.push({ source: 'tvmaze', kind: 'series', extId: 'tvmaze:' + id, name, year: yearOf(sh.premiered), overview: trimText(stripHtml(sh.summary)) });
+  }
+  return out.slice(0, 15);
+}
+function dedupeCrew(list) {
+  const seen = new Set(), out = [];
+  for (const c of list) { const k = c.role + '|' + normName(c.name); if (!normName(c.name) || seen.has(k)) continue; seen.add(k); out.push(c); }
+  return out;
+}
+/* -> {source, externalId, kind, name, year, genres[], overview, cast:[{name,character}], crew:[{name,role}]} or null */
+function parseTmdbDetails(j, media) {
+  j = obj(j);
+  const id = intIn(j.id, 1, 999999999), name = cleanName(j.title || j.name);
+  if (id == null || !name) return null;
+  const tv = media === 'tv', credits = obj(j.credits), aggCast = arr(obj(j.aggregate_credits).cast);
+  let cast;
+  if (tv && aggCast.length) cast = aggCast.map((c0, i) => { const c = obj(c0); return { name: cleanName(c.name), character: cleanName(obj(arr(c.roles)[0]).character), ord: isNum(c.order) ? c.order : i }; });
+  else cast = arr(credits.cast).map((c0, i) => { const c = obj(c0); return { name: cleanName(c.name), character: cleanName(c.character), ord: isNum(c.order) ? c.order : i }; });
+  cast = cast.filter(c => normName(c.name)).sort((a, b) => a.ord - b.ord).map(c => ({ name: c.name, character: c.character }));
+  const crew = [];
+  if (tv) for (const c of arr(j.created_by)) crew.push({ name: cleanName(obj(c).name), role: 'creator' });
+  for (const c0 of arr(credits.crew)) {
+    const c = obj(c0), job = str(c.job).toLowerCase().trim();
+    if (job === 'director') crew.push({ name: cleanName(c.name), role: 'director' });
+    else if (WRITER_JOBS.includes(job)) crew.push({ name: cleanName(c.name), role: 'writer' });
+  }
+  return { source: 'tmdb', externalId: `tmdb:${tv ? 'tv' : 'movie'}:${id}`, kind: tv ? 'series' : 'movie', name, year: yearOf(j.release_date || j.first_air_date), genres: arr(j.genres).map(g => cleanName(obj(g).name)).filter(Boolean), overview: trimText(cleanName(j.overview), 300), cast, crew: dedupeCrew(crew) };
+}
+function parseTvmazeDetails(j) {
+  j = obj(j);
+  const id = intIn(j.id, 1, 999999999), name = cleanName(j.name);
+  if (id == null || !name) return null;
+  const em = obj(j._embedded);
+  const cast = arr(em.cast).map(c0 => { const c = obj(c0); return { name: cleanName(obj(c.person).name), character: cleanName(obj(c.character).name) }; }).filter(c => normName(c.name));
+  const crew = [];
+  for (const c0 of arr(em.crew)) { const c = obj(c0), t = str(c.type).toLowerCase(); if (t === 'creator' || t === 'developer') crew.push({ name: cleanName(obj(c.person).name), role: 'creator' }); }
+  return { source: 'tvmaze', externalId: 'tvmaze:' + id, kind: 'series', name, year: yearOf(j.premiered), genres: arr(j.genres).map(g => cleanName(g)).filter(Boolean), overview: trimText(stripHtml(j.summary), 300), cast, crew: dedupeCrew(crew) };
+}
+/* crew first (directors, creators, writers; CREW_CAP each), then the top N cast (10 | 25 | 'all') -> parsed credits for planBulk */
+function selectCredits(d, count) {
+  const out = [];
+  for (const role of ['director', 'creator', 'writer']) for (const c of d.crew.filter(x => x.role === role).slice(0, CREW_CAP)) out.push({ name: c.name, role, character: '' });
+  const n = count === 'all' ? Infinity : (Number(count) > 0 ? Number(count) : 25);
+  for (const c of d.cast.slice(0, n)) out.push({ name: c.name, role: 'actor', character: c.character.slice(0, 120) });
+  return out;
+}
+async function netGet(url, headers) {
+  let u; try { u = new URL(url); } catch { throw new Error('Bad address.'); }
+  if (u.protocol !== 'https:' || !ALLOWED_HOSTS.includes(u.hostname)) throw new Error('Blocked: only TMDB and TVMaze may be contacted.');
+  const tmdb = u.hostname === 'api.themoviedb.org', ctl = new AbortController(), timer = setTimeout(() => ctl.abort(), NET_TIMEOUT);
+  const timeoutMsg = 'Timed out after 10 seconds. Try again.';
+  try {
+    let res;
+    try { res = await fetch(url, { method: 'GET', headers: headers || {}, signal: ctl.signal, credentials: 'omit', referrerPolicy: 'no-referrer', cache: 'no-store' }); }
+    catch (e) { throw new Error(ctl.signal.aborted ? timeoutMsg : 'Couldn’t reach the service. You may be offline, or something is blocking the request.'); }
+    if (res.status === 401 || (tmdb && res.status === 403)) throw new Error('TMDB rejected the key (' + res.status + '). Check it in Backup → Online lookup.');
+    if (res.status === 429) throw new Error('Too many requests (429). Wait a minute and try again.');
+    if (res.status === 404) throw new Error('Not found (404).');
+    if (!res.ok) throw new Error('The service had a problem (HTTP ' + res.status + '). Try again later.');
+    try { return await res.json(); }
+    catch (e) { throw new Error(ctl.signal.aborted ? timeoutMsg : 'The service sent something unreadable. Try again.'); }
+  } finally { clearTimeout(timer); }
+}
+async function searchOnline(q) {
+  q = cleanName(q);
+  if (q.length < 2) throw new Error('Type at least 2 letters.');
+  const key = state.settings.tmdbKey;
+  if (key) { const r = tmdbRequest('/search/multi', { query: q }, key); return parseTmdbSearch(await netGet(r.url, r.headers)); }
+  return parseTvmazeSearch(await netGet('https://api.tvmaze.com/search/shows?q=' + encodeURIComponent(q)));
+}
+async function fetchDetails(extId) {
+  const unreadable = () => new Error('The service sent something unreadable. Try again.');
+  let m = str(extId).match(/^tmdb:(movie|tv):(\d{1,9})$/);
+  if (m) {
+    const key = state.settings.tmdbKey;
+    if (!key) throw new Error('This title came from TMDB. Add your TMDB key in Backup → Online lookup first.');
+    const r = tmdbRequest(`/${m[1]}/${m[2]}`, { append_to_response: m[1] === 'tv' ? 'aggregate_credits,credits' : 'credits' }, key);
+    const d = parseTmdbDetails(await netGet(r.url, r.headers), m[1]); if (!d) throw unreadable();
+    d.externalId = extId; return d;
+  }
+  m = str(extId).match(/^tvmaze:(\d{1,9})$/);
+  if (!m) throw new Error('Unknown source.');
+  const d = parseTvmazeDetails(await netGet(`https://api.tvmaze.com/shows/${m[1]}?embed[]=cast&embed[]=crew`)); if (!d) throw unreadable();
+  d.externalId = extId; return d;
+}
+async function testOnline() {
+  const key = state.settings.tmdbKey;
+  if (key) { const r = tmdbRequest('/configuration', {}, key); await netGet(r.url, r.headers); return 'TMDB: OK. Your key works.'; }
+  await netGet('https://api.tvmaze.com/search/shows?q=test'); return 'TVMaze: OK (no TMDB key set, so movies are not searchable).';
+}
+
 /* ===================== data normalisation ===================== */
 function normTitle(t) {
   if (!t || typeof t !== 'object') return null;
@@ -899,7 +1033,7 @@ function normTitle(t) {
     watchedOn: isISO(t.watchedOn) ? t.watchedOn : '', rewatchCount: intIn(t.rewatchCount, 0, 999) ?? 0,
     where: cleanName(t.where).slice(0, 100), genres: parseGenres(t.genres).join(', ').slice(0, 300), notes: str(t.notes).slice(0, 5000),
     seasonsWatched: ser ? (intIn(t.seasonsWatched, 0, 999) ?? 0) : 0, currentSeason: ser ? (intIn(t.currentSeason, 0, 999) ?? 0) : 0, currentEpisode: ser ? (intIn(t.currentEpisode, 0, 9999) ?? 0) : 0,
-    createdAt: isoDT(t.createdAt) || new Date().toISOString()
+    externalId: extIdOk(t.externalId) ? str(t.externalId) : '', createdAt: isoDT(t.createdAt) || new Date().toISOString()
   };
 }
 function normPerson(p) {
@@ -943,16 +1077,18 @@ function normalizeData(raw) {
   });
   const okP = new Set(people.map(p => p.id));
   const final = credits.filter(c => { if (okP.has(c.personId)) return true; dropped++; return false; });
-  return { data: { titles, people, credits: final }, dropped };
+  const tk = cleanName(obj(raw.settings).tmdbKey).replace(/\s/g, '').slice(0, 600);
+  return { data: { titles, people, credits: final, settings: { tmdbKey: tk } }, dropped };
 }
 const DATA_KEYS = ['titles', 'people', 'credits'];
-const defaultState = () => ({ schemaVersion: SCHEMA, meta: { lastBackup: null, lastChange: null }, ...normalizeData({}).data });
+const defaultState = () => ({ schemaVersion: SCHEMA, meta: { lastBackup: null, lastChange: null }, ...normalizeData({}).data });  /* includes settings:{tmdbKey} */
 function loadState(parsed) {
   const { data } = normalizeData(parsed);
   const m = (parsed && parsed.meta) || {};
   return { schemaVersion: SCHEMA, meta: { lastBackup: str(m.lastBackup) || null, lastChange: str(m.lastChange) || null }, ...data };
 }
-const exportData = () => { const o = {}; for (const k of DATA_KEYS) o[k] = state[k]; return o; };
+/* The TMDB key is a personal secret: it is left OUT of backups unless includeKey is true (the Backup tab checkbox, off by default). */
+const exportData = (includeKey = false) => { const o = {}; for (const k of DATA_KEYS) o[k] = state[k]; if (includeKey && state.settings.tmdbKey) o.settings = { tmdbKey: state.settings.tmdbKey }; return o; };
 const hasAnyData = () => state.titles.length > 0 || state.people.length > 0;
 
 /* ===================== persistence + lookups ===================== */
@@ -987,7 +1123,7 @@ const creditsOfTitle = id => ix().byTitle.get(id) || [];
 const creditsOfPerson = id => ix().byPerson.get(id) || [];
 const personByName = n => ix().byKey.get(normName(n)) || null;
 const PLURALS = { person: 'people', match: 'matches' };
-const plural = (n, w) => `${n} ${n === 1 ? w : PLURALS[w] || w + 's'}`;
+const plural = (n, w, pl) => `${n} ${n === 1 ? w : pl || PLURALS[w] || w + 's'}`;
 const dataOf = () => ({ titles: state.titles, people: state.people, credits: state.credits });
 
 /* ===================== state changes ===================== */
@@ -1018,6 +1154,26 @@ function addPersonToTitle(titleId, name, role, character) {
   const order = Math.max(-1, ...creditsOfTitle(titleId).map(c => c.order)) + 1;
   state.credits.push({ id: uid(), titleId, personId: pid, role, character: cleanName(character).slice(0, 120), order });
   commit(); return '';
+}
+/* online add: parsed details -> new title + credits (people reused by normalised name, never duplicated). -> {error} | {title, plan} */
+function addOnlineTitle(d, { count = 25, status = 'want', rating = 0 } = {}) {
+  if (state.titles.some(t => t.externalId === d.externalId)) return { error: 'That title is already in your log.' };
+  if (state.titles.some(t => normName(t.name) === normName(d.name) && t.kind === d.kind && t.year === d.year)) return { error: 'That title is already in your log.' };
+  const st = STATUS_KEYS.includes(status) ? status : 'want';
+  const t = normTitle({ id: uid(), kind: d.kind, name: d.name, year: d.year, status: st, rating, watchedOn: st === 'watched' ? todayISO() : '', genres: d.genres.join(', '), externalId: d.externalId, createdAt: new Date().toISOString() });
+  if (!t) return { error: 'That result has no usable title.' };
+  state.titles.push(t); rev++;
+  const plan = planBulk(selectCredits(d, count), state.people, state.credits, t.id);
+  applyPlan(t.id, plan);
+  return { title: t, plan };
+}
+/* link an existing title to an online record and merge in only the credits it does not already have */
+function attachOnline(titleId, d, count = 25) {
+  const t = titleById(titleId); if (!t) return { error: 'Title not found.' };
+  if (!t.externalId) t.externalId = d.externalId;
+  const plan = planBulk(selectCredits(d, count), state.people, state.credits, titleId);
+  applyPlan(titleId, plan);
+  return { title: t, plan };
 }
 /* form values -> {error} | {value} (a normalised title without id/createdAt) */
 function readTitleForm(v, existing) {
@@ -1158,7 +1314,7 @@ function renderTitle() {
       <div class="btnrow"><button type="button" class="btn" data-action="edit-title" data-id="${esc(t.id)}">Edit details</button><button type="button" class="btn danger" data-action="del-title" data-id="${esc(t.id)}">Delete</button></div>
     </section>
     <section class="card pad"><h3>Cast &amp; crew <span class="muted" style="font-weight:500">(${cs.length})</span></h3>
-      <div class="btnrow" style="margin-bottom:6px"><button type="button" class="btn primary" data-action="add-person">+ Add person</button><button type="button" class="btn" data-action="bulk">Paste a list</button></div>${cc}</section>
+      <div class="btnrow" style="margin-bottom:6px"><button type="button" class="btn primary" data-action="add-person">+ Add person</button><button type="button" class="btn" data-action="bulk">Paste a list</button></div><button type="button" class="btn block" data-action="fetch-cast" data-id="${esc(t.id)}">🔎 Fetch cast online</button>${cc}</section>
     ${cs.length ? `<section class="card pad"><h3>Where do I know them from?</h3><p class="muted">See everyone here and what else of yours they’re in.</p><button type="button" class="btn block" data-action="seen-here">Show</button></section>` : ''}
   </div>`;
 }
@@ -1285,7 +1441,15 @@ function renderBackup() {
       ${canEncrypt ? `<div class="field"><label for="bkPass">Passphrase (optional — encrypts the file)</label><input id="bkPass" type="password" autocomplete="new-password"></div>
       <div class="field" style="margin-top:8px"><label for="bkPass2">Repeat passphrase</label><input id="bkPass2" type="password" autocomplete="new-password"></div>
       <p class="hint">If you set one, the file can’t be opened without it.</p>` : ''}
+      <div class="field check" style="margin-top:10px"><input type="checkbox" id="bkKey"><label for="bkKey">Include my TMDB key in the backup</label></div>
+      <p class="hint">Off by default so the key doesn’t travel with the file.</p>
       <button type="button" class="btn primary block" style="margin-top:12px" data-action="export">Back up now</button></section>
+    <section class="card pad"><h3>Online lookup</h3>
+      <p>Search titles and fetch cast from the internet instead of typing. TV shows work with no key (TVMaze). Movies need a free TMDB key: sign in at themoviedb.org → Settings → API, then paste the “API Key” (or the longer “API Read Access Token”) here. The key stays on this device.</p>
+      <div class="field"><label for="tmdbKey">TMDB key</label><input id="tmdbKey" type="password" value="${esc(state.settings.tmdbKey)}" placeholder="Paste key" autocomplete="off" autocapitalize="none"></div>
+      <div class="keyrow"><button type="button" class="btn" data-action="save-key">Save key</button><button type="button" class="btn" data-action="test-key">Test</button></div>
+      <div id="testRes" class="note hide" role="status"></div>
+      <p class="hint">Only the search text or a title id is sent, and only to api.themoviedb.org and api.tvmaze.com. No pictures are loaded.</p></section>
     <section class="card pad"><h3>Restore</h3><p>Pick a backup file made by this app. You’ll choose whether to replace what’s here or merge it in.</p>
       <button type="button" class="btn block" data-action="restore">Choose backup file…</button></section>
     <section class="card pad"><h3>Export titles (CSV)</h3><p>One row per title with status, rating, directors and cast, for Excel or Numbers.</p>
@@ -1360,7 +1524,8 @@ function titleDialog(id) {
         nav(() => { ui.titleId = nt.id; ui.personId = null; }); toast('Added. Now add its cast.');
       }
     },
-    onDelete: t ? () => { delTitle(t.id); return true; } : null, deleteLabel: 'Delete'
+    onDelete: t ? () => { delTitle(t.id); return true; } : null, deleteLabel: 'Delete',
+    extra: t ? [] : [{ label: '🔎 Search online', kind: '', onClick: v => onlineDialog({ q: v.name }) }]
   });
   if (t) {
     const dlg = $('#dlg'), form = $('form', dlg), kindEl = form.elements.kind;
@@ -1471,6 +1636,95 @@ function seenHere() {
   ui.tab = 'connect'; ui.titleId = null; ui.personId = null; render(); window.scrollTo(0, 0);
 }
 
+/* ---- online search dialog ---- */
+const onl = { attach: null, results: [], q: '', details: null, back: null };
+const SRC_LABEL = { tmdb: 'TMDB', tvmaze: 'TVMaze' };
+const offlineMsg = () => (navigator.onLine === false ? 'You’re offline. Online lookup needs a connection; everything else still works.' : '');
+function onlineDialog(opts = {}) {
+  const dlg = $('#dlg');
+  onl.attach = opts.attach || null; onl.results = []; onl.details = null; onl.q = opts.q || '';
+  dlg.onclose = null;
+  if (opts.extId) { onlineBody('<p class="muted">Loading…</p>'); loadDetails(opts.extId, true); }
+  else { onlineSearchView(); }
+  if (!dlg.hasAttribute('open')) dlg.showModal();
+}
+function onlineBody(html) { const dlg = $('#dlg'); dlg.innerHTML = `<div class="dlg-form" id="onBox">${html}</div>`; }
+function onlineSearchView() {
+  const key = state.settings.tmdbKey, off = offlineMsg();
+  onlineBody(`<h2>${onl.attach ? 'Fetch cast online' : 'Search online'}</h2>
+    <p class="hint">${key ? 'Searching movies and TV on TMDB.' : 'Searching TV shows on TVMaze. Add a free TMDB key in Backup → Online lookup to search movies too.'} Only your search text is sent.</p>
+    ${off ? `<div class="note bad" id="onOff">${esc(off)}</div>` : ''}
+    <form id="onForm" novalidate><div class="field"><label for="onQ">Title</label><input id="onQ" type="search" value="${esc(onl.q)}" autocomplete="off" autocapitalize="words"${off ? ' disabled' : ''}></div>
+    <button type="submit" class="btn primary block" style="margin-top:10px" id="onGo"${off ? ' disabled' : ''}>Search</button></form>
+    <div id="onRes">${onl.results.length ? onlineRowsHTML() : ''}</div>
+    <div class="dlg-actions"><span class="spacer"></span><button type="button" class="btn ghost" data-k="cancel">Close</button></div>`);
+  const dlg = $('#dlg');
+  $('[data-k="cancel"]', dlg).onclick = () => dlg.close();
+  $('#onForm', dlg).addEventListener('submit', e => { e.preventDefault(); runOnlineSearch(); });
+  wireRows();
+  const q = $('#onQ', dlg); if (q && !off && !onl.results.length && cleanName(onl.q).length >= 2) runOnlineSearch(); else if (q && !q.value) q.focus();
+}
+function onlineRowsHTML() {
+  return `<div style="margin-top:12px">${onl.results.map((r, i) => `<button type="button" class="orow" data-i="${i}"><div class="ot">${esc(r.name)}${r.year ? ` <span class="muted">(${r.year})</span>` : ''}<span class="badge acc">${r.kind === 'series' ? 'TV' : 'Movie'}</span><span class="badge">${SRC_LABEL[r.source]}</span></div>${r.overview ? `<div class="ov">${esc(r.overview)}</div>` : ''}</button>`).join('')}</div>`;
+}
+function wireRows() { $$('#onRes .orow').forEach(b => { b.onclick = () => loadDetails(onl.results[+b.dataset.i].extId, false); }); }
+async function runOnlineSearch() {
+  const q = $('#onQ'); onl.q = q.value; const res = $('#onRes');
+  const off = offlineMsg(); if (off) { res.innerHTML = `<div class="note bad">${esc(off)}</div>`; return; }
+  res.innerHTML = '<p class="muted" style="margin-top:12px">Searching…</p>'; $('#onGo').disabled = true;
+  try {
+    onl.results = await searchOnline(onl.q);
+    res.innerHTML = onl.results.length ? onlineRowsHTML() : '<div class="note">Nothing found. Try fewer words.</div>';
+    wireRows();
+  } catch (e) { onl.results = []; res.innerHTML = `<div class="note bad">${esc(e.message)}</div>`; }
+  const go = $('#onGo'); if (go) go.disabled = false;
+}
+async function loadDetails(extId, direct) {
+  const off = offlineMsg();
+  onl.back = direct ? null : 'results';
+  onlineBody('<p class="muted">Loading cast and crew…</p>');
+  let d;
+  try { if (off) throw new Error(off); d = await fetchDetails(extId); }
+  catch (e) {
+    onlineBody(`<h2>Couldn’t load that</h2><div class="note bad">${esc(e.message)}</div><div class="dlg-actions"><span class="spacer"></span>${direct ? '' : '<button type="button" class="btn" data-k="back">Back</button>'}<button type="button" class="btn ghost" data-k="cancel">Close</button></div>`);
+    $('[data-k="cancel"]').onclick = () => $('#dlg').close(); const bk = $('[data-k="back"]'); if (bk) bk.onclick = onlineSearchView; return;
+  }
+  onl.details = d; onlinePreview();
+}
+function onlinePreview() {
+  const d = onl.details, att = onl.attach, t = att ? titleById(att) : null;
+  onlineBody(`<form id="onPrev" novalidate><h2>${esc(d.name)}${d.year ? ` <span class="muted">(${d.year})</span>` : ''}</h2>
+    <div class="muted" style="font-size:14px;margin:4px 0 8px">${d.kind === 'series' ? 'TV series' : 'Movie'} · ${SRC_LABEL[d.source]}${d.genres.length ? ' · ' + esc(d.genres.join(', ')) : ''}</div>
+    ${d.overview ? `<p class="hint" style="margin:0 0 8px">${esc(d.overview)}</p>` : ''}
+    <div class="note" id="onCounts"></div>
+    <div class="stack" style="gap:10px;margin-top:8px">
+    <div class="field"><label for="onCount">Cast to add</label><select id="onCount" name="count"><option value="10">Top 10</option><option value="25" selected>Top 25</option><option value="all">All (${d.cast.length})</option></select></div>
+    ${att ? '' : `<div class="field"><label for="onStatus">Status</label><select id="onStatus" name="status">${STATUSES.map(([k, l]) => `<option value="${k}"${k === 'want' ? ' selected' : ''}>${l}</option>`).join('')}</select></div>
+    <div class="field"><label for="onRating">Rating (optional)</label><select id="onRating" name="rating">${RATING_OPTS.map(([v, l]) => `<option value="${v}">${l}</option>`).join('')}</select></div>`}</div>
+    <div class="dlg-err" id="onErr" role="alert"></div>
+    <div class="dlg-actions"><button type="button" class="btn" data-k="back">${onl.back ? 'Back' : 'Cancel'}</button><span class="spacer"></span><button type="submit" class="btn primary">${att ? 'Add cast to “' + esc(t ? t.name : '') + '”' : 'Add to log'}</button></div></form>`);
+  const dlg = $('#dlg'), cnt = $('#onCount'), box = $('#onCounts');
+  const upd = () => {
+    const c = selectCredits(d, cnt.value), n = r => c.filter(x => x.role === r).length;
+    box.textContent = `Will add: ${plural(n('actor'), 'cast member')}` + [['director', 'director'], ['creator', 'creator'], ['writer', 'writer']].filter(([r]) => n(r)).map(([r, w]) => ' · ' + plural(n(r), w)).join('');
+  };
+  cnt.addEventListener('change', upd); upd();
+  $('[data-k="back"]', dlg).onclick = () => { if (onl.back) onlineSearchView(); else dlg.close(); };
+  $('#onPrev', dlg).addEventListener('submit', e => {
+    e.preventDefault();
+    const count = cnt.value;
+    if (att) {
+      const r = attachOnline(att, d, count);
+      if (r.error) { $('#onErr').textContent = r.error; return; }
+      dlg.close(); const c = r.plan.counts; toast(c.newCredits || c.filled ? `Added ${plural(c.newCredits, 'new credit')}${c.newPeople ? ` (${plural(c.newPeople, 'new person', 'new people')})` : ''}` : 'Nothing new to add; this title already has them.'); return;
+    }
+    const r = addOnlineTitle(d, { count, status: $('#onStatus').value, rating: normRating($('#onRating').value) });
+    if (r.error) { $('#onErr').textContent = r.error; return; }
+    dlg.close(); nav(() => { ui.titleId = r.title.id; ui.personId = null; });
+    toast(`Added “${r.title.name}” with ${plural(r.plan.counts.newCredits, 'credit')}`);
+  });
+}
+
 /* ---- backup / restore ---- */
 async function doExport() {
   const pass = ($('#bkPass') || {}).value || '', pass2 = ($('#bkPass2') || {}).value || '';
@@ -1480,7 +1734,7 @@ async function doExport() {
   }
   const btn = $('[data-action="export"]'); if (btn) btn.disabled = true;
   try {
-    const text = await Backup.build({ appId: APP_ID, schema: SCHEMA, data: exportData(), passphrase: pass || null });
+    const text = await Backup.build({ appId: APP_ID, schema: SCHEMA, data: exportData(!!($('#bkKey') || {}).checked), passphrase: pass || null });
     const r = await deliverFile(`goobs-watchlog-backup-${todayISO()}${pass ? '-encrypted' : ''}.json`, text, 'application/json');
     if (r !== 'cancelled') {
       state.meta.lastBackup = new Date().toISOString();
@@ -1512,6 +1766,7 @@ async function restoreFromText(text) {
   if (choice === 'replace') {
     const ts = parsed.exportedAt && !isNaN(Date.parse(parsed.exportedAt)) ? parsed.exportedAt : new Date().toISOString();
     for (const k of DATA_KEYS) state[k] = data[k];
+    if (data.settings.tmdbKey) state.settings.tmdbKey = data.settings.tmdbKey;
     state.meta.lastBackup = ts; state.meta.lastChange = ts; ui.titleId = null; ui.personId = null; ui.stack = [];
     await persist({ touch: false });
     render(); toast(`Restored ${sum}`); return true;
@@ -1522,6 +1777,7 @@ async function restoreFromText(text) {
     for (const k of DATA_KEYS) { const ids = new Set(state[k].map(x => x.id)); merged[k] = [...state[k], ...data[k].filter(x => !ids.has(x.id))]; }
     const n = normalizeData(merged).data;
     for (const k of DATA_KEYS) state[k] = n[k];
+    if (!state.settings.tmdbKey && data.settings.tmdbKey) state.settings.tmdbKey = data.settings.tmdbKey;
     await persist(); render(); toast(`Merged in ${plural(state.titles.length + state.people.length + state.credits.length - before, 'item')}`); return true;
   }
   return false;
@@ -1537,6 +1793,18 @@ async function doWipe() {
   state = defaultState(); ui.titleId = null; ui.personId = null; ui.stack = [];
   await persist({ touch: false });
   render(); toast('Everything erased');
+}
+function saveKey() {
+  const v = cleanName($('#tmdbKey').value).replace(/\s/g, '').slice(0, 600);
+  state.settings.tmdbKey = v; persist(); toast(v ? 'TMDB key saved' : 'TMDB key removed');
+}
+async function testKey() {
+  const res = $('#testRes'), v = cleanName($('#tmdbKey').value).replace(/\s/g, '');
+  if (v !== state.settings.tmdbKey) { state.settings.tmdbKey = v; persist(); }
+  const show = (ok, msg) => { res.classList.remove('hide', 'bad'); if (!ok) res.classList.add('bad'); res.textContent = (ok ? 'OK: ' : 'Failed: ') + msg; };
+  const off = offlineMsg(); if (off) return show(false, off);
+  res.classList.remove('hide', 'bad'); res.textContent = 'Testing…';
+  try { show(true, await testOnline()); } catch (e) { show(false, e.message); }
 }
 async function doCsv(copy) {
   if (!state.titles.length) return toast('Nothing to export yet.');
@@ -1574,6 +1842,9 @@ view.addEventListener('click', e => {
     case 'del-title': delTitle(id); break;
     case 'add-person': addPersonDialog(); break;
     case 'bulk': bulkDialog(); break;
+    case 'fetch-cast': { const t = titleById(id); if (t) onlineDialog(t.externalId ? { attach: id, extId: t.externalId } : { attach: id, q: t.name }); break; }
+    case 'save-key': saveKey(); break;
+    case 'test-key': testKey(); break;
     case 'edit-credit': creditDialog(id); break;
     case 'seen-here': seenHere(); break;
     case 'edit-person': personDialog(id); break;
