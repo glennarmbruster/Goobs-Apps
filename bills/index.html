@@ -143,6 +143,7 @@ dialog::backdrop{background:rgba(10,15,12,.55)}
 
 .stack{display:flex;flex-direction:column;gap:14px;margin-top:14px}
 .row .btn{flex:none}
+.tiles.cash{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.tiles.cash .tile{padding:10px;min-width:0}.tiles.cash .val{font-size:15px;white-space:nowrap}.tiles.cash .hint{overflow-wrap:anywhere}
 </style>
 </head>
 <body>
@@ -150,6 +151,7 @@ dialog::backdrop{background:rgba(10,15,12,.55)}
 <main class="wrap" id="view"></main>
 <nav class="tabs" aria-label="Sections"><div class="wrap">
   <button type="button" data-tab="due"><span class="ico">📅</span>Due</button>
+  <button type="button" data-tab="cash"><span class="ico">💵</span>Cash</button>
   <button type="button" data-tab="all"><span class="ico">🧾</span>All bills</button>
   <button type="button" data-tab="history"><span class="ico">✅</span>History</button>
   <button type="button" data-tab="backup"><span class="ico">💾</span>Backup</button>
@@ -512,8 +514,20 @@ function normEntry(h) {
     createdAt: isNum(h.createdAt) ? h.createdAt : Date.parse(h.paidOn)
   };
 }
+function normBal(x) {
+  if (!x || typeof x !== 'object' || !isISO(x.date)) return null;
+  const amount = Number(x.amount);
+  if (!isNum(amount) || Math.abs(amount) > 1e12) return null;
+  return { id: str(x.id) || uid(), date: x.date, amount: Math.round(amount * 100) / 100, createdAt: isNum(x.createdAt) ? x.createdAt : Date.parse(x.date) };
+}
+const INC_FREQS = [['monthly', 'Monthly'], ['biweekly', 'Every 2 weeks'], ['weekly', 'Weekly'], ['once', 'One time only']];
 function normalizeData(raw) {
-  let dropped = 0, bills = [], history = [];
+  let dropped = 0, bills = [], history = [], income = [], incomeLog = [], balances = [];
+  for (const b of Array.isArray(raw && raw.income) ? raw.income : []) { const n = normBill(b); if (n) income.push({ ...n, category: '', autopay: false }); else dropped++; }
+  for (const h of Array.isArray(raw && raw.incomeLog) ? raw.incomeLog : []) { const n = normEntry(h); if (n) incomeLog.push(n); else dropped++; }
+  for (const x of Array.isArray(raw && raw.balances) ? raw.balances : []) { const n = normBal(x); if (n) balances.push(n); else dropped++; }
+  { const i = new Set(), l = new Set(), q = new Set();
+    income = income.filter(b => !i.has(b.id) && i.add(b.id)); incomeLog = incomeLog.filter(b => !l.has(b.id) && l.add(b.id)); balances = balances.filter(b => !q.has(b.id) && q.add(b.id)).slice(-300); }
   for (const b of Array.isArray(raw && raw.bills) ? raw.bills : []) { const n = normBill(b); if (n) bills.push(n); else dropped++; }
   for (const h of Array.isArray(raw && raw.history) ? raw.history : []) { const n = normEntry(h); if (n) history.push(n); else dropped++; }
   const a = new Set(), c = new Set();
@@ -521,14 +535,14 @@ function normalizeData(raw) {
   bills = bills.filter(b => !a.has(b.id) && a.add(b.id));
   history = history.filter(h => !c.has(h.id) && c.add(h.id));
   dropped += (nb - bills.length) + (nh - history.length);
-  return { data: { bills, history }, dropped };
+  return { data: { bills, history, income, incomeLog, balances }, dropped };
 }
-const defaultState = () => ({ schemaVersion: SCHEMA, meta: { lastBackup: null, lastChange: null }, settings: {}, bills: [], history: [] });
+const defaultState = () => ({ schemaVersion: SCHEMA, meta: { lastBackup: null, lastChange: null }, settings: {}, bills: [], history: [], income: [], incomeLog: [], balances: [] });
 function loadState(parsed) {
   const { data } = normalizeData(parsed);
-  return { schemaVersion: SCHEMA, meta: { lastBackup: str(parsed && parsed.meta && parsed.meta.lastBackup) || null, lastChange: str(parsed && parsed.meta && parsed.meta.lastChange) || null }, settings: {}, bills: data.bills, history: data.history };
+  return { schemaVersion: SCHEMA, meta: { lastBackup: str(parsed && parsed.meta && parsed.meta.lastBackup) || null, lastChange: str(parsed && parsed.meta && parsed.meta.lastChange) || null }, settings: {}, bills: data.bills, history: data.history, income: data.income, incomeLog: data.incomeLog, balances: data.balances };
 }
-const exportData = () => ({ bills: state.bills, history: state.history });
+const exportData = () => ({ bills: state.bills, history: state.history, income: state.income, incomeLog: state.incomeLog, balances: state.balances });
 
 /* ---- persistence ---- */
 let state = defaultState(), db = null, saveFailed = false, persistAsked = false, saveChain = Promise.resolve();
@@ -546,41 +560,73 @@ const commit = () => { persist(); render(); };
 const byId = id => state.bills.find(b => b.id === id);
 const byDue = (a, b) => a.dueDate.localeCompare(b.dueDate) || a.name.localeCompare(b.name);
 const sumAmt = arr => arr.reduce((s, b) => s + b.amount, 0);
-const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
-function latestEntry(billId) {
+const plural = (n, w, pl) => `${n} ${n === 1 ? w : pl || w + 's'}`;
+const incById = id => state.income.find(b => b.id === id);
+const logOf = inc => (inc ? state.incomeLog : state.history);
+function latestEntry(billId, inc = false) {
   let cur = null;
-  for (const h of state.history) if (h.billId === billId && (!cur || h.createdAt >= cur.createdAt)) cur = h;
+  for (const h of logOf(inc)) if (h.billId === billId && (!cur || h.createdAt >= cur.createdAt)) cur = h;
   return cur;
 }
 function advance(b) { const n = stepDate(b, b.dueDate); if (n) b.dueDate = n; else b.active = false; }
-function markPaid(b, { paidOn, amount, keep }) {
+function markPaid(b, { paidOn, amount, keep }, inc = false) {
   const entry = { id: uid(), billId: b.id, name: b.name, amount, dueDate: b.dueDate, paidOn, status: 'paid', prevAmount: null, createdAt: Date.now() };
   if (keep && amount !== b.amount) { entry.prevAmount = b.amount; b.amount = amount; }
-  state.history.push(entry);
+  logOf(inc).push(entry);
   advance(b);
   commit();
-  toast(b.active ? `Paid · next due ${fmtDate(b.dueDate)}` : 'Paid · one-time bill completed', { label: 'Undo', fn: () => undoEntry(entry.id) });
+  toast(b.active ? `${inc ? 'Received' : 'Paid'} · next ${inc ? 'pay date' : 'due'} ${fmtDate(b.dueDate)}` : `${inc ? 'Received' : 'Paid'} · one-time ${inc ? 'pay' : 'bill'} completed`, { label: 'Undo', fn: () => undoEntry(entry.id, inc) });
 }
-function skipOnce(b) {
+function skipOnce(b, inc = false) {
   const entry = { id: uid(), billId: b.id, name: b.name, amount: b.amount, dueDate: b.dueDate, paidOn: todayISO(), status: 'skipped', prevAmount: null, createdAt: Date.now() };
-  state.history.push(entry);
+  logOf(inc).push(entry);
   advance(b);
   commit();
-  toast(`Skipped · next due ${b.active ? fmtDate(b.dueDate) : 'never'}`, { label: 'Undo', fn: () => undoEntry(entry.id) });
+  toast(`Skipped · next ${inc ? 'pay date' : 'due'} ${b.active ? fmtDate(b.dueDate) : 'never'}`, { label: 'Undo', fn: () => undoEntry(entry.id, inc) });
 }
-function undoEntry(id) {
-  const e = state.history.find(h => h.id === id);
+function undoEntry(id, inc = false) {
+  const e = logOf(inc).find(h => h.id === id);
   if (!e) return;
-  const b = byId(e.billId);
+  const b = inc ? incById(e.billId) : byId(e.billId);
   if (b) {
-    const latest = latestEntry(b.id);
-    if (!latest || latest.id !== e.id) { toast('Only the most recent payment of a bill can be undone.'); return; }
+    const latest = latestEntry(b.id, inc);
+    if (!latest || latest.id !== e.id) { toast(inc ? 'Only the most recent paycheck can be undone.' : 'Only the most recent payment of a bill can be undone.'); return; }
     b.dueDate = e.dueDate; b.active = true;
     if (e.prevAmount != null) b.amount = e.prevAmount;
   }
-  state.history = state.history.filter(h => h.id !== id);
+  if (inc) state.incomeLog = state.incomeLog.filter(h => h.id !== id); else state.history = state.history.filter(h => h.id !== id);
   commit();
   toast('Undone');
+}
+
+
+/* ---- balance & cash flow ---- */
+const round2 = n => Math.round(n * 100) / 100;
+function balAnchor() {
+  let a = null;
+  for (const b of state.balances) if (!a || b.date > a.date || (b.date === a.date && b.createdAt >= a.createdAt)) a = b;
+  return a;
+}
+/* A payment or paycheck dated after the balance date changes the balance; one on that same day only if it was entered after the balance was set. */
+const afterAnchor = (a, e) => e.paidOn > a.date || (e.paidOn === a.date && e.createdAt > a.createdAt);
+function currentBalance() {
+  const a = balAnchor(); if (!a) return null;
+  let v = a.amount;
+  for (const h of state.incomeLog) if (h.status === 'paid' && afterAnchor(a, h)) v += h.amount;
+  for (const h of state.history) if (h.status === 'paid' && afterAnchor(a, h)) v -= h.amount;
+  return { anchor: a, amount: round2(v) };
+}
+function horizonEnd(h, today) { return h === '90' ? addDays(today, 90) : h === 'eom' ? monthEndISO(today) : monthEndISO(addMonths(today.slice(0, 7) + '-01', 1)); }
+/* Everything still unpaid (bills out, paychecks in) up to endISO, with the running balance after each one */
+function forecast(endISO) {
+  const cb = currentBalance(); if (!cb) return null;
+  const evs = [];
+  for (const b of state.bills) if (b.active) for (const d of occurrencesUntil(b, endISO, 120)) evs.push({ kind: 'bill', id: b.id, name: b.name, date: d, amt: -b.amount, first: d === b.dueDate, autopay: b.autopay });
+  for (const b of state.income) if (b.active) for (const d of occurrencesUntil(b, endISO, 120)) evs.push({ kind: 'pay', id: b.id, name: b.name, date: d, amt: b.amount, first: d === b.dueDate });
+  evs.sort((x, y) => x.date.localeCompare(y.date) || (y.amt > 0) - (x.amt > 0) || x.name.localeCompare(y.name));
+  let run = cb.amount, low = { amt: run, date: cb.anchor.date }, inn = 0, out = 0;
+  for (const e of evs) { run = round2(run + e.amt); e.run = run; if (e.amt > 0) inn += e.amt; else out -= e.amt; if (run < low.amt) low = { amt: run, date: e.date }; }
+  return { cb, events: evs, end: run, low, inn: round2(inn), out: round2(out) };
 }
 
 /* ---- dialogs ---- */
@@ -599,6 +645,79 @@ function payDialog(id) {
       if (!(amt >= 0)) return 'Enter a valid amount.';
       if (!isISO(v.paidOn)) return 'Pick a valid date.';
       markPaid(b, { paidOn: v.paidOn, amount: Math.round(amt * 100) / 100, keep: v.keep });
+    }
+  });
+}
+function incomeDialog(id) {
+  const b = id ? incById(id) : null;
+  if (id && !b) return;
+  const canSkip = b && b.active && b.frequency !== 'once';
+  formDialog({
+    title: b ? 'Edit paycheck' : 'Add paycheck',
+    fields: [
+      { name: 'name', label: 'Name', required: true, value: b ? b.name : 'Paycheck', placeholder: 'e.g. Paycheck' },
+      { name: 'amount', label: 'Amount (take-home)', type: 'number', required: true, value: b ? b.amount : '', min: 0, placeholder: '0.00' },
+      { name: 'dueDate', label: b ? 'Next pay date' : 'First pay date', type: 'date', required: true, value: b ? b.dueDate : todayISO() },
+      { name: 'frequency', label: 'Repeats', type: 'select', options: INC_FREQS, value: b ? b.frequency : 'monthly' },
+      { name: 'notes', label: 'Notes', type: 'textarea', value: b && b.notes }
+    ],
+    submitLabel: b ? 'Save' : 'Add paycheck',
+    extra: canSkip ? [{ label: 'Skip this one', onClick: () => { $('#dlg').close(); skipOnce(b, true); } }] : [],
+    onSubmit: v => {
+      const amount = parseFloat(v.amount);
+      if (!(amount >= 0)) return 'Enter a valid amount.';
+      if (!isISO(v.dueDate)) return 'Pick a valid pay date.';
+      const rec = { name: v.name.trim(), amount: Math.round(amount * 100) / 100, dueDate: v.dueDate, frequency: v.frequency, category: '', autopay: false, notes: v.notes.trim() };
+      if (b) {
+        const dateChanged = b.dueDate !== rec.dueDate;
+        Object.assign(b, rec);
+        if (dateChanged) { b.anchorDay = parseISO(rec.dueDate).getDate(); b.active = true; }
+      } else state.income.push({ id: uid(), ...rec, anchorDay: parseISO(rec.dueDate).getDate(), active: true, createdAt: Date.now() });
+      commit();
+    },
+    onDelete: b ? async () => {
+      if (!(await confirmBox(`Delete “${b.name}”?`, 'Paychecks already received stay in your balance.', 'Delete paycheck'))) return false;
+      state.income = state.income.filter(x => x.id !== b.id);
+      commit(); toast('Paycheck deleted'); return true;
+    } : null,
+    deleteLabel: 'Delete'
+  });
+}
+function receiveDialog(id) {
+  const b = incById(id); if (!b) return;
+  formDialog({
+    title: `Mark “${b.name}” received`, intro: `Expected ${fmtDate(b.dueDate)}.`,
+    fields: [
+      { name: 'paidOn', label: 'Date received', type: 'date', value: todayISO(), required: true },
+      { name: 'amount', label: 'Amount received', type: 'number', value: b.amount, required: true, min: 0 },
+      { name: 'keep', label: 'Use this amount for future paychecks too', type: 'checkbox', value: false }
+    ],
+    submitLabel: 'Mark received',
+    onSubmit: v => {
+      const amt = parseFloat(v.amount);
+      if (!(amt >= 0)) return 'Enter a valid amount.';
+      if (!isISO(v.paidOn)) return 'Pick a valid date.';
+      markPaid(b, { paidOn: v.paidOn, amount: Math.round(amt * 100) / 100, keep: v.keep }, true);
+    }
+  });
+}
+function balanceDialog() {
+  const cb = currentBalance();
+  formDialog({
+    title: 'Set current balance',
+    intro: cb ? `The app currently figures ${money(cb.amount)} (from ${money(cb.anchor.amount)} set ${fmtDate(cb.anchor.date)}). Enter what your account really shows.` : 'Enter what your account shows. From this date on, paychecks add to it and bills subtract from it.',
+    fields: [
+      { name: 'date', label: 'Balance as of', type: 'date', value: todayISO(), required: true },
+      { name: 'amount', label: 'Balance', type: 'number', required: true, value: '', placeholder: '0.00' }
+    ],
+    submitLabel: 'Save balance',
+    onSubmit: v => {
+      const amt = parseFloat(v.amount);
+      if (!isFinite(amt) || Math.abs(amt) > 1e12) return 'Enter a valid balance.';
+      if (!isISO(v.date)) return 'Pick a valid date.';
+      state.balances.push({ id: uid(), date: v.date, amount: Math.round(amt * 100) / 100, createdAt: Date.now() });
+      if (state.balances.length > 300) state.balances = state.balances.slice(-300);
+      commit(); toast('Balance set');
     }
   });
 }
@@ -672,6 +791,47 @@ function billRow(b, today) {
     <div class="row-amt num">${money(b.amount)}</div>
     <button type="button" class="btn small primary" data-action="pay" data-id="${id}" aria-label="Mark ${esc(b.name)} paid">Paid</button></li>`;
 }
+let horizon = 'eonm';
+const evLabel = (d, today) => { const diff = daysBetween(today, d); return diff < 0 ? `${plural(-diff, 'day')} overdue · was ${fmtDate(d)}` : diff === 0 ? 'Today' : fmtDate(d); };
+function renderCash() {
+  const today = todayISO(), f = forecast(horizonEnd(horizon, today)), ban = storageBannerHTML();
+  const incRow = b => `<li class="row ${b.active ? '' : 'faded'}" data-action="edit-pay" data-id="${esc(b.id)}"><div class="row-main"><div class="row-title">${esc(b.name)}</div><div class="row-sub">${esc((INC_FREQS.find(x => x[0] === b.frequency) || [0, ''])[1])} · ${b.active ? 'next ' + esc(fmtDate(b.dueDate)) : 'completed'}</div></div><div class="row-amt num ok">+${money(b.amount)}</div></li>`;
+  const paySec = `<div class="sec-h"><span>Paychecks</span><button type="button" class="btn small" data-action="add-pay">+ Add paycheck</button></div>`
+    + (state.income.length ? `<ul class="card list" id="paylist">${[...state.income].sort(byDue).map(incRow).join('')}</ul>` : '<div class="card pad muted">No paychecks yet. Add your pay so upcoming deposits raise the balance.</div>');
+  let h = ban;
+  if (!f) {
+    h += `<div class="empty"><div class="big">💵</div><h2>Set your balance</h2><p>Enter what your account shows today. From that date on, paychecks add to it and bills subtract from it, so you can see what is left before each bill is due.</p><button type="button" class="btn primary" data-action="set-balance">Set current balance</button></div>` + paySec;
+    return h;
+  }
+  const { cb } = f, hz = [['eom', 'This month'], ['eonm', 'Through next month'], ['90', '90 days']];
+  const endLbl = { eom: 'end of month', eonm: 'end of next month', 90: 'in 90 days' }[horizon];
+  h += `<section class="card pad" id="balCard"><div class="lbl muted" style="font-size:13px;font-weight:600">Balance now</div><div class="val num ${cb.amount < 0 ? 'bad' : ''}" style="font-size:32px;font-weight:700" id="balNow">${money(cb.amount)}</div>
+    <div class="hint">From ${money(cb.anchor.amount)} set ${esc(fmtDate(cb.anchor.date))}, plus paychecks and minus bills marked since.</div>
+    <button type="button" class="btn primary block" style="margin-top:12px" data-action="set-balance">Set current balance</button></section>
+    <div class="tiles cash">
+      <div class="card tile"><div class="lbl">Balance ${esc(endLbl)}</div><div class="val num ${f.end < 0 ? 'bad' : ''}" id="balEnd">${money(f.end)}</div></div>
+      <div class="card tile"><div class="lbl">Lowest point</div><div class="val num ${f.low.amt < 0 ? 'bad' : ''}" id="balLow">${money(f.low.amt)}</div><div class="hint">${f.low.date === cb.anchor.date && f.low.amt === cb.amount ? 'right now' : esc(fmtDate(f.low.date))}</div></div>
+      <div class="card tile"><div class="lbl">Net change</div><div class="val num ${f.inn - f.out < 0 ? 'bad' : 'ok'}">${f.inn - f.out < 0 ? '−' : '+'}${money(Math.abs(f.inn - f.out))}</div><div class="hint">+${money(f.inn)} / −${money(f.out)}</div></div>
+    </div>
+    <div class="chips" role="group" aria-label="Look ahead">${hz.map(([k, l]) => `<button type="button" class="chip" data-action="horizon" data-v="${k}" aria-pressed="${k === horizon}">${l}</button>`).join('')}</div>
+    <div class="sec-h"><span>Coming up</span></div>`;
+  if (!f.events.length) h += '<div class="card pad muted">Nothing due or expected in this window.</div>';
+  else h += `<ul class="card list" id="flow">${f.events.map(e => {
+    const bill = e.kind === 'bill', od = e.date < today;
+    return `<li class="row" data-action="${bill ? 'edit' : 'edit-pay'}" data-id="${esc(e.id)}"><div class="row-main"><div class="row-title">${esc(e.name)}${e.autopay ? '<span class="badge acc">Autopay</span>' : ''}</div>
+      <div class="row-sub ${od ? 'bad' : ''}">${esc(evLabel(e.date, today))} · balance <span class="${e.run < 0 ? 'bad' : ''}">${money(e.run)}</span></div></div>
+      <div class="row-amt num ${bill ? '' : 'ok'}">${bill ? '−' : '+'}${money(Math.abs(e.amt))}</div>
+      ${e.first ? `<button type="button" class="btn small ${bill ? 'primary' : ''}" data-action="${bill ? 'pay' : 'receive'}" data-id="${esc(e.id)}" aria-label="Mark ${esc(e.name)} ${bill ? 'paid' : 'received'}">${bill ? 'Paid' : 'Received'}</button>` : ''}</li>`;
+  }).join('')}</ul>`;
+  h += `<p class="hint" style="margin:8px 4px 0">Paychecks and bills dated after the balance date change it; ones dated that same day count only if you mark them after setting the balance. Unpaid items from before today are still counted — mark them paid to clear them.</p>`;
+  h += paySec;
+  const rec = [...state.incomeLog].filter(x => x.status === 'paid').sort((a, b) => b.paidOn.localeCompare(a.paidOn) || b.createdAt - a.createdAt).slice(0, 8);
+  const lat = new Map(); for (const x of state.incomeLog) { const c = lat.get(x.billId); if (!c || x.createdAt >= c.createdAt) lat.set(x.billId, x); }
+  if (rec.length) h += `<div class="sec-h"><span>Received</span></div><ul class="card list" id="received">${rec.map(x => `<li class="row static"><div class="row-main"><div class="row-title">${esc(x.name)}</div><div class="row-sub ok">Received ${esc(fmtDate(x.paidOn))}</div></div><div class="row-amt num ok">+${money(x.amount)}</div>${incById(x.billId) && lat.get(x.billId).id === x.id ? `<button type="button" class="btn small" data-action="undo-pay" data-id="${esc(x.id)}">Undo</button>` : ''}</li>`).join('')}</ul>`;
+  const hist = [...state.balances].sort((a, b) => b.date.localeCompare(a.date) || b.createdAt - a.createdAt).slice(0, 12);
+  h += `<details class="card eg" style="margin-top:14px" id="balHist"><summary>Balance history <span class="hint">· ${state.balances.length}</span></summary><ul class="list">${hist.map(x => `<li class="row static"><div class="row-main"><div class="row-title num">${money(x.amount)}</div><div class="row-sub">As of ${esc(fmtDate(x.date))}</div></div><button type="button" class="btn small" data-action="del-balance" data-id="${esc(x.id)}">Delete</button></li>`).join('')}</ul></details>`;
+  return h;
+}
 function renderDue() {
   if (!state.bills.length) return storageBannerHTML() + emptyHTML();
   const today = todayISO(), curYM = today.slice(0, 7), monthEnd = monthEndISO(today);
@@ -694,7 +854,9 @@ function renderDue() {
   const paidRow = h => `<li class="row static"><div class="row-main"><div class="row-title">${esc(h.name)}</div><div class="row-sub ok">Paid ${esc(fmtDate(h.paidOn))}</div></div>
     <div class="row-amt num">${money(h.amount)}</div>${byId(h.billId) && latest.get(h.billId).id === h.id ? `<button type="button" class="btn small" data-action="undo" data-id="${esc(h.id)}">Undo</button>` : ''}</li>`;
   const anyDue = g.overdue.length + g.soon.length + g.month.length + g.next.length;
-  return storageBannerHTML() + nagHTML() + `
+  const fc = forecast(monthEndISO(today));
+  const balCard = fc ? `<section class="card pad" id="dueBal" data-action="tab-cash" style="cursor:pointer;margin-top:14px"><div style="display:flex;justify-content:space-between;gap:12px;align-items:baseline"><div><div class="lbl muted" style="font-size:12px;font-weight:600">Balance now</div><div class="val num ${fc.cb.amount < 0 ? 'bad' : ''}" style="font-size:22px;font-weight:700">${money(fc.cb.amount)}</div></div><div style="text-align:right"><div class="lbl muted" style="font-size:12px;font-weight:600">End of ${esc(monthName)}</div><div class="val num ${fc.end < 0 ? 'bad' : ''}" style="font-size:22px;font-weight:700">${money(fc.end)}</div></div></div></section>` : '';
+  return storageBannerHTML() + nagHTML() + balCard + `
     <div class="tiles">
       <div class="card tile"><div class="lbl">Left to pay in ${esc(monthName)}</div><div class="val num">${money(left)}</div></div>
       <div class="card tile"><div class="lbl">Paid so far</div><div class="val num ok">${money(paidSum)}</div></div>
@@ -747,7 +909,7 @@ function renderBackup() {
   return storageBannerHTML() + installCardHTML() + `<div class="stack">
     <section class="card pad"><h3>Back up</h3>
       <p class="muted">${last}</p>
-      <p>Saves one file with all your bills and payment history. On iPhone it opens the share sheet — save it to Files or OneDrive. <b>Never put this file in your GitHub repo.</b></p>
+      <p>Saves one file with all your bills, payment history, paychecks and balances. On iPhone it opens the share sheet — save it to Files or OneDrive. <b>Never put this file in your GitHub repo.</b></p>
       ${canEncrypt ? `<div class="field"><label for="bkPass">Passphrase (optional — encrypts the file)</label><input id="bkPass" type="password" autocomplete="new-password"></div>
       <div class="field" style="margin-top:8px"><label for="bkPass2">Repeat passphrase</label><input id="bkPass2" type="password" autocomplete="new-password"></div>
       <p class="hint">If you set one, the file can’t be opened without it — not even by me.</p>` : ''}
@@ -756,16 +918,17 @@ function renderBackup() {
       <button type="button" class="btn block" data-action="restore">Choose backup file…</button></section>
     <section class="card pad"><h3>Use in Excel</h3><p>Payment history as a CSV file.</p>
       <button type="button" class="btn block" data-action="csv">Export history (CSV)</button></section>
-    <section class="card pad"><h3>Danger zone</h3><p>Erases all bills and history on this device.</p>
+    <section class="card pad"><h3>Danger zone</h3><p>Erases all bills, paychecks, balances and history on this device.</p>
       <button type="button" class="btn danger block" data-action="wipe">Erase everything on this device</button></section>
     <p class="hint" style="text-align:center">Your data lives only on this device. Nothing is sent anywhere.</p></div>`;
 }
 function render() {
   const y = window.scrollY;
-  view.innerHTML = { due: renderDue, all: renderAll, history: renderHistory, backup: renderBackup }[tab]();
+  view.innerHTML = { due: renderDue, cash: renderCash, all: renderAll, history: renderHistory, backup: renderBackup }[tab]();
   $$('nav.tabs button').forEach(b => b.setAttribute('aria-current', b.dataset.tab === tab ? 'page' : 'false'));
-  $('#addBtn').classList.toggle('hide', !(tab === 'due' || tab === 'all'));
-  $('#title').textContent = { due: 'Bills due', all: 'All bills', history: 'Payment history', backup: 'Backup & restore' }[tab];
+  $('#addBtn').classList.toggle('hide', !(tab === 'due' || tab === 'all' || tab === 'cash'));
+  $('#addBtn').textContent = tab === 'cash' ? '+ Add paycheck' : '+ Add bill';
+  $('#title').textContent = { due: 'Bills due', cash: 'Cash flow', all: 'All bills', history: 'Payment history', backup: 'Backup & restore' }[tab];
   $('#sub').textContent = new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
   window.scrollTo(0, y);
 }
@@ -797,9 +960,9 @@ async function restoreFromText(text) {
   catch (e) { await msgBox('Can’t restore that file', e.message); return false; }
   if (!parsed) return false;
   const { data, dropped } = normalizeData(parsed.data);
-  if (!data.bills.length && !data.history.length) { await msgBox('Nothing to restore', 'That backup has no bills or history in it.'); return false; }
-  const hasLocal = state.bills.length > 0 || state.history.length > 0;
-  const sum = `${plural(data.bills.length, 'bill')} and ${plural(data.history.length, 'payment record')}`;
+  if (!data.bills.length && !data.history.length && !data.income.length && !data.balances.length) { await msgBox('Nothing to restore', 'That backup has no bills or history in it.'); return false; }
+  const hasLocal = state.bills.length > 0 || state.history.length > 0 || state.income.length > 0 || state.balances.length > 0;
+  const sum = `${plural(data.bills.length, 'bill')} and ${plural(data.history.length, 'payment record')}` + (data.income.length || data.balances.length ? `, ${plural(data.income.length, 'paycheck')} and ${plural(data.balances.length, 'balance entry', 'balance entries')}` : '');
   const when = parsed.exportedAt ? ` Backup made ${fmtDateTime(parsed.exportedAt)}.` : '';
   const skipped = dropped ? ` ${plural(dropped, 'unreadable item')} will be skipped.` : '';
   const body = `<p>${esc(sum + '.' + when + skipped)}</p>` + (hasLocal ? '<p class="muted"><b>Replace all</b> swaps everything here for the backup. <b>Merge</b> adds what isn’t here yet and keeps the rest.</p>' : '');
@@ -811,7 +974,7 @@ async function restoreFromText(text) {
   });
   if (choice === 'replace') {
     const ts = parsed.exportedAt && !isNaN(Date.parse(parsed.exportedAt)) ? parsed.exportedAt : new Date().toISOString();
-    state.bills = data.bills; state.history = data.history;
+    state.bills = data.bills; state.history = data.history; state.income = data.income; state.incomeLog = data.incomeLog; state.balances = data.balances;
     state.meta.lastBackup = ts; state.meta.lastChange = ts;
     await persist({ touch: false });
     render(); toast(`Restored ${sum}`); return true;
@@ -821,6 +984,8 @@ async function restoreFromText(text) {
     let nb = 0, nh = 0;
     for (const b of data.bills) if (!ids.has(b.id)) { state.bills.push(b); nb++; }
     for (const h of data.history) if (!hids.has(h.id)) { state.history.push(h); nh++; }
+    const mg = (cur, inn) => { const k = new Set(cur.map(x => x.id)); for (const x of inn) if (!k.has(x.id)) cur.push(x); };
+    mg(state.income, data.income); mg(state.incomeLog, data.incomeLog); mg(state.balances, data.balances);
     await persist(); render(); toast(`Merged in ${plural(nb, 'bill')} and ${plural(nh, 'payment record')}`); return true;
   }
   return false;
@@ -855,6 +1020,14 @@ view.addEventListener('click', e => {
     case 'edit': billDialog(id); break;
     case 'pay': payDialog(id); break;
     case 'undo': undoEntry(id); break;
+    case 'undo-pay': undoEntry(id, true); break;
+    case 'receive': receiveDialog(id); break;
+    case 'edit-pay': incomeDialog(id); break;
+    case 'add-pay': incomeDialog(); break;
+    case 'set-balance': balanceDialog(); break;
+    case 'tab-cash': go('cash'); break;
+    case 'horizon': horizon = el.dataset.v; render(); break;
+    case 'del-balance': if (state.balances.some(x => x.id === id)) { state.balances = state.balances.filter(x => x.id !== id); commit(); toast('Balance entry deleted'); } break;
     case 'tab-backup': go('backup'); break;
     case 'export': doExport(); break;
     case 'restore': doRestore(); break;
@@ -863,7 +1036,7 @@ view.addEventListener('click', e => {
     case 'install': runInstall(); break;
   }
 });
-$('#addBtn').onclick = () => billDialog();
+$('#addBtn').onclick = () => (tab === 'cash' ? incomeDialog() : billDialog());
 $$('nav.tabs button').forEach(b => { b.onclick = () => go(b.dataset.tab); });
 document.addEventListener('visibilitychange', () => { if (!document.hidden && !$('dialog[open]')) render(); });
 
