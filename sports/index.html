@@ -941,7 +941,11 @@ let ESPN_TIMEOUT = 10000;
 const LEAGUES = [['football/nfl', 'NFL'], ['football/college-football', 'College football'], ['basketball/nba', 'NBA'], ['basketball/wnba', 'WNBA'], ['basketball/mens-college-basketball', 'Men’s college basketball'], ['basketball/womens-college-basketball', 'Women’s college basketball'], ['baseball/mlb', 'MLB'], ['hockey/nhl', 'NHL'], ['soccer/usa.1', 'MLS'], ['soccer/eng.1', 'English Premier League'], ['soccer/esp.1', 'La Liga'], ['soccer/ger.1', 'Bundesliga'], ['soccer/ita.1', 'Serie A'], ['soccer/fra.1', 'Ligue 1'], ['soccer/uefa.champions', 'UEFA Champions League']];
 const LEAGUE_KEYS = LEAGUES.map(l => l[0]);
 const leagueLabel = p => (LEAGUES.find(l => l[0] === p) || [0, str(p)])[1];
-const espnScheduleUrl = (p, id, season) => (LEAGUE_KEYS.includes(p) && /^\d{1,10}$/.test(String(id)) ? `${ESPN_HOST}apis/site/v2/sports/${p}/teams/${id}/schedule` + (/^\d{4}$/.test(String(season || '')) ? `?season=${season}` : '') : null);
+const espnScheduleUrl = (p, id, season, post) => {
+  if (!(LEAGUE_KEYS.includes(p) && /^\d{1,10}$/.test(String(id)))) return null;
+  const q = [/^\d{4}$/.test(String(season || '')) ? `season=${season}` : '', post ? 'seasontype=3' : ''].filter(Boolean).join('&');
+  return `${ESPN_HOST}apis/site/v2/sports/${p}/teams/${id}/schedule` + (q ? '?' + q : '');
+};
 const espnStandingsUrl = p => (LEAGUE_KEYS.includes(p) ? `${ESPN_HOST}apis/v2/sports/${p}/standings` : null);
 const arr = v => (Array.isArray(v) ? v : []);
 const obj = v => (v && typeof v === 'object' ? v : {});
@@ -994,11 +998,12 @@ function parseEspnEvent(ev) {
   const chans = [...new Set(arr(comp.broadcasts).map(b => str(obj(obj(b).media).shortName || arr(obj(b).names)[0]).trim()).filter(Boolean))];
   const stype = Number(obj(ev.seasonType).type != null ? obj(ev.seasonType).type : obj(ev.seasonType).id);
   const type = stype === 1 ? 'preseason' : stype === 3 ? 'playoff' : /post|play/i.test(str(obj(ev.seasonType).name)) ? 'playoff' : 'regular';
-  return { externalId: id, date, time, season: str(obj(ev.season).year) || date.slice(0, 4), home: h, away: a, venue: str(obj(comp.venue).fullName).trim().slice(0, 120), channel: chans.join(', ').slice(0, 40), status, homeScore: hs, awayScore: as, ot, type, neutral: comp.neutralSite === true };
+  const note = str(obj(arr(comp.notes)[0]).headline).trim() || str(obj(ev.week).text).trim();
+  return { round: type === 'playoff' ? note.replace(/\s*[-–—,:]?\s*\(?\bGame\s*\d+\b.*$/i, '').trim().slice(0, 60) : '', externalId: id, date, time, season: str(obj(ev.season).year) || date.slice(0, 4), home: h, away: a, venue: str(obj(comp.venue).fullName).trim().slice(0, 120), channel: chans.join(', ').slice(0, 40), status, homeScore: hs, awayScore: as, ot, type, neutral: comp.neutralSite === true };
 }
-function parseEspnSchedule(json) {
+function parseEspnSchedule(json, post) {
   const j = obj(json), out = { games: [], skipped: 0, year: Number(obj(j.season).year) || Number(obj(j.requestedSeason).year) || null };
-  for (const ev of arr(j.events)) { const g = parseEspnEvent(ev); if (g) out.games.push(g); else out.skipped++; }
+  for (const ev of arr(j.events)) { const g = parseEspnEvent(ev); if (g && post) { if (g.type !== 'playoff') { out.skipped++; continue; } } if (g) out.games.push(g); else out.skipped++; }
   return out;
 }
 function espnStandRow(e) {
@@ -1078,7 +1083,7 @@ function mergeEspnGames(st, path, parsed) {
   for (const pg of arr(parsed && parsed.games)) {
     const h = espnTeamFor(st, path, pg.home), a = espnTeamFor(st, path, pg.away);
     if (!h || !a || h.id === a.id) { res.skipped++; continue; }
-    const f = { season: pg.season, date: pg.date, time: pg.time, homeId: h.id, awayId: a.id, venue: pg.venue, channel: pg.channel, status: pg.status, homeScore: pg.homeScore, awayScore: pg.awayScore, ot: pg.ot, type: pg.type, neutral: pg.neutral };
+    const f = { season: pg.season, date: pg.date, time: pg.time, homeId: h.id, awayId: a.id, venue: pg.venue, channel: pg.channel, status: pg.status, homeScore: pg.homeScore, awayScore: pg.awayScore, ot: pg.ot, type: pg.type, round: pg.round, neutral: pg.neutral };
     const ex = byExt.get(pg.externalId);
     if (ex) {
       const next = normGame({ ...ex, ...f });
@@ -1122,7 +1127,7 @@ function normGame(g) {
     id: str(g.id).slice(0, 60) || uid(), season: str(g.season).trim().slice(0, 20) || date.slice(0, 4), date, time: validTime(str(g.time)) ? g.time : '',
     homeId, awayId, venue: str(g.venue).trim().slice(0, 120), channel: str(g.channel).trim().slice(0, 40), status, homeScore: hs, awayScore: as,
     ot: g.ot === true && hs != null && hs !== as, type: TYPE_KEYS.includes(g.type) ? g.type : 'regular', notes: str(g.notes).slice(0, 1000),
-    neutral: g.neutral === true, approx: g.approx === true,
+    neutral: g.neutral === true, approx: g.approx === true, round: str(g.round).trim().slice(0, 60),
     source: g.source === 'espn' && /^[\w./:-]{1,80}$/.test(str(g.externalId)) ? 'espn' : '', externalId: g.source === 'espn' && /^[\w./:-]{1,80}$/.test(str(g.externalId)) ? str(g.externalId) : ''
   };
 }
@@ -1230,7 +1235,7 @@ function setFTeam(v) { ui.fTeam = v; state.prefs.fTeam = v; persist({ touch: fal
 /* 'mine' = any of my teams, 'all' = everyone, otherwise one team id */
 function fTeamId() { return ui.fTeam !== 'all' && ui.fTeam !== 'mine' && tm(ui.fTeam) ? ui.fTeam : null; }
 function fMode() { const id = fTeamId(); if (id) return id; return ui.fTeam === 'all' || !myTeams().length ? 'all' : 'mine'; }
-const ui = { tab: 'schedule', fTeam: 'mine', stTried: {}, stErr: {}, stLoading: null, fSeason: null, sSeason: null, rA: null, rB: null, showAll: false, espn: { state: 'idle' }, espnTest: null, espnTry: 0, lastLeague: null };
+const ui = { tab: 'schedule', fTeam: 'mine', stTried: {}, stErr: {}, stLoading: null, fSeason: null, sSeason: null, pSeason: null, rA: null, rB: null, showAll: false, espn: { state: 'idle' }, espnTest: null, espnTry: 0, lastLeague: null };
 function storageBannerHTML() {
   if (saveFailed) return '<div class="banner bad">Couldn’t save to this device’s storage. Back up now so nothing is lost.</div>';
   if (!db) return '<div class="banner bad">This browser isn’t allowing storage (private mode?). Changes won’t survive closing the app — use Backup.</div>';
@@ -1276,7 +1281,11 @@ function refreshEspn({ auto = false, only = null } = {}) {
         const parsed = parseEspnSchedule(await espnGet(espnScheduleUrl(t.espnPath, t.espnId)));
         const r = mergeEspnGames(state, t.espnPath, parsed);
         added += r.added; updated += r.updated; okCount++;
-      } catch (e) { errs.push(e); if (['offline', 'timeout', 'network'].includes(e.kind)) stop = true; }
+      } catch (e) { errs.push(e); if (['offline', 'timeout', 'network'].includes(e.kind)) { stop = true; continue; } }
+      try { /* postseason is a separate request; "none yet" is normal, so only a dead connection matters */
+        const rp = mergeEspnGames(state, t.espnPath, parseEspnSchedule(await espnGet(espnScheduleUrl(t.espnPath, t.espnId, null, true)), true));
+        added += rp.added; updated += rp.updated;
+      } catch (e) { if (['offline', 'timeout', 'network'].includes(e.kind)) stop = true; }
     }
     for (const p of [...new Set(teams.map(t => t.espnPath))]) {
       if (stop) break;
@@ -1403,6 +1412,10 @@ async function importPastSeasons(tid, count) {
         const parsed = parseEspnSchedule(await espnGet(espnScheduleUrl(t.espnPath, t.espnId, y), prog.signal));
         const r = mergeEspnGames(state, t.espnPath, parsed);
         out.added += r.added; out.updated += r.updated; out.done.push({ year: y, games: parsed.games.length });
+        try {
+          const rp = mergeEspnGames(state, t.espnPath, parseEspnSchedule(await espnGet(espnScheduleUrl(t.espnPath, t.espnId, y, true), prog.signal), true));
+          out.added += rp.added; out.updated += rp.updated;
+        } catch (e) { if (e.kind === 'cancelled') { out.cancelled = true; await persist(); break; } if (e.kind === 'offline') { await persist(); break; } }
         await persist();
       } catch (e) {
         if (e.kind === 'cancelled') { out.cancelled = true; break; }
@@ -1742,6 +1755,49 @@ function leagueChipsHTML(opts, lg) {
   const more = `<div class="field more"><label for="sel_moreLeague" class="sr">More leagues</label><select id="sel_moreLeague" data-sel="moreLeague"><option value="">More leagues…</option>${LEAGUES.map(([p, n]) => `<option value="${esc(p)}">${esc(n)}</option>`).join('')}</select></div>`;
   return `<div class="chips" id="leagueChips" role="group" aria-label="League">${all.map(o => `<button type="button" class="chip${o.key === lg ? ' on' : ''}" data-action="league" data-v="${esc(o.key)}" aria-pressed="${o.key === lg}">${esc(o.name)}</button>`).join('')}</div>${more}`;
 }
+
+/* ---- postseason: every game of the league's postseason that we have saved ---- */
+async function loadLeaguePostseason(p) {
+  const c = state.espn.standings[p], cat = arr(obj(obj(state.espn.catalogs)[p]).teams);
+  const ids = [...new Set([...arr(c && c.groups).flatMap(g => g.rows.map(r => r.id)), ...cat.map(x => x.id)])].filter(x => /^\d{1,10}$/.test(x));
+  if (!ids.length) { await msgBox('No team list yet', 'Load the official standings first (they hold the league’s team list), then try again.'); return; }
+  if (espnBusy) return;
+  const prog = progressDialog(`${leagueLabel(p)} postseason`); let added = 0, updated = 0, failed = 0, cancelled = false, n = 0;
+  try {
+    for (const id of ids) {
+      if (prog.signal.aborted) { cancelled = true; break; }
+      prog.update(`Team ${++n} of ${ids.length}…`, (n - 1) / ids.length);
+      try {
+        const r = mergeEspnGames(state, p, parseEspnSchedule(await espnGet(espnScheduleUrl(p, id, null, true), prog.signal), true));
+        added += r.added; updated += r.updated;
+      } catch (e) {
+        if (e.kind === 'cancelled') { cancelled = true; break; }
+        failed++; if (['offline', 'timeout', 'network'].includes(e.kind)) break;
+      }
+    }
+    await persist();
+  } finally { prog.close(); }
+  render();
+  toast(cancelled ? 'Cancelled' : `Postseason: ${plural(added, 'new game')}${failed ? `, ${failed} failed` : ''}`);
+}
+function postseasonHTML(lg) {
+  const p = leaguePath(lg); if (!p) return '';
+  const games = state.games.filter(g => g.type === 'playoff' && (leagueKey(tm(g.homeId) || {}) === lg || leagueKey(tm(g.awayId) || {}) === lg));
+  const seasons = [...new Set(games.map(g => g.season))].sort((a, b) => seasonYear(b) - seasonYear(a) || b.localeCompare(a));
+  let season = ui.pSeason && seasons.includes(ui.pSeason) ? ui.pSeason : seasons[0];
+  let h = `<div class="sec-h" style="margin-top:18px"><span>Postseason</span></div><div class="espn-line"><span class="fine">${seasons.length ? plural(games.filter(g => g.season === season).length, 'game') + ' saved' : ''}</span><button type="button" class="btn small" data-action="post-load" data-p="${esc(p)}"${espnBusy ? ' disabled' : ''}>Load all ${esc(leagueLabel(p))} postseason games</button></div>`;
+  if (!seasons.length) return h + '<div class="card pad muted" id="postseason">No postseason games saved yet. Games for your synced teams download with Refresh; the button above loads the whole league’s bracket.</div>';
+  const list = games.filter(g => g.season === season).sort(gameCmp);
+  const rounds = []; for (const g of list) { const nm = g.round || 'Postseason'; let r = rounds.find(x => x.name === nm); if (!r) rounds.push(r = { name: nm, games: [] }); r.games.push(g); }
+  h += `<div id="postseason">` + (seasons.length > 1 ? `<div class="filters" style="grid-template-columns:1fr;margin-top:0">${selHTML('pSeason', 'Postseason', seasons.map(s => [s, s]), season)}</div>` : '');
+  for (const r of rounds) {
+    const pairs = new Map();
+    for (const g of r.games) { if (!isScored(g)) continue; const k = pairKey(g.homeId, g.awayId), o = pairs.get(k) || { n: 0, w: {} }; o.n++; const win = g.homeScore > g.awayScore ? g.homeId : g.awayScore > g.homeScore ? g.awayId : null; if (win) o.w[win] = (o.w[win] || 0) + 1; o.ids = [g.homeId, g.awayId]; pairs.set(k, o); }
+    const series = [...pairs.values()].filter(o => o.n > 1).map(o => { const [a, b] = o.ids, wa = o.w[a] || 0, wb = o.w[b] || 0; return wa === wb ? `${tShort(a)}–${tShort(b)} tied ${wa}-${wb}` : `${tShort(wa > wb ? a : b)} leads ${Math.max(wa, wb)}-${Math.min(wa, wb)}`; });
+    h += `<h3 class="eh">${esc(r.name)}<span class="fine"> · ${plural(r.games.length, 'game')}${series.length ? ' · ' + esc(series.join('; ')) : ''}</span></h3><ul class="card list">${r.games.map(g => gameRowHTML(g, fTeamId())).join('')}</ul>`;
+  }
+  return h + '</div>';
+}
 function renderStandings() {
   const lopts = standingsLeagues(), lg = curLeague(lopts), lgTeams = state.teams.filter(t => leagueKey(t) === lg), lgIds = new Set(lgTeams.map(t => t.id));
   const lgName = (lopts.find(o => o.key === lg) || {}).name || (LEAGUES.find(l => l[1].toLowerCase() === lg) || [0, ''])[1];
@@ -1750,7 +1806,7 @@ function renderStandings() {
   const controls = leagueChipsHTML(lopts, lg);
   const official = renderEspnStandings(lg), hasOfficial = !!official && !!state.espn.standings[leaguePath(lg)];
   const optCard = `<section class="card pad" style="margin-top:14px"><div class="optrow"><input type="checkbox" id="optOtl" data-opt="otl"${state.settings.otl ? ' checked' : ''}><label for="optOtl">Count overtime losses separately (OTL, hockey style)</label></div><p class="hint">Standings use final regular-season games only. Ties count as half a win.</p></section>`;
-  let h = storageBannerHTML() + controls + official;
+  let h = storageBannerHTML() + controls + official + postseasonHTML(lg);
   if (!lgTeams.length) return h + (official ? '' : '<div class="empty"><div class="big">📊</div><h2>No standings yet</h2><p>Add a team, or pick a league above to see its official standings.</p></div>') + (official ? '' : optCard);
   const body = det => `<details class="card eg comp" id="computed"${hasOfficial ? '' : ' open'}><summary>From your games (partial)<span class="fine"> · ${esc(lgName || 'League')}</span></summary><div class="pad">${det}</div></details>`;
   if (!seasons.length) return h + body('<div class="empty"><div class="big">📊</div><h2>No standings yet</h2><p>These are computed from final regular-season scores you have saved. Add games on the Schedule tab.</p><button type="button" class="btn primary" data-action="add-game">Add a game</button></div>') + optCard;
@@ -2056,7 +2112,8 @@ view.addEventListener('click', e => {
     case 'install': runInstall(); break;
     case 'chip': setFTeam(el.dataset.v); ui.showAll = false; render(); break;
     case 'league-refresh': ensureStandings(el.dataset.p, true); break;
-    case 'league': state.prefs.sLeague = el.dataset.v; ui.sSeason = null; commit(); break;
+    case 'post-load': loadLeaguePostseason(el.dataset.p); break;
+    case 'league': state.prefs.sLeague = el.dataset.v; ui.sSeason = null; ui.pSeason = null; commit(); break;
     case 'espn-add': addFromLeagueDialog(); break;
     case 'espn-refresh': refreshEspn(); break;
     case 'espn-past': pastDialog(); break;
@@ -2070,6 +2127,7 @@ view.addEventListener('change', e => {
     if (el.dataset.sel === 'fTeam') setFTeam(v);
     else if (el.dataset.sel === 'fSeason') ui.fSeason = v;
     else if (el.dataset.sel === 'sSeason') ui.sSeason = v;
+    else if (el.dataset.sel === 'pSeason') ui.pSeason = v;
     else if (el.dataset.sel === 'moreLeague') { if (!v) return; state.prefs.sLeague = leagueLabel(v).toLowerCase(); ui.sSeason = null; persist({ touch: false }); }
     else if (el.dataset.sel === 'rA') { ui.rA = v; if (ui.rB === v) ui.rB = null; }
     else if (el.dataset.sel === 'rB') ui.rB = v;
