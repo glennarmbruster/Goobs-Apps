@@ -2,7 +2,7 @@ name: Houston events
 
 on:
   schedule:
-    - cron: '17 */6 * * *'
+    - cron: '17 11 * * *'
   workflow_dispatch:
 
 permissions:
