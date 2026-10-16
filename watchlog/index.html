@@ -947,9 +947,9 @@ function parseTmdbDetails(j, media) {
   if (id == null || !name) return null;
   const tv = media === 'tv', credits = obj(j.credits), aggCast = arr(obj(j.aggregate_credits).cast);
   let cast;
-  if (tv && aggCast.length) cast = aggCast.map((c0, i) => { const c = obj(c0); return { name: cleanName(c.name), character: cleanName(obj(arr(c.roles)[0]).character), ord: isNum(c.order) ? c.order : i }; });
-  else cast = arr(credits.cast).map((c0, i) => { const c = obj(c0); return { name: cleanName(c.name), character: cleanName(c.character), ord: isNum(c.order) ? c.order : i }; });
-  cast = cast.filter(c => normName(c.name)).sort((a, b) => a.ord - b.ord).map(c => ({ name: c.name, character: c.character }));
+  if (tv && aggCast.length) cast = aggCast.map((c0, i) => { const c = obj(c0); return { name: cleanName(c.name), character: cleanName(obj(arr(c.roles)[0]).character), ord: isNum(c.order) ? c.order : i, pid: intIn(c.id, 1, 999999999) }; });
+  else cast = arr(credits.cast).map((c0, i) => { const c = obj(c0); return { name: cleanName(c.name), character: cleanName(c.character), ord: isNum(c.order) ? c.order : i, pid: intIn(c.id, 1, 999999999) }; });
+  cast = cast.filter(c => normName(c.name)).sort((a, b) => a.ord - b.ord).map(c => ({ name: c.name, character: c.character, pid: c.pid }));
   const crew = [];
   if (tv) for (const c of arr(j.created_by)) crew.push({ name: cleanName(obj(c).name), role: 'creator' });
   for (const c0 of arr(credits.crew)) {
@@ -964,7 +964,7 @@ function parseTvmazeDetails(j) {
   const id = intIn(j.id, 1, 999999999), name = cleanName(j.name);
   if (id == null || !name) return null;
   const em = obj(j._embedded);
-  const cast = arr(em.cast).map(c0 => { const c = obj(c0); return { name: cleanName(obj(c.person).name), character: cleanName(obj(c.character).name) }; }).filter(c => normName(c.name));
+  const cast = arr(em.cast).map(c0 => { const c = obj(c0); return { name: cleanName(obj(c.person).name), character: cleanName(obj(c.character).name), pid: intIn(obj(c.person).id, 1, 999999999) }; }).filter(c => normName(c.name));
   const crew = [];
   for (const c0 of arr(em.crew)) { const c = obj(c0), t = str(c.type).toLowerCase(); if (t === 'creator' || t === 'developer') crew.push({ name: cleanName(obj(c.person).name), role: 'creator' }); }
   return { source: 'tvmaze', externalId: 'tvmaze:' + id, kind: 'series', name, year: yearOf(j.premiered), genres: arr(j.genres).map(g => cleanName(g)).filter(Boolean), overview: trimText(stripHtml(j.summary), 300), cast, crew: dedupeCrew(crew) };
@@ -1022,6 +1022,87 @@ async function testOnline() {
   await netGet('https://api.tvmaze.com/search/shows?q=test'); return 'TVMaze: OK (no TMDB key set, so movies are not searchable).';
 }
 
+/* ===================== FILMOGRAPHY: "where do I know them from?" =====================
+   Cast members linked to TMDB or TVMaze get their full credit list cached on this device (kept out of backups; it can be
+   fetched again), and it is matched against the titles in your log. */
+const FILMO_TOP = 15, FILMO_MAX = 400, FILMO_TTL = 30 * 864e5;
+let TVM_GAP = 600; /* TVMaze allows about 20 requests per 10 seconds */
+const TALK_GENRES = [10767, 10763]; /* TMDB Talk, News */
+const TVM_SKIP = ['Talk Show', 'News', 'Award Show'];
+const SELF_RE = /^(self|himself|herself|themselves|themself)\b/i;
+const FILMO_X = /^(tmdb:(movie|tv):\d{1,9}|tvmaze:\d{1,9})$/;
+const wait = ms => new Promise(r => setTimeout(r, ms));
+let filmo = {}, filmoDirty = false;
+const personSrcKey = p => (p && p.tmdbId && state.settings.tmdbKey ? 'tmdb:' + p.tmdbId : p && p.tvmazeId ? 'tvmaze:' + p.tvmazeId : '');
+function filmoOf(p) { if (!p) return null; for (const k of [p.tmdbId ? 'tmdb:' + p.tmdbId : '', p.tvmazeId ? 'tvmaze:' + p.tvmazeId : '']) if (k && filmo[k]) return filmo[k]; return null; }
+function filmoStale(p) { const k = personSrcKey(p); if (!k) return false; const e = filmo[k]; return !e || !(Date.now() - Date.parse(e.at) < FILMO_TTL); }
+function mergeFilmo(list) {
+  const by = new Map();
+  for (const it of list) {
+    const f = by.get(it.x);
+    if (!f) { by.set(it.x, { ...it }); continue; }
+    if (it.c && !f.c.split(' / ').includes(it.c)) f.c = (f.c ? f.c + ' / ' + it.c : it.c).slice(0, 120);
+    if (it.e) f.e = (f.e || 0) + it.e;
+    if (f.y == null && it.y != null) f.y = it.y;
+    if (it.ay && (!f.ay || it.ay < f.ay)) f.ay = it.ay;
+  }
+  return [...by.values()].sort((a, b) => ((b.y || b.ay || 0) - (a.y || a.ay || 0)) || cmpStr(a.n, b.n)).slice(0, FILMO_MAX);
+}
+/* TMDB /person/{id}/combined_credits -> [{k,x,n,y,c,e}] (talk shows, news and "Self" appearances left out) */
+function parseTmdbFilmo(j) {
+  const out = [];
+  for (const c0 of arr(obj(j).cast)) {
+    const c = obj(c0), media = c.media_type, id = intIn(c.id, 1, 999999999), n = cleanName(c.title || c.name).slice(0, 200), ch = cleanName(c.character).slice(0, 120);
+    if ((media !== 'movie' && media !== 'tv') || id == null || !n) continue;
+    if (arr(c.genre_ids).some(g => TALK_GENRES.includes(g)) || SELF_RE.test(ch)) continue;
+    out.push({ k: media === 'tv' ? 'series' : 'movie', x: `tmdb:${media}:${id}`, n, y: yearOf(c.release_date || c.first_air_date), c: ch, e: media === 'tv' ? intIn(c.episode_count, 0, 99999) : null });
+  }
+  return mergeFilmo(out);
+}
+/* TVMaze castcredits (regular roles) + guestcastcredits (one row per episode, grouped by show) */
+function parseTvmazeFilmo(main, guest) {
+  const out = [];
+  for (const c0 of arr(main)) {
+    const c = obj(c0), em = obj(c._embedded), sh = obj(em.show), id = intIn(sh.id, 1, 999999999), n = cleanName(sh.name).slice(0, 200);
+    if (c.self === true || id == null || !n || TVM_SKIP.includes(sh.type)) continue;
+    out.push({ k: 'series', x: 'tvmaze:' + id, n, y: yearOf(sh.premiered), c: cleanName(obj(em.character).name).slice(0, 120), e: null });
+  }
+  for (const c0 of arr(guest)) {
+    const c = obj(c0), em = obj(c._embedded), ep = obj(em.episode), sl = obj(obj(ep._links).show), m = str(sl.href).match(/\/shows\/(\d{1,9})$/), n = cleanName(sl.name).slice(0, 200);
+    if (c.self === true || !m || !n) continue;
+    out.push({ k: 'series', x: 'tvmaze:' + m[1], n, y: null, ay: yearOf(ep.airdate), c: cleanName(obj(em.character).name).slice(0, 120), e: 1 });
+  }
+  return mergeFilmo(out);
+}
+function normFilmo(raw) {
+  const out = {};
+  for (const [k, v] of Object.entries(obj(raw))) {
+    if (!/^(tmdb|tvmaze):\d{1,9}$/.test(k) || !isoDT(obj(v).at)) continue;
+    out[k] = { at: v.at, items: arr(v.items).filter(it => it && FILMO_X.test(str(it.x)) && cleanName(it.n)).slice(0, FILMO_MAX).map(it => ({ k: it.k === 'series' ? 'series' : 'movie', x: it.x, n: cleanName(it.n).slice(0, 200), y: intIn(it.y, 1850, 2200), ay: intIn(it.ay, 1850, 2200), c: cleanName(it.c).slice(0, 120), e: intIn(it.e, 0, 99999) })) };
+  }
+  return out;
+}
+async function fetchFilmo(p) {
+  const key = personSrcKey(p); if (!key) return null;
+  let items;
+  try {
+    if (key.startsWith('tmdb:')) { const r = tmdbRequest(`/person/${p.tmdbId}/combined_credits`, {}, state.settings.tmdbKey); items = parseTmdbFilmo(await netGet(r.url, r.headers)); }
+    else {
+      const main = await netGet(`https://api.tvmaze.com/people/${p.tvmazeId}/castcredits?embed[]=show&embed[]=character`);
+      await wait(TVM_GAP);
+      const guest = await netGet(`https://api.tvmaze.com/people/${p.tvmazeId}/guestcastcredits?embed[]=episode&embed[]=character`);
+      items = parseTvmazeFilmo(main, guest);
+    }
+  } catch (e) { if (!/Not found/.test(e.message)) throw e; items = []; }
+  filmo[key] = { at: new Date().toISOString(), items }; filmoDirty = true;
+  return filmo[key];
+}
+function saveFilmo() {
+  if (!db || !filmoDirty) return Promise.resolve();
+  filmoDirty = false;
+  return idbPut(db, 'filmo', JSON.stringify(filmo)).catch(e => console.error(e));
+}
+
 /* ===================== data normalisation ===================== */
 function normTitle(t) {
   if (!t || typeof t !== 'object') return null;
@@ -1039,7 +1120,7 @@ function normTitle(t) {
 function normPerson(p) {
   if (!p || typeof p !== 'object') return null;
   const name = cleanName(p.name).slice(0, 120); if (!normName(name)) return null;
-  return { id: str(p.id).slice(0, 60) || uid(), name, notes: str(p.notes).slice(0, 2000) };
+  return { id: str(p.id).slice(0, 60) || uid(), name, notes: str(p.notes).slice(0, 2000), tmdbId: intIn(p.tmdbId, 1, 999999999), tvmazeId: intIn(p.tvmazeId, 1, 999999999) };
 }
 function normCredit(c, i) {
   if (!c || typeof c !== 'object') return null;
@@ -1061,7 +1142,7 @@ function normalizeData(raw) {
     if (!n || pIds.has(n.id) || people.length >= MAX.people) { dropped++; continue; }
     pIds.add(n.id);
     const k = normName(n.name), first = byKey.get(k);
-    if (first) { remap.set(n.id, first.id); if (!first.notes && n.notes) first.notes = n.notes; dropped++; continue; }
+    if (first) { remap.set(n.id, first.id); if (!first.notes && n.notes) first.notes = n.notes; if (!first.tmdbId) first.tmdbId = n.tmdbId; if (!first.tvmazeId) first.tvmazeId = n.tvmazeId; dropped++; continue; }
     byKey.set(k, n); people.push(n);
   }
   const credits = [], cKeys = new Map();
@@ -1126,6 +1207,120 @@ const PLURALS = { person: 'people', match: 'matches' };
 const plural = (n, w, pl) => `${n} ${n === 1 ? w : pl || PLURALS[w] || w + 's'}`;
 const dataOf = () => ({ titles: state.titles, people: state.people, credits: state.credits });
 
+/* ===================== "where do I know them from?" matching + lookups ===================== */
+let _mx = null;
+function matchIx() {
+  const sig = rev + ':' + state.titles.length;
+  if (_mx && _mx.sig === sig) return _mx;
+  const o = { sig, ext: new Map(), name: new Map() };
+  for (const t of state.titles) {
+    if (t.externalId) o.ext.set(t.externalId, t);
+    const k = normName(t.name) + '|' + t.kind; if (!o.name.has(k)) o.name.set(k, []); o.name.get(k).push(t);
+  }
+  return (_mx = o);
+}
+/* a filmography entry -> the title in your log it is (same online id; else same name + type and year within 1) or null */
+function matchFilmoItem(it, mx = matchIx()) {
+  const t = mx.ext.get(it.x); if (t) return t;
+  const c = mx.name.get(normName(it.n) + '|' + it.k) || []; if (!c.length) return null;
+  if (it.y == null) return c.length === 1 ? c[0] : null;
+  return c.find(x => x.year == null || Math.abs(x.year - it.y) <= 1) || null;
+}
+/* every title in your log this person is in: the credits you have plus their online filmography.
+   -> [{title, chars:[], fromFilmo}] titles you've watched or are watching first, then newest first */
+function knownFrom(personId, excludeTitleId) {
+  const p = personById(personId); if (!p) return [];
+  const by = new Map();
+  const add = (t, ch, ff, role) => {
+    if (!t || t.id === excludeTitleId) return;
+    let r = by.get(t.id); if (!r) by.set(t.id, r = { title: t, chars: [], roles: [], fromFilmo: ff }); else if (!ff) r.fromFilmo = false;
+    if (ch && !r.chars.includes(ch)) r.chars.push(ch);
+    if (role && !r.roles.includes(role)) r.roles.push(role);
+  };
+  for (const c of creditsOfPerson(personId)) add(titleById(c.titleId), c.role === 'actor' ? c.character : ROLE_LABEL[c.role], false, roleText(c));
+  const f = filmoOf(p);
+  if (f) { const mx = matchIx(); for (const it of f.items) add(matchFilmoItem(it, mx), it.c, true); }
+  const rank = t => (t.status === 'want' ? 1 : 0);
+  return [...by.values()].sort((a, b) => rank(a.title) - rank(b.title) || (b.title.year || 0) - (a.title.year || 0) || cmpStr(sortKeyName(a.title.name), sortKeyName(b.title.name)));
+}
+/* cast ids from an online record onto the people in your log (by name) -> how many were linked */
+function linkPeople(d) {
+  const src = str(d.externalId).startsWith('tmdb:') ? 'tmdbId' : 'tvmazeId'; let n = 0;
+  for (const c of arr(d.cast)) { if (c.pid == null) continue; const p = personByName(c.name); if (p && !p[src]) { p[src] = c.pid; n++; } }
+  if (n) persist({ touch: false });
+  return n;
+}
+const topCast = titleId => [...new Map(creditsOfTitle(titleId).filter(c => c.role === 'actor').map(c => [c.personId, personById(c.personId)])).values()].filter(Boolean).slice(0, FILMO_TOP);
+const fj = { running: false, done: 0, total: 0, err: '', ctl: null, tried: new Set() };
+function filmoStatusText() {
+  if (fj.running) return `Looking up their other work… ${fj.done} of ${fj.total}`;
+  if (fj.err === 'offline') return 'Offline: their other work is looked up next time you’re online.';
+  return fj.err ? 'Lookup stopped: ' + fj.err : '';
+}
+function paintFilmo() { const el = document.getElementById('filmoStatus'); if (el) el.textContent = filmoStatusText(); }
+function refreshAfterFilmo() {
+  const busyInput = document.activeElement && document.activeElement.matches('input,textarea,select');
+  if ((ui.titleId || ui.personId || ui.tab === 'connect') && !$('dialog[open]') && !busyInput) render(); else paintFilmo();
+}
+async function runFilmoJob(people, { force = false } = {}) {
+  if (fj.running) return { busy: true };
+  const list = people.filter(p => personSrcKey(p) && (force || filmoStale(p)));
+  if (!list.length) return { done: 0 };
+  if (navigator.onLine === false) { fj.err = 'offline'; paintFilmo(); return { offline: true }; }
+  Object.assign(fj, { running: true, done: 0, total: list.length, err: '', ctl: new AbortController() });
+  paintFilmo();
+  try {
+    for (const p of list) {
+      if (fj.ctl.signal.aborted) break;
+      try { await fetchFilmo(p); } catch (e) { fj.err = e.message; break; }
+      fj.done++; paintFilmo();
+      if (fj.done % 5 === 0) saveFilmo();
+      await wait(personSrcKey(p).startsWith('tvmaze:') ? TVM_GAP : 40);
+    }
+  } finally { fj.running = false; await saveFilmo(); _mx = null; }
+  refreshAfterFilmo();
+  return { done: fj.done, err: fj.err };
+}
+function autoFilmoForTitle(titleId) {
+  if (fj.running || fj.tried.has('t:' + titleId) || navigator.onLine === false) return;
+  const ppl = topCast(titleId); if (!ppl.some(filmoStale)) return;
+  fj.tried.add('t:' + titleId); setTimeout(() => runFilmoJob(ppl), 0);
+}
+function autoFilmoForPerson(p) {
+  if (!p || fj.running || fj.tried.has('p:' + p.id) || navigator.onLine === false || !filmoStale(p)) return;
+  fj.tried.add('p:' + p.id); setTimeout(() => runFilmoJob([p]), 0);
+}
+/* Backup tab: link and look up the top cast of every title that came from online */
+async function backfillFilmo() {
+  if (fj.running) return toast('Already looking something up; try again in a moment.');
+  const off = offlineMsg(); if (off) return msgBox('Offline', off);
+  const titles = state.titles.filter(t => t.externalId);
+  if (!titles.length) return msgBox('Nothing linked yet', 'Only titles added with Search online or Fetch cast online are linked. Open a title and use Fetch cast online first.');
+  const dlg = $('#dlg'); let stop = false;
+  dlg.onclose = null;
+  dlg.innerHTML = `<div class="dlg-form"><h2>Looking up the cast’s other work</h2><p id="bfTxt" role="status">Starting…</p><div class="dlg-actions"><span class="spacer"></span><button type="button" class="btn" id="bfStop">Stop</button></div></div>`;
+  $('#bfStop').onclick = () => { stop = true; if (fj.ctl) fj.ctl.abort(); };
+  if (!dlg.hasAttribute('open')) dlg.showModal();
+  const txt = m => { const e = document.getElementById('bfTxt'); if (e) e.textContent = m; };
+  let fails = 0;
+  for (let i = 0; i < titles.length && !stop; i++) {
+    const t = titles[i];
+    if (t.externalId.startsWith('tmdb:') && !state.settings.tmdbKey) continue;
+    if (topCast(t.id).every(p => (t.externalId.startsWith('tmdb:') ? p.tmdbId : p.tvmazeId))) continue;
+    txt(`Linking cast: ${t.name} (${i + 1} of ${titles.length})`);
+    try { linkPeople(await fetchDetails(t.externalId)); }
+    catch (e) { fails++; if (/reach|offline|Too many|rejected/i.test(e.message)) { txt('Stopped: ' + e.message); stop = true; } }
+    await wait(t.externalId.startsWith('tvmaze:') ? TVM_GAP : 40);
+  }
+  const ppl = [...new Map(titles.flatMap(t => topCast(t.id)).map(p => [p.id, p])).values()];
+  let r = {};
+  if (!stop) { const iv = setInterval(() => txt(filmoStatusText() || 'Finishing…'), 250); r = await runFilmoJob(ppl); clearInterval(iv); }
+  if (dlg.hasAttribute('open')) dlg.close();
+  render();
+  toast(stop ? 'Stopped' : r.err ? 'Stopped: ' + r.err : `Done: ${plural(ppl.length, 'person')} checked${fails ? `, ${plural(fails, 'title')} skipped` : ''}`);
+}
+
+
 /* ===================== state changes ===================== */
 function setStatus(id, s) {
   const t = titleById(id); if (!t || !STATUS_KEYS.includes(s)) return;
@@ -1164,7 +1359,7 @@ function addOnlineTitle(d, { count = 25, status = 'want', rating = 0 } = {}) {
   if (!t) return { error: 'That result has no usable title.' };
   state.titles.push(t); rev++;
   const plan = planBulk(selectCredits(d, count), state.people, state.credits, t.id);
-  applyPlan(t.id, plan);
+  applyPlan(t.id, plan); linkPeople(d); fj.tried.delete('t:' + t.id); autoFilmoForTitle(t.id);
   return { title: t, plan };
 }
 /* link an existing title to an online record and merge in only the credits it does not already have */
@@ -1172,7 +1367,7 @@ function attachOnline(titleId, d, count = 25) {
   const t = titleById(titleId); if (!t) return { error: 'Title not found.' };
   if (!t.externalId) t.externalId = d.externalId;
   const plan = planBulk(selectCredits(d, count), state.people, state.credits, titleId);
-  applyPlan(titleId, plan);
+  applyPlan(titleId, plan); linkPeople(d); fj.tried.delete('t:' + titleId); autoFilmoForTitle(titleId);
   return { title: t, plan };
 }
 /* form values -> {error} | {value} (a normalised title without id/createdAt) */
@@ -1315,14 +1510,54 @@ function renderTitle() {
     </section>
     <section class="card pad"><h3>Cast &amp; crew <span class="muted" style="font-weight:500">(${cs.length})</span></h3>
       <div class="btnrow" style="margin-bottom:6px"><button type="button" class="btn primary" data-action="add-person">+ Add person</button><button type="button" class="btn" data-action="bulk">Paste a list</button></div><button type="button" class="btn block" data-action="fetch-cast" data-id="${esc(t.id)}">🔎 Fetch cast online</button>${cc}</section>
-    ${cs.length ? `<section class="card pad"><h3>Where do I know them from?</h3><p class="muted">See everyone here and what else of yours they’re in.</p><button type="button" class="btn block" data-action="seen-here">Show</button></section>` : ''}
+    ${knownCastHTML(t)}
   </div>`;
+}
+
+/* the "where do I know them from?" card on a title: each cast member and the other titles in your log they're in */
+function knownCastHTML(t) {
+  const actors = creditsOfTitle(t.id).filter(c => c.role === 'actor');
+  if (!actors.length) return '';
+  autoFilmoForTitle(t.id);
+  const seen = new Set(), rows = []; let linked = 0, none = 0;
+  for (const c of actors) {
+    if (seen.has(c.personId)) continue; seen.add(c.personId);
+    const p = personById(c.personId); if (!p) continue;
+    if (p.tmdbId || p.tvmazeId) linked++;
+    const kf = knownFrom(p.id, t.id);
+    if (!kf.length) { none++; continue; }
+    rows.push(`<div class="row" data-action="open-person" data-id="${esc(p.id)}" role="button" tabindex="0"><div class="row-main"><div class="row-title">${esc(p.name)}${c.character ? ` <span class="muted" style="font-weight:500">as ${esc(c.character)}</span>` : ''}</div>${kf.slice(0, 3).map(r => `<div class="row-sub">${esc(r.title.name)}${r.title.year ? ' (' + r.title.year + ')' : ''}${r.chars.length ? ' – ' + esc(r.chars.join(', ')) : ''} ${statusBadge(r.title.status)}</div>`).join('')}${kf.length > 3 ? `<div class="row-sub">+ ${kf.length - 3} more</div>` : ''}</div></div>`);
+  }
+  const hint = linked ? '' : '<p class="muted">These people aren’t linked online yet. Use “Fetch cast online” above; their other work is then looked up automatically.</p>';
+  const empty = rows.length ? '' : linked && !fj.running ? '<p class="muted pad" style="padding-top:0">Nobody here is in anything else in your log yet.</p>' : '';
+  return `<section class="card" id="knownFrom"><div class="pad" style="padding-bottom:4px"><h3>Where do I know them from?</h3><p class="fine" id="filmoStatus" role="status">${esc(filmoStatusText())}</p>${hint}</div>${rows.join('')}${empty}
+    ${rows.length && none ? `<p class="fine pad" style="padding-top:6px;padding-bottom:0">${plural(none, 'other cast member')} ${none === 1 ? 'isn’t' : 'aren’t'} in anything else you’ve logged.</p>` : ''}
+    ${linked ? `<div class="pad" style="padding-top:8px"><button type="button" class="btn small ghost" data-action="filmo-refresh" data-id="${esc(t.id)}"${fj.running ? ' disabled' : ''}>Refresh from online</button></div>` : ''}</section>`;
+}
+/* the full filmography card on a person */
+function filmoCardHTML(p) {
+  if (!(p.tmdbId || p.tvmazeId)) return `<section class="card pad" id="filmo"><h3>Everything they’ve been in</h3><p class="muted">Not linked online yet. People are linked when their title is added with Search online or Fetch cast online.</p></section>`;
+  autoFilmoForPerson(p);
+  const f = filmoOf(p);
+  if (!f) return `<section class="card pad" id="filmo"><h3>Everything they’ve been in</h3><p class="fine" id="filmoStatus" role="status">${esc(filmoStatusText() || (navigator.onLine === false ? 'Offline: this loads when you’re online.' : 'Loading…'))}</p></section>`;
+  const mx = matchIx(), tvm = f === filmo['tvmaze:' + p.tvmazeId];
+  const rows = f.items.map(it => {
+    const t = matchFilmoItem(it, mx), yr = it.y || it.ay;
+    const sub = [it.k === 'series' ? 'TV' : 'Movie', it.c ? 'as ' + it.c : '', it.e ? plural(it.e, 'episode') : ''].filter(Boolean).join(' · ');
+    const head = `<div class="row-main"><div class="row-title">${esc(it.n)}${yr ? ` <span class="muted" style="font-weight:500">(${yr})</span>` : ''}</div><div class="row-sub">${esc(sub)}</div></div>`;
+    return t ? `<div class="row" data-action="open-title" data-id="${esc(t.id)}" role="button" tabindex="0">${head}${statusBadge(t.status)}</div>` : `<div class="row static">${head}</div>`;
+  }).join('');
+  return `<details class="card eg" id="filmo"${f.items.length <= 30 ? ' open' : ''}><summary>Everything they’ve been in <span class="fine">· ${f.items.length}</span></summary>${rows || '<p class="muted pad">Nothing listed online.</p>'}
+    <div class="pad"><p class="fine" id="filmoStatus" role="status">${esc(filmoStatusText())}</p><p class="fine">From ${tvm ? 'TVMaze (TV only; add a TMDB key in Backup for movies)' : 'TMDB'}, updated ${esc(fmtWhen(f.at.slice(0, 10)) || f.at.slice(0, 10))}. Talk shows and appearances as themselves are left out.</p>
+    <button type="button" class="btn small ghost" data-action="filmo-person" data-id="${esc(p.id)}"${fj.running ? ' disabled' : ''}>Refresh from online</button></div></details>`;
 }
 
 /* ---- Person detail + People list ---- */
 function renderPerson() {
-  const p = personById(ui.personId), sm = personSummary(p.id, state);
-  const rows = sm.rows.map(r => `<div class="row" data-action="open-title" data-id="${esc(r.title.id)}" role="button" tabindex="0"><div class="row-main"><div class="row-title">${tName(r.title)}</div><div class="row-sub">${esc(r.credits.map(roleText).join(' · '))}</div></div>${ratingTag(r.title.rating)}${statusBadge(r.title.status)}</div>`).join('');
+  const p = personById(ui.personId), sm = personSummary(p.id, state), kf = knownFrom(p.id);
+  const rows = kf.map(r => `<div class="row" data-action="open-title" data-id="${esc(r.title.id)}" role="button" tabindex="0"><div class="row-main"><div class="row-title">${tName(r.title)}</div><div class="row-sub">${esc((r.roles.length ? r.roles : r.chars.map(c => 'as ' + c)).join(' · '))}${r.fromFilmo ? '<span class="badge">from their filmography</span>' : ''}</div></div>${ratingTag(r.title.rating)}${statusBadge(r.title.status)}</div>`).join('');
+  const kw = kf.filter(r => r.title.status === 'watched'), kr = kw.filter(r => r.title.rating > 0);
+  sm.titles = kf.length; sm.watched = kw.length; sm.avgRating = kr.length ? Math.round(kr.reduce((a, r) => a + r.title.rating, 0) / kr.length * 100) / 100 : null;
   const co = sm.coStars.map(c => `<div class="row" data-action="open-person" data-id="${esc(c.personId)}" role="button" tabindex="0"><div class="row-main"><div class="row-title">${esc(c.name)}</div></div><span class="muted">${plural(c.count, 'title')}</span></div>`).join('');
   return `<div class="stack">
     <section class="card pad"><div class="tilesb" style="margin-top:0"><div class="card tile"><div class="lbl">Titles</div><div class="val">${sm.titles}</div></div><div class="card tile"><div class="lbl">Watched</div><div class="val">${sm.watched}</div></div><div class="card tile"><div class="lbl">Avg rating</div><div class="val">${sm.avgRating == null ? '–' : fmtR(sm.avgRating)}</div></div></div>
@@ -1330,6 +1565,7 @@ function renderPerson() {
       <div class="btnrow"><button type="button" class="btn" data-action="edit-person" data-id="${esc(p.id)}">Edit</button><button type="button" class="btn danger" data-action="del-person" data-id="${esc(p.id)}">Delete</button></div></section>
     <section class="card"><div class="pad" style="padding-bottom:4px"><h3>In your log</h3></div>${rows || '<p class="muted pad">Not in any title yet.</p>'}</section>
     ${co ? `<section class="card"><div class="pad" style="padding-bottom:4px"><h3>Also worked with</h3></div>${co}</section>` : ''}
+    ${filmoCardHTML(p)}
   </div>`;
 }
 function peopleListHTML() {
@@ -1382,7 +1618,8 @@ function whoHTML() {
   if (!tokens(ui.conn.w).length) return `<p class="muted">Type part of a name, or a character’s name.</p>`;
   if (!m.length) return `<div class="note">No one matches “${esc(cleanName(ui.conn.w))}”.</div>`;
   return `<p class="fine" style="margin:0 4px 6px">${plural(m.length, 'match')}${m.length > 25 ? ' (showing 25)' : ''}</p><div class="card">${m.slice(0, 25).map(r => {
-    const subs = r.credits.map(c => { const t = titleById(c.titleId); return t ? `${t.name}${t.year ? ' (' + t.year + ')' : ''} · ${roleText(c)}` : ''; }).filter(Boolean);
+    const subs = r.by === 'character' ? r.credits.map(c => { const t = titleById(c.titleId); return t ? `${t.name}${t.year ? ' (' + t.year + ')' : ''} · ${roleText(c)}` : ''; }).filter(Boolean)
+      : knownFrom(r.personId).map(k => `${k.title.name}${k.title.year ? ' (' + k.title.year + ')' : ''}${k.roles.length ? ' · ' + k.roles.join(', ') : k.chars.length ? ' · as ' + k.chars.join(', ') : ''}`);
     return `<div class="row" data-action="open-person" data-id="${esc(r.personId)}" role="button" tabindex="0"><div class="row-main"><div class="row-title">${esc(r.name)}${r.by === 'character' ? '<span class="badge acc">character</span>' : ''}</div>${subs.slice(0, 4).map(s => `<div class="row-sub">${esc(s)}</div>`).join('')}${subs.length > 4 ? `<div class="row-sub">+ ${subs.length - 4} more</div>` : ''}</div></div>`;
   }).join('')}</div>`;
 }
@@ -1392,6 +1629,7 @@ function seenHTML() {
   if (r.error) return `<div class="note bad">${esc(r.error)}</div>`;
   const list = seenIn(r.id, state);
   if (!list.length) return `<div class="note">No cast or crew entered for this title yet.</div>`;
+  for (const s of list) s.others = knownFrom(s.personId, r.id).map(k => k.title);
   return `<div class="card">${list.map(s => `<div class="row" data-action="open-person" data-id="${esc(s.personId)}" role="button" tabindex="0"><div class="row-main"><div class="row-title">${esc(s.name)}</div><div class="row-sub">${esc(s.credits.map(roleText).join(', '))}</div>${s.others.length ? `<div class="row-sub"><b>Also in:</b> ${esc(s.others.map(t => t.name + (t.year ? ' (' + t.year + ')' : '')).join('; '))}</div>` : '<div class="row-sub">Nothing else logged</div>'}</div></div>`).join('')}</div>`;
 }
 function renderConnect() {
@@ -1449,12 +1687,16 @@ function renderBackup() {
       <div class="field"><label for="tmdbKey">TMDB key</label><input id="tmdbKey" type="password" value="${esc(state.settings.tmdbKey)}" placeholder="Paste key" autocomplete="off" autocapitalize="none"></div>
       <div class="keyrow"><button type="button" class="btn" data-action="save-key">Save key</button><button type="button" class="btn" data-action="test-key">Test</button></div>
       <div id="testRes" class="note hide" role="status"></div>
-      <p class="hint">Only the search text or a title id is sent, and only to api.themoviedb.org and api.tvmaze.com. No pictures are loaded.</p></section>
+      <p class="hint">Only the search text, a title id or a person id is sent, and only to api.themoviedb.org and api.tvmaze.com. No pictures are loaded.</p></section>
+    <section class="card pad" id="filmoCard"><h3>Where do I know them from?</h3>
+      <p>When you add a title online, the top ${FILMO_TOP} cast members’ other work is looked up automatically and matched to your log. Use this once for titles you added before, or to refresh everything.</p>
+      <p class="fine">${plural(state.people.filter(p => p.tmdbId || p.tvmazeId).length, 'person')} linked · ${plural(Object.keys(filmo).length, 'filmography', 'filmographies')} saved on this device (not in backups; they can be fetched again).</p>
+      <button type="button" class="btn block" data-action="filmo-all">Look up the cast of every title</button></section>
     <section class="card pad"><h3>Restore</h3><p>Pick a backup file made by this app. You’ll choose whether to replace what’s here or merge it in.</p>
       <button type="button" class="btn block" data-action="restore">Choose backup file…</button></section>
     <section class="card pad"><h3>Export titles (CSV)</h3><p>One row per title with status, rating, directors and cast, for Excel or Numbers.</p>
       <div class="btnrow"><button type="button" class="btn" data-action="csv">Save / share CSV</button><button type="button" class="btn" data-action="csv-copy">Copy CSV</button></div></section>
-    <section class="card pad"><h3>Danger zone</h3><p>Erases everything in this app on this device.</p>
+    <section class="card pad"><h3>Danger zone</h3><p>Erases everything in this app on this device, including saved filmographies.</p>
       <button type="button" class="btn danger block" data-action="wipe">Erase everything on this device</button></section>
     <p class="hint" style="text-align:center">Your data lives only on this device. Nothing is sent anywhere.</p></div>`;
 }
@@ -1521,7 +1763,9 @@ function titleDialog(id) {
       else {
         const nt = normTitle({ ...r.value, id: uid(), createdAt: new Date().toISOString() });
         state.titles.push(nt); persist();
-        nav(() => { ui.titleId = nt.id; ui.personId = null; }); toast('Added. Now add its cast.');
+        nav(() => { ui.titleId = nt.id; ui.personId = null; });
+        if (navigator.onLine !== false) { setTimeout(() => onlineDialog({ attach: nt.id, q: nt.name }), 0); toast('Added. Pick the match to fetch its cast.'); }
+        else toast('Added. Fetch its cast online when you’re connected.');
       }
     },
     onDelete: t ? () => { delTitle(t.id); return true; } : null, deleteLabel: 'Delete',
@@ -1791,6 +2035,7 @@ async function doRestore() {
 async function doWipe() {
   if (!(await confirmBox('Erase everything?', 'This permanently deletes all titles, people and credits on this device. Make a backup first if you might want them.', 'Erase everything'))) return;
   state = defaultState(); ui.titleId = null; ui.personId = null; ui.stack = [];
+  filmo = {}; filmoDirty = true; await saveFilmo();
   await persist({ touch: false });
   render(); toast('Everything erased');
 }
@@ -1847,6 +2092,9 @@ view.addEventListener('click', e => {
     case 'test-key': testKey(); break;
     case 'edit-credit': creditDialog(id); break;
     case 'seen-here': seenHere(); break;
+    case 'filmo-refresh': runFilmoJob(topCast(id), { force: true }).then(r => { if (r && r.busy) toast('Already looking something up.'); }); paintFilmo(); break;
+    case 'filmo-person': { const p = personById(id); if (p) runFilmoJob([p], { force: true }); break; }
+    case 'filmo-all': backfillFilmo(); break;
     case 'edit-person': personDialog(id); break;
     case 'del-person': delPerson(id); break;
     case 'add-p': personDialog(); break;
@@ -1890,6 +2138,7 @@ document.addEventListener('visibilitychange', () => { if (!document.hidden && !$
         catch (e) { console.error(e); await idbPut(db, 'state-damaged-' + Date.now(), raw); toast('Saved data looked damaged — a copy was kept aside.'); }
       }
     } catch (e) { console.error(e); db = null; }
+    if (db) { try { const fr = await idbGet(db, 'filmo'); if (fr) filmo = normFilmo(JSON.parse(fr)); } catch (e) { console.error(e); filmo = {}; } }
   }
   rev++;
   render();
