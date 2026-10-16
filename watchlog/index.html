@@ -155,6 +155,7 @@ dialog::backdrop{background:rgba(10,15,12,.55)}
 .ctrl .two{display:grid;grid-template-columns:1fr 1fr auto;gap:8px}
 .ctrl .two select{min-width:0}
 .fine{font-size:13px;color:var(--muted)}
+.synopsis{margin:0 0 12px;line-height:1.45;color:var(--ink)}
 .facts{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;margin:10px 0;font-size:15px}
 .facts dt{color:var(--muted);font-size:13px;font-weight:600;padding-top:2px}
 .facts dd{margin:0;overflow-wrap:anywhere}
@@ -940,7 +941,15 @@ function dedupeCrew(list) {
   for (const c of list) { const k = c.role + '|' + normName(c.name); if (!normName(c.name) || seen.has(k)) continue; seen.add(k); out.push(c); }
   return out;
 }
-/* -> {source, externalId, kind, name, year, genres[], overview, cast:[{name,character}], crew:[{name,role}]} or null */
+/* TMDB videos -> the best YouTube trailer key ('' if none): official trailers first, then any trailer, then teasers; English preferred */
+const YT_KEY = /^[\w-]{6,20}$/;
+function pickTrailer(v) {
+  const score = x => (x.type === 'Trailer' ? 0 : 10) + (x.official === true ? 0 : 2) + (!x.iso_639_1 || x.iso_639_1 === 'en' ? 0 : 1);
+  const list = arr(obj(v).results).map(obj).filter(x => x.site === 'YouTube' && YT_KEY.test(str(x.key)) && (x.type === 'Trailer' || x.type === 'Teaser'));
+  list.sort((a, b) => score(a) - score(b));
+  return list.length ? str(list[0].key) : '';
+}
+/* -> {source, externalId, kind, name, year, genres[], overview, synopsis, trailer, cast:[{name,character,pid}], crew:[{name,role}]} or null */
 function parseTmdbDetails(j, media) {
   j = obj(j);
   const id = intIn(j.id, 1, 999999999), name = cleanName(j.title || j.name);
@@ -957,7 +966,7 @@ function parseTmdbDetails(j, media) {
     if (job === 'director') crew.push({ name: cleanName(c.name), role: 'director' });
     else if (WRITER_JOBS.includes(job)) crew.push({ name: cleanName(c.name), role: 'writer' });
   }
-  return { source: 'tmdb', externalId: `tmdb:${tv ? 'tv' : 'movie'}:${id}`, kind: tv ? 'series' : 'movie', name, year: yearOf(j.release_date || j.first_air_date), genres: arr(j.genres).map(g => cleanName(obj(g).name)).filter(Boolean), overview: trimText(cleanName(j.overview), 300), cast, crew: dedupeCrew(crew) };
+  return { source: 'tmdb', externalId: `tmdb:${tv ? 'tv' : 'movie'}:${id}`, kind: tv ? 'series' : 'movie', name, year: yearOf(j.release_date || j.first_air_date), genres: arr(j.genres).map(g => cleanName(obj(g).name)).filter(Boolean), overview: trimText(cleanName(j.overview), 300), synopsis: cleanName(j.overview).slice(0, 2000), trailer: pickTrailer(j.videos), cast, crew: dedupeCrew(crew) };
 }
 function parseTvmazeDetails(j) {
   j = obj(j);
@@ -967,7 +976,8 @@ function parseTvmazeDetails(j) {
   const cast = arr(em.cast).map(c0 => { const c = obj(c0); return { name: cleanName(obj(c.person).name), character: cleanName(obj(c.character).name), pid: intIn(obj(c.person).id, 1, 999999999) }; }).filter(c => normName(c.name));
   const crew = [];
   for (const c0 of arr(em.crew)) { const c = obj(c0), t = str(c.type).toLowerCase(); if (t === 'creator' || t === 'developer') crew.push({ name: cleanName(obj(c.person).name), role: 'creator' }); }
-  return { source: 'tvmaze', externalId: 'tvmaze:' + id, kind: 'series', name, year: yearOf(j.premiered), genres: arr(j.genres).map(g => cleanName(g)).filter(Boolean), overview: trimText(stripHtml(j.summary), 300), cast, crew: dedupeCrew(crew) };
+  const imdb = str(obj(j.externals).imdb);
+  return { source: 'tvmaze', externalId: 'tvmaze:' + id, kind: 'series', name, year: yearOf(j.premiered), genres: arr(j.genres).map(g => cleanName(g)).filter(Boolean), overview: trimText(stripHtml(j.summary), 300), synopsis: stripHtml(j.summary).slice(0, 2000), trailer: '', imdb: /^tt\d{5,10}$/.test(imdb) ? imdb : '', cast, crew: dedupeCrew(crew) };
 }
 /* crew first (directors, creators, writers; CREW_CAP each), then the top N cast (10 | 25 | 'all') -> parsed credits for planBulk */
 function selectCredits(d, count) {
@@ -1007,14 +1017,23 @@ async function fetchDetails(extId) {
   if (m) {
     const key = state.settings.tmdbKey;
     if (!key) throw new Error('This title came from TMDB. Add your TMDB key in Backup → Online lookup first.');
-    const r = tmdbRequest(`/${m[1]}/${m[2]}`, { append_to_response: m[1] === 'tv' ? 'aggregate_credits,credits' : 'credits' }, key);
+    const r = tmdbRequest(`/${m[1]}/${m[2]}`, { append_to_response: m[1] === 'tv' ? 'aggregate_credits,credits,videos' : 'credits,videos' }, key);
     const d = parseTmdbDetails(await netGet(r.url, r.headers), m[1]); if (!d) throw unreadable();
     d.externalId = extId; return d;
   }
   m = str(extId).match(/^tvmaze:(\d{1,9})$/);
   if (!m) throw new Error('Unknown source.');
   const d = parseTvmazeDetails(await netGet(`https://api.tvmaze.com/shows/${m[1]}?embed[]=cast&embed[]=crew`)); if (!d) throw unreadable();
-  d.externalId = extId; return d;
+  d.externalId = extId;
+  /* TVMaze has no trailers: with a TMDB key, find the same show on TMDB by its IMDb id and take its trailer */
+  const key = state.settings.tmdbKey;
+  if (key && d.imdb) {
+    try {
+      const f = tmdbRequest(`/find/${d.imdb}`, { external_source: 'imdb_id' }, key), tvId = intIn(obj(arr(obj(await netGet(f.url, f.headers)).tv_results)[0]).id, 1, 999999999);
+      if (tvId != null) { const v = tmdbRequest(`/tv/${tvId}/videos`, {}, key); d.trailer = pickTrailer(await netGet(v.url, v.headers)); }
+    } catch (e) { /* the trailer is optional */ }
+  }
+  return d;
 }
 async function testOnline() {
   const key = state.settings.tmdbKey;
@@ -1114,7 +1133,8 @@ function normTitle(t) {
     watchedOn: isISO(t.watchedOn) ? t.watchedOn : '', rewatchCount: intIn(t.rewatchCount, 0, 999) ?? 0,
     where: cleanName(t.where).slice(0, 100), genres: parseGenres(t.genres).join(', ').slice(0, 300), notes: str(t.notes).slice(0, 5000),
     seasonsWatched: ser ? (intIn(t.seasonsWatched, 0, 999) ?? 0) : 0, currentSeason: ser ? (intIn(t.currentSeason, 0, 999) ?? 0) : 0, currentEpisode: ser ? (intIn(t.currentEpisode, 0, 9999) ?? 0) : 0,
-    externalId: extIdOk(t.externalId) ? str(t.externalId) : '', createdAt: isoDT(t.createdAt) || new Date().toISOString()
+    externalId: extIdOk(t.externalId) ? str(t.externalId) : '', createdAt: isoDT(t.createdAt) || new Date().toISOString(),
+    synopsis: cleanName(t.synopsis).slice(0, 2000), trailer: YT_KEY.test(str(t.trailer)) ? str(t.trailer) : '', metaAt: isoDT(t.metaAt) || ''
   };
 }
 function normPerson(p) {
@@ -1250,6 +1270,24 @@ function linkPeople(d) {
   if (n) persist({ touch: false });
   return n;
 }
+/* synopsis + trailer from an online record (never overwrites with blanks) */
+function applyMeta(t, d) {
+  if (d.synopsis) t.synopsis = cleanName(d.synopsis).slice(0, 2000);
+  if (YT_KEY.test(str(d.trailer))) t.trailer = d.trailer;
+  t.metaAt = new Date().toISOString();
+}
+/* titles linked online before synopses/trailers existed: fill them in the first time the title is opened */
+function autoMeta(t) {
+  if (!t.externalId || t.metaAt || fj.tried.has('m:' + t.id) || navigator.onLine === false) return;
+  if (t.externalId.startsWith('tmdb:') && !state.settings.tmdbKey) return;
+  fj.tried.add('m:' + t.id);
+  setTimeout(async () => {
+    try { const d = await fetchDetails(t.externalId); applyMeta(t, d); linkPeople(d); persist({ touch: false }); if (ui.titleId === t.id) refreshAfterFilmo(); }
+    catch (e) { console.warn(e); }
+  }, 0);
+}
+const ytSearch = t => 'https://www.youtube.com/results?search_query=' + encodeURIComponent(`${t.name}${t.year ? ' ' + t.year : ''} ${t.kind === 'series' ? 'series ' : ''}trailer`);
+const ytWatch = k => 'https://www.youtube.com/watch?v=' + encodeURIComponent(k);
 const topCast = titleId => [...new Map(creditsOfTitle(titleId).filter(c => c.role === 'actor').map(c => [c.personId, personById(c.personId)])).values()].filter(Boolean).slice(0, FILMO_TOP);
 const fj = { running: false, done: 0, total: 0, err: '', ctl: null, tried: new Set() };
 function filmoStatusText() {
@@ -1306,9 +1344,9 @@ async function backfillFilmo() {
   for (let i = 0; i < titles.length && !stop; i++) {
     const t = titles[i];
     if (t.externalId.startsWith('tmdb:') && !state.settings.tmdbKey) continue;
-    if (topCast(t.id).every(p => (t.externalId.startsWith('tmdb:') ? p.tmdbId : p.tvmazeId))) continue;
-    txt(`Linking cast: ${t.name} (${i + 1} of ${titles.length})`);
-    try { linkPeople(await fetchDetails(t.externalId)); }
+    if (t.metaAt && topCast(t.id).every(p => (t.externalId.startsWith('tmdb:') ? p.tmdbId : p.tvmazeId))) continue;
+    txt(`Updating: ${t.name} (${i + 1} of ${titles.length})`);
+    try { const d = await fetchDetails(t.externalId); applyMeta(t, d); linkPeople(d); persist({ touch: false }); }
     catch (e) { fails++; if (/reach|offline|Too many|rejected/i.test(e.message)) { txt('Stopped: ' + e.message); stop = true; } }
     await wait(t.externalId.startsWith('tvmaze:') ? TVM_GAP : 40);
   }
@@ -1355,7 +1393,7 @@ function addOnlineTitle(d, { count = 25, status = 'want', rating = 0 } = {}) {
   if (state.titles.some(t => t.externalId === d.externalId)) return { error: 'That title is already in your log.' };
   if (state.titles.some(t => normName(t.name) === normName(d.name) && t.kind === d.kind && t.year === d.year)) return { error: 'That title is already in your log.' };
   const st = STATUS_KEYS.includes(status) ? status : 'want';
-  const t = normTitle({ id: uid(), kind: d.kind, name: d.name, year: d.year, status: st, rating, watchedOn: st === 'watched' ? todayISO() : '', genres: d.genres.join(', '), externalId: d.externalId, createdAt: new Date().toISOString() });
+  const t = normTitle({ id: uid(), kind: d.kind, name: d.name, year: d.year, status: st, rating, watchedOn: st === 'watched' ? todayISO() : '', genres: d.genres.join(', '), externalId: d.externalId, createdAt: new Date().toISOString(), synopsis: d.synopsis, trailer: d.trailer, metaAt: new Date().toISOString() });
   if (!t) return { error: 'That result has no usable title.' };
   state.titles.push(t); rev++;
   const plan = planBulk(selectCredits(d, count), state.people, state.credits, t.id);
@@ -1366,6 +1404,7 @@ function addOnlineTitle(d, { count = 25, status = 'want', rating = 0 } = {}) {
 function attachOnline(titleId, d, count = 25) {
   const t = titleById(titleId); if (!t) return { error: 'Title not found.' };
   if (!t.externalId) t.externalId = d.externalId;
+  applyMeta(t, d);
   const plan = planBulk(selectCredits(d, count), state.people, state.credits, titleId);
   applyPlan(titleId, plan); linkPeople(d); fj.tried.delete('t:' + titleId); autoFilmoForTitle(titleId);
   return { title: t, plan };
@@ -1484,6 +1523,7 @@ function renderTitles() {
 /* ---- Title detail ---- */
 function renderTitle() {
   const t = titleById(ui.titleId), cs = creditsOfTitle(t.id);
+  autoMeta(t);
   const facts = [];
   const fact = (l, v) => { if (v) facts.push(`<dt>${l}</dt><dd>${v}</dd>`); };
   fact('Watched on', fmtWhen(t.watchedOn)); fact('Rewatched', t.rewatchCount ? plural(t.rewatchCount, 'time') : '');
@@ -1501,6 +1541,8 @@ function renderTitle() {
     <section class="card pad">
       <div class="muted" style="font-size:14px">${t.kind === 'series' ? 'TV series' : 'Movie'}${t.year ? ' · ' + t.year : ''}</div>
       <h2 style="margin:2px 0 10px">${esc(t.name)}</h2>
+      ${t.synopsis ? `<p class="synopsis" id="synopsis">${esc(t.synopsis)}</p>` : ''}
+      <div class="btnrow" style="margin:0 0 12px">${t.trailer ? `<a class="btn" id="trailer" href="${esc(ytWatch(t.trailer))}" target="_blank" rel="noopener noreferrer">▶ Watch trailer</a>` : `<a class="btn ghost" id="trailerSearch" href="${esc(ytSearch(t))}" target="_blank" rel="noopener noreferrer">▶ Find trailer on YouTube</a>`}</div>
       <div class="chips" role="group" aria-label="Status">${STATUSES.map(([k, l]) => `<button type="button" class="chip" data-action="set-status" data-s="${k}" aria-pressed="${t.status === k}">${l}</button>`).join('')}</div>
       <div class="btnrow"><button type="button" class="btn" data-action="rate" data-id="${esc(t.id)}">${t.rating > 0 ? '★ ' + fmtR(t.rating) + ' / 10 · Change' : '★ Rate it'}</button>${t.kind === 'series' ? `<button type="button" class="btn" data-action="q-ep" data-id="${esc(t.id)}">+ Episode</button>` : ''}<button type="button" class="btn" data-action="q-again" data-id="${esc(t.id)}">↻ Watched again</button></div>
       ${facts.length ? `<dl class="facts">${facts.join('')}</dl>` : ''}
@@ -1688,9 +1730,9 @@ function renderBackup() {
       <div class="field"><label for="tmdbKey">TMDB key</label><input id="tmdbKey" type="password" value="${esc(state.settings.tmdbKey)}" placeholder="Paste key" autocomplete="off" autocapitalize="none"></div>
       <div class="keyrow"><button type="button" class="btn" data-action="save-key">Save key</button><button type="button" class="btn" data-action="test-key">Test</button></div>
       <div id="testRes" class="note hide" role="status"></div>
-      <p class="hint">Only the search text, a title id or a person id is sent, and only to api.themoviedb.org and api.tvmaze.com. No pictures are loaded.</p></section>
+      <p class="hint">Only the search text, a title id or a person id is sent, and only to api.themoviedb.org and api.tvmaze.com. No pictures are loaded. Trailers open on YouTube only when you tap them.</p></section>
     <section class="card pad" id="filmoCard"><h3>Where do I know them from?</h3>
-      <p>When you add a title online, the top ${FILMO_TOP} cast members’ other work is looked up automatically and matched to your log. Use this once for titles you added before, or to refresh everything.</p>
+      <p>When you add a title online, the top ${FILMO_TOP} cast members’ other work is looked up automatically and matched to your log. Use this once for titles you added before (it also fills in synopses and trailers), or to refresh everything.</p>
       <p class="fine">${plural(state.people.filter(p => p.tmdbId || p.tvmazeId).length, 'person')} linked · ${plural(Object.keys(filmo).length, 'filmography', 'filmographies')} saved on this device (not in backups; they can be fetched again).</p>
       <button type="button" class="btn block" data-action="filmo-all">Look up the cast of every title</button></section>
     <section class="card pad"><h3>Restore</h3><p>Pick a backup file made by this app. You’ll choose whether to replace what’s here or merge it in.</p>
@@ -1941,6 +1983,7 @@ function onlinePreview() {
   onlineBody(`<form id="onPrev" novalidate><h2>${esc(d.name)}${d.year ? ` <span class="muted">(${d.year})</span>` : ''}</h2>
     <div class="muted" style="font-size:14px;margin:4px 0 8px">${d.kind === 'series' ? 'TV series' : 'Movie'} · ${SRC_LABEL[d.source]}${d.genres.length ? ' · ' + esc(d.genres.join(', ')) : ''}</div>
     ${d.overview ? `<p class="hint" style="margin:0 0 8px">${esc(d.overview)}</p>` : ''}
+    ${d.trailer ? `<p style="margin:0 0 8px"><a href="${esc(ytWatch(d.trailer))}" target="_blank" rel="noopener noreferrer">▶ Watch trailer</a></p>` : ''}
     <div class="note" id="onCounts"></div>
     <div class="stack" style="gap:10px;margin-top:8px">
     <div class="field"><label for="onCount">Cast to add</label><select id="onCount" name="count"><option value="10">Top 10</option><option value="25" selected>Top 25</option><option value="all">All (${d.cast.length})</option></select></div>
