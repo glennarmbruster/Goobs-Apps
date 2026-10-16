@@ -1545,10 +1545,11 @@ function filmoCardHTML(p) {
     const t = matchFilmoItem(it, mx), yr = it.y || it.ay;
     const sub = [it.k === 'series' ? 'TV' : 'Movie', it.c ? 'as ' + it.c : '', it.e ? plural(it.e, 'episode') : ''].filter(Boolean).join(' · ');
     const head = `<div class="row-main"><div class="row-title">${esc(it.n)}${yr ? ` <span class="muted" style="font-weight:500">(${yr})</span>` : ''}</div><div class="row-sub">${esc(sub)}</div></div>`;
-    return t ? `<div class="row" data-action="open-title" data-id="${esc(t.id)}" role="button" tabindex="0">${head}${statusBadge(t.status)}</div>` : `<div class="row static">${head}</div>`;
+    return t ? `<div class="row" data-action="open-title" data-id="${esc(t.id)}" role="button" tabindex="0">${head}${statusBadge(t.status)}</div>`
+      : `<div class="row" data-action="filmo-add" data-x="${esc(it.x)}" role="button" tabindex="0" aria-label="Add ${esc(it.n)} to your log">${head}<span class="badge acc">+ Add</span></div>`;
   }).join('');
   return `<details class="card eg" id="filmo"${f.items.length <= 30 ? ' open' : ''}><summary>Everything they’ve been in <span class="fine">· ${f.items.length}</span></summary>${rows || '<p class="muted pad">Nothing listed online.</p>'}
-    <div class="pad"><p class="fine" id="filmoStatus" role="status">${esc(filmoStatusText())}</p><p class="fine">From ${tvm ? 'TVMaze (TV only; add a TMDB key in Backup for movies)' : 'TMDB'}, updated ${esc(fmtWhen(f.at.slice(0, 10)) || f.at.slice(0, 10))}. Talk shows and appearances as themselves are left out.</p>
+    <div class="pad"><p class="fine" id="filmoStatus" role="status">${esc(filmoStatusText())}</p><p class="fine">From ${tvm ? 'TVMaze (TV only; add a TMDB key in Backup for movies)' : 'TMDB'}, updated ${esc(fmtWhen(f.at.slice(0, 10)) || f.at.slice(0, 10))}. Tap one you haven’t logged to add it. Talk shows and appearances as themselves are left out.</p>
     <button type="button" class="btn small ghost" data-action="filmo-person" data-id="${esc(p.id)}"${fj.running ? ' disabled' : ''}>Refresh from online</button></div></details>`;
 }
 
@@ -2095,6 +2096,7 @@ view.addEventListener('click', e => {
     case 'filmo-refresh': runFilmoJob(topCast(id), { force: true }).then(r => { if (r && r.busy) toast('Already looking something up.'); }); paintFilmo(); break;
     case 'filmo-person': { const p = personById(id); if (p) runFilmoJob([p], { force: true }); break; }
     case 'filmo-all': backfillFilmo(); break;
+    case 'filmo-add': { const x = el.dataset.x; if (!extIdOk(x)) break; const ex = state.titles.find(t => t.externalId === x); if (ex) openTitle(ex.id); else onlineDialog({ extId: x }); break; }
     case 'edit-person': personDialog(id); break;
     case 'del-person': delPerson(id); break;
     case 'add-p': personDialog(); break;
