@@ -27,6 +27,18 @@ a.app span{color:var(--muted);font-size:13px;line-height:1.35;display:block}
 #pick label{display:flex;gap:10px;align-items:center;padding:6px 0;font-size:16px}
 #pick input{width:20px;height:20px}
 .tip{font-size:14px;margin-top:22px}
+/* rearrange mode */
+#apps.editing a.app{touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;cursor:grab;position:relative;animation:wig .28s ease-in-out infinite alternate}
+#apps.editing a.app:nth-child(2n){animation-delay:-.14s}
+#apps.editing a.app,#apps.editing img{-webkit-user-drag:none}
+#apps.editing a.app::after{content:"⠿";position:absolute;top:10px;right:12px;font-size:20px;color:var(--muted)}
+#apps.editing a.app.dragging{animation:none;z-index:5;cursor:grabbing;box-shadow:0 10px 30px rgba(0,0,0,.25);opacity:.95;pointer-events:none}
+@keyframes wig{from{transform:rotate(-.6deg)}to{transform:rotate(.6deg)}}
+@media (prefers-reduced-motion:reduce){#apps.editing a.app{animation:none}}
+#editbar{display:none;position:sticky;top:0;z-index:6;background:var(--bg);padding:10px 0;margin:-10px 0 6px;align-items:center;gap:12px}
+#editbar.on{display:flex}
+#editbar span{flex:1;color:var(--muted);font-size:14px}
+#editbar button{font:inherit;font-weight:700;border:0;border-radius:999px;padding:8px 18px;background:var(--ink);color:var(--bg);cursor:pointer}
 </style>
 </head>
 <body>
@@ -34,6 +46,7 @@ a.app span{color:var(--muted);font-size:13px;line-height:1.35;display:block}
   <img src="icon-192.png" alt="" style="width:72px;height:72px;display:block">
   <h1>Goobs Apps</h1>
   <p>Pick an app. Each one installs separately to your home screen and works offline.</p>
+  <div id="editbar"><span>Drag apps to put them in the order you want.</span><button type="button" id="done">Done</button></div>
   <div id="apps">
   <a class="app" data-k="bills" href="bills/"><img src="bills/icon-192.png" alt=""><div><b>Bills</b><span>What's due, mark it paid, it rolls to the next date</span></div></a>
   <a class="app" data-k="money" href="money/"><img src="money/icon-192.png" alt=""><div><b>Money</b><span>Retirement Monte Carlo planner and monthly budget</span></div></a>
@@ -55,12 +68,13 @@ a.app span{color:var(--muted);font-size:13px;line-height:1.35;display:block}
   <a class="app" data-k="sports" href="sports/"><img src="sports/icon-192.png" alt=""><div><b>Sports</b><span>Schedules, standings and rivalry records</span></div></a>
   <a class="app" data-k="houston" href="houston/"><img src="houston/icon-192.png" alt=""><div><b>Houston Events</b><span>Things to do around Houston, with shared picks</span></div></a>
   </div>
-  <div class="bar"><button id="cust" type="button">Choose which apps to show</button><button id="all" type="button" hidden>Show all apps</button></div>
+  <div class="bar"><button id="arr" type="button">Rearrange apps</button><button id="cust" type="button">Choose which apps to show</button><button id="reord" type="button" hidden>Reset order</button><button id="all" type="button" hidden>Show all apps</button></div>
   <div id="pick"></div>
 </main>
 <script>
 (function(){
-  var KEY='goobs-launcher-apps', PRESETS={cindy:['travel','grocery','todo','recipes','household','sousvide']}, OLD_PRESETS=[['travel','grocery','todo','recipes','household']], ALIAS={trips:'travel','to-do':'todo',work:'worklog'};
+  var pick=document.getElementById('pick');
+  var KEY='goobs-launcher-apps', PRESETS={cindy:['travel','grocery','todo','recipes','household','sousvide','storage','watchlog']}, OLD_PRESETS=[['travel','grocery','todo','recipes','household'],['travel','grocery','todo','recipes','household','sousvide']], ALIAS={trips:'travel','to-do':'todo',work:'worklog'};
   var grid=document.getElementById('apps'), cards={}, order=[];
   [].forEach.call(grid.children,function(a){cards[a.dataset.k]=a;order.push(a.dataset.k);});
   function clean(list){var out=[];(list||[]).forEach(function(k){k=String(k).trim().toLowerCase();k=ALIAS[k]||k;if(cards[k]&&out.indexOf(k)<0)out.push(k);});return out;}
@@ -72,15 +86,65 @@ a.app span{color:var(--muted);font-size:13px;line-height:1.35;display:block}
   if(shown&&shown.length)save(shown);else{shown=load();
     /* a phone still on an older preset (not customised) moves to the current one */
     if(shown&&OLD_PRESETS.some(function(o){return o.join()===shown.join();})){shown=PRESETS.cindy.slice();save(shown);}}
+  /* custom order (set by dragging) is kept apart from which apps show, so a preset link never undoes it */
+  var OKEY='goobs-launcher-order';
+  function loadOrder(){try{var v=JSON.parse(localStorage.getItem(OKEY)||'null');return Array.isArray(v)?clean(v):null;}catch(e){return null;}}
+  function saveOrder(v){try{if(v)localStorage.setItem(OKEY,JSON.stringify(v));else localStorage.removeItem(OKEY);}catch(e){}}
+  var mine=loadOrder();
+  function arrange(list){if(!mine||!mine.length)return list;var pos=function(k){var i=mine.indexOf(k);return i<0?1e4+list.indexOf(k):i;};return list.slice().sort(function(a,b){return pos(a)-pos(b);});}
   function render(){
-    var list=shown&&shown.length?shown:order;
+    var list=arrange(shown&&shown.length?shown:order);
     order.forEach(function(k){cards[k].hidden=true;});
     list.forEach(function(k){cards[k].hidden=false;grid.appendChild(cards[k]);});
     document.getElementById('all').hidden=!(shown&&shown.length);
     document.getElementById('cust').textContent=shown&&shown.length?'Change which apps show':'Choose which apps to show';
+    document.getElementById('reord').hidden=!(mine&&mine.length);
   }
-  var pick=document.getElementById('pick');
+  /* ---- rearrange: pointer-based drag so it works with a finger on iPhone as well as a mouse ---- */
+  var editing=false, drag=null, bar=document.getElementById('editbar');
+  function setEditing(on){editing=on;[].forEach.call(grid.querySelectorAll('a.app,img'),function(x){x.draggable=!on;});grid.classList.toggle('editing',on);bar.classList.toggle('on',on);document.getElementById('arr').hidden=on;if(on)pick.style.display='none';}
+  function visibleCards(){return [].filter.call(grid.children,function(a){return !a.hidden;});}
+  function commitOrder(){
+    var vis=visibleCards().map(function(a){return a.dataset.k;}), prev=mine&&mine.length?mine:order;
+    /* the apps you see, in the order you dragged them, then everything else */
+    mine=vis.concat(prev.concat(order).filter(function(k,i,all){return vis.indexOf(k)<0&&all.indexOf(k)===i;})); saveOrder(mine); document.getElementById('reord').hidden=false;
+  }
+  function place(e){
+    drag.el.style.transform='';
+    var r=drag.el.getBoundingClientRect();
+    drag.el.style.transform='translate('+(e.clientX-drag.ox-r.left)+'px,'+(e.clientY-drag.oy-r.top)+'px)';
+  }
+  grid.addEventListener('pointerdown',function(e){
+    if(!editing||drag||(e.pointerType==='mouse'&&e.button!==0))return;
+    var a=e.target.closest('a.app'); if(!a)return;
+    e.preventDefault();
+    var r=a.getBoundingClientRect();
+    drag={el:a,id:e.pointerId,ox:e.clientX-r.left,oy:e.clientY-r.top};
+    a.classList.add('dragging'); place(e);
+  });
+  window.addEventListener('pointermove',function(e){
+    if(!drag||e.pointerId!==drag.id)return;
+    e.preventDefault();
+    var under=document.elementFromPoint(e.clientX,e.clientY), t=under&&under.closest&&under.closest('a.app');
+    if(t!==drag.last)drag.last=null;
+    /* swap once per card entered, so a card that just slid under the finger doesn't flip back */
+    if(t&&t!==drag.el&&t!==drag.last&&!t.hidden&&t.parentNode===grid){
+      drag.last=t;
+      var cs=visibleCards(), from=cs.indexOf(drag.el), to=cs.indexOf(t);
+      grid.insertBefore(drag.el,from<to?t.nextSibling:t);
+    }
+    if(e.clientY<70)window.scrollBy(0,-12);else if(e.clientY>innerHeight-70)window.scrollBy(0,12);
+    place(e);
+  },{passive:false});
+  function endDrag(e){if(!drag||(e&&e.pointerId!==drag.id))return;drag.el.classList.remove('dragging');drag.el.style.transform='';drag=null;commitOrder();}
+  window.addEventListener('pointerup',endDrag); window.addEventListener('pointercancel',endDrag);
+  grid.addEventListener('click',function(e){if(editing){e.preventDefault();}},true);
+  grid.addEventListener('contextmenu',function(e){if(editing)e.preventDefault();});
+  document.getElementById('arr').onclick=function(){setEditing(true);};
+  document.getElementById('done').onclick=function(){setEditing(false);};
+  document.getElementById('reord').onclick=function(){mine=null;saveOrder(null);render();};
   document.getElementById('cust').onclick=function(){
+    setEditing(false);
     if(pick.style.display==='block'){pick.style.display='none';return;}
     var cur=shown&&shown.length?shown:order;
     pick.innerHTML='<b>Show these apps on this phone</b>'+order.map(function(k){return '<label><input type="checkbox" value="'+k+'"'+(cur.indexOf(k)>-1?' checked':'')+'>'+cards[k].querySelector('b').textContent+'</label>';}).join('')+'<button type="button" id="ok" style="margin-top:8px;font:inherit;padding:8px 16px">Done</button>';
