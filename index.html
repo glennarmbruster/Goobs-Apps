@@ -11,7 +11,7 @@
 :root{--bg:#f5f4ef;--card:#fff;--ink:#1b2420;--muted:#66736d;--line:#e2e0d6;color-scheme:light dark}
 @media (prefers-color-scheme:dark){:root{--bg:#0e1311;--card:#171f1c;--ink:#e7eeeb;--muted:#97a69f;--line:#27332e}}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:max(24px,env(safe-area-inset-top)) 16px 40px}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:max(16px,env(safe-area-inset-top)) 16px 40px}
 main{max-width:640px;margin:0 auto}
 #apps{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 h1{font-size:26px;margin:24px 0 4px}
@@ -23,6 +23,7 @@ a.app span{color:var(--muted);font-size:13px;line-height:1.35;display:block}
 .bar{margin-top:18px;font-size:14px;display:flex;gap:16px;flex-wrap:wrap}
 .bar button{font:inherit;background:none;border:0;padding:0;color:var(--muted);text-decoration:underline;cursor:pointer}
 [hidden]{display:none!important}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;margin:0}
 #pick{display:none;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-top:12px}
 #pick label{display:flex;gap:10px;align-items:center;padding:6px 0;font-size:16px}
 #pick input{width:20px;height:20px}
@@ -43,9 +44,7 @@ a.app span{color:var(--muted);font-size:13px;line-height:1.35;display:block}
 </head>
 <body>
 <main>
-  <img src="icon-192.png" alt="" style="width:72px;height:72px;display:block">
-  <h1>Goobs Apps</h1>
-  <p>Pick an app. Each one installs separately to your home screen and works offline.</p>
+  <h1 class="sr">Goobs Apps</h1>
   <div id="editbar"><span>Drag apps to put them in the order you want.</span><button type="button" id="done">Done</button></div>
   <div id="apps">
   <a class="app" data-k="bills" href="bills/"><img src="bills/icon-192.png" alt=""><div><b>Bills</b><span>What's due, mark it paid, it rolls to the next date</span></div></a>
