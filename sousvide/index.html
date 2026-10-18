@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Sous Vide</title>
-<meta name="description" content="Steakhouse-style steak and sous vide lab: time and temperature calculator, sear plan, low-calorie swaps, saved recipes and a cook log. Data stays on your device.">
+<title>Cooking Temps</title>
+<meta name="description" content="Safe and recommended cooking temperatures for meat, poultry, game and seafood, plus a sous vide lab: time and temperature calculator, sear plan, low-calorie swaps, saved recipes and a cook log. Data stays on your device.">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -12,7 +12,7 @@
 <meta name="theme-color" content="#1a110d" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Sous Vide">
+<meta name="apple-mobile-web-app-title" content="Cooking Temps">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <style>
 :root{
@@ -195,15 +195,25 @@ body.cooking #timerbar{bottom:calc(86px + env(safe-area-inset-bottom))}
 @keyframes pulse{50%{opacity:.75}}
 body.cooking nav.tabs{display:none}
 details.ingd{margin-top:12px}
+.tchips{margin:0 0 12px}
+.titem h3{margin:0;font-size:18px}.thead{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}
+.tlab{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.tsafe{margin-top:8px;display:flex;flex-direction:column;gap:2px}.tsafe b{font-size:17px}
+.trec{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px;padding:3px 0}.trec .tl{min-width:0}.trec b{font-size:17px;font-variant-numeric:tabular-nums}.trec .tt{flex-basis:100%;font-size:13px;color:var(--muted)}
+details.tdet{flex-basis:100%}details.tdet>summary{list-style:none;display:inline-flex;align-items:center}details.tdet>summary::-webkit-details-marker{display:none}
+details.tdet[open]>summary{background:var(--accent-soft,#f3e8e2)}
+.tbody{margin-top:10px;font-size:15px;line-height:1.45}.tbody h4{margin:12px 0 2px;font-size:15px}.tbody p{margin:0 0 6px}.tnote{font-weight:600}
+.htbl{width:100%;border-collapse:collapse;margin:8px 0 4px;font-size:14px}.htbl th,.htbl td{text-align:left;padding:5px 6px;border-bottom:1px solid var(--line)}.htbl th{color:var(--muted);font-weight:700}
 details.ingd summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;align-items:center}
 </style>
 </head>
 <body>
-<header class="top"><div class="wrap"><div class="grow"><h1 id="title">Sous Vide</h1><div class="sub" id="sub"></div></div><button type="button" class="btn small primary hide" id="addBtn">+ Add</button></div></header>
+<header class="top"><div class="wrap"><div class="grow"><h1 id="title">Cooking Temps</h1><div class="sub" id="sub"></div></div><button type="button" class="btn small primary hide" id="addBtn">+ Add</button></div></header>
 <main class="wrap" id="view"></main>
 <div id="timerbar" aria-live="polite"></div>
 <nav class="tabs" aria-label="Sections"><div class="wrap">
-  <button type="button" data-tab="plan"><span class="ico">🥩</span>Plan</button>
+  <button type="button" data-tab="temps"><span class="ico">🌡️</span>Temps</button>
+  <button type="button" data-tab="plan"><span class="ico">🥩</span>Sous vide</button>
   <button type="button" data-tab="recipes"><span class="ico">📖</span>Recipes</button>
   <button type="button" data-tab="log"><span class="ico">📝</span>Log</button>
   <button type="button" data-tab="settings"><span class="ico">⚙️</span>Settings</button>
@@ -1147,7 +1157,7 @@ const commit = () => { persist(); render(); };
    UI state, timers, helpers
    ===================================================================== */
 const view = $('#view');
-const ui = { tab: 'plan', recipe: null, scale: null, q: '', fav: false, cutFilter: '', cook: null };
+const ui = { tab: 'temps', tq: '', tg: '', recipe: null, scale: null, q: '', fav: false, cutFilter: '', cook: null };
 let timers = [], timerIv = null, actx = null;
 
 function primeAudio() {
@@ -1370,11 +1380,136 @@ function renderCook() {
     <div class="cookbar"><div class="wrap"><button type="button" class="btn" data-action="cook-prev"${c.i === 0 ? ' disabled' : ''}>‹ Back</button><button type="button" class="btn primary" data-action="cook-next">${last ? 'Done' : 'Next ›'}</button></div></div>`;
 }
 
-const SUBS = { plan: 'Plan a cook', recipes: 'Saved recipes', log: 'Cook log', settings: 'Settings and backup' };
+/* =====================================================================
+   COOKING TEMPS: USDA safe minimums next to what cooks recommend, with the "why" behind each.
+   Safe numbers: FoodSafety.gov "Safe Minimum Internal Temperatures" (USDA/FSIS/FDA).
+   Time-at-temperature holds: USDA FSIS time-temperature tables (poultry, 7-log Salmonella; 10% fat column)
+   and the FSIS / FDA Food Code roast-beef table. Recommended numbers are common culinary practice.
+   ===================================================================== */
+const TEMP_GROUPS = [['beef', 'Beef, lamb & veal'], ['pork', 'Pork'], ['poultry', 'Poultry'], ['game', 'Game'], ['fish', 'Fish'], ['shell', 'Shellfish'], ['other', 'Eggs & leftovers']];
+/* Equivalent "same kill" holds. 165°F (poultry) and 145°F + rest (whole beef) are the instant versions. */
+const HOLD_POULTRY = [[165, 'under 10 sec', 'under 10 sec'], [160, '16 sec', '27 sec'], [155, '52 sec', '1.3 min'], [150, '3.5 min', '4.3 min'], [145, '11.3 min', '12.4 min'], [140, '32 min', '31.5 min']];
+const HOLD_BEEF = [[145, '4 min'], [140, '12 min'], [135, '36 min'], [130, '112 min']];
+const WHY = {
+  whole: ['Why the middle can be pink', 'On an intact steak, chop or roast, bacteria live on the outside surface. The inside of a whole muscle is essentially sterile. Searing or roasting the outside kills what is there, so the center can stay pink. USDA’s 145°F with a 3-minute rest is a conservative one-size number for everyone.'],
+  mech: ['One exception', 'Steaks labeled “mechanically tenderized” or “needle tenderized” (common in some grocery and restaurant beef) have had blades push surface bacteria into the middle. Cook those to at least 145°F.'],
+  ground: ['Why ground meat is different', 'Grinding mixes the outside surface, where bacteria such as E. coli O157:H7 live, all through the meat. The middle is no longer protected, so ground meat needs to reach the safe temperature all the way through, even when a steak from the same animal is fine pink. Color is not a test: a burger can brown before it is safe. Use a thermometer.'],
+  time: ['Safety is temperature AND time', 'The USDA numbers are “instant” numbers: the point where bacteria die within seconds. Lower temperatures kill the same bacteria, just more slowly. USDA’s own food-processing tables list how long each temperature must be held for the same kill (table below). 165°F is not the only safe temperature for chicken. It is the temperature where it is safe instantly.'],
+  timeHow: ['How to use the hold times', 'Pull the meat at the lower temperature and rest it covered. A thick breast usually stays near its peak for a few minutes, but to be sure, leave the probe in and confirm it stays at or above that temperature for the listed time. Sous vide makes this exact: the food sits at the set temperature for far longer than the table requires.'],
+  dark: ['Why dark meat goes hotter than “safe”', 'Thighs, legs and wings are safe at 165°F but still a bit chewy there. Their connective tissue melts between about 175°F and 190°F, which makes them tender and juicy. Going higher is about texture, not safety.'],
+  lowslow: ['Why 195–205°F', 'Tough cuts are safe much lower, but their collagen needs time around 195–205°F to turn into gelatin so the meat pulls apart or slices tender. This is about texture, not safety. Probe-tender (slides in like butter) matters more than the exact number.'],
+  pork: ['Why pork can be a little pink', 'USDA lowered whole-cut pork from 160°F to 145°F with a 3-minute rest in 2011. Trichinella has been all but eliminated from U.S. commercial pork, and it dies at 137°F anyway. A blush of pink at 145°F is normal and safe.'],
+  fish: ['About fish', 'USDA says 145°F or until the flesh flakes. Most cooks stop well below that because fish dries out fast. The main concern with undercooked fish is parasites, not surface bacteria. Fish that was commercially frozen (FDA guidance: −4°F for 7 days) has had parasites killed, and farm-raised salmon is low-risk. Buy from a reputable source and keep it cold.'],
+  shell: ['About shrimp, lobster, crab and scallops', 'USDA gives no number for these: cook until the flesh is pearly or white and opaque. They overcook quickly and turn rubbery, so take them off as soon as they are opaque.'],
+  bivalve: ['About clams, mussels and oysters', 'Cook until the shells open, and throw away any that stay closed. Raw or lightly cooked oysters can carry Vibrio bacteria, which is dangerous for people with liver disease or weakened immune systems.'],
+  game: ['About venison and other game', 'USDA uses 160°F for venison and rabbit, wild or farm-raised. That covers field-dressing contamination and parasites such as Toxoplasma. Hunters and chefs usually serve venison steaks medium-rare because it is so lean that it turns tough and livery past medium. Cleanly handled, intact steaks follow the same surface logic as beef, but ground venison always goes to 160°F. Chronic wasting disease (CWD) is not destroyed by cooking: use your state’s CWD testing if you hunt in an affected area.'],
+  trich: ['Always 160°F', 'Wild boar, feral hogs and bear can carry Trichinella and other parasites that commercial pork no longer does. Cook them to 160°F all the way through.'],
+  duck: ['About duck and goose breast', 'USDA counts duck as poultry (165°F), but the breast is a red-meat muscle and is almost always served medium-rare in restaurants. Most of the Salmonella risk is on the skin and surface, which gets thoroughly cooked when you render the skin. It is still below USDA guidance: a reasonable choice for healthy adults, not for higher-risk people.'],
+  game_bird: ['About quail and other small birds', 'USDA treats them as poultry (165°F). Chefs often serve quail slightly pink at the bone because the tiny breasts dry out fast. Same reasoning as duck: below USDA guidance, a judgment call for healthy adults.'],
+  eggs: ['About eggs', 'Runny yolks carry a small Salmonella risk. Pasteurized-in-the-shell eggs remove it and cook the same, so use them for soft yolks, homemade mayo or Caesar dressing if anyone at the table is higher-risk.'],
+  left: ['About leftovers', 'Reheating to 165°F kills bacteria that grew in storage, but it cannot undo toxins some bacteria leave behind. Refrigerate cooked food within 2 hours (1 hour above 90°F) and eat leftovers within 3–4 days.'],
+  carry: ['Carryover', 'Thick meat keeps rising about 3–10°F after it comes off the heat (more for big roasts, less for thin cuts). The recommended numbers are where it should end up; pull a few degrees early.'],
+  risk: ['Who should stick to the USDA numbers', 'Pregnant women, young children, adults over 65 and anyone with a weakened immune system should use the USDA safe minimums, not the lower recommended ones.']
+};
+/* sF: USDA safe minimum (°F) or null with sT text; rest: minutes; rec: [{l: label, lo, hi (null = and up), t: text}] ; why: WHY keys; holds: 'poultry'|'beef'; sv: Plan cut key */
+const TEMPS = [
+  { id: 'steak', g: 'beef', n: 'Beef steaks', a: 'ribeye strip filet sirloin t-bone porterhouse flank skirt tri-tip picanha', sF: 145, rest: 3, rec: [{ l: 'Rare', lo: 120, hi: 125 }, { l: 'Medium-rare', lo: 130, hi: 135 }, { l: 'Medium', lo: 140, hi: 145 }, { l: 'Medium-well', lo: 150, hi: 155 }, { l: 'Well done', lo: 160, hi: null }], why: ['whole', 'mech', 'time', 'carry', 'risk'], holds: 'beef', sv: 'ribeye' },
+  { id: 'roast', g: 'beef', n: 'Beef roasts (prime rib, tenderloin)', a: 'prime rib standing rib roast tenderloin roast beef top round', sF: 145, rest: 3, rec: [{ l: 'Medium-rare', lo: 130, hi: 135, t: 'pull at 120–125°F; big roasts climb 5–10°F' }, { l: 'Medium', lo: 140, hi: 145 }], why: ['whole', 'time', 'carry', 'risk'], holds: 'beef', sv: 'filet' },
+  { id: 'brisket', g: 'beef', n: 'Brisket, chuck roast, short ribs', a: 'pot roast smoked brisket beef ribs braise', sF: 145, rest: 3, rec: [{ l: 'Tender (slice or pull)', lo: 200, hi: 205 }], why: ['lowslow'] },
+  { id: 'gbeef', g: 'beef', n: 'Ground beef, burgers, meatloaf', a: 'hamburger meatballs ground chuck', sF: 160, rec: [{ l: 'Cooked through', lo: 160, hi: 165 }], why: ['ground', 'risk'], note: 'Meatloaf or meatballs that contain ground poultry: 165°F.' },
+  { id: 'lamb', g: 'beef', n: 'Lamb chops, rack, leg', a: 'lamb rack lamb leg', sF: 145, rest: 3, rec: [{ l: 'Medium-rare', lo: 130, hi: 135 }, { l: 'Medium', lo: 140, hi: 145 }], why: ['whole', 'time', 'carry', 'risk'], holds: 'beef', sv: 'lamb' },
+  { id: 'lambsh', g: 'beef', n: 'Lamb shoulder (braised, pulled)', a: 'lamb shank', sF: 145, rest: 3, rec: [{ l: 'Pull-apart tender', lo: 195, hi: 205 }], why: ['lowslow'] },
+  { id: 'glamb', g: 'beef', n: 'Ground lamb, ground veal', a: 'kofta lamb burger', sF: 160, rec: [{ l: 'Cooked through', lo: 160, hi: 165 }], why: ['ground', 'risk'] },
+  { id: 'veal', g: 'beef', n: 'Veal chops and roasts', a: 'veal', sF: 145, rest: 3, rec: [{ l: 'Medium', lo: 135, hi: 140, t: 'veal is lean; past 145°F it dries out' }], why: ['whole', 'time', 'carry', 'risk'], holds: 'beef' },
+  { id: 'bison', g: 'beef', n: 'Bison steaks and roasts', a: 'buffalo', sF: 145, rest: 3, rec: [{ l: 'Medium-rare', lo: 125, hi: 135, t: 'leaner than beef; cook a little less' }], why: ['whole', 'time', 'risk'], holds: 'beef' },
+  { id: 'chop', g: 'pork', n: 'Pork chops, loin, tenderloin', a: 'pork loin pork tenderloin', sF: 145, rest: 3, rec: [{ l: 'Juicy, faint pink', lo: 145, hi: 145, t: 'pull at about 140°F; it reaches 145°F while resting' }], why: ['pork', 'whole', 'carry'], sv: 'porkchop' },
+  { id: 'pksteak', g: 'pork', n: 'Pork steaks (shoulder / blade)', a: 'blade steak shoulder steak', sF: 145, rest: 3, rec: [{ l: 'Grilled', lo: 160, hi: 175, t: 'marbled shoulder meat is better cooked past 145°F' }, { l: 'Braised or smoked tender', lo: 185, hi: 195 }], why: ['pork', 'lowslow'] },
+  { id: 'pulled', g: 'pork', n: 'Pulled pork (shoulder / butt)', a: 'boston butt pork shoulder carnitas', sF: 145, rest: 3, rec: [{ l: 'Pulls apart', lo: 195, hi: 205 }], why: ['lowslow'] },
+  { id: 'ribs', g: 'pork', n: 'Pork ribs', a: 'baby back spare ribs st louis', sF: 145, rest: 3, rec: [{ l: 'Tender, bends and cracks', lo: 195, hi: 203 }], why: ['lowslow'] },
+  { id: 'gpork', g: 'pork', n: 'Ground pork, fresh sausage', a: 'bratwurst italian sausage breakfast sausage chorizo', sF: 160, rec: [{ l: 'Cooked through', lo: 160, hi: 165 }], why: ['ground'] },
+  { id: 'ham', g: 'pork', n: 'Ham', a: 'spiral ham fresh ham', sF: 145, rest: 3, rec: [{ l: 'Fresh (raw) ham', lo: 145, hi: 150 }, { l: 'Precooked ham, reheated', lo: 140, hi: null, usda: true, t: '140°F if packaged in a USDA-inspected plant; otherwise 165°F' }], why: ['pork'] },
+  { id: 'cbreast', g: 'poultry', n: 'Chicken breasts', a: 'chicken breast boneless skinless', sF: 165, rec: [{ l: 'Juicy, held', lo: 150, hi: 155, t: 'hold 150°F for 3.5 min or 155°F for 1 min (see Details)' }, { l: 'Sous vide', lo: 145, hi: 150, t: 'safe after the full cook time' }], why: ['time', 'timeHow', 'risk'], holds: 'poultry', sv: 'chickenbreast' },
+  { id: 'cthigh', g: 'poultry', n: 'Chicken thighs and legs', a: 'drumsticks chicken leg quarters', sF: 165, rec: [{ l: 'Tender', lo: 175, hi: 185 }], why: ['dark'], sv: 'chickenthigh' },
+  { id: 'wings', g: 'poultry', n: 'Chicken wings', a: 'wings drumettes flats', sF: 165, rec: [{ l: 'Tender, crisp', lo: 175, hi: 190 }], why: ['dark'] },
+  { id: 'wholechix', g: 'poultry', n: 'Whole chicken, Cornish hen', a: 'roast chicken rotisserie spatchcock cornish game hen', sF: 165, rec: [{ l: 'Breast', lo: 155, hi: 160, t: 'held, see Details' }, { l: 'Thigh', lo: 175, hi: 185 }], why: ['time', 'timeHow', 'dark', 'risk'], holds: 'poultry', note: 'USDA: 165°F in the thickest part of the breast, thigh and wing; stuffing inside the bird also 165°F.' },
+  { id: 'gchix', g: 'poultry', n: 'Ground chicken, chicken sausage', a: 'chicken burger chicken meatballs', sF: 165, rec: [{ l: 'Cooked through', lo: 165, hi: null }], why: ['ground'], note: 'No lower option: ground poultry has surface bacteria mixed all the way through.' },
+  { id: 'tbreast', g: 'poultry', n: 'Turkey breast', a: 'turkey breast roast', sF: 165, rec: [{ l: 'Juicy, held', lo: 155, hi: 160, t: 'hold 155°F for 1.3 min or 150°F for 4.3 min' }], why: ['time', 'timeHow', 'carry', 'risk'], holds: 'poultry' },
+  { id: 'tthigh', g: 'poultry', n: 'Turkey thighs and legs', a: 'turkey drumsticks', sF: 165, rec: [{ l: 'Tender', lo: 175, hi: 180 }], why: ['dark'] },
+  { id: 'wholeturkey', g: 'poultry', n: 'Whole turkey', a: 'thanksgiving roast turkey smoked turkey', sF: 165, rec: [{ l: 'Breast', lo: 155, hi: 160, t: 'held' }, { l: 'Thigh', lo: 175, hi: 180 }], why: ['time', 'timeHow', 'dark', 'carry', 'risk'], holds: 'poultry', note: 'Stuffing cooked inside the bird must reach 165°F; it is easier and safer to bake it separately.' },
+  { id: 'gturkey', g: 'poultry', n: 'Ground turkey', a: 'turkey burger turkey meatloaf', sF: 165, rec: [{ l: 'Cooked through', lo: 165, hi: null }], why: ['ground'], note: 'No lower option: ground poultry has surface bacteria mixed all the way through.' },
+  { id: 'duckbreast', g: 'poultry', n: 'Duck breast, goose breast', a: 'magret', sF: 165, rec: [{ l: 'Medium-rare (restaurant standard)', lo: 130, hi: 135 }, { l: 'Medium', lo: 140, hi: 145 }], why: ['duck', 'risk'] },
+  { id: 'duckleg', g: 'poultry', n: 'Duck legs, whole duck', a: 'confit roast duck', sF: 165, rec: [{ l: 'Tender (confit, braise, roast)', lo: 175, hi: 185 }], why: ['dark'] },
+  { id: 'quail', g: 'poultry', n: 'Quail, squab, pheasant', a: 'dove partridge game birds', sF: 165, rec: [{ l: 'Quail / squab, slightly pink', lo: 145, hi: 155 }, { l: 'Pheasant breast', lo: 155, hi: 160, t: 'held, like chicken' }], why: ['game_bird', 'time', 'risk'], holds: 'poultry' },
+  { id: 'venison', g: 'game', n: 'Venison steaks, backstrap, elk', a: 'deer backstrap tenderloin elk moose antelope', sF: 160, rec: [{ l: 'Medium-rare (common practice)', lo: 125, hi: 135 }], why: ['game', 'whole', 'risk'] },
+  { id: 'venroast', g: 'game', n: 'Venison roast, shoulder, shanks', a: 'deer roast elk roast braise', sF: 160, rec: [{ l: 'Braised tender', lo: 195, hi: 205 }], why: ['game', 'lowslow'] },
+  { id: 'gven', g: 'game', n: 'Ground venison, venison sausage', a: 'deer burger elk burger', sF: 160, rec: [{ l: 'Cooked through', lo: 160, hi: 165 }], why: ['ground', 'game'] },
+  { id: 'boar', g: 'game', n: 'Wild boar, feral hog, bear', a: 'wild pig hog bear', sF: 160, rec: [{ l: 'Cooked through', lo: 160, hi: null }], why: ['trich'] },
+  { id: 'rabbit', g: 'game', n: 'Rabbit', a: 'hare', sF: 160, rec: [{ l: 'Loin', lo: 160, hi: null }, { l: 'Legs, braised', lo: 175, hi: 185 }], why: ['game', 'dark'] },
+  { id: 'salmon', g: 'fish', n: 'Salmon, arctic char', a: 'salmon char steelhead', sF: 145, rec: [{ l: 'Medium-rare, silky', lo: 120, hi: 125 }, { l: 'Medium, flaky', lo: 130, hi: 135 }], why: ['fish', 'risk'], sv: 'salmon' },
+  { id: 'tuna', g: 'fish', n: 'Tuna steaks', a: 'ahi yellowfin seared tuna', sF: 145, rec: [{ l: 'Seared rare', lo: 110, hi: 115, t: 'sushi-grade only' }, { l: 'Medium-rare', lo: 120, hi: 125 }], why: ['fish', 'risk'] },
+  { id: 'whitefish', g: 'fish', n: 'Cod, haddock, tilapia, catfish', a: 'pollock flounder sole snapper grouper', sF: 145, rec: [{ l: 'Just flakes', lo: 140, hi: 145 }], why: ['fish'] },
+  { id: 'firmfish', g: 'fish', n: 'Halibut, sea bass, swordfish, mahi-mahi', a: 'halibut chilean sea bass swordfish mahi', sF: 145, rec: [{ l: 'Moist, just opaque', lo: 130, hi: 135 }], why: ['fish', 'risk'] },
+  { id: 'trout', g: 'fish', n: 'Trout, redfish, speckled trout', a: 'rainbow trout redfish drum', sF: 145, rec: [{ l: 'Flaky', lo: 135, hi: 140 }], why: ['fish'] },
+  { id: 'shrimp', g: 'shell', n: 'Shrimp', a: 'prawns', sT: 'Pearly and opaque', rec: [{ l: 'Just opaque, C-shaped', lo: 120, hi: 135, t: 'tight “O” shape means overcooked' }], why: ['shell'] },
+  { id: 'scallops', g: 'shell', n: 'Scallops', a: 'sea scallops bay scallops', sT: 'Milky white or opaque and firm', rec: [{ l: 'Seared, center just translucent', lo: 115, hi: 125 }], why: ['shell', 'risk'] },
+  { id: 'lobster', g: 'shell', n: 'Lobster (tails or whole)', a: 'lobster tail', sT: 'Pearly and opaque', rec: [{ l: 'Tender', lo: 135, hi: 140 }], why: ['shell'] },
+  { id: 'crab', g: 'shell', n: 'Crab legs (snow, king)', a: 'king crab snow crab dungeness', sT: 'Opaque; precooked legs just need reheating', rec: [{ l: 'Reheat precooked legs', lo: 140, hi: 145, t: 'most crab legs are cooked and frozen on the boat' }, { l: 'Live crab', lo: 145, hi: null, t: 'shell bright red-orange, meat opaque' }], why: ['shell'] },
+  { id: 'crawfish', g: 'shell', n: 'Crawfish', a: 'crayfish crawdads boil', sT: 'Shells bright red, meat opaque', rec: [{ t: 'Boil 3–5 minutes after the water returns to a boil, then soak' }], why: ['shell'] },
+  { id: 'bivalve', g: 'shell', n: 'Clams, mussels, oysters', a: 'clams mussels oysters', sT: 'Until the shells open', rec: [{ t: 'Steam until open; discard any that stay shut' }], why: ['bivalve', 'risk'] },
+  { id: 'squid', g: 'shell', n: 'Squid, octopus', a: 'calamari octopus', sT: 'Opaque', rec: [{ t: 'Either very fast (1–2 minutes) or long and slow (30+ minutes braise); anything in between is rubbery' }], why: ['shell'] },
+  { id: 'eggs', g: 'other', n: 'Eggs and egg dishes', a: 'quiche frittata custard', sF: 160, sT: 'Eggs: yolk and white firm', rec: [{ l: 'Egg dishes (quiche, frittata)', lo: 160, hi: null }, { l: 'Soft or runny yolks', t: 'below USDA guidance; use pasteurized eggs for higher-risk people' }], why: ['eggs', 'risk'] },
+  { id: 'left', g: 'other', n: 'Leftovers, casseroles, stuffing', a: 'reheat casserole dressing', sF: 165, rec: [{ l: 'Steaming hot', lo: 165, hi: null }], why: ['left'] },
+  { id: 'deli', g: 'other', n: 'Hot dogs, deli meats (higher-risk people)', a: 'listeria lunch meat hot dog', sF: 165, sT: 'or steaming hot: for pregnant women and other higher-risk people (Listeria)', rec: [{ l: 'Steaming hot', lo: 165, hi: null }], why: ['risk'] }
+];
+const tempLo = it => { const v = it.rec.filter(r => !r.usda).map(r => r.lo).filter(isNum); return v.length ? Math.min(...v) : null; };
+const belowUSDA = it => isNum(it.sF) && isNum(tempLo(it)) && tempLo(it) < it.sF;
+function fmtRange(lo, hi, tu) {
+  const c = f => (tu === 'C' ? Math.round(fToC(f)) : f), u = tu === 'C' ? '°C' : '°F';
+  if (!isNum(lo)) return '';
+  if (hi == null) return `${c(lo)}${u}+`;
+  return lo === hi ? `${c(lo)}${u}` : `${c(lo)}–${c(hi)}${u}`;
+}
+/* text in WHY / notes is written in °F; show °C alongside when the app is set to Celsius */
+const tempText = (s, tu) => (tu === 'C' ? s.replace(/(\d{2,3})°F/g, (m, f) => `${m} (${Math.round(fToC(+f))}°C)`) : s);
+function holdTableHTML(kind, tu) {
+  const T = f => fmtTemp(f, tu);
+  if (kind === 'poultry') return `<table class="htbl"><thead><tr><th>Hold at</th><th>Chicken</th><th>Turkey</th></tr></thead><tbody>${HOLD_POULTRY.map(([f, c, t]) => `<tr><td>${T(f)}</td><td>${c}</td><td>${t}</td></tr>`).join('')}</tbody></table><p class="fine">USDA FSIS time-temperature tables for a 7-log Salmonella kill (10% fat column, the more cautious one).</p>`;
+  return `<table class="htbl"><thead><tr><th>Hold at</th><th>Beef, lamb roasts</th></tr></thead><tbody>${HOLD_BEEF.map(([f, m]) => `<tr><td>${T(f)}</td><td>${m}</td></tr>`).join('')}</tbody></table><p class="fine">USDA FSIS / FDA Food Code roast table. Mostly relevant to sous vide; a seared steak’s inside is not where the bacteria are.</p>`;
+}
+function tempItemHTML(it, tu) {
+  const safe = isNum(it.sF) ? `${fmtRange(it.sF, it.sF, tu)}${it.rest ? ` + ${it.rest} min rest` : ''}` : '';
+  const safeTxt = it.sT ? (safe ? `${safe} <span class="muted">· ${esc(tempText(it.sT, tu))}</span>` : esc(tempText(it.sT, tu))) : safe;
+  const recs = it.rec.map(r => `<div class="trec"><span class="tl">${esc(r.l || '')}</span><b>${fmtRange(r.lo, r.hi, tu)}</b>${r.t ? `<span class="tt">${esc(tempText(r.t, tu))}</span>` : ''}</div>`).join('');
+  const below = belowUSDA(it);
+  const det = it.why.map(k => WHY[k]).filter(Boolean).map(([h, p]) => `<h4>${esc(h)}</h4><p>${esc(tempText(p, tu))}</p>`).join('')
+    + (it.holds ? holdTableHTML(it.holds, tu) : '') + (it.note ? `<p class="tnote">${esc(tempText(it.note, tu))}</p>` : '');
+  return `<section class="card pad titem" data-temp="${esc(it.id)}">
+    <div class="thead"><h3>${esc(it.n)}</h3>${below ? '<span class="badge warn">Below USDA: see Details</span>' : ''}</div>
+    <div class="tsafe"><span class="tlab">USDA safe minimum</span><b>${safeTxt}</b></div>
+    <div class="tlab" style="margin-top:8px">Recommended</div>${recs}
+    <div class="btnrow"><details class="tdet"><summary class="btn small">${below ? 'Details: why it’s safe' : 'Details'}</summary><div class="tbody">${det}</div></details>${it.sv && CUTS[it.sv] ? `<button type="button" class="btn small ghost" data-action="temp-sv" data-v="${esc(it.sv)}">Sous vide plan</button>` : ''}</div>
+  </section>`;
+}
+const tNorm = s => String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9 ]+/g, ' ').replace(/\s+/g, ' ').trim();
+const tempMatches = () => { const q = tNorm(ui.tq), g = ui.tg; return TEMPS.filter(it => (!g || it.g === g) && (!q || q.split(' ').every(w => tNorm(it.n + ' ' + it.a + ' ' + (TEMP_GROUPS.find(x => x[0] === it.g) || [0, ''])[1]).includes(w) || tNorm(it.n + ' ' + it.a).split(' ').some(x => x.replace(/s$/, '') === w.replace(/s$/, ''))))); };
+function tempsListHTML(list, tu, intro) {
+  const body = list.length ? list.map(it => tempItemHTML(it, tu)).join('') : `<div class="empty"><h2>Nothing matches “${esc(ui.tq)}”</h2><p>Try a different word, or pick All.</p></div>`;
+  return (ui.tq || ui.tg ? '' : intro) + body;
+}
+function renderTemps() {
+  const tu = state.settings.tempUnit === 'C' ? 'C' : 'F', g = ui.tg, list = tempMatches();
+  const intro = `<section class="card pad" id="tempIntro"><p style="margin:0">Each food shows two numbers: the <b>USDA safe minimum</b>, which is safe instantly for everyone, and what cooks <b>recommend</b> for the best result. Measure in the thickest part, away from bone.</p>
+    <details class="tdet" style="margin-top:8px"><summary class="btn small">Why can a lower temperature be safe?</summary><div class="tbody"><h4>${esc(WHY.time[0])}</h4><p>${esc(WHY.time[1])}</p>${holdTableHTML('poultry', tu)}<h4>${esc(WHY.timeHow[0])}</h4><p>${esc(WHY.timeHow[1])}</p><h4>${esc(WHY.whole[0])}</h4><p>${esc(WHY.whole[1])}</p><h4>${esc(WHY.risk[0])}</h4><p>${esc(WHY.risk[1])}</p></div></details></section>`;
+  const chips = `<div class="chips tchips"><button type="button" class="chip" data-action="temp-group" data-v="" aria-pressed="${!g}">All</button>${TEMP_GROUPS.map(([k, l]) => `<button type="button" class="chip" data-action="temp-group" data-v="${k}" aria-pressed="${g === k}">${esc(l)}</button>`).join('')}</div>`;
+  return storageBannerHTML() + `<div class="search"><input id="tq" type="search" placeholder="Search foods (e.g. thighs, scallops, brisket)" value="${esc(ui.tq)}" aria-label="Search foods"></div>${chips}<div class="stack" id="tlist">${tempsListHTML(list, tu, intro)}</div>
+    <p class="fine" style="margin:14px 4px">Safe minimums: FoodSafety.gov (USDA, FDA). Hold times: USDA FSIS time-temperature tables. Recommended temperatures are common chef and cookbook practice.</p>`;
+}
+
+const SUBS = { temps: 'Safe and recommended temperatures', plan: 'Plan a sous vide cook', recipes: 'Saved recipes', log: 'Cook log', settings: 'Settings and backup' };
 function render() {
   const y = window.scrollY;
   document.body.classList.toggle('cooking', !!ui.cook);
-  view.innerHTML = ui.cook ? renderCook() : { plan: renderPlan, recipes: renderRecipes, log: renderLog, settings: renderSettings }[ui.tab]();
+  view.innerHTML = ui.cook ? renderCook() : { temps: renderTemps, plan: renderPlan, recipes: renderRecipes, log: renderLog, settings: renderSettings }[ui.tab]();
   $$('nav.tabs button').forEach(b => b.setAttribute('aria-current', b.dataset.tab === ui.tab ? 'page' : 'false'));
   const add = $('#addBtn');
   const label = ui.cook ? '' : ui.tab === 'recipes' && !ui.recipe && state.recipes.length ? '+ Recipe' : ui.tab === 'log' && state.log.length ? '+ Entry' : '';
@@ -1599,6 +1734,8 @@ view.addEventListener('click', async e => {
     case 'cook-next': if (ui.cook) { if (ui.cook.i < ui.cook.steps.length - 1) { ui.cook.i++; render(); window.scrollTo(0, 0); } else { ui.cook = null; render(); } } break;
     case 'step-timer': { const s = ui.cook.steps[ui.cook.i]; startTimer(s.title || `Step ${ui.cook.i + 1}`, +el.dataset.secs); break; }
     case 'custom-timer': timerDialog(); break;
+    case 'temp-group': ui.tg = el.dataset.v; render(); break;
+    case 'temp-sv': if (CUTS[el.dataset.v]) { setPlan('cut', el.dataset.v); go('plan'); } break;
     case 'export': doExport(); break;
     case 'restore': doRestore(); break;
     case 'wipe': doWipe(); break;
@@ -1613,6 +1750,7 @@ view.addEventListener('change', e => {
   if (st) { const k = st.dataset.set; setSetting(k, k === 'servings' ? numIn(st.value, 1, 20) : st.value); }
 });
 view.addEventListener('input', e => {
+  if (e.target.id === 'tq') { ui.tq = e.target.value; const l = $('#tlist'); if (l) l.innerHTML = tempsListHTML(tempMatches(), state.settings.tempUnit === 'C' ? 'C' : 'F', ''); return; }
   if (e.target.id === 'q') { ui.q = e.target.value; const l = $('#rlist'); if (l) l.innerHTML = recipeRows(); }
 });
 $('#addBtn').onclick = () => { if (ui.tab === 'recipes') recipeDialog(); else if (ui.tab === 'log') logDialog(); };

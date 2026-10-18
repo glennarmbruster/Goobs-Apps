@@ -1,7 +1,7 @@
 {
-  "name": "Sous Vide",
-  "short_name": "Sous Vide",
-  "description": "Steakhouse-style steak and sous vide lab: time and temperature calculator, sear plan, low-calorie swaps, saved recipes and a cook log. Data stays on your device.",
+  "name": "Cooking Temps",
+  "short_name": "Cooking Temps",
+  "description": "Safe and recommended cooking temperatures for meat, poultry, game and seafood, plus a sous vide lab: time and temperature calculator, sear plan, low-calorie swaps, saved recipes and a cook log. Data stays on your device.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

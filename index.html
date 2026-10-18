@@ -49,7 +49,7 @@ a.app span{color:var(--muted);font-size:13px;line-height:1.35;display:block}
   <a class="app" data-k="household" href="household/"><img src="household/icon-192.png" alt=""><div><b>Household</b><span>How the house runs: contacts, accounts, vendors, what to do when</span></div></a>
   <a class="app" data-k="occasions" href="occasions/"><img src="occasions/icon-192.png" alt=""><div><b>Occasions</b><span>Birthdays and events with countdowns, plus gift ideas</span></div></a>
   <a class="app" data-k="worklog" href="worklog/"><img src="worklog/icon-192.png" alt=""><div><b>Work Log</b><span>What you did on each job, with tickets and a weekly summary</span></div></a>
-  <a class="app" data-k="sousvide" href="sousvide/"><img src="sousvide/icon-192.png" alt=""><div><b>Sous Vide</b><span>Steak and sous vide time, temp and sear plans</span></div></a>
+  <a class="app" data-k="sousvide" href="sousvide/"><img src="sousvide/icon-192.png" alt=""><div><b>Cooking Temps</b><span>Safe and recommended temps, plus sous vide plans</span></div></a>
   <a class="app" data-k="watchlog" href="watchlog/"><img src="watchlog/icon-192.png" alt=""><div><b>Watch Log</b><span>TV and movie log with who-was-in-what</span></div></a>
   <a class="app" data-k="sports" href="sports/"><img src="sports/icon-192.png" alt=""><div><b>Sports</b><span>Schedules, standings and rivalry records</span></div></a>
   <a class="app" data-k="houston" href="houston/"><img src="houston/icon-192.png" alt=""><div><b>Houston Events</b><span>Things to do around Houston, with shared picks</span></div></a>
@@ -59,7 +59,7 @@ a.app span{color:var(--muted);font-size:13px;line-height:1.35;display:block}
 </main>
 <script>
 (function(){
-  var KEY='goobs-launcher-apps', PRESETS={cindy:['travel','grocery','todo','recipes','household']}, ALIAS={trips:'travel','to-do':'todo',work:'worklog'};
+  var KEY='goobs-launcher-apps', PRESETS={cindy:['travel','grocery','todo','recipes','household','sousvide']}, OLD_PRESETS=[['travel','grocery','todo','recipes','household']], ALIAS={trips:'travel','to-do':'todo',work:'worklog'};
   var grid=document.getElementById('apps'), cards={}, order=[];
   [].forEach.call(grid.children,function(a){cards[a.dataset.k]=a;order.push(a.dataset.k);});
   function clean(list){var out=[];(list||[]).forEach(function(k){k=String(k).trim().toLowerCase();k=ALIAS[k]||k;if(cards[k]&&out.indexOf(k)<0)out.push(k);});return out;}
@@ -68,7 +68,9 @@ a.app span{color:var(--muted);font-size:13px;line-height:1.35;display:block}
   var q=new URLSearchParams(location.search), shown=null;
   if(q.get('for')&&PRESETS[q.get('for').toLowerCase()])shown=PRESETS[q.get('for').toLowerCase()].slice();
   else if(q.get('apps'))shown=clean(q.get('apps').split(','));
-  if(shown&&shown.length)save(shown);else shown=load();
+  if(shown&&shown.length)save(shown);else{shown=load();
+    /* a phone still on an older preset (not customised) moves to the current one */
+    if(shown&&OLD_PRESETS.some(function(o){return o.join()===shown.join();})){shown=PRESETS.cindy.slice();save(shown);}}
   function render(){
     var list=shown&&shown.length?shown:order;
     order.forEach(function(k){cards[k].hidden=true;});
