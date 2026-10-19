@@ -1,0 +1,1053 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Calorie Lookup</title>
+<meta name="description" content="Calories and full nutrition for almost any food, drink, liquor, condiment or fast-food item, with steak by grade (select, choice, prime, wagyu). USDA data.">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#f1f7f4" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0c1512" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Calorie Lookup">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<style>
+:root{
+  --bg:#f5f4ef; --card:#ffffff; --ink:#1b2420; --muted:#66736d; --line:#e2e0d6; --soft:#efede5;
+  --accent:#0f766e; --accent-ink:#ffffff; --accent-soft:#d9f0ec;
+  --bad:#b42318; --bad-soft:#fde8e6; --warn:#9a5b00; --warn-soft:#fdf0d5; --ok:#166534; --ok-soft:#dcf5e3;
+  --radius:14px; --shadow:0 1px 2px rgba(16,24,20,.06),0 6px 18px rgba(16,24,20,.06);
+  color-scheme:light dark;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0e1311; --card:#171f1c; --ink:#e7eeeb; --muted:#97a69f; --line:#27332e; --soft:#1e2824;
+    --accent:#2dd4bf; --accent-ink:#06211d; --accent-soft:#12332e;
+    --bad:#ff8a80; --bad-soft:#3a1a18; --warn:#f6c26b; --warn-soft:#3a2c12; --ok:#7ee2a0; --ok-soft:#14301f;
+    --shadow:none;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation;
+  padding-bottom:calc(92px + env(safe-area-inset-bottom));
+}
+a{color:var(--accent)}
+h1,h2,h3{margin:0;line-height:1.2}
+h3{font-size:16px}
+p{margin:0 0 8px}
+.wrap{max-width:720px;margin:0 auto;padding:0 16px}
+.muted{color:var(--muted)} .bad{color:var(--bad)} .warn{color:var(--warn)} .ok{color:var(--ok)}
+.num{font-variant-numeric:tabular-nums}
+.hide{display:none!important}
+.pad{padding:14px 16px}
+.hint{font-size:13px;color:var(--muted);margin-top:4px}
+
+/* header */
+header.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top)}
+header.top .wrap{display:flex;align-items:center;gap:12px;min-height:58px}
+header.top .grow{flex:1;min-width:0}
+header.top h1{font-size:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+header.top .sub{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.back{display:inline-flex;align-items:center;min-height:44px;padding-right:6px;text-decoration:none;font-weight:600}
+
+/* cards, tiles, lists */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+.tile{padding:12px}
+.tile .lbl{font-size:12px;color:var(--muted);font-weight:600}
+.tile .val{font-size:20px;font-weight:700;margin-top:2px}
+.sec-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin:22px 4px 8px;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700}
+.sec-h .btn{text-transform:none;letter-spacing:0}
+.list{list-style:none;margin:0;padding:0}
+.row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-top:1px solid var(--line);cursor:pointer}
+.row:first-child{border-top:0}
+.row.static{cursor:default}
+.row-main{flex:1;min-width:0}
+.row-title{font-weight:600;overflow-wrap:anywhere}
+.row-sub{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.row-amt{font-weight:700;white-space:nowrap}
+.row.faded{opacity:.6}
+.badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 7px;border-radius:999px;background:var(--soft);color:var(--muted);vertical-align:middle;margin-left:6px}
+.badge.ok{background:var(--ok-soft);color:var(--ok)} .badge.warn{background:var(--warn-soft);color:var(--warn)} .badge.bad{background:var(--bad-soft);color:var(--bad)} .badge.acc{background:var(--accent-soft);color:var(--accent)}
+.empty{text-align:center;padding:40px 20px;color:var(--muted)}
+.empty .big{font-size:40px;line-height:1;margin-bottom:10px}
+.empty h2{color:var(--ink);font-size:18px;margin-bottom:6px}
+.empty .btn{margin-top:14px}
+.banner{padding:12px 14px;border-radius:12px;background:var(--warn-soft);color:var(--warn);font-size:14px;margin:14px 0;display:flex;gap:10px;justify-content:space-between;align-items:center}
+.banner.bad{background:var(--bad-soft);color:var(--bad)}
+.bar{height:8px;border-radius:99px;background:var(--soft);overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--accent);border-radius:99px}
+.bar.over>i{background:var(--bad)}
+
+/* buttons */
+.btn{white-space:nowrap;appearance:none;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-weight:600;min-height:44px;padding:0 16px;border-radius:12px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.danger{color:var(--bad)}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--accent)}
+.btn.small{min-height:36px;padding:0 12px;font-size:14px;border-radius:10px}
+.btn.block{width:100%}
+.btn:active{transform:translateY(1px)}
+.btn:disabled{opacity:.5;cursor:default}
+.btn:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible,.chip:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 14px;min-height:36px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+
+/* bottom nav + fab */
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+nav.tabs .wrap{display:flex;padding:0}
+nav.tabs a,nav.tabs button{flex:1;min-height:58px;border:0;background:none;color:var(--muted);font:inherit;font-size:11px;font-weight:600;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;text-decoration:none}
+nav.tabs .ico{font-size:20px;line-height:1}
+nav.tabs [aria-current="page"]{color:var(--accent)}
+.fab{position:fixed;right:max(16px,calc(50vw - 344px));bottom:calc(74px + env(safe-area-inset-bottom));z-index:7;width:56px;height:56px;border-radius:50%;border:0;background:var(--accent);color:var(--accent-ink);font-size:30px;line-height:1;box-shadow:0 6px 18px rgba(0,0,0,.28);cursor:pointer}
+.fab:active{transform:scale(.96)}
+
+/* forms + dialogs */
+input,select,textarea{width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-height:44px}
+textarea{min-height:92px;resize:vertical}
+input[type=checkbox]{width:22px;height:22px;min-height:0;padding:0;accent-color:var(--accent);flex:none}
+.field label{display:block;font-size:13px;font-weight:600;color:var(--muted);margin-bottom:4px}
+.field.check{display:flex;align-items:center;gap:10px}
+.field.check label{margin:0;color:var(--ink);font-size:16px;font-weight:500}
+.fields2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+dialog{border:0;border-radius:18px;padding:0;width:calc(100vw - 24px);max-width:520px;background:var(--card);color:var(--ink);box-shadow:0 20px 60px rgba(0,0,0,.35)}
+dialog::backdrop{background:rgba(10,15,12,.55)}
+.dlg-form{padding:20px;display:flex;flex-direction:column;gap:12px;max-height:85vh;max-height:85dvh;overflow:auto}
+.dlg-form h2{font-size:19px}
+.dlg-actions{display:flex;gap:8px;align-items:center;margin-top:6px;flex-wrap:wrap}
+.dlg-actions .spacer{flex:1}
+.ask-actions{justify-content:flex-end}
+.dlg-err{color:var(--bad);font-size:14px}
+.dlg-err:empty{display:none}
+.ask-body{font-size:15px;color:var(--ink)}
+.ask-body p{margin:0 0 8px}
+.checkgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px}
+.checkgrid .field.check label{font-size:15px}
+
+/* toast */
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom));background:#1b2420;color:#fff;padding:12px 16px;border-radius:12px;display:flex;gap:14px;align-items:center;z-index:60;max-width:calc(100vw - 24px);box-shadow:0 8px 24px rgba(0,0,0,.35);font-size:15px}
+.toast button{background:none;border:0;color:#7dd3c8;font:inherit;font-weight:700;cursor:pointer;min-height:36px}
+
+@media (prefers-reduced-motion:no-preference){.btn,.fab{transition:transform .08s}}
+
+.syncbadge{flex:none;white-space:nowrap;border:1px solid var(--line,#d5dbe0);background:var(--card,#fff);color:inherit;border-radius:999px;padding:4px 10px;font:inherit;font-size:.82rem;cursor:pointer;white-space:nowrap}
+.syncbadge.ok{color:#15803d}.syncbadge.bad{color:#b91c1c}
+.seg{display:flex;gap:8px;margin-top:6px}.seg .chip{flex:1;text-align:center}
+
+:root{--bg:#f1f7f4;--accent:#047857;--accent-ink:#fff;--accent-soft:#d5f0e4;--line:#dbe6e0;--soft:#e8f0ec}
+@media (prefers-color-scheme:dark){:root{--bg:#0c1512;--card:#14201b;--line:#25352e;--soft:#1a2923;--accent:#5fd3a5;--accent-ink:#04291b;--accent-soft:#163a2d}}
+.stack{display:flex;flex-direction:column;gap:12px;margin-top:12px}
+.search{margin-top:14px}
+.search input{width:100%;font:inherit;font-size:17px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink)}
+.fine{font-size:13px;color:var(--muted)}
+.scroll-chips{display:flex;gap:8px;overflow-x:auto;padding:12px 2px 4px;margin:0 -2px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.scroll-chips::-webkit-scrollbar{display:none}
+.scroll-chips .chip{flex:none;white-space:nowrap}
+.row .kc{font-weight:800;white-space:nowrap;text-align:right;font-size:17px}
+.row .kc small{display:block;font-weight:500;font-size:12px;color:var(--muted)}
+.portion{display:flex;gap:8px;align-items:center;margin-top:12px}
+.portion input{width:84px;font:inherit;font-size:17px;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink)}
+.portion select{flex:1;min-width:0;font:inherit;font-size:16px;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink)}
+.bigcal{display:flex;align-items:baseline;gap:8px;margin-top:14px}
+.bigcal b{font-size:44px;line-height:1;letter-spacing:-.02em}
+.bigcal span{color:var(--muted);font-weight:600}
+.macros{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.macros div{background:var(--soft);border-radius:12px;padding:10px;text-align:center}
+.macros b{display:block;font-size:20px}
+.macros span{font-size:12px;color:var(--muted)}
+.mbar{display:flex;height:10px;border-radius:999px;overflow:hidden;margin-top:10px;background:var(--soft)}
+.mbar i{display:block;height:100%}
+.mbar .p{background:#3b82f6}.mbar .c{background:#f59e0b}.mbar .f{background:#ef4444}.mbar .a{background:#a855f7}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:6px}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:4px;vertical-align:middle}
+.nf{width:100%;border-collapse:collapse;font-size:15px}
+.nf td{padding:7px 0;border-top:1px solid var(--line);vertical-align:top}
+.nf tr:first-child td{border-top:0}
+.nf td.v{text-align:right;white-space:nowrap;font-weight:600}
+.nf td.dv{text-align:right;width:56px;white-space:nowrap;color:var(--muted);font-size:13px;padding-left:8px}
+.nf tr.main td:first-child{font-weight:700}
+.nf tr.sub td:first-child{padding-left:16px;color:var(--muted)}
+.nf tr.thick td{border-top:3px solid var(--ink)}
+.note{background:var(--soft);border-radius:12px;padding:10px 12px;font-size:14px}
+.src{font-size:12px;color:var(--muted);margin-top:4px}
+.star{border:0;background:none;font-size:26px;line-height:1;padding:4px 6px;cursor:pointer;color:var(--muted);min-height:44px;min-width:44px}
+.star[aria-pressed="true"]{color:#f59e0b}
+.seg{display:flex;background:var(--soft);border-radius:12px;padding:3px;gap:3px}
+.seg button{flex:1;border:0;background:none;font:inherit;font-weight:700;font-size:14px;padding:8px 6px;border-radius:9px;color:var(--muted);cursor:pointer;min-height:38px}
+.seg button[aria-pressed="true"]{background:var(--card);color:var(--ink);box-shadow:var(--shadow)}
+.stbl{width:100%;border-collapse:collapse;font-size:15px}
+.stbl th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);text-align:right;padding:6px 4px;font-weight:700}
+.stbl th:first-child{text-align:left}
+.stbl td{padding:11px 4px;border-top:1px solid var(--line);text-align:right;white-space:nowrap}
+.stbl td:first-child{text-align:left;white-space:normal;font-weight:700}
+.stbl td.k{font-weight:800;font-size:17px}
+.stbl tr{cursor:pointer}
+.stbl td small{display:block;font-weight:500;color:var(--muted);font-size:12px}
+.gbar{height:6px;border-radius:999px;background:var(--accent);margin-top:5px;opacity:.75}
+.orow{display:block;width:100%;text-align:left;border:0;border-top:1px solid var(--line);background:none;font:inherit;color:inherit;padding:11px 14px;cursor:pointer}
+.orow:first-child{border-top:0}
+.loading{padding:40px 0;text-align:center;color:var(--muted)}
+.keyrow{display:flex;gap:8px;margin-top:8px}
+.keyrow input{flex:1;min-width:0;font:inherit;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink)}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap"><div class="grow"><h1 id="title">Calorie Lookup</h1><div class="sub" id="sub"></div></div></div></header>
+<main class="wrap" id="view"><div class="loading">Loading foods…</div></main>
+<nav class="tabs" aria-label="Sections"><div class="wrap">
+  <button type="button" data-tab="foods"><span class="ico">🔎</span>Foods</button>
+  <button type="button" data-tab="steak"><span class="ico">🥩</span>Steak</button>
+  <button type="button" data-tab="drinks"><span class="ico">🍸</span>Drinks</button>
+  <button type="button" data-tab="saved"><span class="ico">⭐</span>Saved</button>
+</div></nav>
+<script>
+'use strict';
+/* ===================== shared helpers (identical in every Goobs app) ===================== */
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => Array.from(el.querySelectorAll(s));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const isNum = v => typeof v === 'number' && Number.isFinite(v);
+const str = v => (typeof v === 'string' ? v : v == null ? '' : String(v));
+
+/* ---- dates: always local calendar dates stored as 'YYYY-MM-DD' ---- */
+const pad = n => String(n).padStart(2, '0');
+const fmtISO = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const parseISO = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+const isISO = s => typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s) && fmtISO(parseISO(s)) === s;
+const todayISO = () => fmtISO(new Date());
+const daysBetween = (a, b) => Math.round((parseISO(b) - parseISO(a)) / 86400000);
+const addDays = (s, n) => { const d = parseISO(s); d.setDate(d.getDate() + n); return fmtISO(d); };
+function addMonths(s, n, anchorDay) {
+  const d = parseISO(s);
+  const day = anchorDay || d.getDate();
+  const first = new Date(d.getFullYear(), d.getMonth() + n, 1);
+  const last = new Date(first.getFullYear(), first.getMonth() + 1, 0).getDate();
+  first.setDate(Math.min(day, last));
+  return fmtISO(first);
+}
+const monthEndISO = s => { const d = parseISO(s); return fmtISO(new Date(d.getFullYear(), d.getMonth() + 1, 0)); };
+
+function fmtDate(s, withWeekday = true) {
+  const d = parseISO(s);
+  const o = { month: 'short', day: 'numeric' };
+  if (withWeekday) o.weekday = 'short';
+  if (d.getFullYear() !== new Date().getFullYear()) o.year = 'numeric';
+  return d.toLocaleDateString(undefined, o);
+}
+function fmtDateTime(iso) {
+  const d = new Date(iso);
+  return isNaN(d) ? 'unknown date' : d.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+}
+const _mf = {};
+function money(n, cur = 'USD') {
+  if (!_mf[cur]) {
+    try { _mf[cur] = new Intl.NumberFormat(undefined, { style: 'currency', currency: cur }); }
+    catch { _mf[cur] = new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }); }
+  }
+  return _mf[cur].format(n);
+}
+const csvCell = v => {
+  let s = String(v ?? '');
+  if (/^[=+\-@\t\r]/.test(s)) s = "'" + s; // neutralise spreadsheet formula injection
+  return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+};
+function safeUrl(u) {
+  let s = String(u ?? '').trim();
+  if (!s) return '';
+  if (!/^[a-z][a-z0-9+.-]*:/i.test(s)) s = 'https://' + s;
+  try { const x = new URL(s); return /^https?:$/.test(x.protocol) ? x.href : ''; } catch { return ''; }
+}
+
+/* ---- storage: one JSON string under one key in IndexedDB ---- */
+function openDB(name) {
+  return new Promise((res, rej) => {
+    if (!window.indexedDB) return rej(new Error('IndexedDB unavailable'));
+    const r = indexedDB.open(name, 1);
+    r.onupgradeneeded = () => { r.result.createObjectStore('kv'); };
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+    r.onblocked = () => rej(new Error('Database blocked'));
+  });
+}
+function idbGet(db, key) {
+  return new Promise((res, rej) => {
+    const q = db.transaction('kv').objectStore('kv').get(key);
+    q.onsuccess = () => res(q.result);
+    q.onerror = () => rej(q.error);
+  });
+}
+function idbPut(db, key, val) {
+  return new Promise((res, rej) => {
+    const tx = db.transaction('kv', 'readwrite');
+    tx.objectStore('kv').put(val, key);
+    tx.oncomplete = () => res();
+    tx.onerror = () => rej(tx.error);
+    tx.onabort = () => rej(tx.error || new Error('Write aborted'));
+  });
+}
+
+/* ---- toast ---- */
+function toast(msg, action) {
+  const old = $('.toast'); if (old) old.remove();
+  const t = document.createElement('div');
+  t.className = 'toast'; t.setAttribute('role', 'status');
+  t.innerHTML = `<span>${esc(msg)}</span>` + (action ? `<button type="button">${esc(action.label)}</button>` : '');
+  if (action) t.querySelector('button').onclick = () => { t.remove(); action.fn(); };
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), action ? 8000 : 3200);
+}
+
+/* ---- dialogs ---- */
+if (!$('#dlg')) document.body.insertAdjacentHTML('beforeend', '<dialog id="dlg"></dialog><dialog id="ask"></dialog>');
+{
+  const dlg = $('#dlg'); let down = false;
+  dlg.addEventListener('pointerdown', e => { down = e.target === dlg; });
+  dlg.addEventListener('click', e => { if (e.target === dlg && down) dlg.close(); });
+}
+
+function fieldHTML(f) {
+  const id = 'f_' + f.name, v = f.value ?? '';
+  if (f.type === 'checkbox')
+    return `<div class="field check"><input type="checkbox" id="${id}" name="${f.name}"${f.value ? ' checked' : ''}><label for="${id}">${esc(f.label)}</label></div>`;
+  let ctl;
+  if (f.type === 'select') {
+    ctl = `<select id="${id}" name="${f.name}">${f.options.map(o => {
+      const [val, label] = Array.isArray(o) ? o : [o, o];
+      return `<option value="${esc(val)}"${String(val) === String(v) ? ' selected' : ''}>${esc(label)}</option>`;
+    }).join('')}</select>`;
+  } else if (f.type === 'textarea') {
+    ctl = `<textarea id="${id}" name="${f.name}" placeholder="${esc(f.placeholder || '')}">${esc(v)}</textarea>`;
+  } else {
+    const t = f.type || 'text';
+    const extra = t === 'number' ? ` inputmode="decimal" step="${f.step || 'any'}"` : '';
+    ctl = `<input id="${id}" name="${f.name}" type="${t}" value="${esc(v)}" placeholder="${esc(f.placeholder || '')}"${extra}${f.min != null ? ` min="${f.min}"` : ''}${f.max != null ? ` max="${f.max}"` : ''} autocomplete="${f.autocomplete || 'off'}" autocapitalize="${f.capitalize || (t === 'email' || t === 'password' ? 'none' : 'sentences')}">`;
+  }
+  return `<div class="field"><label for="${id}">${esc(f.label)}${f.required ? ' *' : ''}</label>${ctl}${f.hint ? `<div class="hint">${esc(f.hint)}</div>` : ''}</div>`;
+}
+
+/* formDialog: fields -> values. onSubmit(values) may return an error string (keeps dialog open).
+   onDelete() may return true to close. extra: [{label, kind, onClick}] extra buttons. */
+function formDialog({ title, intro = '', fields, submitLabel = 'Save', onSubmit, onDelete, deleteLabel = 'Delete', extra = [], onClose, grid = '' }) {
+  const dlg = $('#dlg');
+  const body = grid ? `<div class="${grid}">${fields.map(fieldHTML).join('')}</div>` : fields.map(fieldHTML).join('');
+  dlg.innerHTML = `<form class="dlg-form" novalidate>
+    <h2>${esc(title)}</h2>${intro ? `<p class="muted">${esc(intro)}</p>` : ''}${body}
+    <div class="dlg-err" role="alert"></div>
+    <div class="dlg-actions">
+      ${onDelete ? `<button type="button" class="btn danger" data-k="del">${esc(deleteLabel)}</button>` : ''}
+      ${extra.map((x, i) => `<button type="button" class="btn ${x.kind || ''}" data-x="${i}">${esc(x.label)}</button>`).join('')}
+      <span class="spacer"></span>
+      <button type="button" class="btn ghost" data-k="cancel">Cancel</button>
+      <button type="submit" class="btn primary">${esc(submitLabel)}</button>
+    </div></form>`;
+  const form = $('form', dlg), err = $('.dlg-err', dlg);
+  const collect = () => {
+    const vals = {};
+    for (const f of fields) { const el = form.elements[f.name]; vals[f.name] = f.type === 'checkbox' ? el.checked : el.value; }
+    return vals;
+  };
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const vals = collect();
+    for (const f of fields) if (f.required && !String(vals[f.name]).trim()) { err.textContent = `${f.label} is required.`; return; }
+    err.textContent = '';
+    let msg;
+    try { msg = await onSubmit(vals); } catch (ex) { msg = ex.message || 'Something went wrong.'; }
+    if (msg) err.textContent = msg; else dlg.close();
+  });
+  $('[data-k="cancel"]', dlg).onclick = () => dlg.close();
+  if (onDelete) $('[data-k="del"]', dlg).onclick = async () => { if (await onDelete()) dlg.close(); };
+  $$('[data-x]', dlg).forEach(b => { b.onclick = () => extra[+b.dataset.x].onClick(collect()); });
+  dlg.onclose = () => { dlg.onclose = null; if (onClose) onClose(); };
+  dlg.showModal();
+  const first = form.querySelector('input:not([type=checkbox]),textarea');
+  if (first && !first.value) first.focus(); // new-item forms open ready to type; edit forms don't pop the keyboard
+}
+
+function askDialog({ title, body = '', buttons }) {
+  return new Promise(resolve => {
+    const d = $('#ask'); let done = false;
+    d.innerHTML = `<div class="dlg-form"><h2>${esc(title)}</h2>${body ? `<div class="ask-body">${body}</div>` : ''}
+      <div class="dlg-actions ask-actions">${buttons.map((b, i) => `<button type="button" class="btn ${b.kind || ''}" data-i="${i}">${esc(b.label)}</button>`).join('')}</div></div>`;
+    const finish = v => { if (done) return; done = true; d.close(); resolve(v); };
+    $$('button', d).forEach(btn => { btn.onclick = () => finish(buttons[+btn.dataset.i].value); });
+    d.oncancel = () => { done = true; resolve(undefined); };
+    d.showModal();
+  });
+}
+const confirmBox = async (title, bodyText, okLabel = 'Delete', danger = true) =>
+  (await askDialog({ title, body: bodyText ? `<p>${esc(bodyText)}</p>` : '', buttons: [{ label: 'Cancel', value: false }, { label: okLabel, value: true, kind: danger ? 'danger' : 'primary' }] })) === true;
+const msgBox = (title, bodyText) =>
+  askDialog({ title, body: `<p>${esc(bodyText)}</p>`, buttons: [{ label: 'OK', value: true, kind: 'primary' }] });
+
+/* ---- backup: optional AES-GCM passphrase encryption (Web Crypto, PBKDF2-SHA256) ---- */
+const b64 = buf => { let s = ''; const b = new Uint8Array(buf); for (let i = 0; i < b.length; i += 0x8000) s += String.fromCharCode.apply(null, b.subarray(i, i + 0x8000)); return btoa(s); };
+const unb64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+async function deriveKey(pass, salt, iterations) {
+  const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(pass), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey({ name: 'PBKDF2', salt, iterations, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+}
+async function encryptPayload(obj, pass) {
+  const salt = crypto.getRandomValues(new Uint8Array(16)), iv = crypto.getRandomValues(new Uint8Array(12));
+  const iterations = 250000;
+  const key = await deriveKey(pass, salt, iterations);
+  const ct = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, new TextEncoder().encode(JSON.stringify(obj)));
+  return { encrypted: true, kdf: 'PBKDF2-SHA256', iterations, salt: b64(salt), iv: b64(iv), data: b64(ct) };
+}
+async function decryptPayload(env, pass) {
+  const key = await deriveKey(pass, unb64(env.salt), env.iterations);
+  try {
+    const pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: unb64(env.iv) }, key, unb64(env.data));
+    return JSON.parse(new TextDecoder().decode(pt));
+  } catch { throw new Error('Wrong passphrase, or the file is damaged.'); }
+}
+function promptDecrypt(env) {
+  return new Promise(resolve => {
+    let result = null;
+    formDialog({
+      title: 'Encrypted backup', intro: 'Enter the passphrase you chose when you made this backup.',
+      fields: [{ name: 'pass', label: 'Passphrase', type: 'password', required: true }], submitLabel: 'Unlock',
+      onSubmit: async v => { try { result = await decryptPayload(env, v.pass); } catch (e) { return e.message; } },
+      onClose: () => resolve(result)
+    });
+  });
+}
+const Backup = {
+  async build({ appId, schema, data, passphrase }) {
+    const head = { app: appId, schemaVersion: schema, exportedAt: new Date().toISOString() };
+    if (passphrase) return JSON.stringify({ ...head, ...(await encryptPayload(data, passphrase)) });
+    return JSON.stringify({ ...head, encrypted: false, data }, null, 2);
+  },
+  /* returns {data, exportedAt, schemaVersion}, or null if the user cancelled the passphrase prompt; throws Error with a friendly message */
+  async parse(text, { appId, schema }) {
+    let env;
+    try { env = JSON.parse(text); } catch { throw new Error('That file isn’t a valid backup (it isn’t JSON).'); }
+    if (!env || typeof env !== 'object' || env.app !== appId)
+      throw new Error(env && typeof env === 'object' && env.app ? `That backup belongs to a different app (${String(env.app).slice(0, 40)}).` : 'That file isn’t a backup from this app.');
+    if (!Number.isInteger(env.schemaVersion) || env.schemaVersion < 1) throw new Error('The backup is missing its version number.');
+    if (env.schemaVersion > schema) throw new Error('That backup was made by a newer version of the app. Close and reopen this app to update it, then try again.');
+    let data;
+    if (env.encrypted) {
+      if (!(window.crypto && crypto.subtle)) throw new Error('Encrypted backups need a secure (https) connection.');
+      if (!(env.iterations >= 1000 && env.iterations <= 2000000) || typeof env.salt !== 'string' || typeof env.iv !== 'string' || typeof env.data !== 'string')
+        throw new Error('The encrypted backup is damaged.');
+      data = await promptDecrypt(env);
+      if (data === null) return null;
+    } else data = env.data;
+    if (!data || typeof data !== 'object') throw new Error('The backup contains no data.');
+    return { data, exportedAt: typeof env.exportedAt === 'string' ? env.exportedAt : null, schemaVersion: env.schemaVersion };
+  }
+};
+
+/* share sheet when the platform supports sharing files (iPhone), otherwise a normal download */
+async function deliverFile(filename, text, mime = 'application/json') {
+  const file = new File([text], filename, { type: mime });
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try { await navigator.share({ files: [file], title: filename }); return 'shared'; }
+    catch (e) { if (e && e.name === 'AbortError') return 'cancelled'; /* otherwise fall back to a download */ }
+  }
+  const url = URL.createObjectURL(file);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.style.display = 'none';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 15000);
+  return 'downloaded';
+}
+function pickFile(accept = '.json,application/json') {
+  return new Promise(resolve => {
+    const i = document.createElement('input');
+    i.type = 'file'; i.accept = accept; i.style.display = 'none';
+    document.body.appendChild(i);
+    let done = false;
+    const fin = f => { if (done) return; done = true; i.remove(); resolve(f); };
+    i.addEventListener('change', () => fin((i.files && i.files[0]) || null));
+    i.addEventListener('cancel', () => fin(null));
+    i.click();
+  });
+}
+const readFileText = f => (f.text ? f.text() : new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = () => rej(r.error); r.readAsText(f); }));
+
+/* nag banner: only when there is data and no recent backup */
+function backupNag(meta, hasData) {
+  if (!hasData) return null;
+  if (!meta.lastBackup) return 'You have data but no backup yet. Make one so you can restore it if this device loses it.';
+  const age = (Date.now() - Date.parse(meta.lastBackup)) / 86400000;
+  const changed = meta.lastChange && Date.parse(meta.lastChange) > Date.parse(meta.lastBackup) + 1000;
+  if (changed && age >= 7) return `Your last backup was ${Math.floor(age)} days ago and you’ve made changes since.`;
+  return null;
+}
+
+/* ---- install helper ---- */
+let deferredInstall = null;
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferredInstall = e; if (typeof render === 'function') render(); });
+const isStandalone = () => (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+function installCardHTML() {
+  if (isStandalone()) return '';
+  const ios = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const msg = deferredInstall
+    ? '<p>Install it for its own window and full offline use.</p><button class="btn primary" data-action="install">Install app</button>'
+    : ios
+      ? '<p>In Safari tap <b>Share</b> → <b>Add to Home Screen</b>. <b>Do this before entering data</b> — the home-screen app keeps its own separate storage from the Safari tab. Then open it from the new icon.</p>'
+      : '<p>Use your browser’s menu → <b>Install app</b> (or <b>Add to Home Screen</b>).</p>';
+  return `<section class="card pad"><h3>Install on this device</h3>${msg}</section>`;
+}
+async function runInstall() { if (!deferredInstall) return; deferredInstall.prompt(); try { await deferredInstall.userChoice; } catch {} deferredInstall = null; if (typeof render === 'function') render(); }
+
+
+
+if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol))
+  window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
+
+/* Exit link: every app's top bar gets "‹ Apps" (back to the main apps page) unless that screen already has its own back link. */
+(function () {
+  const add = () => {
+    const w = document.querySelector('header.top .wrap');
+    if (!w || w.querySelector('a.back')) return;
+    const a = document.createElement('a');
+    a.className = 'back exit'; a.href = '../'; a.textContent = '‹ Apps'; a.setAttribute('aria-label', 'Exit to all apps');
+    w.insertBefore(a, w.firstChild);
+  };
+  const start = () => { add(); new MutationObserver(add).observe(document.body, { childList: true, subtree: true }); };
+  if (document.body) start(); else document.addEventListener('DOMContentLoaded', start);
+})();
+
+
+/* ===================== Calorie Lookup =====================
+   Offline data: USDA National Nutrient Database for Standard Reference, Release 28 (public domain), shipped as foods.json.
+   Online (optional): USDA FoodData Central search API for current generic, restaurant-style and packaged foods.
+   Only the search text is sent; the shared DEMO_KEY is USDA's public demo key, and you can paste your own free key. */
+const APP_ID = 'goobs-calories', DB_NAME = 'goobs-calories-db';
+let DATA = null, NI = {}, FOODS = [], byId = new Map(), HAY = [];
+const isLocalId = id => typeof id === 'number';
+const cap = s => (s ? s[0].toUpperCase() + s.slice(1) : s);
+const parseId = s => (/^\d+$/.test(String(s)) ? +s : String(s));
+
+/* ---------- nutrients ---------- */
+/* FDA Daily Values (21 CFR 101.9, 2016 rule) for adults and children 4+ */
+const DV = { fat: 78, sat: 20, chol: 300, na: 2300, carb: 275, fib: 28, pro: 50, vitD: 20, ca: 1300, fe: 18, k: 4700, vitA: 900, vitC: 90, vitE: 15, vitK: 120, b1: 1.2, b2: 1.3, b3: 16, b5: 5, b6: 1.7, fol: 400, b12: 2.4, cho: 550, mg: 420, p: 1250, zn: 11, se: 55, cu: 0.9, mn: 2.3 };
+const LABEL = [ // [key, label, unit, style]
+  ['fat', 'Total fat', 'g', 'main'], ['sat', 'Saturated fat', 'g', 'sub'], ['mono', 'Monounsaturated fat', 'g', 'sub'], ['poly', 'Polyunsaturated fat', 'g', 'sub'],
+  ['chol', 'Cholesterol', 'mg', 'main'], ['na', 'Sodium', 'mg', 'main'], ['carb', 'Total carbohydrate', 'g', 'main'], ['fib', 'Dietary fiber', 'g', 'sub'],
+  ['sug', 'Total sugars', 'g', 'sub'], ['pro', 'Protein', 'g', 'main']];
+const MICRO = [
+  ['vitD', 'Vitamin D', 'mcg'], ['ca', 'Calcium', 'mg'], ['fe', 'Iron', 'mg'], ['k', 'Potassium', 'mg'], ['vitA', 'Vitamin A', 'mcg RAE'], ['vitC', 'Vitamin C', 'mg'],
+  ['vitE', 'Vitamin E', 'mg'], ['vitK', 'Vitamin K', 'mcg'], ['b1', 'Thiamin (B1)', 'mg'], ['b2', 'Riboflavin (B2)', 'mg'], ['b3', 'Niacin (B3)', 'mg'],
+  ['b5', 'Pantothenic acid (B5)', 'mg'], ['b6', 'Vitamin B6', 'mg'], ['fol', 'Folate', 'mcg DFE'], ['b12', 'Vitamin B12', 'mcg'], ['cho', 'Choline', 'mg'],
+  ['mg', 'Magnesium', 'mg'], ['p', 'Phosphorus', 'mg'], ['zn', 'Zinc', 'mg'], ['se', 'Selenium', 'mcg'], ['cu', 'Copper', 'mg'], ['mn', 'Manganese', 'mg'],
+  ['water', 'Water', 'g'], ['bcar', 'Beta-carotene', 'mcg'], ['lyc', 'Lycopene', 'mcg'], ['lutz', 'Lutein + zeaxanthin', 'mcg']];
+const per100 = (f, key) => { const v = f.v[key]; return v == null ? null : v; };
+const amt = (f, key, g) => { const v = per100(f, key); return v == null ? null : v * g / 100; };
+function fmtN(x, unit) {
+  if (x == null) return '—';
+  const a = Math.abs(x);
+  const s = a === 0 ? '0' : a >= 100 ? String(Math.round(x)) : a >= 10 ? (Math.round(x * 10) / 10).toString() : a >= 1 ? (Math.round(x * 10) / 10).toString() : a >= 0.1 ? (Math.round(x * 100) / 100).toString() : '<0.1';
+  return s + (unit ? (unit.startsWith('mcg') || unit === 'mg' || unit === 'g' ? ' ' : ' ') + unit : '');
+}
+const kcalOf = (f, g) => { const k = amt(f, 'kcal', g); return k == null ? null : Math.round(k); };
+const isBooze = f => f.alc != null || /^(Alcoholic|Cocktail)|liqueur/i.test(f.n);
+/* SR28 has no alcohol column: estimate it from the calories not explained by protein, carbs and fat (alcohol = about 7 kcal/g) */
+function alcoholG(f, g) {
+  if (f.alc != null) return f.alc * g / 100;
+  if (!isBooze(f)) return null;
+  const k = per100(f, 'kcal'), p = per100(f, 'pro') || 0, c = per100(f, 'carb') || 0, fa = per100(f, 'fat') || 0;
+  if (k == null) return null;
+  const a = (k - 4 * p - 4 * c - 9 * fa) / 6.93;
+  return a > 0.3 ? a * g / 100 : 0;
+}
+
+/* ---------- names ---------- */
+const GROUP = i => (DATA ? DATA.groups[i] : '');
+const FASTGROUPS = () => [DATA.groups.indexOf('Fast food'), DATA.groups.indexOf('Restaurants')];
+function titleOf(f) {
+  if (f.t) return f.t;
+  const parts = f.n.split(', ');
+  if (/^Cocktail$/.test(parts[0])) return (f.t = parts.slice(1).join(', '));
+  const brandFirst = f.mf || (isLocalId(f.id) && FASTGROUPS().includes(f.g) && parts.length > 1 && !/^(Fast foods?|Restaurant|School Lunch)$/i.test(parts[0]));
+  if (brandFirst && parts.length > 1) return (f.t = parts.slice(1, 3).join(', '));
+  if (/^Beef, Australian, imported, Wagyu, /.test(f.n)) return (f.t = 'Wagyu, ' + parts.slice(4, 6).join(', '));
+  if (/^(Beef|Pork|Lamb|Veal|Chicken|Turkey|Game meat)$/.test(parts[0]) && parts.length > 3) return (f.t = parts.slice(0, 3).join(', '));
+  return (f.t = parts.slice(0, 2).join(', '));
+}
+function subOf(f) {
+  if (f.s != null) return f.s;
+  const parts = f.n.split(', '), t = titleOf(f);
+  if (/^Cocktail$/.test(parts[0])) return (f.s = 'Cocktail · estimated from the recipe');
+  if (/^Wagyu, /.test(t)) return (f.s = ['Australian', ...parts.slice(6)].join(', '));
+  const brandFirst = f.n.startsWith(parts[0]) && !f.n.startsWith(t);
+  const rest = brandFirst ? [parts[0], ...parts.slice(3)] : parts.slice(t.split(', ').length);
+  return (f.s = rest.join(', '));
+}
+const RESTAURANT_CHAINS = [["McDonald's", "McDonald's"], ['Burger King', 'Burger King'], ["Wendy's", "Wendy's"], ['Taco Bell', 'Taco Bell'], ['KFC', 'KFC'], ['Popeyes', 'Popeyes'], ['Subway', 'Subway'],
+  ["Denny's", "Denny's"], ["Applebee's", "Applebee's"], ['Cracker Barrel', 'Cracker Barrel'], ["TGI Friday's", "TGI Friday's"], ['Olive Garden', 'Olive Garden'], ["Carrabba's", "Carrabba's Italian Grill"],
+  ['On The Border', 'On The Border'], ['Chick-fil-a', 'Chick-fil-A'], ['Pizza Hut', 'Pizza Hut'], ["Domino's", "Domino's"], ["Papa John's", "Papa John's"], ['Little Caesars', 'Little Caesars'], ["Arby's", "Arby's"]];
+const chainOf = f => { for (const [k, v] of RESTAURANT_CHAINS) if (f.n.toLowerCase().includes(k.toLowerCase())) return v; return ''; };
+
+/* ---------- portions ---------- */
+function gPerFlOz(f) {
+  for (const [g, d] of f.m) { const m = String(d).match(/^([\d.]+) fl oz$/); if (m) return g / +m[1]; }
+  for (const [g, d] of f.m) { const m = String(d).match(/\(([\d.]+) fl oz\)|, ([\d.]+) fl oz$|^1 serving, ([\d.]+) fl oz/); if (m) return g / +(m[1] || m[2] || m[3]); }
+  for (const [g, d] of f.m) if (/^1 cup(,|$)/.test(String(d)) && !/whipped/.test(d)) return g / 8;
+  return null;
+}
+function portionOptions(f) {
+  const o = f.m.map(([g, d], i) => ['m' + i, d + ' (' + fmtN(g) + ' g)']);
+  const fl = gPerFlOz(f);
+  if (fl && isBooze(f)) o.push(['shot', 'shot, 1.5 fl oz']);
+  if (fl) o.push(['floz', 'fl oz']);
+  o.push(['oz', 'oz (weight)'], ['g', 'grams'], ['lb', 'lb']);
+  return o;
+}
+function gramsFor(f, unit, n) {
+  n = isNum(n) && n > 0 ? n : 0;
+  if (unit[0] === 'm') { const m = f.m[+unit.slice(1)]; return m ? m[0] * n : 0; }
+  if (unit === 'shot') return (gPerFlOz(f) || 29.6) * 1.5 * n;
+  if (unit === 'floz') return (gPerFlOz(f) || 29.6) * n;
+  return n * ({ g: 1, oz: 28.3495, lb: 453.592 }[unit] || 1);
+}
+function defaultPortion(f) {
+  if (/^Alcoholic beverage, (distilled|liqueur)|creme de menthe/i.test(f.n) && gPerFlOz(f)) return ['shot', 1];
+  const i = f.m.findIndex(([, d]) => /^1 (drink|serving|item|sandwich|burger|order|taco|burrito|piece|slice|cup|medium|large|small|regular|can|bottle|bar|container)\b/i.test(d));
+  return i >= 0 ? ['m' + i, 1] : f.m.length ? ['m0', 1] : ['g', 100];
+}
+const portionLabel = (f, unit, n) => (unit[0] === 'm' ? `${n !== 1 ? n + ' × ' : ''}${f.m[+unit.slice(1)][1]}` : unit === 'shot' ? `${n !== 1 ? n + ' × ' : ''}1.5 fl oz shot` : `${n} ${{ g: 'g', oz: 'oz', lb: 'lb', floz: 'fl oz' }[unit]}`);
+
+/* ---------- search ---------- */
+const norm = s => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9%]+/g, ' ').trim();
+const stem = w => w.replace(/(ies)$/, 'y').replace(/(oes|ches|shes|xes)$/, m => m.slice(0, -2)).replace(/([^s])s$/, '$1');
+/* everyday words the USDA names don't use: [pattern in the USDA name, extra search words] */
+const ALIAS = [
+  [/catsup/i, 'ketchup'], [/^Beverages, carbonated/i, 'soda pop soft drink'], [/carbonated, cola/i, 'coke coca cola pepsi'], [/carbonated, low calorie, cola/i, 'diet coke diet pepsi'], [/lemon-lime/i, 'sprite 7up'], [/^Beef, .*rib eye/i, 'ribeye'], [/^Beef, rib, small end/i, 'ribeye prime rib'], [/^Beef, .*top loin/i, 'strip steak new york strip ny strip kansas city strip'],
+  [/^Beef, .*tenderloin/i, 'filet mignon fillet'], [/^Beef, .*top blade/i, 'flat iron'], [/^Beef, .*(inside|outside) skirt/i, 'fajita'], [/Beef, ground/i, 'hamburger burger meat'],
+  [/distilled, all/i, 'tequila bourbon scotch brandy cognac mezcal liquor spirits shot whiskey vodka gin rum'], [/^Alcoholic beverage, beer/i, 'beer'],
+  [/Wagyu/i, 'kobe wagyu'], [/french fried|french fries/i, 'fries'], [/Potato chips|potato, chips/i, 'chips'], [/Mayonnaise|Salad dressing, mayonnaise/i, 'mayo'],
+  [/Frankfurter/i, 'hot dog hotdog wiener'], [/Sauce, barbecue/i, 'bbq'], [/Shrimp/i, 'prawn'], [/Bacon/i, 'bacon'], [/Cheese, cheddar/i, 'cheddar'],
+  [/Beverages, coffee/i, 'coffee'], [/Doughnut/i, 'donut'], [/Yogurt/i, 'yoghurt'], [/Crustaceans, crab/i, 'crab'], [/Mollusks/i, 'shellfish'], [/Fish, /i, 'fish'],
+  [/Pepper sauce|hot sauce/i, 'hot sauce'], [/Soy sauce/i, 'soy'], [/Chicken, broilers or fryers/i, 'chicken'], [/Turkey/i, 'turkey'],
+  [/Cocktail, /i, 'cocktail mixed drink'], [/Pork, cured, ham/i, 'ham'], [/Sweet potato/i, 'yam'], [/Garbanzo|chickpea/i, 'chickpea garbanzo hummus'],
+  [/Restaurant, Mexican/i, 'mexican tex mex'], [/Restaurant, Chinese/i, 'chinese takeout'], [/Restaurant, Italian/i, 'italian'], [/Restaurant, family style/i, 'family restaurant']];
+const SPELL = { yoghurt: 'yogurt', donut: 'doughnut', bbq: 'barbecue', barbeque: 'barbecue', chile: 'chili', chilli: 'chili', whisky: 'whiskey', ketsup: 'ketchup', ketchup: 'ketchup', tumeric: 'turmeric', aubergine: 'eggplant', courgette: 'zucchini', rocket: 'arugula', filet: 'filet', expresso: 'espresso', sherbert: 'sherbet', parmesean: 'parmesan', mozarella: 'mozzarella', brocoli: 'broccoli', broccolli: 'broccoli', tomatoe: 'tomato', potatoe: 'potato', cinamon: 'cinnamon', jalepeno: 'jalapeno', zuchini: 'zucchini', cantelope: 'cantaloupe', bannana: 'banana', avacado: 'avocado', brussel: 'brussels', mcdonalds: 'mcdonald', mcdonald: 'mcdonald', wendys: 'wendy', chickfila: 'chick fil', popeye: 'popeye', dominos: 'domino', applebees: 'applebee', dennys: 'denny', arbys: 'arby' };
+function buildIndex() {
+  HAY = FOODS.map(f => {
+    let extra = ''; for (const [re, w] of ALIAS) if (re.test(f.n)) extra += ' ' + w;
+    const name = norm(f.n), first = norm(f.n.split(',')[0]);
+    const all = ' ' + [name, norm(f.c), norm(f.mf), norm(GROUP(f.g)), norm(extra)].join(' ').split(' ').filter(Boolean).map(stem).join(' ') + ' ';
+    return { f, all, nameS: ' ' + name.split(' ').map(stem).join(' ') + ' ', firstS: ' ' + first.split(' ').map(stem).join(' ') + ' ', len: name.split(' ').length, extraS: ' ' + norm(extra).split(' ').map(stem).join(' ') + ' ' };
+  });
+  VOCAB = null;
+}
+let VOCAB = null;
+function vocab() { if (!VOCAB) { VOCAB = new Map(); for (const h of HAY) for (const t of h.all.trim().split(' ')) if (t) VOCAB.set(t, (VOCAB.get(t) || 0) + 1); } return VOCAB; }
+function lev(a, b, max) {
+  if (Math.abs(a.length - b.length) > max) return max + 1;
+  let pp = null, prev = Array.from({ length: b.length + 1 }, (_, i) => i);
+  for (let i = 1; i <= a.length; i++) {
+    const cur = [i]; let lo = i;
+    for (let j = 1; j <= b.length; j++) {
+      cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+      if (pp && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) cur[j] = Math.min(cur[j], pp[j - 2] + 1);
+      lo = Math.min(lo, cur[j]);
+    }
+    if (lo > max) return max + 1;
+    pp = prev; prev = cur;
+  }
+  return prev[b.length];
+}
+function fixWord(w) {
+  const V = vocab();
+  if (w.length < 4 || [...V.keys()].some(t => t.startsWith(w))) return w;
+  const max = w.length >= 7 ? 2 : 1;
+  let best = w, bd = max + 1, bc = 0;
+  for (const [t, c] of V) { if (t.length < 3) continue; const d = lev(w, t, max); if (d < bd || (d === bd && d <= max && c > bc)) { best = t; bd = d; bc = c; } }
+  return bd <= max ? best : w;
+}
+const queryWords = q => norm(q).replace(/\bmc donald/g, 'mcdonald').split(' ').filter(Boolean).map(w => SPELL[w] || w).join(' ').split(' ').map(stem);
+/* the everyday version first for the most common one- and two-word searches (USDA food numbers) */
+const PICKS = {
+  milk: [1077, 1079, 1082, 1085], 'whole milk': [1077], 'skim milk': [1085], chicken: [5064, 5060, 5098, 5094, 5069, 5103], 'chicken breast': [5064, 5060, 5057],
+  'chicken thigh': [5098, 5094, 5091], 'chicken wing': [5103, 5107], drumstick: [5069], egg: [1123, 1129, 1132, 1128], bread: [18069, 18075], rice: [20045, 20037],
+  pasta: [20121], spaghetti: [20121], noodle: [20121], coffee: [14209, 14210], bacon: [10862, 10123], apple: [9003], potato: [11674, 11363, 11371], 'baked potato': [11674],
+  'mashed potato': [11371], avocado: [9037], salmon: [15237, 15236], shrimp: [15151, 15149], cheese: [1009], pizza: [21224, 22903], tortilla: [18364, 18363], oatmeal: [8121],
+  hamburger: [21108, 21107, 23573], cheeseburger: [21090, 21089], burrito: [21064], taco: [21082, 21486], fry: [21138], 'french fry': [21138], tuna: [15121, 15117],
+  'peanut butter': [16098], 'olive oil': [4053], sugar: [19335], turkey: [5168, 5220], 'pork chop': [10189, 10163], 'pork tenderloin': [10061], beer: [14003, 14006],
+  wine: [14096, 14106], 'red wine': [14096], 'white wine': [14106], coke: [14148], cola: [14148], soda: [14148], pop: [14148], vodka: [14051], rum: [14050], gin: [14049],
+  whiskey: [14052], bourbon: [14052], scotch: [14052], tequila: [14037], liquor: [14037], shot: [14037], mezcal: [14037], brandy: [14037], 'ground beef': [23573, 23572] };
+let lastFix = '';
+function searchFoods(q) {
+  lastFix = '';
+  const words = queryWords(q);
+  if (!words.length) return [];
+  let out = rank(words, q);
+  if (!out.length) { const fixed = words.map(fixWord); if (fixed.join(' ') !== words.join(' ')) { out = rank(fixed, q); if (out.length) lastFix = fixed.join(' '); } }
+  let pick = (PICKS[words.join(' ')] || []).map(id => byId.get(id)).filter(Boolean);
+  const cut = !pick.length && words.length <= 3 && steakCutFor(q);
+  if (cut && words.some(w => /wagyu|kobe/.test(w))) pick = FOODS.filter(f => /Wagyu/.test(f.n) && /lean and fat/.test(f.n));
+  else if (cut) pick = ['choice', 'select', 'prime', 'all'].map(g => (DATA.steak[cut].rows.find(r => r[0] === g && r[1] === 'lf' && r[2] === 'cooked') || [])[3]).map(id => byId.get(id)).filter(Boolean);
+  return pick.length ? [...pick, ...out.filter(f => !pick.includes(f))] : out;
+}
+function rank(words, q) {
+  const wantBaby = /baby|infant/i.test(q), wantBrand = words.some(w => /kellogg|campbell|mcdonald|burger|wendy|taco|kfc|popeye|subway|denny|applebee|barrel|friday|olive|carrabba|border|chick|pizza|domino|papa|caesar|arby|kraft|hershey|quaker|general|nabisco/.test(w));
+  const out = [], steaky = words.some(w => /^(steak|sirloin|ribeye|filet|mignon|strip|tbone|porterhouse|brisket|flank|skirt|wagyu|tri|prime|rib)$/.test(w));
+  for (const h of HAY) {
+    if (!words.every(w => h.all.includes(' ' + w))) continue;
+    let s = 0;
+    for (const w of words) {
+      if (h.firstS.includes(' ' + w + ' ')) s += 12; else if (h.nameS.includes(' ' + w + ' ')) s += 8; else if (h.extraS.includes(' ' + w + ' ')) s += 9;
+      else if (h.nameS.includes(' ' + w)) s += 5; else s += 2;
+    }
+    s -= h.len * 0.35;
+    const f = h.f;
+    if (f.y) s += 4;
+    if (steaky && f.n.startsWith('Beef, ')) s += 7;
+    if (/^(Game meat|Ostrich|Emu)\b/.test(f.n) && !words.some(w => /game|bison|buffalo|venison|deer|elk|ostrich|emu|boar|rabbit|moose|caribou/.test(w))) s -= 6;
+    if (/\braw\b/.test(f.n) && /Fruits|Vegetables|Nuts/.test(GROUP(f.g))) s += 3;
+    if (/Baby foods/.test(GROUP(f.g)) || /^Infant formula/.test(f.n)) s -= wantBaby ? 0 : 12;
+    if (/School Lunch|USDA Commodity|Native foods/.test(f.n + GROUP(f.g))) s -= 6;
+    if ((f.mf || /[A-Z][a-z]+'s,/.test(f.n)) && !wantBrand) s -= 2;
+    if (!isLocalId(f.id)) s -= 1;
+    out.push([s, f]);
+  }
+  return out.sort((a, b) => b[0] - a[0] || a[1].n.length - b[1].n.length).map(x => x[1]);
+}
+
+const CUT_Q = [['ribeye', /rib ?eye|prime rib/], ['strip', /strip|top loin|kansas/], ['filet', /filet|fillet mignon|tenderloin steak|beef tenderloin/], ['sirloin', /sirloin/], ['tbone', /t ?bone/], ['porter', /porterhouse/],
+  ['flank', /flank/], ['skirt', /skirt|fajita/], ['flatiron', /flat ?iron/], ['tritip', /tri ?tip/], ['round', /london broil|top round/], ['brisket', /brisket/], ['chuckeye', /chuck eye/], ['shortrib', /short rib/], ['ribeye', /wagyu|kobe|\bsteak\b/], ['ground', /ground beef|hamburger meat/]];
+const steakCutFor = q => { const n = norm(q); for (const [k, re] of CUT_Q) if (re.test(n) && DATA.steak[k]) return k; return ''; };
+/* ---------- condiments (a view across several USDA groups) ---------- */
+const COND_RE = /^(Catsup|Mustard|Mayonnaise|Salad dressing|Sauce|Sauces|Relish|Pickles?|Pickle relish|Horseradish|Soy sauce|Fish sauce|Hoisin|Oyster sauce|Worcestershire|Salsa|Pepper sauce|Hot sauce|Vinegar|Honey|Jams? and preserves|Jellies|Marmalade|Syrups?|Tahini|Hummus|Guacamole|Dip|Gravy|Pesto|Butter, salted|Butter, without salt|Margarine|Cream, sour|Sour cream|Olives|Capers|Chutney|Teriyaki|Barbecue|Tartar|Cocktail sauce|Steak sauce|Spices, (salt|pepper)|Salt, table|Sweet and sour|Ranch|Cranberry sauce|Peanut butter|Nutella|Chocolate-flavored hazelnut spread)\b/i;
+const isCondiment = f => COND_RE.test(f.n) && !/Restaurant|Fast food/.test(GROUP(f.g));
+
+/* ---------- state ---------- */
+let db = null, store = { favs: [], recent: [], misses: [], key: '', online: {} };
+const save = () => { if (db) idbPut(db, 'state', JSON.stringify(store)).catch(() => {}); };
+const isFav = id => store.favs.some(x => String(x) === String(id));
+function toggleFav(id) { store.favs = isFav(id) ? store.favs.filter(x => String(x) !== String(id)) : [id, ...store.favs].slice(0, 300); keepOnline(); save(); render(); }
+function viewed(id) { store.recent = [id, ...store.recent.filter(x => String(x) !== String(id))].slice(0, 15); keepOnline(); save(); }
+/* online foods you saved or opened are kept on the phone so they work offline */
+function keepOnline() {
+  const want = new Set([...store.favs, ...store.recent].filter(x => !isLocalId(x)).map(String));
+  const kept = {}; for (const id of want) { const f = byId.get(id) || store.online[id]; if (f) kept[id] = slim(f); }
+  store.online = kept;
+}
+const slim = f => ({ id: f.id, g: f.g, n: f.n, c: f.c || '', v: f.v, m: f.m, mf: f.mf || '', note: f.note || '', alc: f.alc ?? null, src: f.src, dt: f.dt || '' });
+
+/* ---------- online: USDA FoodData Central ---------- */
+const FDC = 'https://api.nal.usda.gov/fdc/v1/foods/search';
+const FDC_NUT = { 1008: 'kcal', 2047: 'kcal_a', 2048: 'kcal_b', 1003: 'pro', 1004: 'fat', 1258: 'sat', 1292: 'mono', 1293: 'poly', 1253: 'chol', 1005: 'carb', 1079: 'fib', 2000: 'sug', 1063: 'sug',
+  1093: 'na', 1092: 'k', 1087: 'ca', 1089: 'fe', 1090: 'mg', 1091: 'p', 1095: 'zn', 1103: 'se', 1098: 'cu', 1101: 'mn', 1106: 'vitA', 1162: 'vitC', 1114: 'vitD', 1109: 'vitE',
+  1185: 'vitK', 1165: 'b1', 1166: 'b2', 1167: 'b3', 1170: 'b5', 1175: 'b6', 1190: 'fol', 1178: 'b12', 1180: 'cho', 1051: 'water', 1107: 'bcar', 1122: 'lyc', 1123: 'lutz', 1018: 'alc' };
+const DT_LABEL = { 'Survey (FNDDS)': 'USDA survey foods', Foundation: 'USDA foundation', 'SR Legacy': 'USDA SR Legacy', Branded: 'Packaged brand' };
+const ui = { tab: 'foods', q: '', grp: '', id: null, stack: [], portion: null, cut: 'ribeye', cooked: true, lean: false, oz: 8, onl: { q: '', brands: false, busy: false, results: [], err: '' } };
+const apiKey = () => (store.key || '').trim() || 'DEMO_KEY';
+function parseFdc(x) {
+  if (!x || !isNum(x.fdcId) || typeof x.description !== 'string') return null;
+  const v = {};
+  for (const n of Array.isArray(x.foodNutrients) ? x.foodNutrients : []) {
+    const key = FDC_NUT[n.nutrientId]; if (!key || !isNum(n.value)) continue;
+    let val = n.value; if (n.unitName === 'KJ') continue;
+    if (key === 'vitD' && n.unitName === 'IU') val = val / 40;
+    if (v[key] == null) v[key] = val;
+  }
+  if (v.kcal == null) v.kcal = v.kcal_a ?? v.kcal_b ?? null;
+  delete v.kcal_a; delete v.kcal_b;
+  const alc = v.alc ?? null; delete v.alc;
+  if (v.kcal == null) return null;
+  const vv = {}; for (const k of DATA.nut) vv[k] = v[k] ?? null;
+  const m = [];
+  for (const fm of Array.isArray(x.foodMeasures) ? x.foodMeasures : []) {
+    if (!isNum(fm.gramWeight) || fm.gramWeight <= 0 || /quantity not specified/i.test(fm.disseminationText || '')) continue;
+    m.push([Math.round(fm.gramWeight * 10) / 10, String(fm.disseminationText || '').slice(0, 60)]);
+    if (m.length >= 6) break;
+  }
+  if (isNum(x.servingSize) && x.servingSize > 0 && /^(g|grm|ml|mlt)$/i.test(x.servingSizeUnit || '')) {
+    const ml = /^ml/i.test(x.servingSizeUnit);
+    m.unshift([Math.round(x.servingSize * 10) / 10, `1 serving${x.householdServingFullText ? ' (' + String(x.householdServingFullText).toLowerCase().slice(0, 30) + ')' : ''}${ml ? ', ' + x.servingSize + ' ml' : ''}`]);
+  }
+  const brand = [x.brandName, x.brandOwner].find(s => typeof s === 'string' && s.trim()) || '';
+  const name = x.dataType === 'Branded' ? `${brand ? niceCase(brand) + ', ' : ''}${niceCase(x.description)}` : x.description;
+  return { id: 'fdc:' + x.fdcId, g: -1, n: name, c: '', v: vv, m, mf: x.dataType === 'Branded' ? niceCase(brand) : '', alc, src: 'fdc', dt: x.dataType || '', note: '' };
+}
+const niceCase = s => (s === s.toUpperCase() ? s.toLowerCase().replace(/\b[a-z]/g, c => c.toUpperCase()) : s);
+async function searchOnline(q, brands) {
+  const types = brands ? 'Branded' : 'Survey (FNDDS),Foundation,SR Legacy';
+  const url = `${FDC}?query=${encodeURIComponent(q)}&pageSize=30&dataType=${encodeURIComponent(types)}&api_key=${encodeURIComponent(apiKey())}`;
+  let res;
+  try { res = await fetch(url, { credentials: 'omit', referrerPolicy: 'no-referrer' }); }
+  catch (e) { throw new Error(navigator.onLine === false ? 'You’re offline. Online search needs a connection.' : 'Couldn’t reach USDA. Try again in a moment.'); }
+  if (res.status === 429) throw new Error(store.key ? 'Your USDA key has hit its hourly limit. Try again later.' : 'USDA’s shared demo key is out of searches for this hour on this network. Add your own free key under Saved › Online lookup.');
+  if (res.status === 403) throw new Error('USDA didn’t accept the key. Check it under Saved › Online lookup.');
+  if (!res.ok) throw new Error('USDA search failed (' + res.status + '). Try again.');
+  let j; try { j = await res.json(); } catch (e) { throw new Error('USDA’s server sent a bad answer. Try again.'); }
+  return (Array.isArray(j.foods) ? j.foods : []).map(parseFdc).filter(Boolean);
+}
+async function runOnline() {
+  const q = ui.q.trim(); if (q.length < 2) return;
+  ui.onl = { ...ui.onl, q, busy: true, err: '', results: [] }; paintOnline();
+  try { const r = await searchOnline(q, ui.onl.brands); for (const f of r) byId.set(f.id, f); ui.onl.results = r; }
+  catch (e) { ui.onl.err = e.message; }
+  ui.onl.busy = false; if (ui.q.trim() === q) paintOnline();
+}
+
+/* ---------- UI ---------- */
+const view = $('#view');
+function foodRow(f, unit, n) {
+  const [u, c] = unit ? [unit, n] : defaultPortion(f);
+  const g = gramsFor(f, u, c), k = kcalOf(f, g);
+  const gm = /^Beef, /.test(f.n) && f.n.match(/\b(prime|choice|select|all grades)\b|Wagyu/);
+  const badge = gm ? `<span class="badge ${/prime|Wagyu/.test(gm[0]) ? 'acc' : ''}">${esc(gm[0] === 'Wagyu' ? 'Wagyu' : cap(gm[0]))}</span><span class="badge">${/\braw$/.test(f.n) ? 'raw' : 'cooked'}</span>` : '';
+  return `<div class="row" data-action="open" data-id="${esc(f.id)}" role="button" tabindex="0"><div class="row-main"><div class="row-title">${esc(titleOf(f))}${badge}</div><div class="row-sub">${esc(subOf(f) || GROUP(f.g) || DT_LABEL[f.dt] || '')}</div></div><div class="kc">${k == null ? '—' : k}<small>${esc(shortPortion(f, u, c))}</small></div></div>`;
+}
+const shortPortion = (f, u, c) => { const s = portionLabel(f, u, c); return s.length > 24 ? s.slice(0, 22) + '…' : s; };
+const listHTML = (arr, empty) => (arr.length ? `<div class="card">${arr.map(f => foodRow(f)).join('')}</div>` : (empty ? `<div class="empty"><p>${empty}</p></div>` : ''));
+const QUICK = [['', 'All'], ['@rest', 'Restaurants & fast food'], ['@cond', 'Condiments'], ['@booze', 'Beer, wine & liquor']];
+function groupList() {
+  if (ui.grp === '@rest') { const fg = FASTGROUPS(); return FOODS.filter(f => fg.includes(f.g)); }
+  if (ui.grp === '@cond') return FOODS.filter(isCondiment);
+  if (ui.grp === '@booze') return FOODS.filter(f => isLocalId(f.id) && isBooze(f));
+  const gi = DATA.groups.indexOf(ui.grp); return FOODS.filter(f => f.g === gi);
+}
+function foodsBody() {
+  if (ui.q.trim()) {
+    const r = searchFoods(ui.q);
+    const head = `<p class="fine" style="margin:10px 4px 6px">${r.length} ${r.length === 1 ? 'match' : 'matches'} on this phone${lastFix ? ' (closest spelling)' : ''}</p>`;
+    const cut = steakCutFor(ui.q);
+    return (cut ? `<button type="button" class="card pad" data-action="to-steak" data-v="${cut}" style="display:block;width:100%;text-align:left;font:inherit;color:inherit;margin-top:10px;cursor:pointer"><b>🥩 Compare ${esc(DATA.steak[cut].label.toLowerCase())} by grade</b><div class="fine">Select, choice, prime${['ribeye', 'strip', 'filet'].includes(cut) ? ' and wagyu' : ''}, cooked or raw, any weight →</div></button>` : '') + (r.length ? head + listHTML(r.slice(0, 60)) : `<div class="empty" style="padding:24px 10px"><p>Nothing on this phone matches “${esc(ui.q)}”.</p><p class="fine">Try the USDA online search below, or a simpler word. It’s also been added to <b>Saved › Searched, not found</b>.</p></div>`) + `<div id="online">${onlineHTML()}</div>`;
+  }
+  if (ui.grp) {
+    const arr = groupList().sort((a, b) => a.n.localeCompare(b.n));
+    return `<p class="fine" style="margin:10px 4px 6px">${arr.length} foods</p>` + listHTML(arr.slice(0, 400)) + (arr.length > 400 ? `<p class="fine" style="margin:8px 4px">Showing the first 400. Search to narrow it down.</p>` : '');
+  }
+  const rec = store.recent.map(id => byId.get(id)).filter(Boolean);
+  return (rec.length ? `<div class="sec-h"><span>Recently looked up</span></div>${listHTML(rec)}` : '')
+    + `<div class="card pad" style="margin-top:14px"><p style="margin:0">Search ${FOODS.length.toLocaleString()} foods: produce, meat, seafood, dairy, drinks, liquor, condiments, snacks, fast food and restaurant meals. Every food shows calories, protein, carbs, fat, fiber, sugar, sodium, vitamins and minerals for the amount you pick.</p><p class="fine" style="margin:8px 0 0">Data: USDA nutrient database (SR28). Search USDA online for more, including newer restaurant-style foods and packaged brands.</p></div>`;
+}
+function onlineHTML() {
+  const o = ui.onl, q = ui.q.trim();
+  const same = o.q === q;
+  const btn = `<button type="button" class="btn ${same && (o.results.length || o.err) ? '' : 'primary'} block" data-action="online"${o.busy ? ' disabled' : ''}>${o.busy && same ? 'Searching USDA…' : `🔎 Search USDA online for “${esc(q)}”`}</button>`;
+  const seg = `<div class="seg" style="margin-top:8px"><button type="button" data-action="onl-type" data-v="0" aria-pressed="${!o.brands}">Foods & restaurant-style</button><button type="button" data-action="onl-type" data-v="1" aria-pressed="${o.brands}">Packaged brands</button></div>`;
+  let res = '';
+  if (same && o.err) res = `<div class="note" style="margin-top:10px">${esc(o.err)}</div>`;
+  else if (same && !o.busy && o.results.length) res = `<div class="sec-h"><span>From USDA online</span><span>${o.results.length}</span></div><div class="card">${o.results.map(f => foodRow(f)).join('')}</div>`;
+  else if (same && !o.busy && o.q && !o.results.length) res = `<div class="note" style="margin-top:10px">USDA online has nothing for that either.</div>`;
+  return `<div class="sec-h"><span>More from USDA online</span></div>${seg}<div style="margin-top:8px">${btn}</div>${res}<p class="fine" style="margin:8px 4px 0">Sends only your search words to USDA FoodData Central.</p>`;
+}
+function paintOnline() { const el = $('#online'); if (el) el.innerHTML = onlineHTML(); }
+function renderFoods() {
+  const gs = DATA.groups.map(g => [g, g]).filter(([g]) => !/Native foods/.test(g)).sort((a, b) => a[1].localeCompare(b[1]));
+  return `<div class="search"><input id="q" type="search" placeholder="Search: big mac, ribeye, ranch dressing…" value="${esc(ui.q)}" autocomplete="off" aria-label="Search foods"></div>
+    <div class="scroll-chips" id="grps">${[...QUICK, ...gs].map(([v, l]) => `<button type="button" class="chip" data-action="grp" data-v="${esc(v)}" aria-pressed="${ui.grp === v && !ui.q}">${esc(l)}</button>`).join('')}</div>
+    <div id="res">${foodsBody()}</div>`;
+}
+
+/* ---------- food detail ---------- */
+function renderFood() {
+  const f = byId.get(ui.id);
+  if (!ui.portion || ui.portion.id !== f.id) { const [u, n] = defaultPortion(f); ui.portion = { id: f.id, u, n }; }
+  const opts = portionOptions(f);
+  if (!opts.some(o => o[0] === ui.portion.u)) ui.portion.u = opts[0][0];
+  const chain = chainOf(f), fast = isLocalId(f.id) && FASTGROUPS().includes(f.g);
+  const src = f.src === 'fdc'
+    ? `USDA FoodData Central (${esc(DT_LABEL[f.dt] || f.dt)}), food #${esc(String(f.id).slice(4))}.${f.dt === 'Branded' ? ' Numbers come from the product label as reported to USDA.' : ''}`
+    : f.id >= 900000 ? 'Estimated from USDA SR28 values for each ingredient.' : `USDA SR28 (2015), food #${f.id}.`;
+  return `<div class="stack">
+    <section class="card pad"><div style="display:flex;gap:8px;align-items:flex-start"><div style="flex:1;min-width:0"><div class="fine">${esc(GROUP(f.g) || DT_LABEL[f.dt] || '')}</div><h2 style="margin:2px 0 0">${esc(titleOf(f))}</h2>${subOf(f) ? `<div class="muted" style="font-size:14px">${esc(subOf(f))}</div>` : ''}</div><button type="button" class="star" data-action="fav" data-id="${esc(f.id)}" aria-pressed="${isFav(f.id)}" aria-label="${isFav(f.id) ? 'Remove from saved' : 'Save'}">★</button></div>
+      <div class="portion"><input id="pn" type="number" inputmode="decimal" min="0" step="any" value="${esc(ui.portion.n)}" aria-label="Amount"><select id="pu" aria-label="Portion">${opts.map(([v, l]) => `<option value="${v}"${v === ui.portion.u ? ' selected' : ''}>${esc(l)}</option>`).join('')}</select></div>
+      <div id="facts">${factsHTML(f)}</div></section>
+    ${f.note ? `<section class="card pad"><p class="note" style="margin:0">${esc(f.note)}</p></section>` : ''}
+    ${/Wagyu/i.test(f.n) ? `<section class="card pad"><p class="note" style="margin:0">USDA’s Wagyu numbers are for Australian Wagyu (marble scores 4–5 and 9), raw only. Japanese A5 and American Wagyu aren’t in USDA data; higher marbling means more fat and calories.</p></section>` : ''}
+    ${fast || f.src === 'fdc' && /fast food|restaurant/i.test(f.n) ? `<section class="card pad"><p class="note" style="margin:0">Restaurant numbers are from ${f.src === 'fdc' ? 'USDA’s survey data' : 'USDA’s 2015 data'}; recipes and portion sizes change.${chain ? ` For the current menu: <a href="https://www.google.com/search?q=${encodeURIComponent(chain + ' nutrition information')}" target="_blank" rel="noopener noreferrer">${esc(chain)} nutrition ↗</a>` : ''}</p></section>` : ''}
+    <p class="src">${src} %DV = percent of the FDA Daily Value for a 2,000-calorie diet.</p>
+  </div>`;
+}
+function factsHTML(f) {
+  const g = gramsFor(f, ui.portion.u, +ui.portion.n);
+  const k = kcalOf(f, g), P = amt(f, 'pro', g), C = amt(f, 'carb', g), F = amt(f, 'fat', g), A = alcoholG(f, g);
+  const cal = [(P || 0) * 4, (C || 0) * 4, (F || 0) * 9, (A || 0) * 7], tot = cal.reduce((a, b) => a + b, 0) || 1;
+  const pct = cal.map(c => Math.round(c / tot * 100));
+  const dv = (key, x) => (DV[key] && x != null ? Math.round(x / DV[key] * 100) + '%' : '');
+  const rows = LABEL.map(([key, label, unit, st]) => { const x = amt(f, key, g); return x == null && st === 'sub' ? '' : `<tr class="${st}"><td>${label}</td><td class="v">${fmtN(x, unit)}</td><td class="dv">${dv(key, x)}</td></tr>`; }).join('');
+  const micro = MICRO.map(([key, label, unit]) => { const x = amt(f, key, g); return x == null ? '' : `<tr><td>${label}</td><td class="v">${fmtN(x, unit)}</td><td class="dv">${dv(key, x)}</td></tr>`; }).join('');
+  return `<div class="bigcal"><b id="kcal">${k == null ? '—' : k.toLocaleString()}</b><span>calories · ${fmtN(g)} g</span></div>
+    <div class="macros"><div><b>${fmtN(P)}<small style="font-size:13px">g</small></b><span>Protein</span></div><div><b>${fmtN(C)}<small style="font-size:13px">g</small></b><span>Carbs</span></div><div><b>${fmtN(F)}<small style="font-size:13px">g</small></b><span>Fat</span></div></div>
+    ${k ? `<div class="mbar" aria-hidden="true"><i class="p" style="width:${pct[0]}%"></i><i class="c" style="width:${pct[1]}%"></i><i class="f" style="width:${pct[2]}%"></i><i class="a" style="width:${pct[3]}%"></i></div>
+    <div class="legend"><span><i style="background:#3b82f6"></i>Protein ${pct[0]}%</span><span><i style="background:#f59e0b"></i>Carbs ${pct[1]}%</span><span><i style="background:#ef4444"></i>Fat ${pct[2]}%</span>${A ? `<span><i style="background:#a855f7"></i>Alcohol ${pct[3]}%</span>` : ''}</div>` : ''}
+    ${A ? `<p class="note" style="margin:12px 0 0" id="alc">Alcohol: about ${fmtN(A, 'g')} (${(A / 14).toFixed(1)} standard drinks).${f.alc == null ? ' Estimated from the calories not explained by protein, carbs and fat.' : ''}</p>` : ''}
+    <h3 style="margin:16px 0 4px">Nutrition facts</h3>
+    <table class="nf" id="nf"><tbody><tr class="main thick"><td>Calories</td><td class="v">${k == null ? '—' : k}</td><td class="dv">${'' }</td></tr>${rows}</tbody></table>
+    ${micro ? `<details class="eg" style="margin-top:10px"><summary>Vitamins & minerals</summary><table class="nf" style="margin-top:6px"><tbody>${micro}</tbody></table></details>` : ''}`;
+}
+
+/* ---------- steak ---------- */
+const GRADE = { select: ['Select', 'Least marbling'], choice: ['Choice', 'Most supermarket steak'], all: ['All grades', 'USDA average'], prime: ['Prime', 'Most marbling of USDA grades'], wagyu45: ['Wagyu, marble 4–5', 'Australian, raw only'], wagyu9: ['Wagyu, marble 9', 'Australian, raw only'] };
+const GORDER = ['select', 'choice', 'all', 'prime', 'wagyu45', 'wagyu9'];
+function renderSteak() {
+  const S = DATA.steak, cut = S[ui.cut] ? ui.cut : 'ribeye', c = S[cut], ground = cut === 'ground';
+  const oz = isNum(+ui.oz) && +ui.oz > 0 ? +ui.oz : 8, g = oz * 28.3495;
+  const state = ui.cooked ? 'cooked' : 'raw', fat = ui.lean ? 'lo' : 'lf';
+  let rows = c.rows.filter(r => ground ? r[1] === state : r[1] === fat && r[2] === state);
+  const extraRaw = ground || !ui.cooked ? [] : c.rows.filter(r => r[1] === fat && r[2] === 'raw' && r[0].startsWith('wagyu'));
+  const line = (label, sub, id, rawOnly) => { const f = byId.get(id); if (!f) return ''; const k = kcalOf(f, g); return { k, html: (max) => `<tr data-action="open-steak" data-id="${id}"><td>${esc(label)}<small>${esc(sub)}</small><div class="gbar" style="width:${Math.max(6, Math.round(k / max * 100))}%"></div></td><td class="k">${k}</td><td>${fmtN(amt(f, 'pro', g), 'g')}</td><td>${fmtN(amt(f, 'fat', g), 'g')}</td></tr>` }; };
+  const lines = ground
+    ? rows.map(r => line(r[0] + ' ground beef', state === 'cooked' ? 'patty, broiled' : 'raw', r[2]))
+    : rows.sort((a, b) => GORDER.indexOf(a[0]) - GORDER.indexOf(b[0])).map(r => line(GRADE[r[0]][0], GRADE[r[0]][1], r[3]));
+  const rawLines = extraRaw.sort((a, b) => GORDER.indexOf(a[0]) - GORDER.indexOf(b[0])).map(r => line(GRADE[r[0]][0], 'raw weight (USDA has no cooked values)', r[3]));
+  const all = [...lines, ...rawLines].filter(Boolean), max = Math.max(1, ...all.map(x => x.k || 0));
+  return `<div class="stack">
+    <div class="scroll-chips" style="padding-top:2px">${Object.keys(S).map(k => `<button type="button" class="chip" data-action="cut" data-v="${k}" aria-pressed="${k === cut}">${esc(S[k].label)}</button>`).join('')}</div>
+    <section class="card pad">
+      <div class="seg"><button type="button" data-action="st-cooked" data-v="1" aria-pressed="${ui.cooked}">Cooked</button><button type="button" data-action="st-cooked" data-v="0" aria-pressed="${!ui.cooked}">Raw</button></div>
+      ${ground ? '' : `<div class="seg" style="margin-top:8px"><button type="button" data-action="st-lean" data-v="0" aria-pressed="${!ui.lean}">Eat the fat</button><button type="button" data-action="st-lean" data-v="1" aria-pressed="${ui.lean}">Lean only</button></div>`}
+      <div class="portion"><input id="soz" type="number" inputmode="decimal" min="0" step="any" value="${esc(oz)}" aria-label="Ounces"><span style="font-weight:600">oz ${ui.cooked ? 'cooked weight' : 'raw weight'}</span></div>
+    </section>
+    <section class="card pad"><h3 style="margin:0 0 2px">${esc(c.label)}${ground ? ' by lean %' : ' by grade'}</h3>${c.note ? `<p class="fine" style="margin:0 0 6px">${esc(c.note)}</p>` : ''}
+      ${lines.filter(Boolean).length ? `<table class="stbl" id="stbl"><thead><tr><th>${ground ? 'Blend' : 'Grade'}</th><th>Cal</th><th>Protein</th><th>Fat</th></tr></thead><tbody>${lines.filter(Boolean).map(x => x.html(max)).join('')}${rawLines.filter(Boolean).map(x => x.html(max)).join('')}</tbody></table>` : `<p class="muted">USDA has no ${state} ${fat === 'lo' ? 'lean-only ' : ''}values for this cut.</p>`}
+      <p class="fine" style="margin:10px 0 0">Tap a row for full nutrition. ${ground ? '' : '“Eat the fat” counts the fat cap and marbling; “Lean only” is with the visible fat trimmed off on the plate.'} Cooked numbers are per ounce of cooked meat; a steak loses roughly a quarter of its weight cooking.</p></section>
+    <section class="card pad"><p class="fine" style="margin:0">Grades: <b>Select</b> has the least marbling, <b>Choice</b> is most supermarket steak, <b>Prime</b> has the most marbling of the USDA grades. USDA’s <b>Wagyu</b> data is Australian (marble scores 4–5 and 9), raw only; Japanese A5 isn’t in USDA data. Data: USDA SR28.</p></section>
+  </div>`;
+}
+
+/* ---------- drinks ---------- */
+const DRINKS = [
+  ['Liquor', 'shot', 1.5, [[14037, '80 proof: vodka, gin, rum, whiskey, tequila'], [14550, '86 proof'], [14551, '90 proof'], [14532, '94 proof'], [14533, '100 proof']]],
+  ['Liqueurs', 'shot', 1.5, [[14414, 'Coffee liqueur, 53 proof'], [14534, 'Coffee liqueur, 63 proof'], [14415, 'Coffee liqueur with cream'], [14034, 'Crème de menthe']]],
+  ['Beer', 'floz', 12, [[14003, 'Regular beer'], [14006, 'Light beer'], [14013, 'Light, low carb'], [14251, 'Higher alcohol beer'], [14248, 'Light, higher alcohol'], [14004, 'Budweiser'], [14007, 'Bud Light'], [14005, 'Budweiser Select'], [14239, 'Hard lemonade'], [14305, 'Non-alcoholic beer']]],
+  ['Wine', 'floz', 5, [[14096, 'Red wine'], [14106, 'White wine'], [14253, 'Rosé'], [14097, 'Cabernet Sauvignon'], [14602, 'Merlot'], [14099, 'Pinot Noir'], [14102, 'Zinfandel'], [14160, 'Chardonnay'], [14134, 'Sauvignon Blanc'], [14113, 'Pinot Grigio'], [14132, 'Riesling'], [43155, 'Light wine'], [14057, 'Dessert wine, sweet'], [43479, 'Sake'], [14553, 'Non-alcoholic wine']]],
+  ['Cocktails', 'm0', 1, 'cocktails'],
+  ['Mixers & soft drinks', 'floz', 8, [[14148, 'Cola'], [14121, 'Club soda'], [14155, 'Tonic water'], [14136, 'Ginger ale'], [14242, 'Cranberry juice cocktail'], [9209, 'Orange juice'], [9123, 'Grapefruit juice'], [11540, 'Tomato juice'], [9160, 'Lime juice'], [14146, 'Diet cola']]]];
+function renderDrinks() {
+  return `<div class="stack">${DRINKS.map(([title, unit, n, list]) => {
+    const items = list === 'cocktails' ? FOODS.filter(f => isLocalId(f.id) && (f.id >= 900000 || [14010, 14017, 14531, 14019, 14015, 14009].includes(f.id))).map(f => [f.id, titleOf(f)]) : list;
+    const rows = items.map(([id, label]) => { const f = byId.get(id); if (!f) return ''; const u = unit === 'm0' ? 'm0' : unit, nn = unit === 'shot' ? 1 : n, g = gramsFor(f, u, nn), k = kcalOf(f, g), a = alcoholG(f, g);
+      return `<div class="row" data-action="open-drink" data-id="${id}" data-u="${u}" data-n="${nn}" role="button" tabindex="0"><div class="row-main"><div class="row-title">${esc(label)}</div><div class="row-sub">${esc(unit === 'm0' ? f.m[0][1] : portionLabel(f, u, nn))}${a ? ` · ${(a / 14).toFixed(1)} std drinks` : ''}</div></div><div class="kc">${k}<small>cal</small></div></div>`; }).join('');
+    return `<div><div class="sec-h"><span>${esc(title)}</span><span>${unit === 'shot' ? 'per 1.5 oz' : unit === 'm0' ? 'per drink' : 'per ' + n + ' fl oz'}</span></div><div class="card">${rows}</div></div>`;
+  }).join('')}
+    <p class="src">Calories in spirits come almost entirely from alcohol, so any spirit at the same proof has about the same calories. Cocktails marked estimated add up USDA values for each ingredient (recipe on the detail page). Margaritas and other drinks with triple sec or mixes: search USDA online from the Foods tab.</p></div>`;
+}
+
+/* ---------- saved ---------- */
+function renderSaved() {
+  const favs = store.favs.map(id => byId.get(id)).filter(Boolean), m = store.misses;
+  const misses = `<div class="sec-h"><span>Searched, not found</span><span>${m.length}</span></div>`
+    + (m.length ? `<div class="card" id="misses">${m.map(x => `<div class="row"><div class="row-main" data-action="miss-search" data-q="${esc(x.q)}" role="button" tabindex="0"><div class="row-title">${esc(x.q)}</div><div class="row-sub">${esc(fmtDate(x.at))}</div></div><button type="button" class="btn small ghost" data-action="miss-del" data-q="${esc(x.q)}" aria-label="Remove ${esc(x.q)}">✕</button></div>`).join('')}</div>
+      <div style="display:flex;gap:8px;margin-top:10px"><button type="button" class="btn primary" data-action="miss-send" style="flex:1">Send this list</button><button type="button" class="btn ghost" data-action="miss-clear">Clear</button></div>`
+      : `<p class="fine" style="margin:4px">When a search finds nothing on this phone, it’s listed here so you can send the list in to be added.</p>`);
+  return `<div class="stack">${favs.length ? `<div class="card">${favs.map(f => foodRow(f)).join('')}</div>` : '<div class="empty"><div class="big">⭐</div><h2>Nothing saved yet</h2><p>Tap the star on any food to keep it here.</p></div>'}${misses}
+    <div class="sec-h"><span>Online lookup</span></div>
+    <section class="card pad"><p style="margin:0">USDA online search uses USDA’s shared demo key, which allows about 30 searches an hour per network. For more, get a free key at <a href="https://api.data.gov/signup/" target="_blank" rel="noopener noreferrer">api.data.gov</a> and paste it here. It stays on this phone.</p>
+      <div class="keyrow"><input id="key" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Your api.data.gov key (optional)" value="${esc(store.key)}"><button type="button" class="btn" data-action="key-save">Save</button></div>
+      ${store.key ? `<p class="fine" style="margin:6px 0 0">Using your key. <a href="#" data-action="key-clear">Remove it</a></p>` : ''}</section>
+    <p class="src">Food data: USDA National Nutrient Database for Standard Reference, Release 28 (public domain), and USDA FoodData Central for online results.</p></div>`;
+}
+
+/* ---------- render / nav ---------- */
+const TITLES = { foods: 'Calorie Lookup', steak: 'Steak by grade', drinks: 'Drinks & alcohol', saved: 'Saved' };
+function render() {
+  if (!DATA) return;
+  const y = window.scrollY, detail = ui.id != null && byId.has(ui.id);
+  view.innerHTML = detail ? renderFood() : { foods: renderFoods, steak: renderSteak, drinks: renderDrinks, saved: renderSaved }[ui.tab]();
+  $$('nav.tabs button').forEach(b => b.setAttribute('aria-current', !detail && b.dataset.tab === ui.tab ? 'page' : 'false'));
+  const hd = $('header.top .wrap'); let back = $('#backLink');
+  const ex = $('a.exit', hd); if (ex) ex.classList.toggle('hide', detail);
+  if (detail && !back) { back = document.createElement('a'); back.id = 'backLink'; back.className = 'back'; back.href = '#'; back.textContent = '‹ Back'; hd.insertBefore(back, hd.firstChild); }
+  if (!detail && back) back.remove();
+  $('#title').textContent = detail ? titleOf(byId.get(ui.id)) : TITLES[ui.tab];
+  $('#sub').textContent = detail ? '' : ui.tab === 'foods' ? `${FOODS.length.toLocaleString()} foods · USDA data` : '';
+  window.scrollTo(0, detail ? 0 : y);
+}
+function openFood(id, portion) {
+  if (!byId.has(id)) return;
+  ui.stack.push({ tab: ui.tab, id: ui.id, portion: ui.portion }); ui.id = id; ui.portion = portion ? { id, ...portion } : null;
+  viewed(id); render(); window.scrollTo(0, 0);
+}
+function goBack() { const s = ui.stack.pop(); ui.id = s ? s.id : null; ui.portion = s ? s.portion : null; if (s) ui.tab = s.tab; render(); }
+function go(t) { ui.tab = t; ui.id = null; ui.stack = []; render(); window.scrollTo(0, 0); }
+
+/* not-found list */
+let missTimer = 0;
+function noteMiss(q) {
+  q = String(q || '').trim().replace(/\s+/g, ' ');
+  if (q.length < 3 || searchFoods(q).length) return;
+  const lq = q.toLowerCase();
+  if (store.misses.some(m => m.q.toLowerCase().startsWith(lq))) return;
+  store.misses = [{ q, at: todayISO() }, ...store.misses.filter(m => !lq.startsWith(m.q.toLowerCase()))].slice(0, 100);
+  save();
+}
+const missText = () => 'Calorie Lookup: foods I searched for and didn’t find\n' + store.misses.map(m => '- ' + m.q).join('\n');
+async function sendMisses() {
+  const text = missText();
+  try { if (navigator.share) { await navigator.share({ title: 'Foods to add', text }); return; } } catch (e) { if (e && e.name === 'AbortError') return; }
+  try { await navigator.clipboard.writeText(text); toast('List copied'); }
+  catch (e) { askDialog({ title: 'Foods to add', body: `<textarea readonly rows="8" style="width:100%">${esc(text)}</textarea>`, buttons: [{ label: 'OK', value: true, kind: 'primary' }] }); }
+}
+
+view.addEventListener('click', e => {
+  const el = e.target.closest('[data-action]'); if (!el) return;
+  const id = el.dataset.id != null ? parseId(el.dataset.id) : null;
+  switch (el.dataset.action) {
+    case 'open': openFood(id); break;
+    case 'open-steak': openFood(id, { u: 'oz', n: +ui.oz || 8 }); break;
+    case 'open-drink': openFood(id, { u: el.dataset.u, n: +el.dataset.n }); break;
+    case 'grp': ui.grp = el.dataset.v; ui.q = ''; render(); break;
+    case 'fav': toggleFav(id); break;
+    case 'online': runOnline(); break;
+    case 'onl-type': ui.onl.brands = el.dataset.v === '1'; ui.onl.results = []; ui.onl.err = ''; ui.onl.q = ''; paintOnline(); if (ui.q.trim()) runOnline(); break;
+    case 'cut': ui.cut = el.dataset.v; render(); break;
+    case 'to-steak': ui.cut = el.dataset.v; go('steak'); break;
+    case 'st-cooked': ui.cooked = el.dataset.v === '1'; render(); break;
+    case 'st-lean': ui.lean = el.dataset.v === '1'; render(); break;
+    case 'miss-search': ui.tab = 'foods'; ui.id = null; ui.stack = []; ui.q = el.dataset.q; ui.grp = ''; render(); break;
+    case 'miss-del': store.misses = store.misses.filter(m => m.q !== el.dataset.q); save(); render(); break;
+    case 'miss-send': sendMisses(); break;
+    case 'miss-clear': confirmBox('Clear the not-found list?', '', 'Clear').then(ok => { if (ok) { store.misses = []; save(); render(); } }); break;
+    case 'key-save': store.key = ($('#key').value || '').trim().slice(0, 100); save(); toast(store.key ? 'Key saved' : 'Using the demo key'); render(); break;
+    case 'key-clear': e.preventDefault(); store.key = ''; save(); render(); break;
+  }
+});
+view.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('[role=button]')) { e.preventDefault(); e.target.click(); } });
+view.addEventListener('input', e => {
+  const t = e.target;
+  if (t.id === 'q') {
+    ui.q = t.value; if (ui.q) ui.grp = '';
+    $('#res').innerHTML = foodsBody(); $$('#grps .chip').forEach(c => c.setAttribute('aria-pressed', String(!ui.q && c.dataset.v === ui.grp)));
+    clearTimeout(missTimer); const q = ui.q; missTimer = setTimeout(() => noteMiss(q), 1500);
+  } else if (t.id === 'pn' || t.id === 'pu') {
+    ui.portion.n = $('#pn').value === '' ? 0 : +$('#pn').value; ui.portion.u = $('#pu').value; $('#facts').innerHTML = factsHTML(byId.get(ui.id));
+  } else if (t.id === 'soz') { ui.oz = t.value; clearTimeout(missTimer); missTimer = setTimeout(() => { const p = t.selectionStart; render(); const s = $('#soz'); if (s) { s.focus(); try { s.setSelectionRange(p, p); } catch (er) {} } }, 400); }
+});
+view.addEventListener('change', e => {
+  if (e.target.id === 'q') { clearTimeout(missTimer); noteMiss(e.target.value); }
+  if (e.target.id === 'pu') { ui.portion.u = e.target.value; $('#facts').innerHTML = factsHTML(byId.get(ui.id)); }
+});
+view.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.id === 'q') { e.preventDefault(); e.target.blur(); } });
+$('header.top').addEventListener('click', e => { if (e.target.closest('#backLink')) { e.preventDefault(); goBack(); } });
+$$('nav.tabs button').forEach(b => { b.onclick = () => go(b.dataset.tab); });
+
+function loadData(json) {
+  DATA = json;
+  DATA.nut.forEach((k, i) => { NI[k] = i; });
+  FOODS = DATA.foods.map(([id, g, n, c, vals, m, mf, note, y]) => { const v = {}; DATA.nut.forEach((k, i) => { v[k] = vals[i]; }); return { id, g, n, c: c || '', v, m: m || [], mf: mf || '', note: note || '', y: !!y, src: 'sr' }; });
+  byId = new Map(FOODS.map(f => [f.id, f]));
+  buildIndex();
+}
+(async function init() {
+  try { db = await openDB(DB_NAME); const raw = await idbGet(db, 'state'); if (raw) { const s = JSON.parse(raw); for (const k of ['favs', 'recent', 'misses']) if (Array.isArray(s[k])) store[k] = s[k].slice(0, 300); if (typeof s.key === 'string') store.key = s.key; if (s.online && typeof s.online === 'object') store.online = s.online; } }
+  catch (e) { console.error(e); }
+  try {
+    const res = await fetch('foods.json'); if (!res.ok) throw new Error('HTTP ' + res.status);
+    loadData(await res.json());
+  } catch (e) { view.innerHTML = `<div class="empty"><div class="big">⚠️</div><h2>Couldn’t load the food list</h2><p>${esc(navigator.onLine === false ? 'Open the app once while online so it can save the food list for offline use.' : 'Try again in a moment.')}</p></div>`; return; }
+  for (const [id, f] of Object.entries(store.online || {})) if (f && f.v && Array.isArray(f.m)) byId.set(id, { ...f, src: 'fdc' });
+  store.favs = store.favs.filter(id => byId.has(id)); store.recent = store.recent.filter(id => byId.has(id));
+  render();
+})();
+</script>
+</body>
+</html>

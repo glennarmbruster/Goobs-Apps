@@ -1,0 +1,29 @@
+{
+  "name": "Calorie Lookup",
+  "short_name": "Calorie Lookup",
+  "description": "Calories and full nutrition for almost any food, drink, liquor, condiment or fast-food item, with steak by grade (select, choice, prime, wagyu). USDA data.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f1f7f4",
+  "theme_color": "#047857",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
