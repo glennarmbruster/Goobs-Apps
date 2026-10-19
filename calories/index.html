@@ -205,6 +205,7 @@ dialog::backdrop{background:rgba(10,15,12,.55)}
   <button type="button" data-tab="foods"><span class="ico">🔎</span>Foods</button>
   <button type="button" data-tab="steak"><span class="ico">🥩</span>Steak</button>
   <button type="button" data-tab="drinks"><span class="ico">🍸</span>Drinks</button>
+  <button type="button" data-tab="viva"><span class="ico">🚢</span>Viva</button>
   <button type="button" data-tab="saved"><span class="ico">⭐</span>Saved</button>
 </div></nav>
 <script>
@@ -521,7 +522,7 @@ if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol))
 
 
 /* ===================== Calorie Lookup =====================
-   Offline data: USDA National Nutrient Database for Standard Reference, Release 28 (public domain), shipped as foods.json.
+   Offline data: USDA FNDDS 2021–2023 and SR28 (public domain), official chain menus, Norwegian Viva estimates; shipped as foods.json.
    Online (optional): USDA FoodData Central search API for current generic, restaurant-style and packaged foods.
    Only the search text is sent; the shared DEMO_KEY is USDA's public demo key, and you can paste your own free key. */
 const APP_ID = 'goobs-calories', DB_NAME = 'goobs-calories-db';
@@ -542,7 +543,7 @@ const MICRO = [
   ['vitE', 'Vitamin E', 'mg'], ['vitK', 'Vitamin K', 'mcg'], ['b1', 'Thiamin (B1)', 'mg'], ['b2', 'Riboflavin (B2)', 'mg'], ['b3', 'Niacin (B3)', 'mg'],
   ['b5', 'Pantothenic acid (B5)', 'mg'], ['b6', 'Vitamin B6', 'mg'], ['fol', 'Folate', 'mcg DFE'], ['b12', 'Vitamin B12', 'mcg'], ['cho', 'Choline', 'mg'],
   ['mg', 'Magnesium', 'mg'], ['p', 'Phosphorus', 'mg'], ['zn', 'Zinc', 'mg'], ['se', 'Selenium', 'mcg'], ['cu', 'Copper', 'mg'], ['mn', 'Manganese', 'mg'],
-  ['water', 'Water', 'g'], ['bcar', 'Beta-carotene', 'mcg'], ['lyc', 'Lycopene', 'mcg'], ['lutz', 'Lutein + zeaxanthin', 'mcg']];
+  ['caf', 'Caffeine', 'mg'], ['water', 'Water', 'g']];
 const per100 = (f, key) => { const v = f.v[key]; return v == null ? null : v; };
 const amt = (f, key, g) => { const v = per100(f, key); return v == null ? null : v * g / 100; };
 function fmtN(x, unit) {
@@ -552,10 +553,11 @@ function fmtN(x, unit) {
   return s + (unit ? (unit.startsWith('mcg') || unit === 'mg' || unit === 'g' ? ' ' : ' ') + unit : '');
 }
 const kcalOf = (f, g) => { const k = amt(f, 'kcal', g); return k == null ? null : Math.round(k); };
-const isBooze = f => f.alc != null || /^(Alcoholic|Cocktail)|liqueur/i.test(f.n);
+const isBooze = f => (f.alc != null && f.alc > 0) || (f.v && f.v.alc > 0) || /^(Alcoholic|Cocktail)|liqueur/i.test(f.n) || /^(Liquor and cocktails|Beer|Wine)$/.test(f.cat || '');
 /* SR28 has no alcohol column: estimate it from the calories not explained by protein, carbs and fat (alcohol = about 7 kcal/g) */
 function alcoholG(f, g) {
   if (f.alc != null) return f.alc * g / 100;
+  if (f.v && f.v.alc != null) return f.v.alc * g / 100;
   if (!isBooze(f)) return null;
   const k = per100(f, 'kcal'), p = per100(f, 'pro') || 0, c = per100(f, 'carb') || 0, fa = per100(f, 'fat') || 0;
   if (k == null) return null;
@@ -569,18 +571,27 @@ const FASTGROUPS = () => [DATA.groups.indexOf('Fast food'), DATA.groups.indexOf(
 function titleOf(f) {
   if (f.t) return f.t;
   const parts = f.n.split(', ');
+  if (f.src === 'ncl') return (f.t = f.n);
+  if (f.src === 'fndds') return (f.t = DATA.fams[f.fam] || f.n);
+  if (f.src === 'menu') return (f.t = (famOf(f).length > 1 ? DATA.fams[f.fam] : f.n).split(', ').slice(1).join(', '));
   if (/^Cocktail$/.test(parts[0])) return (f.t = parts.slice(1).join(', '));
   const brandFirst = f.mf || (isLocalId(f.id) && FASTGROUPS().includes(f.g) && parts.length > 1 && !/^(Fast foods?|Restaurant|School Lunch)$/i.test(parts[0]));
   if (brandFirst && parts.length > 1) return (f.t = parts.slice(1, 3).join(', '));
   if (/^Beef, Australian, imported, Wagyu, /.test(f.n)) return (f.t = 'Wagyu, ' + parts.slice(4, 6).join(', '));
+  if (DATA.fams && DATA.fams[f.fam] && famOf(f).length > 1) return (f.t = DATA.fams[f.fam]);
   if (/^(Beef|Pork|Lamb|Veal|Chicken|Turkey|Game meat)$/.test(parts[0]) && parts.length > 3) return (f.t = parts.slice(0, 3).join(', '));
   return (f.t = parts.slice(0, 2).join(', '));
 }
+const prettyVar = s => String(s || '').replace(/separable lean and fat/g, 'lean and fat').replace(/separable lean only/g, 'lean only').replace(/trimmed to ([^ ,]+) fat/g, '$1 trim').replace(/,? ?URMIS #[\d/, #]+/g, '').replace(/\bNS as to fat eaten\b/g, 'fat not specified').replace(/\bNFS\b/g, 'not further specified').replace(/^, |, $/g, '');
 function subOf(f) {
-  if (f.s != null) return f.s;
+  if (f.s != null && f.src !== 'ncl') return f.s;
+  if (f.src === 'ncl') return (f.s = ui.tab === 'viva' && !ui.id ? f.vr : [f.cat, f.vr].filter(Boolean).join(' · '));
+  if (f.src === 'fndds') return (f.s = [prettyVar(f.vr), f.cat].filter(Boolean).join(' · '));
+  if (f.src === 'menu') return (f.s = [f.mf, f.vr, f.cat].filter(Boolean).join(' · '));
   const parts = f.n.split(', '), t = titleOf(f);
   if (/^Cocktail$/.test(parts[0])) return (f.s = 'Cocktail · estimated from the recipe');
   if (/^Wagyu, /.test(t)) return (f.s = ['Australian', ...parts.slice(6)].join(', '));
+  if (DATA.fams && t === DATA.fams[f.fam] && famOf(f).length > 1) return (f.s = prettyVar(f.vr));
   const brandFirst = f.n.startsWith(parts[0]) && !f.n.startsWith(t);
   const rest = brandFirst ? [parts[0], ...parts.slice(3)] : parts.slice(t.split(', ').length);
   return (f.s = rest.join(', '));
@@ -588,7 +599,7 @@ function subOf(f) {
 const RESTAURANT_CHAINS = [["McDonald's", "McDonald's"], ['Burger King', 'Burger King'], ["Wendy's", "Wendy's"], ['Taco Bell', 'Taco Bell'], ['KFC', 'KFC'], ['Popeyes', 'Popeyes'], ['Subway', 'Subway'],
   ["Denny's", "Denny's"], ["Applebee's", "Applebee's"], ['Cracker Barrel', 'Cracker Barrel'], ["TGI Friday's", "TGI Friday's"], ['Olive Garden', 'Olive Garden'], ["Carrabba's", "Carrabba's Italian Grill"],
   ['On The Border', 'On The Border'], ['Chick-fil-a', 'Chick-fil-A'], ['Pizza Hut', 'Pizza Hut'], ["Domino's", "Domino's"], ["Papa John's", "Papa John's"], ['Little Caesars', 'Little Caesars'], ["Arby's", "Arby's"]];
-const chainOf = f => { for (const [k, v] of RESTAURANT_CHAINS) if (f.n.toLowerCase().includes(k.toLowerCase())) return v; return ''; };
+const chainOf = f => { const n = f.n.toLowerCase().replace(/'/g, ''); for (const [k, v] of RESTAURANT_CHAINS) if (n.includes(k.toLowerCase().replace(/'/g, ''))) return v; return ''; };
 
 /* ---------- portions ---------- */
 function gPerFlOz(f) {
@@ -598,6 +609,7 @@ function gPerFlOz(f) {
   return null;
 }
 function portionOptions(f) {
+  if (f.src === 'menu') return f.m.map(([g, d], i) => ['m' + i, d]);
   const o = f.m.map(([g, d], i) => ['m' + i, d + ' (' + fmtN(g) + ' g)']);
   const fl = gPerFlOz(f);
   if (fl && isBooze(f)) o.push(['shot', 'shot, 1.5 fl oz']);
@@ -614,8 +626,10 @@ function gramsFor(f, unit, n) {
 }
 function defaultPortion(f) {
   if (/^Alcoholic beverage, (distilled|liqueur)|creme de menthe/i.test(f.n) && gPerFlOz(f)) return ['shot', 1];
-  const i = f.m.findIndex(([, d]) => /^1 (drink|serving|item|sandwich|burger|order|taco|burrito|piece|slice|cup|medium|large|small|regular|can|bottle|bar|container)\b/i.test(d));
-  return i >= 0 ? ['m' + i, 1] : f.m.length ? ['m0', 1] : ['g', 100];
+  /* the most natural single serving: "1 drink", "1 sandwich", "1 medium", "1 cup"… before "1 slice" or "1 fl oz" */
+  const PRI = [/^1 (drink|cocktail|serving|item|sandwich|burger|order|taco|burrito|bowl|meal|dinner|entree|can|bottle|container|bar|package|glass)\b/i, /^1 (medium|regular)\b/i, /^1 (large|small|piece|egg|patty|fillet|breast|thigh|drumstick|wing|link|muffin|bagel|biscuit|roll|pancake|waffle|cookie|donut|doughnut|tortilla)\b/i, /^1 cup\b/i, /^typical serving$/, /^1 (slice|tbsp|tablespoon)\b/i];
+  for (const re of PRI) { const i = f.m.findIndex(([, d]) => re.test(d)); if (i >= 0) return ['m' + i, 1]; }
+  return f.m.length ? ['m0', 1] : ['g', 100];
 }
 const portionLabel = (f, unit, n) => (unit[0] === 'm' ? `${n !== 1 ? n + ' × ' : ''}${f.m[+unit.slice(1)][1]}` : unit === 'shot' ? `${n !== 1 ? n + ' × ' : ''}1.5 fl oz shot` : `${n} ${{ g: 'g', oz: 'oz', lb: 'lb', floz: 'fl oz' }[unit]}`);
 
@@ -631,13 +645,16 @@ const ALIAS = [
   [/Frankfurter/i, 'hot dog hotdog wiener'], [/Sauce, barbecue/i, 'bbq'], [/Shrimp/i, 'prawn'], [/Bacon/i, 'bacon'], [/Cheese, cheddar/i, 'cheddar'],
   [/Beverages, coffee/i, 'coffee'], [/Doughnut/i, 'donut'], [/Yogurt/i, 'yoghurt'], [/Crustaceans, crab/i, 'crab'], [/Mollusks/i, 'shellfish'], [/Fish, /i, 'fish'],
   [/Pepper sauce|hot sauce/i, 'hot sauce'], [/Soy sauce/i, 'soy'], [/Chicken, broilers or fryers/i, 'chicken'], [/Turkey/i, 'turkey'],
-  [/Cocktail, /i, 'cocktail mixed drink'], [/Pork, cured, ham/i, 'ham'], [/Sweet potato/i, 'yam'], [/Garbanzo|chickpea/i, 'chickpea garbanzo hummus'],
+  [/Cocktail, /i, 'cocktail mixed drink'], [/^Rum and cola$/, 'rum and coke cuba libre'], [/^Whiskey and cola$/, 'jack and coke whiskey coke'], [/^Vodka and cola$/, 'vodka coke'],
+  [/^Cape Cod$/, 'vodka cranberry cape codder'], [/^Whiskey and ginger ale$/, 'highball whiskey ginger'], [/^Vodka and soda$/, 'vodka soda'], [/^Vodka and tonic$/, 'vodka tonic'], [/^Hard seltzer$/, 'white claw truly spiked seltzer'],
+  [/top sirloin cap/i, 'picanha coulotte'], [/^Ketchup$/, 'catsup'], [/Pork, cured, ham/i, 'ham'], [/Sweet potato/i, 'yam'], [/Garbanzo|chickpea/i, 'chickpea garbanzo hummus'],
   [/Restaurant, Mexican/i, 'mexican tex mex'], [/Restaurant, Chinese/i, 'chinese takeout'], [/Restaurant, Italian/i, 'italian'], [/Restaurant, family style/i, 'family restaurant']];
 const SPELL = { yoghurt: 'yogurt', donut: 'doughnut', bbq: 'barbecue', barbeque: 'barbecue', chile: 'chili', chilli: 'chili', whisky: 'whiskey', ketsup: 'ketchup', ketchup: 'ketchup', tumeric: 'turmeric', aubergine: 'eggplant', courgette: 'zucchini', rocket: 'arugula', filet: 'filet', expresso: 'espresso', sherbert: 'sherbet', parmesean: 'parmesan', mozarella: 'mozzarella', brocoli: 'broccoli', broccolli: 'broccoli', tomatoe: 'tomato', potatoe: 'potato', cinamon: 'cinnamon', jalepeno: 'jalapeno', zuchini: 'zucchini', cantelope: 'cantaloupe', bannana: 'banana', avacado: 'avocado', brussel: 'brussels', mcdonalds: 'mcdonald', mcdonald: 'mcdonald', wendys: 'wendy', chickfila: 'chick fil', popeye: 'popeye', dominos: 'domino', applebees: 'applebee', dennys: 'denny', arbys: 'arby' };
 function buildIndex() {
   HAY = FOODS.map(f => {
     let extra = ''; for (const [re, w] of ALIAS) if (re.test(f.n)) extra += ' ' + w;
     const name = norm(f.n), first = norm(f.n.split(',')[0]);
+    if (f.src === 'ncl') extra += ' ncl norwegian cruise ' + f.cat + ' ' + f.vr;
     const all = ' ' + [name, norm(f.c), norm(f.mf), norm(GROUP(f.g)), norm(extra)].join(' ').split(' ').filter(Boolean).map(stem).join(' ') + ' ';
     return { f, all, nameS: ' ' + name.split(' ').map(stem).join(' ') + ' ', firstS: ' ' + first.split(' ').map(stem).join(' ') + ' ', len: name.split(' ').length, extraS: ' ' + norm(extra).split(' ').map(stem).join(' ') + ' ' };
   });
@@ -680,20 +697,23 @@ const PICKS = {
   wine: [14096, 14106], 'red wine': [14096], 'white wine': [14106], coke: [14148], cola: [14148], soda: [14148], pop: [14148], vodka: [14051], rum: [14050], gin: [14049],
   whiskey: [14052], bourbon: [14052], scotch: [14052], tequila: [14037], liquor: [14037], shot: [14037], mezcal: [14037], brandy: [14037], 'ground beef': [23573, 23572] };
 let lastFix = '';
+const SHIP_RE = /^(viva|ncl|norwegian|cruise|ship|cagney|bistro|onda|scarpetta|palomar|hasuki|nama|lobo|indulge|tamara|nudl|garden|local|vibe)/;
 function searchFoods(q) {
   lastFix = '';
   const words = queryWords(q);
   if (!words.length) return [];
   let out = rank(words, q);
   if (!out.length) { const fixed = words.map(fixWord); if (fixed.join(' ') !== words.join(' ')) { out = rank(fixed, q); if (out.length) lastFix = fixed.join(' '); } }
-  let pick = (PICKS[words.join(' ')] || []).map(id => byId.get(id)).filter(Boolean);
+  if (words.some(w => SHIP_RE.test(w))) return out;
+  let pick = (PICKS[words.join(' ')] || []).map(getFood).filter(Boolean);
   const cut = !pick.length && words.length <= 3 && steakCutFor(q);
   if (cut && words.some(w => /wagyu|kobe/.test(w))) pick = FOODS.filter(f => /Wagyu/.test(f.n) && /lean and fat/.test(f.n));
   else if (cut) pick = ['choice', 'select', 'prime', 'all'].map(g => (DATA.steak[cut].rows.find(r => r[0] === g && r[1] === 'lf' && r[2] === 'cooked') || [])[3]).map(id => byId.get(id)).filter(Boolean);
   return pick.length ? [...pick, ...out.filter(f => !pick.includes(f))] : out;
 }
 function rank(words, q) {
-  const wantBaby = /baby|infant/i.test(q), wantBrand = words.some(w => /kellogg|campbell|mcdonald|burger|wendy|taco|kfc|popeye|subway|denny|applebee|barrel|friday|olive|carrabba|border|chick|pizza|domino|papa|caesar|arby|kraft|hershey|quaker|general|nabisco/.test(w));
+  const wantBaby = /baby|infant/i.test(q), wantBrand = words.some(w => /whopper|baconator|frosty|mcnugget|mcmuffin|mcchicken|mcflurry|biggie|croissan|kellogg|campbell|mcdonald|burger|wendy|taco|kfc|popeye|subway|denny|applebee|barrel|friday|olive|carrabba|border|chick|pizza|domino|papa|caesar|arby|kraft|hershey|quaker|general|nabisco/.test(w));
+  const wantShip = words.some(w => SHIP_RE.test(w));
   const out = [], steaky = words.some(w => /^(steak|sirloin|ribeye|filet|mignon|strip|tbone|porterhouse|brisket|flank|skirt|wagyu|tri|prime|rib)$/.test(w));
   for (const h of HAY) {
     if (!words.every(w => h.all.includes(' ' + w))) continue;
@@ -712,12 +732,14 @@ function rank(words, q) {
     if (/School Lunch|USDA Commodity|Native foods/.test(f.n + GROUP(f.g))) s -= 6;
     if ((f.mf || /[A-Z][a-z]+'s,/.test(f.n)) && !wantBrand) s -= 2;
     if (!isLocalId(f.id)) s -= 1;
+    if (f.src === 'menu') s += wantBrand ? 6 : -1;
+    if (f.src === 'ncl') s += wantShip ? 6 : -3;
     out.push([s, f]);
   }
   return out.sort((a, b) => b[0] - a[0] || a[1].n.length - b[1].n.length).map(x => x[1]);
 }
 
-const CUT_Q = [['ribeye', /rib ?eye|prime rib/], ['strip', /strip|top loin|kansas/], ['filet', /filet|fillet mignon|tenderloin steak|beef tenderloin/], ['sirloin', /sirloin/], ['tbone', /t ?bone/], ['porter', /porterhouse/],
+const CUT_Q = [['ribeye', /rib ?eye|prime rib/], ['strip', /strip|top loin|kansas/], ['filet', /filet|fillet mignon|tenderloin steak|beef tenderloin/], ['picanha', /picanha|coulotte|sirloin cap/], ['sirloin', /sirloin/], ['tbone', /t ?bone/], ['porter', /porterhouse/],
   ['flank', /flank/], ['skirt', /skirt|fajita/], ['flatiron', /flat ?iron/], ['tritip', /tri ?tip/], ['round', /london broil|top round/], ['brisket', /brisket/], ['chuckeye', /chuck eye/], ['shortrib', /short rib/], ['ribeye', /wagyu|kobe|\bsteak\b/], ['ground', /ground beef|hamburger meat/]];
 const steakCutFor = q => { const n = norm(q); for (const [k, re] of CUT_Q) if (re.test(n) && DATA.steak[k]) return k; return ''; };
 /* ---------- condiments (a view across several USDA groups) ---------- */
@@ -800,14 +822,18 @@ const view = $('#view');
 function foodRow(f, unit, n) {
   const [u, c] = unit ? [unit, n] : defaultPortion(f);
   const g = gramsFor(f, u, c), k = kcalOf(f, g);
+  const kinds = famOf(f).length;
   const gm = /^Beef, /.test(f.n) && f.n.match(/\b(prime|choice|select|all grades)\b|Wagyu/);
   const badge = gm ? `<span class="badge ${/prime|Wagyu/.test(gm[0]) ? 'acc' : ''}">${esc(gm[0] === 'Wagyu' ? 'Wagyu' : cap(gm[0]))}</span><span class="badge">${/\braw$/.test(f.n) ? 'raw' : 'cooked'}</span>` : '';
-  return `<div class="row" data-action="open" data-id="${esc(f.id)}" role="button" tabindex="0"><div class="row-main"><div class="row-title">${esc(titleOf(f))}${badge}</div><div class="row-sub">${esc(subOf(f) || GROUP(f.g) || DT_LABEL[f.dt] || '')}</div></div><div class="kc">${k == null ? '—' : k}<small>${esc(shortPortion(f, u, c))}</small></div></div>`;
+  return `<div class="row" data-action="open" data-id="${esc(f.id)}" role="button" tabindex="0"><div class="row-main"><div class="row-title">${esc(titleOf(f))}${badge}${kinds > 1 ? `<span class="badge acc">${kinds} kinds</span>` : ''}${kinds > 1 && styleOf(f) === 'home' && famOf(f).some(m => styleOf(m) !== 'home') ? '<span class="badge">restaurant too</span>' : ''}</div><div class="row-sub">${esc(subOf(f) || GROUP(f.g) || DT_LABEL[f.dt] || '')}</div></div><div class="kc">${k == null ? '—' : k}<small>${esc(shortPortion(f, u, c))}</small></div></div>`;
 }
 const shortPortion = (f, u, c) => { const s = portionLabel(f, u, c); return s.length > 24 ? s.slice(0, 22) + '…' : s; };
 const listHTML = (arr, empty) => (arr.length ? `<div class="card">${arr.map(f => foodRow(f)).join('')}</div>` : (empty ? `<div class="empty"><p>${empty}</p></div>` : ''));
-const QUICK = [['', 'All'], ['@rest', 'Restaurants & fast food'], ['@cond', 'Condiments'], ['@booze', 'Beer, wine & liquor']];
+/* one row per family (e.g. all the rib eye trims and grades), keeping the best-ranked member */
+function collapse(arr) { const seen = new Set(), out = []; for (const f of arr) { const k = isLocalId(f.id) ? 'f' + f.fam : f.id; if (seen.has(k)) continue; seen.add(k); out.push(f); } return out; }
+const QUICK = [['', 'All'], ['@chain:McDonald\'s', 'McDonald’s'], ['@chain:Wendy\'s', 'Wendy’s'], ['@chain:Burger King', 'Burger King'], ['@rest', 'Restaurants & fast food'], ['@cond', 'Condiments'], ['@booze', 'Beer, wine & liquor']];
 function groupList() {
+  if (ui.grp.startsWith('@chain:')) { const c = ui.grp.slice(7); return FOODS.filter(f => f.src === 'menu' && f.mf === c); }
   if (ui.grp === '@rest') { const fg = FASTGROUPS(); return FOODS.filter(f => fg.includes(f.g)); }
   if (ui.grp === '@cond') return FOODS.filter(isCondiment);
   if (ui.grp === '@booze') return FOODS.filter(f => isLocalId(f.id) && isBooze(f));
@@ -815,18 +841,18 @@ function groupList() {
 }
 function foodsBody() {
   if (ui.q.trim()) {
-    const r = searchFoods(ui.q);
+    const r = collapse(searchFoods(ui.q));
     const head = `<p class="fine" style="margin:10px 4px 6px">${r.length} ${r.length === 1 ? 'match' : 'matches'} on this phone${lastFix ? ' (closest spelling)' : ''}</p>`;
     const cut = steakCutFor(ui.q);
     return (cut ? `<button type="button" class="card pad" data-action="to-steak" data-v="${cut}" style="display:block;width:100%;text-align:left;font:inherit;color:inherit;margin-top:10px;cursor:pointer"><b>🥩 Compare ${esc(DATA.steak[cut].label.toLowerCase())} by grade</b><div class="fine">Select, choice, prime${['ribeye', 'strip', 'filet'].includes(cut) ? ' and wagyu' : ''}, cooked or raw, any weight →</div></button>` : '') + (r.length ? head + listHTML(r.slice(0, 60)) : `<div class="empty" style="padding:24px 10px"><p>Nothing on this phone matches “${esc(ui.q)}”.</p><p class="fine">Try the USDA online search below, or a simpler word. It’s also been added to <b>Saved › Searched, not found</b>.</p></div>`) + `<div id="online">${onlineHTML()}</div>`;
   }
   if (ui.grp) {
-    const arr = groupList().sort((a, b) => a.n.localeCompare(b.n));
+    const arr = collapse(groupList().sort((a, b) => titleOf(a).localeCompare(titleOf(b)) || (b.y - a.y)));
     return `<p class="fine" style="margin:10px 4px 6px">${arr.length} foods</p>` + listHTML(arr.slice(0, 400)) + (arr.length > 400 ? `<p class="fine" style="margin:8px 4px">Showing the first 400. Search to narrow it down.</p>` : '');
   }
   const rec = store.recent.map(id => byId.get(id)).filter(Boolean);
   return (rec.length ? `<div class="sec-h"><span>Recently looked up</span></div>${listHTML(rec)}` : '')
-    + `<div class="card pad" style="margin-top:14px"><p style="margin:0">Search ${FOODS.length.toLocaleString()} foods: produce, meat, seafood, dairy, drinks, liquor, condiments, snacks, fast food and restaurant meals. Every food shows calories, protein, carbs, fat, fiber, sugar, sodium, vitamins and minerals for the amount you pick.</p><p class="fine" style="margin:8px 0 0">Data: USDA nutrient database (SR28). Search USDA online for more, including newer restaurant-style foods and packaged brands.</p></div>`;
+    + `<div class="card pad" style="margin-top:14px"><p style="margin:0">Search ${FOODS.length.toLocaleString()} foods: produce, meat, seafood, dairy, drinks, liquor, condiments, snacks, fast food and restaurant meals. Every food shows calories, protein, carbs, fat, fiber, sugar, sodium, vitamins and minerals for the amount you pick.</p><p class="fine" style="margin:8px 0 0">Data: USDA survey foods (FNDDS 2021–2023) and nutrient database (SR28); McDonald’s, Wendy’s and Burger King official menus; Norwegian Viva estimates in the Viva tab. Search USDA online for packaged brands.</p></div>`;
 }
 function onlineHTML() {
   const o = ui.onl, q = ui.q.trim();
@@ -853,20 +879,34 @@ function renderFood() {
   if (!ui.portion || ui.portion.id !== f.id) { const [u, n] = defaultPortion(f); ui.portion = { id: f.id, u, n }; }
   const opts = portionOptions(f);
   if (!opts.some(o => o[0] === ui.portion.u)) ui.portion.u = opts[0][0];
-  const chain = chainOf(f), fast = isLocalId(f.id) && FASTGROUPS().includes(f.g);
+  const chain = chainOf(f), fast = (isLocalId(f.id) && FASTGROUPS().includes(f.g)) || (f.src === 'fndds' && styleOf(f) !== 'home') || !!chain;
   const src = f.src === 'fdc'
     ? `USDA FoodData Central (${esc(DT_LABEL[f.dt] || f.dt)}), food #${esc(String(f.id).slice(4))}.${f.dt === 'Branded' ? ' Numbers come from the product label as reported to USDA.' : ''}`
-    : f.id >= 900000 ? 'Estimated from USDA SR28 values for each ingredient.' : `USDA SR28 (2015), food #${f.id}.`;
+    : f.src === 'menu' ? `Official nutrition information from ${esc(f.mf)}, retrieved October 2026.`
+    : f.src === 'ncl' ? `Estimate for Norwegian Viva’s ${esc(f.cat)}: Norwegian doesn’t publish nutrition, so this dish is built from similar USDA foods (FNDDS 2021–2023 and SR28) at a typical restaurant portion. Real plates vary.`
+    : f.src === 'fndds' ? `USDA FNDDS 2021–2023 survey data, food #${f.id}.` : f.id >= 900000 ? 'Estimated from USDA SR28 values for each ingredient.' : `USDA SR28 (2015), food #${f.id}.`;
   return `<div class="stack">
     <section class="card pad"><div style="display:flex;gap:8px;align-items:flex-start"><div style="flex:1;min-width:0"><div class="fine">${esc(GROUP(f.g) || DT_LABEL[f.dt] || '')}</div><h2 style="margin:2px 0 0">${esc(titleOf(f))}</h2>${subOf(f) ? `<div class="muted" style="font-size:14px">${esc(subOf(f))}</div>` : ''}</div><button type="button" class="star" data-action="fav" data-id="${esc(f.id)}" aria-pressed="${isFav(f.id)}" aria-label="${isFav(f.id) ? 'Remove from saved' : 'Save'}">★</button></div>
+      ${styleSwitch(f)}
+      ${famOf(f).length > 1 ? `<label class="fine" for="kind" style="display:block;margin-top:12px">Kind (${famOf(f).length})</label><select id="kind" style="width:100%;font:inherit;font-size:16px;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);margin-top:4px">${famOf(f).map(m => `<option value="${m.id}"${m.id === f.id ? ' selected' : ''}>${esc(kindLabel(m))}</option>`).join('')}</select>` : ''}
       <div class="portion"><input id="pn" type="number" inputmode="decimal" min="0" step="any" value="${esc(ui.portion.n)}" aria-label="Amount"><select id="pu" aria-label="Portion">${opts.map(([v, l]) => `<option value="${v}"${v === ui.portion.u ? ' selected' : ''}>${esc(l)}</option>`).join('')}</select></div>
       <div id="facts">${factsHTML(f)}</div></section>
     ${f.note ? `<section class="card pad"><p class="note" style="margin:0">${esc(f.note)}</p></section>` : ''}
     ${/Wagyu/i.test(f.n) ? `<section class="card pad"><p class="note" style="margin:0">USDA’s Wagyu numbers are for Australian Wagyu (marble scores 4–5 and 9), raw only. Japanese A5 and American Wagyu aren’t in USDA data; higher marbling means more fat and calories.</p></section>` : ''}
-    ${fast || f.src === 'fdc' && /fast food|restaurant/i.test(f.n) ? `<section class="card pad"><p class="note" style="margin:0">Restaurant numbers are from ${f.src === 'fdc' ? 'USDA’s survey data' : 'USDA’s 2015 data'}; recipes and portion sizes change.${chain ? ` For the current menu: <a href="https://www.google.com/search?q=${encodeURIComponent(chain + ' nutrition information')}" target="_blank" rel="noopener noreferrer">${esc(chain)} nutrition ↗</a>` : ''}</p></section>` : ''}
+    ${fast || f.src === 'fdc' && /fast food|restaurant/i.test(f.n) ? `<section class="card pad"><p class="note" style="margin:0">${f.src === 'menu' ? 'Standard recipe as listed by the chain; adding or leaving off sauces and toppings changes it.' : `Restaurant numbers are ${f.src === 'sr' ? 'from USDA’s 2015 data' : 'USDA averages across restaurants (2021–2023 survey data)'}; recipes and portion sizes vary by place.`}${chain ? ` For the current menu: <a href="https://www.google.com/search?q=${encodeURIComponent(chain + ' nutrition information')}" target="_blank" rel="noopener noreferrer">${esc(chain)} nutrition ↗</a>` : ''}</p></section>` : ''}
     <p class="src">${src} %DV = percent of the FDA Daily Value for a 2,000-calorie diet.</p>
   </div>`;
 }
+/* home vs restaurant vs fast food versions of the same dish */
+const styleOf = m => { const v = (m.vr || '') + ' ' + m.n; return /restaurant/i.test(v) ? 'rest' : /fast food/i.test(v) ? 'fast' : /^Restaurant, /.test(m.n) ? 'rest' : 'home'; };
+function styleSwitch(f) {
+  const fam = famOf(f); if (fam.length < 2) return '';
+  const by = {}; for (const m of fam) { const st = styleOf(m); if (!by[st]) by[st] = m; }
+  if (!by.rest && !by.fast) return '';
+  const cur = styleOf(f), lab = { home: 'Home / store', rest: 'Restaurant', fast: 'Fast food' };
+  return `<div class="seg" id="style" style="margin-top:12px">${['home', 'rest', 'fast'].filter(k => by[k]).map(k => `<button type="button" data-action="style" data-id="${by[k].id}" aria-pressed="${cur === k}">${lab[k]}</button>`).join('')}</div>`;
+}
+const kindLabel = m => m.src === 'menu' ? (m.vr || titleOf(m)) : (prettyVar(m.vr) || (m.src === 'fndds' ? 'USDA survey' : 'standard')) + (famOf(m).some(o => o !== m && prettyVar(o.vr) === prettyVar(m.vr)) ? ` (${m.src === 'fndds' ? 'USDA survey' : 'USDA SR28'})` : '');
 function factsHTML(f) {
   const g = gramsFor(f, ui.portion.u, +ui.portion.n);
   const k = kcalOf(f, g), P = amt(f, 'pro', g), C = amt(f, 'carb', g), F = amt(f, 'fat', g), A = alcoholG(f, g);
@@ -875,11 +915,11 @@ function factsHTML(f) {
   const dv = (key, x) => (DV[key] && x != null ? Math.round(x / DV[key] * 100) + '%' : '');
   const rows = LABEL.map(([key, label, unit, st]) => { const x = amt(f, key, g); return x == null && st === 'sub' ? '' : `<tr class="${st}"><td>${label}</td><td class="v">${fmtN(x, unit)}</td><td class="dv">${dv(key, x)}</td></tr>`; }).join('');
   const micro = MICRO.map(([key, label, unit]) => { const x = amt(f, key, g); return x == null ? '' : `<tr><td>${label}</td><td class="v">${fmtN(x, unit)}</td><td class="dv">${dv(key, x)}</td></tr>`; }).join('');
-  return `<div class="bigcal"><b id="kcal">${k == null ? '—' : k.toLocaleString()}</b><span>calories · ${fmtN(g)} g</span></div>
+  return `<div class="bigcal"><b id="kcal">${k == null ? '—' : k.toLocaleString()}</b><span>calories${f.src === 'menu' ? '' : ` · ${fmtN(g)} g`}</span></div>
     <div class="macros"><div><b>${fmtN(P)}<small style="font-size:13px">g</small></b><span>Protein</span></div><div><b>${fmtN(C)}<small style="font-size:13px">g</small></b><span>Carbs</span></div><div><b>${fmtN(F)}<small style="font-size:13px">g</small></b><span>Fat</span></div></div>
     ${k ? `<div class="mbar" aria-hidden="true"><i class="p" style="width:${pct[0]}%"></i><i class="c" style="width:${pct[1]}%"></i><i class="f" style="width:${pct[2]}%"></i><i class="a" style="width:${pct[3]}%"></i></div>
     <div class="legend"><span><i style="background:#3b82f6"></i>Protein ${pct[0]}%</span><span><i style="background:#f59e0b"></i>Carbs ${pct[1]}%</span><span><i style="background:#ef4444"></i>Fat ${pct[2]}%</span>${A ? `<span><i style="background:#a855f7"></i>Alcohol ${pct[3]}%</span>` : ''}</div>` : ''}
-    ${A ? `<p class="note" style="margin:12px 0 0" id="alc">Alcohol: about ${fmtN(A, 'g')} (${(A / 14).toFixed(1)} standard drinks).${f.alc == null ? ' Estimated from the calories not explained by protein, carbs and fat.' : ''}</p>` : ''}
+    ${A ? `<p class="note" style="margin:12px 0 0" id="alc">Alcohol: about ${fmtN(A, 'g')} (${(A / 14).toFixed(1)} standard drinks).${f.alc == null && (!f.v || f.v.alc == null) ? ' Estimated from the calories not explained by protein, carbs and fat.' : ''}</p>` : ''}
     <h3 style="margin:16px 0 4px">Nutrition facts</h3>
     <table class="nf" id="nf"><tbody><tr class="main thick"><td>Calories</td><td class="v">${k == null ? '—' : k}</td><td class="dv">${'' }</td></tr>${rows}</tbody></table>
     ${micro ? `<details class="eg" style="margin-top:10px"><summary>Vitamins & minerals</summary><table class="nf" style="margin-top:6px"><tbody>${micro}</tbody></table></details>` : ''}`;
@@ -915,21 +955,53 @@ function renderSteak() {
 }
 
 /* ---------- drinks ---------- */
+/* rows: [USDA food number, or survey food name, label]; survey (FNDDS 2021–23) entries carry real alcohol values */
 const DRINKS = [
-  ['Liquor', 'shot', 1.5, [[14037, '80 proof: vodka, gin, rum, whiskey, tequila'], [14550, '86 proof'], [14551, '90 proof'], [14532, '94 proof'], [14533, '100 proof']]],
-  ['Liqueurs', 'shot', 1.5, [[14414, 'Coffee liqueur, 53 proof'], [14534, 'Coffee liqueur, 63 proof'], [14415, 'Coffee liqueur with cream'], [14034, 'Crème de menthe']]],
-  ['Beer', 'floz', 12, [[14003, 'Regular beer'], [14006, 'Light beer'], [14013, 'Light, low carb'], [14251, 'Higher alcohol beer'], [14248, 'Light, higher alcohol'], [14004, 'Budweiser'], [14007, 'Bud Light'], [14005, 'Budweiser Select'], [14239, 'Hard lemonade'], [14305, 'Non-alcoholic beer']]],
-  ['Wine', 'floz', 5, [[14096, 'Red wine'], [14106, 'White wine'], [14253, 'Rosé'], [14097, 'Cabernet Sauvignon'], [14602, 'Merlot'], [14099, 'Pinot Noir'], [14102, 'Zinfandel'], [14160, 'Chardonnay'], [14134, 'Sauvignon Blanc'], [14113, 'Pinot Grigio'], [14132, 'Riesling'], [43155, 'Light wine'], [14057, 'Dessert wine, sweet'], [43479, 'Sake'], [14553, 'Non-alcoholic wine']]],
-  ['Cocktails', 'm0', 1, 'cocktails'],
-  ['Mixers & soft drinks', 'floz', 8, [[14148, 'Cola'], [14121, 'Club soda'], [14155, 'Tonic water'], [14136, 'Ginger ale'], [14242, 'Cranberry juice cocktail'], [9209, 'Orange juice'], [9123, 'Grapefruit juice'], [11540, 'Tomato juice'], [9160, 'Lime juice'], [14146, 'Diet cola']]]];
+  ['Liquor', 'shot', 1, [['Vodka', 'Vodka'], ['Tequila', 'Tequila'], ['Whiskey', 'Whiskey / bourbon'], ['Scotch', 'Scotch'], ['Rum', 'Rum'], ['Gin', 'Gin'], ['Brandy', 'Brandy / cognac'],
+    [14037, '80 proof, any spirit'], [14550, '86 proof'], [14551, '90 proof'], [14532, '94 proof'], [14533, '100 proof']]],
+  ['Liqueurs', 'shot', 1, [['Liqueur', 'Liqueur'], ['Liqueur, coffee flavored', 'Coffee liqueur'], ['Liqueur, cream', 'Cream liqueur'], [14034, 'Crème de menthe']]],
+  ['Beer, seltzer & cider', 'floz', 12, [['Beer', 'Regular beer'], ['Beer, light', 'Light beer'], ['Beer, higher alcohol', 'Higher alcohol beer'], ['Hard seltzer', 'Hard seltzer'], ['Hard cider', 'Hard cider'],
+    ['Alcoholic malt beverage', 'Malt beverage'], ['Alcoholic malt beverage, sweetened', 'Malt beverage, sweetened'], ['Michelada', 'Michelada'], [14004, 'Budweiser'], [14007, 'Bud Light'], [14005, 'Budweiser Select'], [14013, 'Light, low carb'], [14305, 'Non-alcoholic beer']]],
+  ['Wine', 'floz', 5, [['Wine, red', 'Red wine'], ['Wine, white', 'White wine'], ['Wine, rose', 'Rosé'], ['Wine, sparkling', 'Sparkling wine / champagne'], ['Wine, light', 'Light wine'], ['Wine, dessert, sweet', 'Dessert wine'],
+    ['Wine, rice', 'Sake / rice wine'], ['Sangria, red', 'Sangria, red'], ['Sangria, white', 'Sangria, white'], ['Mimosa', 'Mimosa'], ['Wine spritzer', 'Wine spritzer'], ['Wine cooler', 'Wine cooler'],
+    [14097, 'Cabernet Sauvignon'], [14602, 'Merlot'], [14099, 'Pinot Noir'], [14102, 'Zinfandel'], [14160, 'Chardonnay'], [14134, 'Sauvignon Blanc'], [14113, 'Pinot Grigio'], [14132, 'Riesling'], [14553, 'Non-alcoholic wine']]],
+  ['Cocktails', 'drink', 1, 'cocktails'],
+  ['Mixers & soft drinks', 'floz', 8, [[14148, 'Cola'], [14146, 'Diet cola'], [14121, 'Club soda'], [14155, 'Tonic water'], [14136, 'Ginger ale'], [14242, 'Cranberry juice cocktail'], [9209, 'Orange juice'], [9123, 'Grapefruit juice'], [11540, 'Tomato juice'], [9160, 'Lime juice']]]];
+const NOT_COCKTAIL = /^(Liqueur|Brandy|Whiskey|Scotch|Gin|Rum|Vodka|Tequila|Cocktail, NFS|Gelatin shot|Glug)/;
+function drinkFood(key) { return typeof key === 'number' ? getFood(key) : FOODS.find(f => f.src === 'fndds' && f.n === key && /Liquor and cocktails|Beer|Wine/.test(f.cat)); }
+const drinkMeasure = f => { const i = f.m.findIndex(([, d]) => /^1 (drink|cocktail|glass|serving)\b/i.test(d)); return i >= 0 ? i : f.m.findIndex(([, d]) => d === 'typical serving'); };
 function renderDrinks() {
   return `<div class="stack">${DRINKS.map(([title, unit, n, list]) => {
-    const items = list === 'cocktails' ? FOODS.filter(f => isLocalId(f.id) && (f.id >= 900000 || [14010, 14017, 14531, 14019, 14015, 14009].includes(f.id))).map(f => [f.id, titleOf(f)]) : list;
-    const rows = items.map(([id, label]) => { const f = byId.get(id); if (!f) return ''; const u = unit === 'm0' ? 'm0' : unit, nn = unit === 'shot' ? 1 : n, g = gramsFor(f, u, nn), k = kcalOf(f, g), a = alcoholG(f, g);
-      return `<div class="row" data-action="open-drink" data-id="${id}" data-u="${u}" data-n="${nn}" role="button" tabindex="0"><div class="row-main"><div class="row-title">${esc(label)}</div><div class="row-sub">${esc(unit === 'm0' ? f.m[0][1] : portionLabel(f, u, nn))}${a ? ` · ${(a / 14).toFixed(1)} std drinks` : ''}</div></div><div class="kc">${k}<small>cal</small></div></div>`; }).join('');
-    return `<div><div class="sec-h"><span>${esc(title)}</span><span>${unit === 'shot' ? 'per 1.5 oz' : unit === 'm0' ? 'per drink' : 'per ' + n + ' fl oz'}</span></div><div class="card">${rows}</div></div>`;
+    const items = list === 'cocktails'
+      ? FOODS.filter(f => (f.src === 'fndds' && f.cat === 'Liquor and cocktails' && !NOT_COCKTAIL.test(f.n)) || (f.id >= 900000 && f.id < 1000000) || [14010, 14017, 14531].includes(f.id)).map(f => [f.id, titleOf(f)]).sort((a, b) => a[1].localeCompare(b[1]))
+      : list;
+    const rows = items.map(([key, label]) => {
+      const f = drinkFood(key); if (!f) return '';
+      let u = unit, nn = n;
+      if (unit === 'drink') { const i = drinkMeasure(f); u = i >= 0 ? 'm' + i : 'm0'; nn = 1; }
+      const g = gramsFor(f, u, nn), k = kcalOf(f, g), a = alcoholG(f, g);
+      return `<div class="row" data-action="open-drink" data-id="${f.id}" data-u="${u}" data-n="${nn}" role="button" tabindex="0"><div class="row-main"><div class="row-title">${esc(label)}</div><div class="row-sub">${esc(portionLabel(f, u, nn))}${a ? ` · ${(a / 14).toFixed(1)} std drinks` : ''}</div></div><div class="kc">${k}<small>cal</small></div></div>`;
+    }).join('');
+    return `<div><div class="sec-h"><span>${esc(title)}</span><span>${unit === 'shot' ? 'per 1.5 oz' : unit === 'drink' ? 'per drink' : 'per ' + n + ' fl oz'}</span></div><div class="card">${rows}</div></div>`;
   }).join('')}
-    <p class="src">Calories in spirits come almost entirely from alcohol, so any spirit at the same proof has about the same calories. Cocktails marked estimated add up USDA values for each ingredient (recipe on the detail page). Margaritas and other drinks with triple sec or mixes: search USDA online from the Foods tab.</p></div>`;
+    <p class="src">Spirits, beer, wine and cocktails by name are USDA survey data (2021–2023) with measured alcohol. The proof list and the wine varietals are USDA SR28. A spirit’s calories come almost entirely from its alcohol, so any spirit at the same proof has about the same calories.</p></div>`;
+}
+
+/* ---------- Norwegian Viva (estimates) ---------- */
+const vivaFoods = () => FOODS.filter(f => f.src === 'ncl');
+const VENUES = ['Main Dining', "Cagney's Steakhouse", 'Le Bistro', 'Onda by Scarpetta', 'Palomar', 'Hasuki', 'Food Republic', 'Nama Sushi & Sashimi', 'Los Lobos', 'Indulge Food Hall', 'The Garden', 'The Local Bar & Grill', 'Vibe, Pool Bar & Room Service', 'Bars'];
+function renderViva() {
+  const all = vivaFoods(), seen = [...new Set(all.map(f => f.cat))];
+  const venues = [...VENUES.filter(x => seen.includes(x)), ...seen.filter(x => !VENUES.includes(x))];
+  const v = venues.includes(ui.venue) ? ui.venue : venues[0];
+  const list = all.filter(f => f.cat === v);
+  const secs = [...new Set(list.map(f => f.c || ''))];
+  return `<div class="stack">
+    <section class="card pad"><p style="margin:0"><b>Estimates.</b> Norwegian doesn’t publish nutrition for its menus, so each dish here is matched to similar USDA restaurant foods at a typical restaurant portion. Use them as ballpark numbers; the food page shows what each estimate is built from.</p></section>
+    <div class="scroll-chips" style="padding-top:2px">${venues.map(x => `<button type="button" class="chip" data-action="venue" data-v="${esc(x)}" aria-pressed="${x === v}">${esc(x)}</button>`).join('')}</div>
+    ${secs.map(sec => `<div>${sec ? `<div class="sec-h"><span>${esc(sec)}</span></div>` : ''}<div class="card">${list.filter(f => (f.c || '') === sec).map(f => foodRow(f)).join('')}</div></div>`).join('')}
+    ${v === 'Main Dining' ? '<p class="fine" style="margin:0 4px">Main dining menus change nightly. These are two sample nights of Norwegian’s fleet-wide menu (posted from Norwegian Getaway); the Cagney’s à la carte list appears every night.</p>' : ''}
+    <p class="src">Menus: Norwegian Viva menus posted by guests on cruisedealstipsandtricks.com; dishes and portions change. Nutrition: estimates from USDA FNDDS 2021–2023 and SR28.</p></div>`;
 }
 
 /* ---------- saved ---------- */
@@ -941,18 +1013,18 @@ function renderSaved() {
       : `<p class="fine" style="margin:4px">When a search finds nothing on this phone, it’s listed here so you can send the list in to be added.</p>`);
   return `<div class="stack">${favs.length ? `<div class="card">${favs.map(f => foodRow(f)).join('')}</div>` : '<div class="empty"><div class="big">⭐</div><h2>Nothing saved yet</h2><p>Tap the star on any food to keep it here.</p></div>'}${misses}
     <div class="sec-h"><span>Online lookup</span></div>
-    <section class="card pad"><p style="margin:0">USDA online search uses USDA’s shared demo key, which allows about 30 searches an hour per network. For more, get a free key at <a href="https://api.data.gov/signup/" target="_blank" rel="noopener noreferrer">api.data.gov</a> and paste it here. It stays on this phone.</p>
+    <section class="card pad"><p style="margin:0">USDA online search uses USDA’s shared demo key, which allows about 30 searches an hour per network. For more, get a free key at <a href="https://fdc.nal.usda.gov/api-key-signup" target="_blank" rel="noopener noreferrer">fdc.nal.usda.gov/api-key-signup</a> and paste it here. It stays on this phone.</p>
       <div class="keyrow"><input id="key" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Your api.data.gov key (optional)" value="${esc(store.key)}"><button type="button" class="btn" data-action="key-save">Save</button></div>
       ${store.key ? `<p class="fine" style="margin:6px 0 0">Using your key. <a href="#" data-action="key-clear">Remove it</a></p>` : ''}</section>
-    <p class="src">Food data: USDA National Nutrient Database for Standard Reference, Release 28 (public domain), and USDA FoodData Central for online results.</p></div>`;
+    <p class="src">Food data: USDA FNDDS 2021–2023 and SR28 (public domain), official chain menus (October 2026), and USDA FoodData Central for online results.</p></div>`;
 }
 
 /* ---------- render / nav ---------- */
-const TITLES = { foods: 'Calorie Lookup', steak: 'Steak by grade', drinks: 'Drinks & alcohol', saved: 'Saved' };
+const TITLES = { foods: 'Calorie Lookup', steak: 'Steak by grade', drinks: 'Drinks & alcohol', viva: 'Norwegian Viva', saved: 'Saved' };
 function render() {
   if (!DATA) return;
   const y = window.scrollY, detail = ui.id != null && byId.has(ui.id);
-  view.innerHTML = detail ? renderFood() : { foods: renderFoods, steak: renderSteak, drinks: renderDrinks, saved: renderSaved }[ui.tab]();
+  view.innerHTML = detail ? renderFood() : { foods: renderFoods, steak: renderSteak, drinks: renderDrinks, viva: renderViva, saved: renderSaved }[ui.tab]();
   $$('nav.tabs button').forEach(b => b.setAttribute('aria-current', !detail && b.dataset.tab === ui.tab ? 'page' : 'false'));
   const hd = $('header.top .wrap'); let back = $('#backLink');
   const ex = $('a.exit', hd); if (ex) ex.classList.toggle('hide', detail);
@@ -963,7 +1035,7 @@ function render() {
   window.scrollTo(0, detail ? 0 : y);
 }
 function openFood(id, portion) {
-  if (!byId.has(id)) return;
+  const f0 = getFood(id); if (!f0) return; id = f0.id;
   ui.stack.push({ tab: ui.tab, id: ui.id, portion: ui.portion }); ui.id = id; ui.portion = portion ? { id, ...portion } : null;
   viewed(id); render(); window.scrollTo(0, 0);
 }
@@ -995,11 +1067,13 @@ view.addEventListener('click', e => {
     case 'open': openFood(id); break;
     case 'open-steak': openFood(id, { u: 'oz', n: +ui.oz || 8 }); break;
     case 'open-drink': openFood(id, { u: el.dataset.u, n: +el.dataset.n }); break;
+    case 'style': { const nf = getFood(id); if (nf) { ui.id = nf.id; ui.portion = null; viewed(nf.id); render(); } break; }
     case 'grp': ui.grp = el.dataset.v; ui.q = ''; render(); break;
     case 'fav': toggleFav(id); break;
     case 'online': runOnline(); break;
     case 'onl-type': ui.onl.brands = el.dataset.v === '1'; ui.onl.results = []; ui.onl.err = ''; ui.onl.q = ''; paintOnline(); if (ui.q.trim()) runOnline(); break;
     case 'cut': ui.cut = el.dataset.v; render(); break;
+    case 'venue': ui.venue = el.dataset.v; render(); break;
     case 'to-steak': ui.cut = el.dataset.v; go('steak'); break;
     case 'st-cooked': ui.cooked = el.dataset.v === '1'; render(); break;
     case 'st-lean': ui.lean = el.dataset.v === '1'; render(); break;
@@ -1025,6 +1099,7 @@ view.addEventListener('input', e => {
 view.addEventListener('change', e => {
   if (e.target.id === 'q') { clearTimeout(missTimer); noteMiss(e.target.value); }
   if (e.target.id === 'pu') { ui.portion.u = e.target.value; $('#facts').innerHTML = factsHTML(byId.get(ui.id)); }
+  if (e.target.id === 'kind') { const nf = getFood(parseId(e.target.value)); if (nf) { const keep = ui.portion && ['g', 'oz', 'lb'].includes(ui.portion.u) ? { u: ui.portion.u, n: ui.portion.n } : null; ui.id = nf.id; ui.portion = keep ? { id: nf.id, ...keep } : null; viewed(nf.id); render(); } }
 });
 view.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.id === 'q') { e.preventDefault(); e.target.blur(); } });
 $('header.top').addEventListener('click', e => { if (e.target.closest('#backLink')) { e.preventDefault(); goBack(); } });
@@ -1033,19 +1108,33 @@ $$('nav.tabs button').forEach(b => { b.onclick = () => go(b.dataset.tab); });
 function loadData(json) {
   DATA = json;
   DATA.nut.forEach((k, i) => { NI[k] = i; });
-  FOODS = DATA.foods.map(([id, g, n, c, vals, m, mf, note, y]) => { const v = {}; DATA.nut.forEach((k, i) => { v[k] = vals[i]; }); return { id, g, n, c: c || '', v, m: m || [], mf: mf || '', note: note || '', y: !!y, src: 'sr' }; });
+  FOODS = DATA.foods.map(([id, g, n, c, vs, m, mf, note, y, ci, fam, vr]) => {
+    const parts = String(vs).split('|'), v = {};
+    DATA.nut.forEach((k, i) => { const x = parts[i]; v[k] = x === '' || x == null ? null : +x; });
+    return { id, g, n, c: c || '', v, m: m || [], mf: mf || '', note: note || '', y: !!y, cat: ci >= 0 ? DATA.cats[ci] : '', fam, vr: vr || '', src: id >= 4000000000 ? 'ncl' : id >= 3000000000 ? 'menu' : id > 1000000 ? 'fndds' : 'sr' };
+  });
   byId = new Map(FOODS.map(f => [f.id, f]));
+  FAM = new Map();
+  for (const f of FOODS) { if (!FAM.has(f.fam)) FAM.set(f.fam, []); FAM.get(f.fam).push(f); }
   buildIndex();
 }
+let FAM = new Map();
+/* foods merged away (an older USDA entry replaced by the newer survey one) still resolve */
+const getFood = id => byId.get(id) || (DATA && DATA.redir && byId.get(DATA.redir[id])) || null;
+const famOf = f => (f && isLocalId(f.id) ? FAM.get(f.fam) || [f] : [f]);
 (async function init() {
   try { db = await openDB(DB_NAME); const raw = await idbGet(db, 'state'); if (raw) { const s = JSON.parse(raw); for (const k of ['favs', 'recent', 'misses']) if (Array.isArray(s[k])) store[k] = s[k].slice(0, 300); if (typeof s.key === 'string') store.key = s.key; if (s.online && typeof s.online === 'object') store.online = s.online; } }
   catch (e) { console.error(e); }
   try {
-    const res = await fetch('foods.json'); if (!res.ok) throw new Error('HTTP ' + res.status);
+    /* the offline copy of foods.json is replaced when a new version of the list ships */
+    const FILEV = 'b4db8dcdbd8c';
+    try { for (const k of await caches.keys()) if (k.startsWith('goobs-calories-')) { const c = await caches.open(k); for (const r of await c.keys()) { const u = new URL(r.url); if (/\/foods\.json$/.test(u.pathname) && u.searchParams.get('v') !== FILEV) await c.delete(r); } } } catch (e) {}
+    const res = await fetch('foods.json?v=' + FILEV); if (!res.ok) throw new Error('HTTP ' + res.status);
     loadData(await res.json());
   } catch (e) { view.innerHTML = `<div class="empty"><div class="big">⚠️</div><h2>Couldn’t load the food list</h2><p>${esc(navigator.onLine === false ? 'Open the app once while online so it can save the food list for offline use.' : 'Try again in a moment.')}</p></div>`; return; }
   for (const [id, f] of Object.entries(store.online || {})) if (f && f.v && Array.isArray(f.m)) byId.set(id, { ...f, src: 'fdc' });
-  store.favs = store.favs.filter(id => byId.has(id)); store.recent = store.recent.filter(id => byId.has(id));
+  const fix = id => { const f = getFood(id); return f ? f.id : null; };
+  store.favs = [...new Set(store.favs.map(fix).filter(x => x != null))]; store.recent = [...new Set(store.recent.map(fix).filter(x => x != null))];
   render();
 })();
 </script>
