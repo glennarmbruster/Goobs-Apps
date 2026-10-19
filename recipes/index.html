@@ -206,6 +206,20 @@ header.top h1{font-size:18px;line-height:1.2;white-space:normal;display:-webkit-
 .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
 textarea.tall{min-height:220px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px;line-height:1.5}
 .tokhint{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.nf{width:100%;border-collapse:collapse;font-size:15px;margin-top:6px}
+.nf td{padding:7px 0;border-top:1px solid var(--line);vertical-align:top}
+.nf tr:first-child td{border-top:0}
+.nf td.v{text-align:right;white-space:nowrap;font-weight:600}
+.nf td.dv{text-align:right;width:52px;white-space:nowrap;color:var(--muted);font-size:13px;padding-left:8px}
+.nf tr.sub td:first-child{padding-left:16px;color:var(--muted)}
+.nf tr.main td:first-child{font-weight:700}
+.nbig{display:flex;align-items:baseline;gap:8px;margin-top:6px}.nbig b{font-size:40px;line-height:1}
+.nmac{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.nmac div{background:var(--soft);border-radius:12px;padding:9px 6px;text-align:center}.nmac b{display:block;font-size:18px}.nmac span{font-size:12px;color:var(--muted)}
+.nrow{display:flex;gap:10px;justify-content:space-between;padding:9px 0;border-top:1px solid var(--line);font-size:14px}.nrow:first-child{border-top:0}
+.nrow .r{text-align:right;white-space:nowrap;color:var(--muted)}.nrow .r b{color:var(--ink)}
+.nsum{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:12px;padding:10px 12px;border-radius:12px;background:var(--soft);text-decoration:none;color:inherit;font-size:14px}
+.nsum b{font-size:16px}.nsum .go{margin-left:auto;color:var(--accent);font-weight:700}
 .tokhint code{background:var(--soft);padding:1px 6px;border-radius:6px;color:var(--ink)}
 #printArea{display:none}
 @media print{
@@ -656,7 +670,8 @@ function normIngredient(raw) {
   if (!o.name) return null;
   if (o.qty !== null && (!Number.isFinite(o.qty) || o.qty > 1e6)) { o.qty = null; o.qtyMax = null; }
   if (o.qtyMax !== null && !(Number.isFinite(o.qtyMax) && o.qtyMax > o.qty && o.qtyMax <= 1e6)) o.qtyMax = null;
-  return { id: cleanId(raw.id) && cleanId(raw.id).length <= 40 ? cleanId(raw.id) : '', group: flat(raw.group, 60), qty: o.qty, qtyMax: o.qtyMax, unit: o.unit, name: o.name, note: o.note };
+  const as = flat(raw.as, 80);
+  return { id: cleanId(raw.id) && cleanId(raw.id).length <= 40 ? cleanId(raw.id) : '', group: flat(raw.group, 60), qty: o.qty, qtyMax: o.qtyMax, unit: o.unit, name: o.name, note: o.note, ...(as ? { as } : {}) };
 }
 function uniqueIds(ings) {
   const used = new Set();
@@ -803,7 +818,7 @@ function textToIngredients(text, old = []) {
     const g = normIngredient(line); if (!g) continue; g.group = group; out.push(g);
   }
   const free = old.slice();
-  for (const g of out) { const i = free.findIndex(o => o.name.toLowerCase() === g.name.toLowerCase()); if (i >= 0) { g.id = free[i].id; free.splice(i, 1); } }
+  for (const g of out) { const i = free.findIndex(o => o.name.toLowerCase() === g.name.toLowerCase()); if (i >= 0) { g.id = free[i].id; if (free[i].as) g.as = free[i].as; free.splice(i, 1); } }
   return uniqueIds(out);
 }
 const stepsToText = r => r.steps.map(s => (s.title ? '## ' + s.title + '\n' : '') + s.text.replace(/\n/g, ' ')).join('\n');
@@ -838,11 +853,82 @@ function recipeJSON(r) {
   if (r.prepMin != null) o.prepMin = r.prepMin; if (r.cookMin != null) o.cookMin = r.cookMin;
   if (r.source) o.source = r.source; if (r.sourceUrl) o.sourceUrl = r.sourceUrl;
   if (r.equipment.length) o.equipment = r.equipment;
-  o.ingredients = r.ingredients.map(g => { const x = { id: g.id }; if (g.group) x.group = g.group; if (g.qty != null) x.qty = g.qty; if (g.qtyMax != null) x.qtyMax = g.qtyMax; if (g.unit) x.unit = g.unit; x.name = g.name; if (g.note) x.note = g.note; return x; });
+  o.ingredients = r.ingredients.map(g => { const x = { id: g.id }; if (g.group) x.group = g.group; if (g.qty != null) x.qty = g.qty; if (g.qtyMax != null) x.qtyMax = g.qtyMax; if (g.unit) x.unit = g.unit; x.name = g.name; if (g.note) x.note = g.note; if (g.as) x.as = g.as; return x; });
   o.steps = r.steps.map(s => { const x = {}; if (s.title) x.title = s.title; x.text = s.text; if (s.timer) x.timer = s.timer; return x; });
   if (r.notes) o.notes = r.notes;
   return o;
 }
+
+/* ---------- nutrition (estimates) ----------
+   recipes/nutrition.json maps ingredient names to USDA foods (Calorie Lookup's data) or a product's own label.
+   Raw ingredient weights are added up and divided by the recipe's servings. */
+const NFILEV = 'ec731e6f2616';
+let NUTR = null, nutrState = 'idle';
+const NDV = { fat: 78, sat: 20, chol: 300, na: 2300, carb: 275, fib: 28, pro: 50, k: 4700, ca: 1300, fe: 18 };
+const SALT_TSP = { morton: 4.95, diamond: 2.89 };   /* labels: Morton 480 mg per 1/4 tsp, Diamond Crystal 280 mg per 1/4 tsp */
+const nPrefs = () => { try { const p = JSON.parse(localStorage.getItem('goobs-recipes-nutr') || '{}'); return { salt: p.salt === 'diamond' ? 'diamond' : 'morton', opt: !!p.opt }; } catch { return { salt: 'morton', opt: false }; } };
+const setNPrefs = p => { try { localStorage.setItem('goobs-recipes-nutr', JSON.stringify({ ...nPrefs(), ...p })); } catch { /* fine */ } NCACHE.clear(); };
+async function loadNutrition() {
+  if (nutrState !== 'idle') return; nutrState = 'loading';
+  try {
+    if (window.caches) for (const k of await caches.keys()) { const c = await caches.open(k); for (const q of await c.keys()) { const u = new URL(q.url); if (/\/nutrition\.json$/.test(u.pathname) && u.searchParams.get('v') !== NFILEV) await c.delete(q); } }
+  } catch { /* fine */ }
+  try {
+    const res = await fetch('nutrition.json?v=' + NFILEV); if (!res.ok) throw new Error('HTTP ' + res.status);
+    const j = await res.json(); j.re = j.rules.map(([p, k]) => [new RegExp(p, 'i'), k]); NUTR = j; nutrState = 'ok'; NCACHE.clear(); render();
+  } catch { nutrState = 'error'; render(); }
+}
+const NCACHE = new Map();
+function ingKey(g) { const n = (g.as || g.name).toLowerCase(); for (const [re, k] of NUTR.re) if (re.test(n)) return k; return ''; }
+function ingSkip(g, r, prefs) {
+  const note = (g.note || '').toLowerCase();
+  if (g.qty == null) return 'no amount (to taste)';
+  if (/\boption b\b/.test(note)) return 'the other option';
+  if (/\boptional\b(?! but recommended)/.test(note) && !prefs.opt) return 'optional';
+  if (/(boil|boiling|pasta|potato|cooking) water|for boiling|for the boil/.test(note)) return 'goes in the cooking water, poured off';
+  if (/removed? before serving|discard/.test(note)) return 'removed before serving';
+  /* only ever added to a pot of boiling water (the {water} that's "for boiling") */
+  const waters = r.ingredients.filter(x => /^water$/i.test(x.name) && /boil/i.test(x.note || '')).map(x => x.id);
+  if (waters.length && g.id && !waters.includes(g.id)) {
+    const used = r.steps.filter(st => st.text.includes('{' + g.id + '}'));
+    if (used.length && used.every(st => waters.some(w => st.text.includes('{' + w + '}')))) return 'goes in the cooking water, poured off';
+  }
+  return '';
+}
+function ingGrams(g, k, f, prefs) {
+  const u = f.u, unit = g.unit, nm = g.name.toLowerCase(), qty = g.qtyMax != null ? (g.qty + g.qtyMax) / 2 : g.qty;
+  const W = { g: 1, kg: 1000, oz: 28.3495, lb: 453.592 };
+  if (W[unit]) return qty * W[unit];
+  let tsp = u.tsp, tbsp = u.tbsp, cup = u.cup;
+  if (k === 'kosher-salt' && /kosher/.test(nm)) { tsp = SALT_TSP[prefs.salt]; tbsp = tsp * 3; cup = tsp * 48; }
+  cup = cup || (tbsp && tbsp * 16) || (tsp && tsp * 48); tbsp = tbsp || (cup && cup / 16); tsp = tsp || (tbsp && tbsp / 3);
+  const V = { cup, tbsp, tsp, 'fl oz': cup && cup / 8, ml: cup && cup / 236.59, l: cup && cup * 1000 / 236.59, quart: cup && cup * 4, pint: cup && cup * 2, gallon: cup && cup * 16, pinch: tsp && tsp / 16, dash: tsp && tsp / 8 };
+  if (unit in V) return V[unit] ? qty * V[unit] : null;
+  if (!unit) { const e = (/\blarge\b/.test(nm) && u.each_large) || (/\bsmall\b/.test(nm) && u.each_small) || u.each; return e != null ? qty * e : null; }
+  if (unit === 'clove') { const e = u.clove || u.each; return e != null ? qty * e : null; }
+  return u[unit] != null ? qty * u[unit] : null;
+}
+/* whole-recipe totals as written (not scaled), plus what was and wasn't counted */
+function recipeNutrition(r) {
+  if (!NUTR) return null;
+  const prefs = nPrefs(), ck = r.id + '|' + r.updated + '|' + prefs.salt + prefs.opt;
+  if (NCACHE.has(ck)) return NCACHE.get(ck);
+  const K = NUTR.keys, tot = K.map(() => 0), gaps = new Set(), rows = [], skipped = [], unmatched = [];
+  for (const g of r.ingredients) {
+    const why = ingSkip(g, r, prefs); if (why) { skipped.push({ g, why }); continue; }
+    const k = ingKey(g); if (!k) { unmatched.push({ g, why: 'no match' }); continue; }
+    const f = NUTR.foods[k], grams = ingGrams(g, k, f, prefs);
+    if (grams == null) { unmatched.push({ g, why: `can’t convert “${g.unit || 'each'}” for this ingredient` }); continue; }
+    const eaten = grams * (f.y || 1), v = K.map((n, i) => (f.v[i] == null ? null : f.v[i] * eaten / 100));
+    v.forEach((x, i) => { if (x == null) gaps.add(K[i]); else tot[i] += x; });
+    rows.push({ g, k, f, grams: eaten, v });
+  }
+  const out = { keys: K, tot, gaps, rows, skipped, unmatched, servings: r.servings, counted: rows.length, of: r.ingredients.length };
+  NCACHE.set(ck, out); return out;
+}
+const nVal = (n, key, per) => { const i = n.keys.indexOf(key); return i < 0 ? null : n.tot[i] / per; };
+const fmtG = x => (x == null ? '—' : x < 1 ? (x < 0.05 ? '0' : x.toFixed(1)) : x < 10 ? x.toFixed(1).replace(/\.0$/, '') : Math.round(x).toLocaleString());
+const perServing = (r, key) => { const n = recipeNutrition(r); return n ? nVal(n, key, n.servings) : null; };
 
 /* ---------- state: my recipes + personal marks (favourite, my notes, made-it log, hidden, servings, progress) ---------- */
 function normMark(m) {
@@ -1144,7 +1230,7 @@ function renderTimers() {
 
 /* ===================== views ===================== */
 const app = $('#app');
-const ui = { q: '', cat: 'All', cook: { id: '', i: 0 }, draft: null, tokOk: false };
+const ui = { q: '', cat: 'All', cook: { id: '', i: 0 }, draft: null, tokOk: false, nWhole: false };
 const headerHTML = ({ back, backLabel = 'Recipes', title, sub, right = '' }) => `<header class="top"><div class="wrap">${back ? `<a class="back" href="${back}">‹ ${esc(backLabel)}</a>` : ''}<div class="grow"><h1>${esc(title)}</h1>${sub ? `<div class="sub">${esc(sub)}</div>` : ''}</div>${right}</div></header>`;
 function storageBannerHTML() {
   if (saveFailed) return '<div class="banner bad">Couldn’t save to this device’s storage. Back up now so nothing is lost.</div>';
@@ -1154,6 +1240,7 @@ function storageBannerHTML() {
 const factorOf = r => { const s = mark(r.id).servings; return s ? s / r.servings : 1; };
 const servingsOf = r => mark(r.id).servings || r.servings;
 const metaLine = r => [r.category, r.totalMin != null ? fmtMin(r.totalMin) : '', `${fmtNum(r.servings)} ${r.servingsLabel || 'servings'}`].filter(Boolean).join(' · ');
+const calLine = r => { const k = perServing(r, 'kcal'); return k ? ` · ${Math.round(k).toLocaleString()} cal each` : ''; };
 function matches(x, q, cat) {
   const r = x.r;
   if (cat === '★') { if (!mark(r.id).fav) return false; } else if (cat !== 'All' && r.category !== cat) return false;
@@ -1169,7 +1256,7 @@ function cardsHTML() {
     return '<div class="empty"><div class="big">🔍</div><h2>No matches</h2><p>Try a different word, or tap All.</p></div>';
   }
   return list.map(({ r, src }) => `<div class="rwrap"><button type="button" class="mealbtn" data-action="meal-toggle" data-id="${esc(r.id)}" aria-pressed="${inMeal(r.id)}" aria-label="${inMeal(r.id) ? 'Remove ' + esc(r.title) + ' from the meal' : 'Add ' + esc(r.title) + ' to the meal'}">${inMeal(r.id) ? '✓ In meal' : '+ Meal'}</button><a class="card rcard" href="#/r/${esc(r.id)}"><div class="tc-top"><h2>${esc(r.title)}</h2><span>${mark(r.id).fav ? '<span class="star" aria-label="Favourite">★</span>' : ''}${src === 'mine' ? `<span class="badge">${findRecipe(r.id).shadows ? 'Edited' : 'Phone only'}</span>` : ''}</span></div>
-    <div class="meta">${esc(metaLine(r))}</div>${r.tags.length ? `<div class="tags">${r.tags.slice(0, 4).map(t => `<span class="tag">${esc(t)}</span>`).join('')}</div>` : ''}</a></div>`).join('');
+    <div class="meta">${esc(metaLine(r) + calLine(r))}</div>${r.tags.length ? `<div class="tags">${r.tags.slice(0, 4).map(t => `<span class="tag">${esc(t)}</span>`).join('')}</div>` : ''}</a></div>`).join('');
 }
 function homeScreen() {
   const all = allRecipes(), cats = [...new Set([...FIXED_TABS, ...all.map(x => x.r.category)])].sort((a, b) => (FIXED_TABS.indexOf(a) + 1 || 99) - (FIXED_TABS.indexOf(b) + 1 || 99) || (CATS.indexOf(a) + 1 || 99) - (CATS.indexOf(b) + 1 || 99) || a.localeCompare(b));
@@ -1183,7 +1270,7 @@ function homeScreen() {
     ${all.length ? `<input class="search" type="search" id="q" placeholder="Search recipes or ingredients" value="${esc(ui.q)}" aria-label="Search recipes" autocomplete="off" autocapitalize="none" enterkeyhint="search">` : ''}${chips}
     <div id="rlist">${cardsHTML()}</div>${empty}</main>`;
 }
-const TABS = [['ingredients', 'Ingredients', '🧂'], ['steps', 'Steps', '👩‍🍳'], ['notes', 'Notes', '📝']];
+const TABS = [['ingredients', 'Ingredients', '🧂'], ['steps', 'Steps', '👩‍🍳'], ['nutrition', 'Nutrition', '🥗'], ['notes', 'Notes', '📝']];
 function ingredientsTab(r) {
   const f = factorOf(r), m = mark(r.id), srv = servingsOf(r), done = new Set(m.prog.i);
   const pills = [r.prepMin != null ? `Prep ${fmtMin(r.prepMin)}` : '', r.cookMin != null ? `Cook ${fmtMin(r.cookMin)}` : '', r.totalMin != null && (r.prepMin == null || r.cookMin == null) ? `Total ${fmtMin(r.totalMin)}` : ''].filter(Boolean);
@@ -1197,10 +1284,40 @@ function ingredientsTab(r) {
     <div class="scale"><div class="stepper" role="group" aria-label="Servings"><button type="button" data-action="srv-" aria-label="Fewer servings">−</button><output aria-live="polite">${esc(fmtNum(srv))}</output><button type="button" data-action="srv+" aria-label="More servings">+</button></div>
       <span class="muted">${esc(r.servingsLabel || 'servings')}</span><button type="button" class="chip" data-action="srv-x" data-x="0.5" aria-pressed="${Math.abs(f - 0.5) < 1e-9}">½×</button><button type="button" class="chip" data-action="srv-x" data-x="1" aria-pressed="${Math.abs(f - 1) < 1e-9}">1×</button><button type="button" class="chip" data-action="srv-x" data-x="2" aria-pressed="${Math.abs(f - 2) < 1e-9}">2×</button><button type="button" class="chip" data-action="srv-x" data-x="3" aria-pressed="${Math.abs(f - 3) < 1e-9}">3×</button></div>
     ${Math.abs(f - 1) > 1e-9 ? `<p class="hint" style="margin-top:8px">Scaled from ${esc(fmtNum(r.servings))}. Cooking times and pan sizes don’t scale automatically.</p>` : ''}
+    ${nutritionSummaryHTML(r)}
     ${r.steps.length ? '<button type="button" class="btn primary block" style="margin-top:14px" data-action="cook">Start cooking</button>' : ''}</section>
     ${r.ingredients.length ? list : '<div class="card empty"><div class="big">🧂</div><h2>No ingredients listed</h2></div>'}
     ${r.equipment.length ? `<div class="grp">Equipment</div><section class="card pad"><div class="eqchips">${r.equipment.map(e => `<span class="pill">${esc(e)}</span>`).join('')}</div></section>` : ''}
     <div class="chips" style="margin-top:14px"><button type="button" class="chip" data-action="meal-add" aria-pressed="${inMeal(r.id)}">${inMeal(r.id) ? '✓ In meal' : '+ Add to meal'}</button><button type="button" class="chip" data-action="grocery-add">Add to Grocery</button><button type="button" class="chip" data-action="copy-list">Copy list</button><button type="button" class="chip" data-action="ing-reset">Uncheck all</button></div>`;
+}
+function nutritionSummaryHTML(r) {
+  const n = recipeNutrition(r); if (!n || !n.counted) return '';
+  const k = Math.round(nVal(n, 'kcal', n.servings)), na = Math.round(nVal(n, 'na', n.servings));
+  return `<a class="nsum" href="#/r/${esc(r.id)}/nutrition"><span>Per serving</span><b>${k.toLocaleString()} cal</b><span>· ${na.toLocaleString()} mg sodium</span><span class="go">Nutrition ›</span></a>`;
+}
+function nutritionTab(r) {
+  if (nutrState === 'loading' || nutrState === 'idle') return '<div class="card empty"><p>Loading nutrition…</p></div>';
+  if (!NUTR) return '<div class="card empty"><div class="big">🥗</div><h2>Nutrition isn’t available</h2><p>Open the app once while online so it can save the nutrition list.</p></div>';
+  const n = recipeNutrition(r), prefs = nPrefs(), whole = ui.nWhole, per = whole ? 1 : n.servings;
+  const v = key => nVal(n, key, per), gap = key => (n.gaps.has(key) ? '*' : '');
+  const row = (key, label, unit, cls) => { const x = v(key); return `<tr class="${cls}"><td>${label}</td><td class="v">${fmtG(x)} ${unit}${gap(key)}</td><td class="dv">${NDV[key] && x != null ? Math.round(x / NDV[key] * 100) + '%' : ''}</td></tr>`; };
+  const amt = g => { const a = amountText(g, 1); return a ? a + ' ' : ''; };
+  const ki = n.keys.indexOf('kcal'), ni = n.keys.indexOf('na');
+  const big = [...n.rows].sort((a, b) => (b.v[ni] || 0) - (a.v[ni] || 0))[0];
+  const notCounted = [...n.skipped, ...n.unmatched];
+  return `<section class="card pad">
+      <div class="seg" style="display:flex;gap:3px;background:var(--soft);border-radius:12px;padding:3px">${[['0', `Per serving (1 of ${fmtNum(n.servings)})`], ['1', 'Whole recipe']].map(([x, l]) => `<button type="button" class="btn small" style="flex:1;border:0;${(whole ? '1' : '0') === x ? 'background:var(--card);box-shadow:0 1px 3px rgba(0,0,0,.15)' : 'background:none'}" data-action="n-whole" data-x="${x}" aria-pressed="${(whole ? '1' : '0') === x}">${esc(l)}</button>`).join('')}</div>
+      <div class="nbig"><b id="nkcal">${Math.round(v('kcal')).toLocaleString()}</b><span class="muted">calories${whole ? ', whole recipe' : ' per serving'}</span></div>
+      <div class="nmac"><div><b>${fmtG(v('pro'))} g</b><span>protein</span></div><div><b>${fmtG(v('carb'))} g</b><span>carbs</span></div><div><b>${fmtG(v('fat'))} g</b><span>fat</span></div></div>
+      <table class="nf" id="nf">${row('fat', 'Total fat', 'g', 'main')}${row('sat', 'Saturated fat', 'g', 'sub')}${row('chol', 'Cholesterol', 'mg', 'main')}${row('na', 'Sodium', 'mg', 'main')}${row('carb', 'Total carbohydrate', 'g', 'main')}${row('fib', 'Fiber', 'g', 'sub')}${row('sug', 'Sugars', 'g', 'sub')}${row('pro', 'Protein', 'g', 'main')}${row('k', 'Potassium', 'mg', 'main')}${row('ca', 'Calcium', 'mg', 'main')}${row('fe', 'Iron', 'mg', 'main')}</table>
+      <p class="hint" style="margin:8px 0 0">%DV is for a 2,000-calorie day.${n.gaps.size ? ' * USDA or the product label doesn’t list this for every ingredient, so it may be a little low.' : ''}${big && big.v[ni] > 0 ? ` Most of the sodium comes from ${esc(big.g.name.toLowerCase())}.` : ''}</p></section>
+    <section class="card pad" style="margin-top:12px"><h3>Counted ${n.counted} of ${n.of} ingredients</h3>
+      ${notCounted.length ? `<p class="muted" style="margin:4px 0 0">Not counted: ${notCounted.map(x => `${esc(x.g.name)} <span class="hint">(${esc(x.why)})</span>`).join('; ')}.</p>` : '<p class="muted" style="margin:4px 0 0">Everything in the list is counted.</p>'}
+      <div style="margin-top:12px"><div class="hint" style="margin-bottom:4px">Kosher salt</div><div class="chips"><button type="button" class="chip" data-action="n-salt" data-v="morton" aria-pressed="${prefs.salt === 'morton'}">Morton</button><button type="button" class="chip" data-action="n-salt" data-v="diamond" aria-pressed="${prefs.salt === 'diamond'}">Diamond Crystal</button></div>
+      <label style="display:flex;gap:8px;align-items:center;margin-top:10px;font-size:15px"><input type="checkbox" data-action="n-opt"${prefs.opt ? ' checked' : ''}> Count optional ingredients</label></div></section>
+    <div class="grp">What it’s built from (whole recipe)</div>
+    <section class="card pad">${n.rows.map(x => `<div class="nrow"><div><div>${esc(amt(x.g) + x.g.name)}</div><div class="hint">${esc(x.f.n)} · ${fmtG(x.grams)} g</div></div><div class="r"><b>${Math.round(x.v[ki] || 0).toLocaleString()}</b> cal<br>${Math.round(x.v[ni] || 0).toLocaleString()} mg sodium</div></div>`).join('')}</section>
+    <p class="hint" style="margin:10px 4px">Estimate from the raw ingredients using USDA data (the same foods as Calorie Lookup) and the packaged products’ own labels. It doesn’t subtract fat that renders off or liquid left in the pan, and breading, dredging flour and frying oil count in full, so breaded dishes run a little high. Ranges use the middle amount. If an ingredient isn’t matched, add <code>"as"</code> to it in the recipe file, for example <code>"as": "chicken thighs"</code>.</p>`;
 }
 function timerButtons(s, label) {
   const ts = s.timer ? [{ secs: s.timer, label: fmtClock(s.timer).replace(/^0?(\d+):00$/, '$1 min') }] : detectTimers(s.text);
@@ -1239,7 +1356,8 @@ function cookScreen(r) {
 function recipeScreen(rt) {
   const { r, tab } = rt, m = mark(r.id);
   if (tab === 'cook') return cookScreen(r);
-  const body = tab === 'steps' ? stepsTab(r) : tab === 'notes' ? notesTab(r) : ingredientsTab(r);
+  if (tab === 'nutrition') loadNutrition();
+  const body = tab === 'steps' ? stepsTab(r) : tab === 'notes' ? notesTab(r) : tab === 'nutrition' ? nutritionTab(r) : ingredientsTab(r);
   const nav = `<nav class="tabs" aria-label="Recipe sections"><div class="wrap">${TABS.map(([k, l, ic]) => `<a href="#/r/${esc(r.id)}/${k}"${k === tab ? ' aria-current="page"' : ''}><span class="ico">${ic}</span>${l}</a>`).join('')}</div></nav>`;
   return headerHTML({ back: '#/', title: r.title, sub: metaLine(r), right: `<button type="button" class="btn small" data-action="fav" aria-pressed="${m.fav}" aria-label="${m.fav ? 'Remove from favourites' : 'Add to favourites'}">${m.fav ? '★' : '☆'}</button><button type="button" class="btn small" data-action="more">More</button>` })
     + `<main class="wrap">${storageBannerHTML()}${body}</main>${nav}`;
@@ -1287,6 +1405,11 @@ function backupScreen() {
     <section class="card pad"><h3>Danger zone</h3><p>Erases the recipes, favourites and notes on this phone. The shared library stays.</p><button type="button" class="btn danger block" data-action="wipe">Erase my recipes on this phone</button></section></div></main>`;
 }
 const mealBarHTML = () => (state.meal.length ? `<div style="height:84px"></div><a class="mealbar" href="#/meal"><b>🍽️ Meal</b><span>${esc(plural(mealRecipes().length, 'recipe'))}</span><span class="go">View ›</span></a>` : '');
+function mealNutritionHTML(rs) {
+  if (!NUTR || !rs.length) return '';
+  const s = key => rs.reduce((t, r) => t + (perServing(r, key) || 0), 0);
+  return `<div class="grp">One serving of each</div><section class="card pad"><div class="nmac"><div><b>${Math.round(s('kcal')).toLocaleString()}</b><span>calories</span></div><div><b>${Math.round(s('fat'))} g</b><span>fat · ${Math.round(s('fat') / NDV.fat * 100)}% DV</span></div><div><b>${Math.round(s('na')).toLocaleString()} mg</b><span>sodium · ${Math.round(s('na') / NDV.na * 100)}% DV</span></div></div><p class="hint" style="margin:8px 0 0">Estimates; open a recipe’s Nutrition tab to see how it’s worked out.</p></section>`;
+}
 function mealScreen() {
   const rs = mealRecipes(), comb = combineIngredients(rs);
   const rows = rs.map(r => `<li class="row static"><a class="row-main" href="#/r/${esc(r.id)}" style="text-decoration:none;color:inherit"><div class="row-title">${esc(r.title)}</div><div class="row-sub">${esc(r.category)} · ${esc(fmtNum(servingsOf(r)))} ${esc(r.servingsLabel || 'servings')}</div></a><button type="button" class="btn small" data-action="meal-toggle" data-id="${esc(r.id)}">Remove</button></li>`).join('');
@@ -1295,6 +1418,7 @@ function mealScreen() {
     + `<main class="wrap">${rs.length ? '' : '<div class="empty"><div class="big">🍽️</div><h2>No meal yet</h2><p>Tap <b>+ Meal</b> on a main dish and on any sides, then come back here for one combined shopping list.</p></div>'}
     <div class="chips" style="margin:14px 0 10px">${adders}</div>
     ${rs.length ? `<ul class="card list">${rows}</ul>
+    ${mealNutritionHTML(rs)}
     <div class="grp">Combined ingredients</div><ul class="card list">${comb.map(g => `<li class="ing"><label style="cursor:default"><span class="amt">${esc(amountText(g, 1))}</span><span class="nm">${esc(g.name)}</span></label></li>`).join('')}</ul>
     <p class="hint" style="margin:8px 4px">Amounts follow the servings set on each recipe.</p>
     <div class="stack"><button type="button" class="btn primary block" data-action="meal-grocery">Add to Grocery</button><button type="button" class="btn block" data-action="meal-copy">Copy as text</button></div>` : ''}</main>`;
@@ -1536,6 +1660,9 @@ function handleAction(a, el) {
   const m = mark(id), togg = (list, i) => (list.includes(i) ? list.filter(x => x !== i) : [...list, i]);
   switch (a) {
     case 'fav': setMark(id, { fav: !m.fav }); return commit();
+    case 'n-whole': ui.nWhole = el.dataset.x === '1'; return render();
+    case 'n-salt': setNPrefs({ salt: el.dataset.v }); return render();
+    case 'n-opt': setNPrefs({ opt: !!el.checked }); return render();
     case 'more': return moreMenu(r, rt.src);
     case 'srv+': case 'srv-': { const cur = servingsOf(r), next = a === 'srv+' ? cur + (cur >= 1 ? 1 : 0.5) : Math.max(0.5, cur - (cur > 1 ? 1 : 0.5)); setMark(id, { servings: Math.abs(next - r.servings) < 1e-9 ? null : next }); return commit(); }
     case 'srv-x': { const x = +el.dataset.x, s = r.servings * x; setMark(id, { servings: Math.abs(x - 1) < 1e-9 ? null : s }); return commit(); }
@@ -1595,6 +1722,7 @@ document.addEventListener('visibilitychange', () => {
   { const r = route(); if (r.name === 'edit') ui.editOld = r.r ? r.r.ingredients : []; }
   render(); ensureTick();
   await loadLibrary();
+  loadNutrition();
   const a = document.activeElement;
   if (route().name === 'home' && a && a.id === 'q') { const l = $('#rlist'); if (l) l.innerHTML = cardsHTML(); } else render();
 })();

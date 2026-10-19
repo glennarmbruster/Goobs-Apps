@@ -40,6 +40,7 @@ async function page(req) {
 async function asset(req) {
   const cache = await caches.open(CACHE);
   const cached = await cache.match(req, { ignoreSearch: true });
+  if (cached && new URL(req.url).searchParams.has('v')) return cached;
   const refresh = fetch(req, { cache: 'no-cache' }).then(res => {
     if (res && res.ok && res.type === 'basic') cache.put(req, res.clone());
     return res;
