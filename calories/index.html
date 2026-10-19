@@ -1127,7 +1127,7 @@ const famOf = f => (f && isLocalId(f.id) ? FAM.get(f.fam) || [f] : [f]);
   catch (e) { console.error(e); }
   try {
     /* the offline copy of foods.json is replaced when a new version of the list ships */
-    const FILEV = 'b4db8dcdbd8c';
+    const FILEV = '44fc9afd4131';
     try { for (const k of await caches.keys()) if (k.startsWith('goobs-calories-')) { const c = await caches.open(k); for (const r of await c.keys()) { const u = new URL(r.url); if (/\/foods\.json$/.test(u.pathname) && u.searchParams.get('v') !== FILEV) await c.delete(r); } } } catch (e) {}
     const res = await fetch('foods.json?v=' + FILEV); if (!res.ok) throw new Error('HTTP ' + res.status);
     loadData(await res.json());

@@ -74,7 +74,7 @@ a.app span{color:var(--muted);font-size:13px;line-height:1.35;display:block}
 <script>
 (function(){
   var pick=document.getElementById('pick');
-  var KEY='goobs-launcher-apps', PRESETS={cindy:['travel','grocery','todo','recipes','household','sousvide','storage','watchlog']}, OLD_PRESETS=[['travel','grocery','todo','recipes','household'],['travel','grocery','todo','recipes','household','sousvide']], ALIAS={trips:'travel','to-do':'todo',work:'worklog'};
+  var KEY='goobs-launcher-apps', PRESETS={cindy:['travel','grocery','todo','recipes','household','sousvide','storage','watchlog','calories']}, OLD_PRESETS=[['travel','grocery','todo','recipes','household'],['travel','grocery','todo','recipes','household','sousvide'],['travel','grocery','todo','recipes','household','sousvide','storage','watchlog']], ALIAS={trips:'travel','to-do':'todo',work:'worklog'};
   var grid=document.getElementById('apps'), cards={}, order=[];
   [].forEach.call(grid.children,function(a){cards[a.dataset.k]=a;order.push(a.dataset.k);});
   function clean(list){var out=[];(list||[]).forEach(function(k){k=String(k).trim().toLowerCase();k=ALIAS[k]||k;if(cards[k]&&out.indexOf(k)<0)out.push(k);});return out;}
