@@ -193,6 +193,23 @@ dialog::backdrop{background:rgba(10,15,12,.55)}
 .gbar{height:6px;border-radius:999px;background:var(--accent);margin-top:5px;opacity:.75}
 .orow{display:block;width:100%;text-align:left;border:0;border-top:1px solid var(--line);background:none;font:inherit;color:inherit;padding:11px 14px;cursor:pointer}
 .orow:first-child{border-top:0}
+.mealbtn{display:flex;align-items:center;gap:12px;width:100%;text-align:left;font:inherit;color:#fff;background:var(--accent);border:0;border-radius:16px;padding:14px 16px;cursor:pointer;box-shadow:var(--shadow)}
+.mealbtn b{display:block;font-size:18px}.mealbtn span{font-size:13px;opacity:.9}.mealbtn .big{font-size:30px}
+.crit{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.crit button{display:flex;align-items:center;gap:8px;font:inherit;font-weight:700;font-size:15px;padding:10px 14px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;min-height:44px}
+.crit button .box{width:20px;height:20px;border-radius:6px;border:2px solid var(--muted);display:inline-flex;align-items:center;justify-content:center;font-size:14px;line-height:1}
+.crit button[aria-checked="true"]{border-color:var(--accent);background:var(--soft)}
+.crit button[aria-checked="true"] .box{background:var(--accent);border-color:var(--accent);color:#fff}
+.mrow{display:flex;align-items:center;gap:10px;padding:11px 12px;border-top:1px solid var(--line);cursor:pointer}
+.mrow:first-child{border-top:0}
+.mrow .dot{flex:none;width:22px;height:22px;border-radius:50%;border:2px solid var(--line);display:flex;align-items:center;justify-content:center}
+.mrow[aria-checked="true"] .dot{border-color:var(--accent)}
+.mrow[aria-checked="true"] .dot::after{content:"";width:12px;height:12px;border-radius:50%;background:var(--accent)}
+.mrow .mm{flex:1;min-width:0}.mrow .mt{font-weight:700}.mrow .ms{font-size:13px;color:var(--muted)}.mrow .ms b{color:var(--ink)}
+.mrow .info{flex:none;border:0;background:none;color:var(--accent);font:inherit;font-weight:700;font-size:13px;padding:8px 4px;cursor:pointer;min-height:40px}
+.mtot{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+.mtot div{background:var(--soft);border-radius:12px;padding:10px 6px;text-align:center}.mtot b{display:block;font-size:19px}.mtot span{font-size:12px;color:var(--muted)}
+.linkbtn{border:0;background:none;color:var(--accent);font:inherit;font-weight:700;padding:8px 0;cursor:pointer;min-height:40px}
 .loading{padding:40px 0;text-align:center;color:var(--muted)}
 .keyrow{display:flex;gap:8px;margin-top:8px}
 .keyrow input{flex:1;min-width:0;font:inherit;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink)}
@@ -626,11 +643,22 @@ function gramsFor(f, unit, n) {
 }
 function defaultPortion(f) {
   if (/^Alcoholic beverage, (distilled|liqueur)|creme de menthe/i.test(f.n) && gPerFlOz(f)) return ['shot', 1];
-  /* the most natural single serving: "1 drink", "1 sandwich", "1 medium", "1 cup"… before "1 slice" or "1 fl oz" */
-  const PRI = [/^1 (drink|cocktail|serving|item|sandwich|burger|order|taco|burrito|bowl|meal|dinner|entree|can|bottle|container|bar|package|glass)\b/i, /^1 (medium|regular)\b/i, /^1 (large|small|piece|egg|patty|fillet|breast|thigh|drumstick|wing|link|muffin|bagel|biscuit|roll|pancake|waffle|cookie|donut|doughnut|tortilla)\b/i, /^1 cup\b/i, /^typical serving$/, /^1 (slice|tbsp|tablespoon)\b/i];
-  for (const re of PRI) { const i = f.m.findIndex(([, d]) => re.test(d)); if (i >= 0) return ['m' + i, 1]; }
-  return f.m.length ? ['m0', 1] : ['g', 100];
+  if (f.src === 'menu' || f.src === 'ncl') return ['m0', 1];
+  if (/espresso/i.test(f.n) && gPerFlOz(f)) return ['floz', 2];
+  /* the most natural single serving: "1 can", "1 sandwich", USDA's typical serving, "1 medium", "1 breast"… never a
+     single fluid ounce of a drink, one floret of broccoli, a whole raw package or a 1.4 kg turkey breast */
+  const drink = isDrink(f), max = drink ? 1100 : 650;
+  const ok = ([g, d]) => g > 0 && g <= max && !(/unprepared|dry mix|, dry\b|powder|concentrate/i.test(f.n) && /package|container|can\b|box/i.test(d));
+  const tiny = ([g, d]) => g < 20 && !/cup|serving|oz\b|egg|slice|strip|link|cookie|cracker|nugget|wing|shrimp|scallop|tbsp|tablespoon|tsp|teaspoon|pat|packet|cube|candy|piece|chip/i.test(d);
+  const PRI = [/^1 (drink|cocktail|serving|item|sandwich|burger|order|taco|burrito|bowl|meal|dinner|entree|can|bottle|glass|bar|slice)\b/i, /^typical serving\b/, /^1 (medium|regular)\b/i, /NLEA serving|^3 oz$/i,
+    /^(1|0\.5|1\/2) (large|small|piece|egg|patty|fillet|breast|thigh|drumstick|leg|chop|steak|wing|link|muffin|bagel|biscuit|roll|pancake|waffle|cookie|donut|doughnut|tortilla|fruit|banana|apple|orange|potato|ear|tomato|pear|peach)\b/i, /^1 cup\b/i];
+  for (const re of PRI) { const i = f.m.findIndex(m => re.test(m[1]) && ok(m) && !(drink && /^1 fl oz/.test(m[1])) && !tiny(m)); if (i >= 0) return ['m' + i, 1]; }
+  if (drink && gPerFlOz(f)) return ['floz', 8];
+  const i = f.m.findIndex(m => ok(m) && !tiny(m) && !/^1 fl oz/.test(m[1]));
+  return i >= 0 ? ['m' + i, 1] : ['g', 100];
 }
+/* drinks: USDA beverages and survey drink categories (not powders, mixes or concentrates) */
+const isDrink = f => !/powder|dry\b|mix\b|concentrate|creamer|syrup|bar\b|dessert|cereal|instant(?!.*prepared)/i.test(f.n) && (GROUP(f.g) === 'Beverages' || /^(Milk, |Beverages, |Alcoholic)/.test(f.n) || /juice|drinks?\b|soda|soft drinks|coffee|^tea$|milk|water|beer|wine|liquor|cocktail|smoothie|shakes?|\bnectar\b|lemonade/i.test(f.cat || ''));
 const portionLabel = (f, unit, n) => (unit[0] === 'm' ? `${n !== 1 ? n + ' × ' : ''}${f.m[+unit.slice(1)][1]}` : unit === 'shot' ? `${n !== 1 ? n + ' × ' : ''}1.5 fl oz shot` : `${n} ${{ g: 'g', oz: 'oz', lb: 'lb', floz: 'fl oz' }[unit]}`);
 
 /* ---------- search ---------- */
@@ -638,7 +666,7 @@ const norm = s => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ
 const stem = w => w.replace(/(ies)$/, 'y').replace(/(oes|ches|shes|xes)$/, m => m.slice(0, -2)).replace(/([^s])s$/, '$1');
 /* everyday words the USDA names don't use: [pattern in the USDA name, extra search words] */
 const ALIAS = [
-  [/catsup/i, 'ketchup'], [/^Beverages, carbonated/i, 'soda pop soft drink'], [/carbonated, cola/i, 'coke coca cola pepsi'], [/carbonated, low calorie, cola/i, 'diet coke diet pepsi'], [/lemon-lime/i, 'sprite 7up'], [/^Beef, .*rib eye/i, 'ribeye'], [/^Beef, rib, small end/i, 'ribeye prime rib'], [/^Beef, .*top loin/i, 'strip steak new york strip ny strip kansas city strip'],
+  [/catsup/i, 'ketchup'], [/^Beverages, carbonated/i, 'soda pop soft drink'], [/carbonated, cola/i, 'coke coca cola pepsi'], [/carbonated, low calorie, cola/i, 'diet coke diet pepsi'], [/lemon-lime/i, 'sprite 7up'], [/pepper-type/i, 'dr pepper drpepper'], [/carbonated, (orange|grape)/i, 'fanta'], [/carbonated, root beer/i, 'a&w'], [/Tea, iced, brewed, .*sweetened with sugar/i, 'sweet tea'], [/^Beef, .*rib eye/i, 'ribeye'], [/^Beef, rib, small end/i, 'ribeye prime rib'], [/^Beef, .*top loin/i, 'strip steak new york strip ny strip kansas city strip'],
   [/^Beef, .*tenderloin/i, 'filet mignon fillet'], [/^Beef, .*top blade/i, 'flat iron'], [/^Beef, .*(inside|outside) skirt/i, 'fajita'], [/Beef, ground/i, 'hamburger burger meat'],
   [/distilled, all/i, 'tequila bourbon scotch brandy cognac mezcal liquor spirits shot whiskey vodka gin rum'], [/^Alcoholic beverage, beer/i, 'beer'],
   [/Wagyu/i, 'kobe wagyu'], [/french fried|french fries/i, 'fries'], [/Potato chips|potato, chips/i, 'chips'], [/Mayonnaise|Salad dressing, mayonnaise/i, 'mayo'],
@@ -687,7 +715,7 @@ function fixWord(w) {
 }
 const queryWords = q => norm(q).replace(/\bmc donald/g, 'mcdonald').split(' ').filter(Boolean).map(w => SPELL[w] || w).join(' ').split(' ').map(stem);
 /* the everyday version first for the most common one- and two-word searches (USDA food numbers) */
-const PICKS = {
+const PICKS = { 'dr pepper': [14153], 'diet dr pepper': [14416],
   milk: [1077, 1079, 1082, 1085], 'whole milk': [1077], 'skim milk': [1085], chicken: [5064, 5060, 5098, 5094, 5069, 5103], 'chicken breast': [5064, 5060, 5057],
   'chicken thigh': [5098, 5094, 5091], 'chicken wing': [5103, 5107], drumstick: [5069], egg: [1123, 1129, 1132, 1128], bread: [18069, 18075], rice: [20045, 20037],
   pasta: [20121], spaghetti: [20121], noodle: [20121], coffee: [14209, 14210], bacon: [10862, 10123], apple: [9003], potato: [11674, 11363, 11371], 'baked potato': [11674],
@@ -713,7 +741,7 @@ function searchFoods(q) {
 }
 function rank(words, q) {
   const wantBaby = /baby|infant/i.test(q), wantBrand = words.some(w => /whopper|baconator|frosty|mcnugget|mcmuffin|mcchicken|mcflurry|biggie|croissan|kellogg|campbell|mcdonald|burger|wendy|taco|kfc|popeye|subway|denny|applebee|barrel|friday|olive|carrabba|border|chick|pizza|domino|papa|caesar|arby|kraft|hershey|quaker|general|nabisco/.test(w));
-  const wantShip = words.some(w => SHIP_RE.test(w));
+  const wantShip = words.some(w => SHIP_RE.test(w)), wantDry = words.some(w => /^(dry|powder|concentrat|mix|raw|unprepar|instant|dehydrat|freeze)/.test(w));
   const out = [], steaky = words.some(w => /^(steak|sirloin|ribeye|filet|mignon|strip|tbone|porterhouse|brisket|flank|skirt|wagyu|tri|prime|rib)$/.test(w));
   for (const h of HAY) {
     if (!words.every(w => h.all.includes(' ' + w))) continue;
@@ -734,6 +762,7 @@ function rank(words, q) {
     if (!isLocalId(f.id)) s -= 1;
     if (f.src === 'menu') s += wantBrand ? 6 : -1;
     if (f.src === 'ncl') s += wantShip ? 6 : -3;
+    if (/\b(dry|powder|concentrate|unprepared|dry mix|freeze-dried|dehydrated)\b/i.test(f.n) && !wantDry) s -= 4;
     out.push([s, f]);
   }
   return out.sort((a, b) => b[0] - a[0] || a[1].n.length - b[1].n.length).map(x => x[1]);
@@ -766,7 +795,7 @@ const FDC_NUT = { 1008: 'kcal', 2047: 'kcal_a', 2048: 'kcal_b', 1003: 'pro', 100
   1093: 'na', 1092: 'k', 1087: 'ca', 1089: 'fe', 1090: 'mg', 1091: 'p', 1095: 'zn', 1103: 'se', 1098: 'cu', 1101: 'mn', 1106: 'vitA', 1162: 'vitC', 1114: 'vitD', 1109: 'vitE',
   1185: 'vitK', 1165: 'b1', 1166: 'b2', 1167: 'b3', 1170: 'b5', 1175: 'b6', 1190: 'fol', 1178: 'b12', 1180: 'cho', 1051: 'water', 1107: 'bcar', 1122: 'lyc', 1123: 'lutz', 1018: 'alc' };
 const DT_LABEL = { 'Survey (FNDDS)': 'USDA survey foods', Foundation: 'USDA foundation', 'SR Legacy': 'USDA SR Legacy', Branded: 'Packaged brand' };
-const ui = { tab: 'foods', q: '', grp: '', id: null, stack: [], portion: null, cut: 'ribeye', cooked: true, lean: false, oz: 8, onl: { q: '', brands: false, busy: false, results: [], err: '' } };
+const ui = { tab: 'foods', q: '', grp: '', id: null, stack: [], portion: null, cut: 'ribeye', cooked: false, lean: false, oz: 8, onl: { q: '', brands: false, busy: false, results: [], err: '' } };
 const apiKey = () => (store.key || '').trim() || 'DEMO_KEY';
 function parseFdc(x) {
   if (!x || !isNum(x.fdcId) || typeof x.description !== 'string') return null;
@@ -919,7 +948,7 @@ function factsHTML(f) {
     <div class="macros"><div><b>${fmtN(P)}<small style="font-size:13px">g</small></b><span>Protein</span></div><div><b>${fmtN(C)}<small style="font-size:13px">g</small></b><span>Carbs</span></div><div><b>${fmtN(F)}<small style="font-size:13px">g</small></b><span>Fat</span></div></div>
     ${k ? `<div class="mbar" aria-hidden="true"><i class="p" style="width:${pct[0]}%"></i><i class="c" style="width:${pct[1]}%"></i><i class="f" style="width:${pct[2]}%"></i><i class="a" style="width:${pct[3]}%"></i></div>
     <div class="legend"><span><i style="background:#3b82f6"></i>Protein ${pct[0]}%</span><span><i style="background:#f59e0b"></i>Carbs ${pct[1]}%</span><span><i style="background:#ef4444"></i>Fat ${pct[2]}%</span>${A ? `<span><i style="background:#a855f7"></i>Alcohol ${pct[3]}%</span>` : ''}</div>` : ''}
-    ${A ? `<p class="note" style="margin:12px 0 0" id="alc">Alcohol: about ${fmtN(A, 'g')} (${(A / 14).toFixed(1)} standard drinks).${f.alc == null && (!f.v || f.v.alc == null) ? ' Estimated from the calories not explained by protein, carbs and fat.' : ''}</p>` : ''}
+    ${A ? `<p class="note" style="margin:12px 0 0" id="alc">Alcohol: about ${fmtN(A, 'g')} (${stdDrinks(A)}).${f.alc == null && (!f.v || f.v.alc == null) ? ' Estimated from the calories not explained by protein, carbs and fat.' : ''}</p>` : ''}
     <h3 style="margin:16px 0 4px">Nutrition facts</h3>
     <table class="nf" id="nf"><tbody><tr class="main thick"><td>Calories</td><td class="v">${k == null ? '—' : k}</td><td class="dv">${'' }</td></tr>${rows}</tbody></table>
     ${micro ? `<details class="eg" style="margin-top:10px"><summary>Vitamins & minerals</summary><table class="nf" style="margin-top:6px"><tbody>${micro}</tbody></table></details>` : ''}`;
@@ -931,30 +960,39 @@ const GORDER = ['select', 'choice', 'all', 'prime', 'wagyu45', 'wagyu9'];
 function renderSteak() {
   const S = DATA.steak, cut = S[ui.cut] ? ui.cut : 'ribeye', c = S[cut], ground = cut === 'ground';
   const oz = isNum(+ui.oz) && +ui.oz > 0 ? +ui.oz : 8, g = oz * 28.3495;
-  const state = ui.cooked ? 'cooked' : 'raw', fat = ui.lean ? 'lo' : 'lf';
-  let rows = c.rows.filter(r => ground ? r[1] === state : r[1] === fat && r[2] === state);
-  const extraRaw = ground || !ui.cooked ? [] : c.rows.filter(r => r[1] === fat && r[2] === 'raw' && r[0].startsWith('wagyu'));
-  const line = (label, sub, id, rawOnly) => { const f = byId.get(id); if (!f) return ''; const k = kcalOf(f, g); return { k, html: (max) => `<tr data-action="open-steak" data-id="${id}"><td>${esc(label)}<small>${esc(sub)}</small><div class="gbar" style="width:${Math.max(6, Math.round(k / max * 100))}%"></div></td><td class="k">${k}</td><td>${fmtN(amt(f, 'pro', g), 'g')}</td><td>${fmtN(amt(f, 'fat', g), 'g')}</td></tr>` }; };
-  const lines = ground
-    ? rows.map(r => line(r[0] + ' ground beef', state === 'cooked' ? 'patty, broiled' : 'raw', r[2]))
-    : rows.sort((a, b) => GORDER.indexOf(a[0]) - GORDER.indexOf(b[0])).map(r => line(GRADE[r[0]][0], GRADE[r[0]][1], r[3]));
-  const rawLines = extraRaw.sort((a, b) => GORDER.indexOf(a[0]) - GORDER.indexOf(b[0])).map(r => line(GRADE[r[0]][0], 'raw weight (USDA has no cooked values)', r[3]));
+  /* "Menu weight" is the raw weight restaurants list; you eat it cooked. Cooked values are scaled to the cooked weight that
+     raw piece becomes, from USDA's own raw/cooked pair for the same cut and grade (protein is kept in cooking). */
+  const menu = !ui.cooked, fat = ui.lean ? 'lo' : 'lf';
+  const idOf = r => r[r.length - 1];
+  const twin = (r, st) => c.rows.find(x => (ground ? x[0] === r[0] && x[1] === st : x[0] === r[0] && x[1] === r[1] && x[2] === st));
+  const yieldOf = r => { const raw = twin(r, 'raw'), ck = twin(r, 'cooked'); const a = raw && byId.get(idOf(raw)), b = ck && byId.get(idOf(ck)); return a && b && a.v.pro && b.v.pro ? Math.min(0.95, Math.max(0.55, a.v.pro / b.v.pro)) : null; };
+  const line = (label, sub, id, gg) => { const f = byId.get(id); if (!f) return ''; const k = kcalOf(f, gg); return { k, html: (max) => `<tr data-action="open-steak" data-id="${id}" data-oz="${+(gg / 28.3495).toFixed(1)}"><td>${esc(label)}<small>${esc(sub)}</small><div class="gbar" style="width:${Math.max(6, Math.round(k / max * 100))}%"></div></td><td class="k">${k}</td><td>${fmtN(amt(f, 'pro', gg), 'g')}</td><td>${fmtN(amt(f, 'fat', gg), 'g')}</td></tr>` }; };
+  const base = c.rows.filter(r => ground ? r[1] === 'cooked' : r[1] === fat && r[2] === 'cooked');
+  const rawOnlyRows = c.rows.filter(r => (ground ? r[1] === 'raw' : r[1] === fat && r[2] === 'raw') && !twin(r, 'cooked'));
+  const cookedSub = (r, y) => menu ? `≈${fmtN(oz * y)} oz once cooked` : '';
+  const build = r => { const y = menu ? yieldOf(r) || 0.75 : 1; const s = cookedSub(r, y);
+    return ground ? line(r[0] + ' ground beef', ['patty, broiled', s].filter(Boolean).join(' · '), idOf(r), g * y) : line(GRADE[r[0]][0], [GRADE[r[0]][1], s].filter(Boolean).join(' · '), idOf(r), g * y); };
+  const lines = (ground ? base : base.sort((a, b) => GORDER.indexOf(a[0]) - GORDER.indexOf(b[0]))).map(build);
+  const rawLines = rawOnlyRows.sort((a, b) => GORDER.indexOf(a[0]) - GORDER.indexOf(b[0])).map(r => line(ground ? r[0] + ' ground beef' : GRADE[r[0]][0], 'raw values at raw weight (USDA has no cooked values)', idOf(r), g));
   const all = [...lines, ...rawLines].filter(Boolean), max = Math.max(1, ...all.map(x => x.k || 0));
+  const state = 'cooked';
   return `<div class="stack">
     <div class="scroll-chips" style="padding-top:2px">${Object.keys(S).map(k => `<button type="button" class="chip" data-action="cut" data-v="${k}" aria-pressed="${k === cut}">${esc(S[k].label)}</button>`).join('')}</div>
     <section class="card pad">
-      <div class="seg"><button type="button" data-action="st-cooked" data-v="1" aria-pressed="${ui.cooked}">Cooked</button><button type="button" data-action="st-cooked" data-v="0" aria-pressed="${!ui.cooked}">Raw</button></div>
+      <div class="seg"><button type="button" data-action="st-cooked" data-v="0" aria-pressed="${!ui.cooked}">Menu weight (raw)</button><button type="button" data-action="st-cooked" data-v="1" aria-pressed="${ui.cooked}">Cooked weight</button></div>
       ${ground ? '' : `<div class="seg" style="margin-top:8px"><button type="button" data-action="st-lean" data-v="0" aria-pressed="${!ui.lean}">Eat the fat</button><button type="button" data-action="st-lean" data-v="1" aria-pressed="${ui.lean}">Lean only</button></div>`}
-      <div class="portion"><input id="soz" type="number" inputmode="decimal" min="0" step="any" value="${esc(oz)}" aria-label="Ounces"><span style="font-weight:600">oz ${ui.cooked ? 'cooked weight' : 'raw weight'}</span></div>
+      <div class="portion"><input id="soz" type="number" inputmode="decimal" min="0" step="any" value="${esc(oz)}" aria-label="Ounces"><span style="font-weight:600">${ui.cooked ? 'oz on the plate, cooked' : 'oz as listed on a menu (raw)'}</span></div>
     </section>
     <section class="card pad"><h3 style="margin:0 0 2px">${esc(c.label)}${ground ? ' by lean %' : ' by grade'}</h3>${c.note ? `<p class="fine" style="margin:0 0 6px">${esc(c.note)}</p>` : ''}
       ${lines.filter(Boolean).length ? `<table class="stbl" id="stbl"><thead><tr><th>${ground ? 'Blend' : 'Grade'}</th><th>Cal</th><th>Protein</th><th>Fat</th></tr></thead><tbody>${lines.filter(Boolean).map(x => x.html(max)).join('')}${rawLines.filter(Boolean).map(x => x.html(max)).join('')}</tbody></table>` : `<p class="muted">USDA has no ${state} ${fat === 'lo' ? 'lean-only ' : ''}values for this cut.</p>`}
-      <p class="fine" style="margin:10px 0 0">Tap a row for full nutrition. ${ground ? '' : '“Eat the fat” counts the fat cap and marbling; “Lean only” is with the visible fat trimmed off on the plate.'} Cooked numbers are per ounce of cooked meat; a steak loses roughly a quarter of its weight cooking.</p></section>
+      <p class="fine" style="margin:10px 0 0">Tap a row for full nutrition. ${ground ? '' : '“Eat the fat” counts the fat cap and marbling; “Lean only” is with the visible fat trimmed off on the plate.'} ${ui.cooked ? 'These are for that many ounces of cooked meat.' : 'Menus list raw weight, so a “16 oz” steak is about 12 oz once cooked; the numbers are for the cooked steak you actually eat.'}</p></section>
     <section class="card pad"><p class="fine" style="margin:0">Grades: <b>Select</b> has the least marbling, <b>Choice</b> is most supermarket steak, <b>Prime</b> has the most marbling of the USDA grades. USDA’s <b>Wagyu</b> data is Australian (marble scores 4–5 and 9), raw only; Japanese A5 isn’t in USDA data. Data: USDA SR28.</p></section>
   </div>`;
 }
 
 /* ---------- drinks ---------- */
+/* US standard drink = 14 g of pure alcohol */
+const stdDrinks = a => { const n = Math.round(a / 14 * 10) / 10; return `${n} standard drink${n === 1 ? '' : 's'}`; };
 /* rows: [USDA food number, or survey food name, label]; survey (FNDDS 2021–23) entries carry real alcohol values */
 const DRINKS = [
   ['Liquor', 'shot', 1, [['Vodka', 'Vodka'], ['Tequila', 'Tequila'], ['Whiskey', 'Whiskey / bourbon'], ['Scotch', 'Scotch'], ['Rum', 'Rum'], ['Gin', 'Gin'], ['Brandy', 'Brandy / cognac'],
@@ -980,7 +1018,7 @@ function renderDrinks() {
       let u = unit, nn = n;
       if (unit === 'drink') { const i = drinkMeasure(f); u = i >= 0 ? 'm' + i : 'm0'; nn = 1; }
       const g = gramsFor(f, u, nn), k = kcalOf(f, g), a = alcoholG(f, g);
-      return `<div class="row" data-action="open-drink" data-id="${f.id}" data-u="${u}" data-n="${nn}" role="button" tabindex="0"><div class="row-main"><div class="row-title">${esc(label)}</div><div class="row-sub">${esc(portionLabel(f, u, nn))}${a ? ` · ${(a / 14).toFixed(1)} std drinks` : ''}</div></div><div class="kc">${k}<small>cal</small></div></div>`;
+      return `<div class="row" data-action="open-drink" data-id="${f.id}" data-u="${u}" data-n="${nn}" role="button" tabindex="0"><div class="row-main"><div class="row-title">${esc(label)}</div><div class="row-sub">${esc(portionLabel(f, u, nn))}${a ? ` · ${stdDrinks(a)}` : ''}</div></div><div class="kc">${k}<small>cal</small></div></div>`;
     }).join('');
     return `<div><div class="sec-h"><span>${esc(title)}</span><span>${unit === 'shot' ? 'per 1.5 oz' : unit === 'drink' ? 'per drink' : 'per ' + n + ' fl oz'}</span></div><div class="card">${rows}</div></div>`;
   }).join('')}
@@ -991,6 +1029,7 @@ function renderDrinks() {
 const vivaFoods = () => FOODS.filter(f => f.src === 'ncl');
 const VENUES = ['Main Dining', "Cagney's Steakhouse", 'Le Bistro', 'Onda by Scarpetta', 'Palomar', 'Hasuki', 'Food Republic', 'Nama Sushi & Sashimi', 'Los Lobos', 'Indulge Food Hall', 'The Garden', 'The Local Bar & Grill', 'Vibe, Pool Bar & Room Service', 'Bars'];
 function renderViva() {
+  if (ui.meal) return renderMeal();
   const all = vivaFoods(), seen = [...new Set(all.map(f => f.cat))];
   const venues = [...VENUES.filter(x => seen.includes(x)), ...seen.filter(x => !VENUES.includes(x))];
   const v = venues.includes(ui.venue) ? ui.venue : venues[0];
@@ -998,10 +1037,70 @@ function renderViva() {
   const secs = [...new Set(list.map(f => f.c || ''))];
   return `<div class="stack">
     <section class="card pad"><p style="margin:0"><b>Estimates.</b> Norwegian doesn’t publish nutrition for its menus, so each dish here is matched to similar USDA restaurant foods at a typical restaurant portion. Use them as ballpark numbers; the food page shows what each estimate is built from.</p></section>
+    <button type="button" class="mealbtn" data-action="meal-open"><span class="big" aria-hidden="true">🍽️</span><div><b>Make me a meal</b><span>Pick a restaurant and what matters to you: low calorie, low fat, low sodium</span></div></button>
     <div class="scroll-chips" style="padding-top:2px">${venues.map(x => `<button type="button" class="chip" data-action="venue" data-v="${esc(x)}" aria-pressed="${x === v}">${esc(x)}</button>`).join('')}</div>
     ${secs.map(sec => `<div>${sec ? `<div class="sec-h"><span>${esc(sec)}</span></div>` : ''}<div class="card">${list.filter(f => (f.c || '') === sec).map(f => foodRow(f)).join('')}</div></div>`).join('')}
     ${v === 'Main Dining' ? '<p class="fine" style="margin:0 4px">Main dining menus change nightly. These are two sample nights of Norwegian’s fleet-wide menu (posted from Norwegian Getaway); the Cagney’s à la carte list appears every night.</p>' : ''}
     <p class="src">Menus: Norwegian Viva menus posted by guests on cruisedealstipsandtricks.com; dishes and portions change. Nutrition: estimates from USDA FNDDS 2021–2023 and SR28.</p></div>`;
+}
+
+/* ---------- Make me a meal (Viva) ---------- */
+/* each restaurant's dishes by course; every ticked box ranks the course's dishes from lowest to highest (per serving),
+   the ranks are averaged, and the closest match comes first */
+const COURSES = [['included', 'Comes with every entrée'], ['starter', 'Starter'], ['main', 'Main'], ['side', 'Side'], ['dessert', 'Dessert']];
+const CRIT = [['kcal', 'Low calorie', 'cal'], ['fat', 'Low fat', 'g fat'], ['na', 'Low sodium', 'mg sodium']];
+const courseOf = f => (DATA.course || {})[f.id] || '';
+const mealVenues = () => { const seen = []; for (const f of vivaFoods()) if (courseOf(f) && !seen.includes(f.cat)) seen.push(f.cat); return [...VENUES.filter(v => seen.includes(v)), ...seen.filter(v => !VENUES.includes(v))]; };
+const serving = f => f.m[0] ? f.m[0][0] : 100;
+const per = (f, k) => { const v = amt(f, k, serving(f)); return v == null ? null : v; };
+function rankCourse(list, crit) {
+  if (!crit.length) return list.slice().sort((a, b) => per(a, 'kcal') - per(b, 'kcal'));
+  const span = {}; for (const k of crit) { const vs = list.map(f => per(f, k)).filter(v => v != null); span[k] = [Math.min(...vs), Math.max(...vs)]; }
+  const score = f => crit.reduce((t, k) => { const v = per(f, k), [lo, hi] = span[k]; return t + (v == null ? 1 : hi > lo ? (v - lo) / (hi - lo) : 0); }, 0) / crit.length;
+  return list.map(f => [score(f), f]).sort((a, b) => a[0] - b[0] || per(a[1], 'kcal') - per(b[1], 'kcal')).map(x => x[1]);
+}
+function mealPlan() {
+  const m = ui.meal, crit = CRIT.map(c => c[0]).filter(k => m.c[k]);
+  const dishes = vivaFoods().filter(f => f.cat === m.v && courseOf(f));
+  return COURSES.map(([key, label]) => {
+    const list = dishes.filter(f => courseOf(f) === key);
+    if (!list.length) return null;
+    if (key === 'included') return { key, label, list, chosen: list };
+    const ranked = rankCourse(list, crit), p = m.pick[key];
+    const chosen = p === 'skip' ? [] : [ranked.find(f => f.id === p) || ranked[0]];
+    return { key, label, list: ranked, chosen };
+  }).filter(Boolean);
+}
+function renderMeal() {
+  const m = ui.meal, venues = mealVenues();
+  if (!venues.includes(m.v)) m.v = venues[0];
+  const crit = CRIT.filter(c => m.c[c[0]]), plan = mealPlan();
+  const chosen = plan.flatMap(c => c.chosen);
+  const tot = k => Math.round(chosen.reduce((t, f) => t + (per(f, k) || 0), 0));
+  const stat = (f, k, unit) => { const v = per(f, k); const t = v == null ? '—' : `${Math.round(v).toLocaleString()} ${unit}`; return m.c[k] ? `<b>${t}</b>` : t; };
+  const sub = f => [stat(f, 'kcal', 'cal'), stat(f, 'fat', 'g fat'), stat(f, 'na', 'mg sodium')].join(' · ');
+  const rowHTML = (c, f) => { const on = c.chosen.includes(f);
+    return `<div class="mrow" role="radio" aria-checked="${on}" tabindex="0" data-action="meal-pick" data-course="${c.key}" data-id="${f.id}"><span class="dot" aria-hidden="true"></span><div class="mm"><div class="mt">${esc(f.n)}</div><div class="ms">${sub(f)}</div></div><button type="button" class="info" data-action="open" data-id="${f.id}" aria-label="Details for ${esc(f.n)}">Details ›</button></div>`; };
+  const courseHTML = c => {
+    if (c.key === 'included') return `<div><div class="sec-h"><span>${esc(c.label)}</span></div><div class="card">${c.list.map(f => `<div class="mrow" data-action="open" data-id="${f.id}" role="button" tabindex="0"><span aria-hidden="true">✓</span><div class="mm"><div class="mt">${esc(f.n)}</div><div class="ms">${sub(f)}</div></div></div>`).join('')}</div></div>`;
+    const n = m.more[c.key] ? c.list.length : Math.min(3, c.list.length), skipped = !c.chosen.length;
+    return `<div><div class="sec-h"><span>${esc(c.label)}${crit.length ? ' · best match first' : ''}</span><span>${c.list.length}</span></div><div class="card" role="radiogroup" aria-label="${esc(c.label)}">${c.list.slice(0, n).map(f => rowHTML(c, f)).join('')}
+      <div class="mrow" role="radio" aria-checked="${skipped}" tabindex="0" data-action="meal-pick" data-course="${c.key}" data-id="skip"><span class="dot" aria-hidden="true"></span><div class="mm"><div class="mt">No ${esc(c.label.toLowerCase())}</div></div></div></div>
+      ${c.list.length > 3 ? `<button type="button" class="linkbtn" data-action="meal-more" data-course="${c.key}">${m.more[c.key] ? 'Show fewer' : `Show all ${c.list.length}`}</button>` : ''}</div>`;
+  };
+  return `<div class="stack">
+    <button type="button" class="linkbtn" data-action="meal-close" style="align-self:flex-start">‹ All Viva menus</button>
+    <section class="card pad">
+      <div class="fine">Restaurant</div>
+      <div class="scroll-chips" style="padding-top:4px">${venues.map(x => `<button type="button" class="chip" data-action="meal-venue" data-v="${esc(x)}" aria-pressed="${x === m.v}">${esc(x)}</button>`).join('')}</div>
+      <div class="fine" style="margin-top:6px">I want</div>
+      <div class="crit">${CRIT.map(([k, label]) => `<button type="button" role="checkbox" aria-checked="${!!m.c[k]}" data-action="meal-crit" data-k="${k}"><span class="box" aria-hidden="true">${m.c[k] ? '✓' : ''}</span>${label}</button>`).join('')}</div>
+      <p class="fine" style="margin:10px 0 0">${crit.length ? `Each course lists ${esc(m.v)}’s dishes with the ${crit.map(c => c[0] === 'kcal' ? 'fewest calories' : c[0] === 'fat' ? 'least fat' : 'least sodium').join(crit.length > 2 ? ', ' : ' and ').replace(/, ([^,]+)$/, ' and $1')} first. That means lowest on this menu, not an official “low” label.` : 'Tick one or more boxes. With none ticked, dishes are listed lowest calorie first.'}</p></section>
+    <section class="card pad"><div style="display:flex;justify-content:space-between;align-items:baseline"><b>Your meal</b><span class="fine">${chosen.length} dish${chosen.length === 1 ? '' : 'es'}</span></div>
+      <div class="mtot"><div><b>${tot('kcal').toLocaleString()}</b><span>calories</span></div><div><b>${tot('fat')} g</b><span>fat · ${Math.round(tot('fat') / DV.fat * 100)}% DV</span></div><div><b>${tot('na').toLocaleString()} mg</b><span>sodium · ${Math.round(tot('na') / DV.na * 100)}% DV</span></div></div>
+      <p class="fine" style="margin:8px 0 0">${chosen.map(f => esc(f.n)).join(' + ') || 'Nothing picked yet.'}</p></section>
+    ${plan.map(courseHTML).join('')}
+    <p class="src">Estimates built from USDA foods at typical restaurant portions; Norwegian doesn’t publish nutrition. %DV is for a 2,000-calorie day (sodium 2,300 mg).</p></div>`;
 }
 
 /* ---------- saved ---------- */
@@ -1030,7 +1129,7 @@ function render() {
   const ex = $('a.exit', hd); if (ex) ex.classList.toggle('hide', detail);
   if (detail && !back) { back = document.createElement('a'); back.id = 'backLink'; back.className = 'back'; back.href = '#'; back.textContent = '‹ Back'; hd.insertBefore(back, hd.firstChild); }
   if (!detail && back) back.remove();
-  $('#title').textContent = detail ? titleOf(byId.get(ui.id)) : TITLES[ui.tab];
+  $('#title').textContent = detail ? titleOf(byId.get(ui.id)) : ui.tab === 'viva' && ui.meal ? 'Make me a meal' : TITLES[ui.tab];
   $('#sub').textContent = detail ? '' : ui.tab === 'foods' ? `${FOODS.length.toLocaleString()} foods · USDA data` : '';
   window.scrollTo(0, detail ? 0 : y);
 }
@@ -1065,7 +1164,7 @@ view.addEventListener('click', e => {
   const id = el.dataset.id != null ? parseId(el.dataset.id) : null;
   switch (el.dataset.action) {
     case 'open': openFood(id); break;
-    case 'open-steak': openFood(id, { u: 'oz', n: +ui.oz || 8 }); break;
+    case 'open-steak': openFood(id, { u: 'oz', n: +el.dataset.oz || +ui.oz || 8 }); break;
     case 'open-drink': openFood(id, { u: el.dataset.u, n: +el.dataset.n }); break;
     case 'style': { const nf = getFood(id); if (nf) { ui.id = nf.id; ui.portion = null; viewed(nf.id); render(); } break; }
     case 'grp': ui.grp = el.dataset.v; ui.q = ''; render(); break;
@@ -1074,6 +1173,12 @@ view.addEventListener('click', e => {
     case 'onl-type': ui.onl.brands = el.dataset.v === '1'; ui.onl.results = []; ui.onl.err = ''; ui.onl.q = ''; paintOnline(); if (ui.q.trim()) runOnline(); break;
     case 'cut': ui.cut = el.dataset.v; render(); break;
     case 'venue': ui.venue = el.dataset.v; render(); break;
+    case 'meal-open': ui.meal = { v: ui.venue && mealVenues().includes(ui.venue) ? ui.venue : (store.meal && store.meal.v) || mealVenues()[0], c: { ...((store.meal && store.meal.c) || {}) }, pick: {}, more: {} }; render(); window.scrollTo(0, 0); break;
+    case 'meal-close': ui.meal = null; render(); window.scrollTo(0, 0); break;
+    case 'meal-venue': ui.meal.v = el.dataset.v; ui.meal.pick = {}; ui.meal.more = {}; store.meal = { v: ui.meal.v, c: ui.meal.c }; save(); render(); break;
+    case 'meal-crit': ui.meal.c[el.dataset.k] = !ui.meal.c[el.dataset.k]; ui.meal.pick = {}; store.meal = { v: ui.meal.v, c: ui.meal.c }; save(); render(); break;
+    case 'meal-pick': if (e.target.closest('.info')) break; ui.meal.pick[el.dataset.course] = el.dataset.id === 'skip' ? 'skip' : parseId(el.dataset.id); render(); break;
+    case 'meal-more': ui.meal.more[el.dataset.course] = !ui.meal.more[el.dataset.course]; render(); break;
     case 'to-steak': ui.cut = el.dataset.v; go('steak'); break;
     case 'st-cooked': ui.cooked = el.dataset.v === '1'; render(); break;
     case 'st-lean': ui.lean = el.dataset.v === '1'; render(); break;
@@ -1085,7 +1190,7 @@ view.addEventListener('click', e => {
     case 'key-clear': e.preventDefault(); store.key = ''; save(); render(); break;
   }
 });
-view.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('[role=button]')) { e.preventDefault(); e.target.click(); } });
+view.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('[role=button], [role=radio]')) { e.preventDefault(); e.target.click(); } });
 view.addEventListener('input', e => {
   const t = e.target;
   if (t.id === 'q') {
@@ -1123,11 +1228,11 @@ let FAM = new Map();
 const getFood = id => byId.get(id) || (DATA && DATA.redir && byId.get(DATA.redir[id])) || null;
 const famOf = f => (f && isLocalId(f.id) ? FAM.get(f.fam) || [f] : [f]);
 (async function init() {
-  try { db = await openDB(DB_NAME); const raw = await idbGet(db, 'state'); if (raw) { const s = JSON.parse(raw); for (const k of ['favs', 'recent', 'misses']) if (Array.isArray(s[k])) store[k] = s[k].slice(0, 300); if (typeof s.key === 'string') store.key = s.key; if (s.online && typeof s.online === 'object') store.online = s.online; } }
+  try { db = await openDB(DB_NAME); const raw = await idbGet(db, 'state'); if (raw) { const s = JSON.parse(raw); for (const k of ['favs', 'recent', 'misses']) if (Array.isArray(s[k])) store[k] = s[k].slice(0, 300); if (typeof s.key === 'string') store.key = s.key; if (s.meal && typeof s.meal === 'object') store.meal = { v: String(s.meal.v || ''), c: { kcal: !!(s.meal.c || {}).kcal, fat: !!(s.meal.c || {}).fat, na: !!(s.meal.c || {}).na } }; if (s.online && typeof s.online === 'object') store.online = s.online; } }
   catch (e) { console.error(e); }
   try {
     /* the offline copy of foods.json is replaced when a new version of the list ships */
-    const FILEV = '44fc9afd4131';
+    const FILEV = '0f78ccd31cbc';
     try { for (const k of await caches.keys()) if (k.startsWith('goobs-calories-')) { const c = await caches.open(k); for (const r of await c.keys()) { const u = new URL(r.url); if (/\/foods\.json$/.test(u.pathname) && u.searchParams.get('v') !== FILEV) await c.delete(r); } } } catch (e) {}
     const res = await fetch('foods.json?v=' + FILEV); if (!res.ok) throw new Error('HTTP ' + res.status);
     loadData(await res.json());
