@@ -1333,7 +1333,7 @@ async function backfillFilmo() {
   if (fj.running) return toast('Already looking something up; try again in a moment.');
   const off = offlineMsg(); if (off) return msgBox('Offline', off);
   const titles = state.titles.filter(t => t.externalId);
-  if (!titles.length) return msgBox('Nothing linked yet', 'Only titles added with Search online or Fetch cast online are linked. Open a title and use Fetch cast online first.');
+  if (!titles.length) return msgBox('Nothing linked yet', 'Only titles added from an online match (or with Fetch cast online) are linked. Open a title and use Fetch cast online first.');
   const dlg = $('#dlg'); let stop = false;
   dlg.onclose = null;
   dlg.innerHTML = `<div class="dlg-form"><h2>Looking up the cast’s other work</h2><p id="bfTxt" role="status">Starting…</p><div class="dlg-actions"><span class="spacer"></span><button type="button" class="btn" id="bfStop">Stop</button></div></div>`;
@@ -1578,7 +1578,7 @@ function knownCastHTML(t) {
 }
 /* the full filmography card on a person */
 function filmoCardHTML(p) {
-  if (!(p.tmdbId || p.tvmazeId)) return `<section class="card pad" id="filmo"><h3>Everything they’ve been in</h3><p class="muted">Not linked online yet. People are linked when their title is added with Search online or Fetch cast online.</p></section>`;
+  if (!(p.tmdbId || p.tvmazeId)) return `<section class="card pad" id="filmo"><h3>Everything they’ve been in</h3><p class="muted">Not linked online yet. People are linked when their title is added from an online match or with Fetch cast online.</p></section>`;
   autoFilmoForPerson(p);
   const f = filmoOf(p);
   if (!f) return `<section class="card pad" id="filmo"><h3>Everything they’ve been in</h3><p class="fine" id="filmoStatus" role="status">${esc(filmoStatusText() || (navigator.onLine === false ? 'Offline: this loads when you’re online.' : 'Loading…'))}</p></section>`;
@@ -1779,11 +1779,11 @@ function rateDialog(id) {
     onSubmit: v => { t.rating = normRating(v.rating); commit(); }
   });
 }
-function titleDialog(id) {
+function titleDialog(id, prefill = {}) {
   const t = id ? titleById(id) : null;
   const common = [
     { name: 'kind', label: 'Type', type: 'select', value: t ? t.kind : 'movie', options: [['movie', 'Movie'], ['series', 'TV series']] },
-    { name: 'name', label: 'Title', required: true, value: t ? t.name : '', capitalize: 'words' },
+    { name: 'name', label: 'Title', required: true, value: t ? t.name : (prefill.name || ''), capitalize: 'words' },
     { name: 'year', label: 'Year', type: 'number', step: 1, min: 1850, max: 2200, value: t && t.year ? t.year : '' },
     { name: 'status', label: 'Status', type: 'select', value: t ? t.status : 'want', options: STATUSES.map(([k, l]) => [k, l]) }
   ];
@@ -1799,7 +1799,8 @@ function titleDialog(id) {
     { name: 'notes', label: 'Notes', type: 'textarea', value: t.notes }
   ] : [];
   formDialog({
-    title: t ? 'Edit title' : 'Add title', fields: [...common, ...more], submitLabel: t ? 'Save' : 'Add',
+    title: t ? 'Edit title' : 'Add without a match', intro: t ? '' : 'Adds it with only what you enter here. You can fetch its cast online later from the title page.',
+    fields: [...common, ...more], submitLabel: t ? 'Save' : 'Add',
     onSubmit: v => {
       const r = readTitleForm(v, t); if (r.error) return r.error;
       if (t) { Object.assign(t, r.value); commit(); toast('Saved'); }
@@ -1807,12 +1808,11 @@ function titleDialog(id) {
         const nt = normTitle({ ...r.value, id: uid(), createdAt: new Date().toISOString() });
         state.titles.push(nt); persist();
         nav(() => { ui.titleId = nt.id; ui.personId = null; });
-        if (navigator.onLine !== false) { setTimeout(() => onlineDialog({ attach: nt.id, q: nt.name }), 0); toast('Added. Pick the match to fetch its cast.'); }
-        else toast('Added. Fetch its cast online when you’re connected.');
+        toast(navigator.onLine === false ? 'Added. Fetch its cast online when you’re connected.' : 'Added without a match');
       }
     },
     onDelete: t ? () => { delTitle(t.id); return true; } : null, deleteLabel: 'Delete',
-    extra: t ? [] : [{ label: '🔎 Search online', kind: '', onClick: v => onlineDialog({ q: v.name }) }]
+    extra: t ? [] : [{ label: '🔎 Search online instead', kind: '', onClick: v => onlineDialog({ add: true, q: v.name }) }]
   });
   if (t) {
     const dlg = $('#dlg'), form = $('form', dlg), kindEl = form.elements.kind;
@@ -1924,12 +1924,12 @@ function seenHere() {
 }
 
 /* ---- online search dialog ---- */
-const onl = { attach: null, results: [], q: '', details: null, back: null };
+const onl = { attach: null, add: false, searched: false, results: [], q: '', details: null, back: null };
 const SRC_LABEL = { tmdb: 'TMDB', tvmaze: 'TVMaze' };
 const offlineMsg = () => (navigator.onLine === false ? 'You’re offline. Online lookup needs a connection; everything else still works.' : '');
 function onlineDialog(opts = {}) {
   const dlg = $('#dlg');
-  onl.attach = opts.attach || null; onl.results = []; onl.details = null; onl.q = opts.q || '';
+  onl.attach = opts.attach || null; onl.add = !!opts.add && !onl.attach; onl.searched = false; onl.results = []; onl.details = null; onl.q = opts.q || '';
   dlg.onclose = null;
   if (opts.extId) { onlineBody('<p class="muted">Loading…</p>'); loadDetails(opts.extId, true); }
   else { onlineSearchView(); }
@@ -1938,21 +1938,34 @@ function onlineDialog(opts = {}) {
 function onlineBody(html) { const dlg = $('#dlg'); dlg.innerHTML = `<div class="dlg-form" id="onBox">${html}</div>`; }
 function onlineSearchView() {
   const key = state.settings.tmdbKey, off = offlineMsg();
-  onlineBody(`<h2>${onl.attach ? 'Fetch cast online' : 'Search online'}</h2>
+  onlineBody(`<h2>${onl.attach ? 'Fetch cast online' : onl.add ? 'Add title' : 'Search online'}</h2>
     <p class="hint">${key ? 'Searching movies and TV on TMDB.' : 'Searching TV shows on TVMaze. Add a free TMDB key in Backup → Online lookup to search movies too.'} Only your search text is sent.</p>
     ${off ? `<div class="note bad" id="onOff">${esc(off)}</div>` : ''}
     <form id="onForm" novalidate><div class="field"><label for="onQ">Title</label><input id="onQ" type="search" value="${esc(onl.q)}" autocomplete="off" autocapitalize="words"${off ? ' disabled' : ''}></div>
     <button type="submit" class="btn primary block" style="margin-top:10px" id="onGo"${off ? ' disabled' : ''}>Search</button></form>
     <div id="onRes">${onl.results.length ? onlineRowsHTML() : ''}</div>
+    <div id="onUnm">${unmatchedHTML()}</div>
     <div class="dlg-actions"><span class="spacer"></span><button type="button" class="btn ghost" data-k="cancel">Close</button></div>`);
   const dlg = $('#dlg');
   $('[data-k="cancel"]', dlg).onclick = () => dlg.close();
   $('#onForm', dlg).addEventListener('submit', e => { e.preventDefault(); runOnlineSearch(); });
-  wireRows();
+  wireRows(); wireUnmatched();
   const q = $('#onQ', dlg); if (q && !off && !onl.results.length && cleanName(onl.q).length >= 2) runOnlineSearch(); else if (q && !q.value) q.focus();
 }
 function onlineRowsHTML() {
   return `<div style="margin-top:12px">${onl.results.map((r, i) => `<button type="button" class="orow" data-i="${i}"><div class="ot">${esc(r.name)}${r.year ? ` <span class="muted">(${r.year})</span>` : ''}<span class="badge acc">${r.kind === 'series' ? 'TV' : 'Movie'}</span><span class="badge">${SRC_LABEL[r.source]}</span></div>${r.overview ? `<div class="ov">${esc(r.overview)}</div>` : ''}</button>`).join('')}</div>`;
+}
+/* Adding a title always starts with an online search; adding it unmatched is the fallback once a search has run (or you're offline). */
+function unmatchedHTML() {
+  if (!onl.add || !(onl.searched || offlineMsg())) return '';
+  const name = cleanName(($('#onQ') || {}).value || onl.q);
+  const none = onl.searched && !onl.results.length;
+  return `<div style="margin-top:12px"><button type="button" class="btn ${none || offlineMsg() ? 'primary' : ''} block" data-k="unmatched" style="white-space:normal;height:auto;min-height:44px;line-height:1.3;padding:10px 14px">${name ? `Add “${esc(name)}” without a match` : 'Add without a match'}</button>
+    <p class="hint" style="margin:6px 2px 0">${none || offlineMsg() ? 'Adds it with just the details you type. You can fetch its cast online later.' : 'Not in the list? Add it with just the details you type.'}</p></div>`;
+}
+function wireUnmatched() {
+  const b = $('#onUnm [data-k="unmatched"]'); if (!b) return;
+  b.onclick = () => { const name = cleanName(($('#onQ') || {}).value || onl.q); $('#dlg').close(); setTimeout(() => titleDialog(null, { name }), 0); };
 }
 function wireRows() { $$('#onRes .orow').forEach(b => { b.onclick = () => loadDetails(onl.results[+b.dataset.i].extId, false); }); }
 async function runOnlineSearch() {
@@ -1961,9 +1974,11 @@ async function runOnlineSearch() {
   res.innerHTML = '<p class="muted" style="margin-top:12px">Searching…</p>'; $('#onGo').disabled = true;
   try {
     onl.results = await searchOnline(onl.q);
-    res.innerHTML = onl.results.length ? onlineRowsHTML() : '<div class="note">Nothing found. Try fewer words.</div>';
+    res.innerHTML = onl.results.length ? onlineRowsHTML() : `<div class="note">Nothing found. Try fewer words${state.settings.tmdbKey ? '' : ', or add a free TMDB key in Backup → Online lookup to search movies'}.</div>`;
     wireRows();
   } catch (e) { onl.results = []; res.innerHTML = `<div class="note bad">${esc(e.message)}</div>`; }
+  onl.searched = true;
+  const u = $('#onUnm'); if (u) { u.innerHTML = unmatchedHTML(); wireUnmatched(); }
   const go = $('#onGo'); if (go) go.disabled = false;
 }
 async function loadDetails(extId, direct) {
@@ -2114,7 +2129,7 @@ view.addEventListener('click', e => {
   if (el.tagName === 'A') e.preventDefault();
   const id = el.dataset.id;
   switch (el.dataset.action) {
-    case 'add-title': titleDialog(); break;
+    case 'add-title': onlineDialog({ add: true }); break;
     case 'seg': ui.logSeg = el.dataset.v; render(); break;
     case 'open-title': openTitle(id); break;
     case 'open-person': openPerson(id); break;
@@ -2168,7 +2183,7 @@ view.addEventListener('change', e => {
   if (t.id === 'tfRating') { ui.tf.rating = t.value; render(); }
   else if (t.id === 'tfSort') { ui.tf.sort = t.value; render(); }
 });
-$('#addBtn').onclick = () => { if (ui.tab === 'people') personDialog(); else titleDialog(); };
+$('#addBtn').onclick = () => { if (ui.tab === 'people') personDialog(); else onlineDialog({ add: true }); };
 $('header.top').addEventListener('click', e => { const b = e.target.closest('#backLink'); if (b) { e.preventDefault(); goBack(); } });
 $$('nav.tabs button').forEach(b => { b.onclick = () => go(b.dataset.tab); });
 document.addEventListener('visibilitychange', () => { if (!document.hidden && !$('dialog[open]') && !(document.activeElement && document.activeElement.matches('input,textarea,select'))) render(); });
