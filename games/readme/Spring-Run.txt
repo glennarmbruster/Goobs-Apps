@@ -1,0 +1,7 @@
+SPRING RUN 0.6.0 — graphics pass
+
+Warmer layered earth, stronger carved-edge shadows, blue stonework with lit edges/mineral detail, richer turquoise water with surface glints, faceted sunstone medallions, shaded otter artwork with blinking/breathing animation, a ceramic pool with water gradients, and polished blue controls.
+
+Puzzle layouts and fluid rules remain unchanged: 24 campaign puzzles, then repeating variations. Existing water, dug terrain, machinery, collected volume, unlocks and sunstones are preserved. A small fix keeps pre-release Undo history and the chosen brush width when opening Pause/Help.
+
+Verification: all 24 puzzle routes, three-sunstone collection, gate/pipe/sponge/sludge behavior and water conservation checked. Canvas rendering/board bounds checked at 390x844, 844x390 and 768x1024. Save/restore across orientation and Pause/Resume Undo checked. These are scripted and canvas-rendering checks, not physical-device/browser playtests.
