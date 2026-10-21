@@ -45,6 +45,7 @@ The Recipes app opens a recipe from plain JSON. Anything that follows this forma
 - **steps:** `text` is one action. `{id}` in the text shows that ingredient's amount, scaled to the servings chosen (`{butter}` shows "1 cup butter"). `title` is optional. Times written in the text ("10 minutes", "1 hour") get a timer button automatically; add `"timer": 600` (seconds) to force one.
 - **Many recipes at once:** use `{"format": "goobs-recipe-library", "version": 1, "recipes": [ ... ]}` or a plain JSON array.
 - Plain text also works (title, "Serves 4", an Ingredients heading, an Instructions heading), but the JSON is more reliable.
+- **From a website:** most recipe sites embed the recipe as schema.org data. The "Add to Recipes" Shortcut (set-up steps in the app: Add, then From a website) copies it from Safari; pasting it imports title, servings, times, ingredients, steps and the source link. Raw schema.org `Recipe` JSON pasted directly works too.
 
 ## Where recipes live
 

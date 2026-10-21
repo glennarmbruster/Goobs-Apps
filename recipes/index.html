@@ -238,6 +238,7 @@ textarea.tall{min-height:220px;font-family:ui-monospace,Menlo,Consolas,monospace
   #printArea li{margin:0 0 6pt;break-inside:avoid}
   #printArea .pa-foot{margin-top:16pt;color:#555;font-size:9pt}
 }
+.steps-help{margin:8px 0 12px;padding-left:22px;line-height:1.45}.steps-help li{margin:6px 0}
 </style>
 </head>
 <body>
@@ -1138,10 +1139,77 @@ function parseRecipeText(text) {
   for (const l of ing) { const gh = /^[#*\s]*([^\d¼½¾⅓⅔⅛][^:]{1,40}):\s*$/.exec(l); if (gh) { group = gh[1]; continue; } const g = normIngredient(l); if (g) { g.group = group; ingredients.push(g); } }
   return normRecipe({ title, description: desc.join(' '), ...meta, ingredients, steps: splitSteps(steps.join('\n')), notes: notes.join('\n') });
 }
+/* ---------- recipes from websites: the schema.org "Recipe" data most recipe sites put in their pages ----------
+   The "Add to Recipes" Shortcut copies it from Safari as {format:'web-recipe', url, recipe}; raw JSON-LD works too. */
+const WEB_SCRIPT = `var hit=null;function find(x){if(!x||typeof x!=='object')return null;if(Array.isArray(x)){for(var i=0;i<x.length;i++){var r=find(x[i]);if(r)return r;}return null;}var t=x['@type'];if(t==='Recipe'||(Array.isArray(t)&&t.indexOf('Recipe')>=0))return x;return find(x['@graph'])||find(x.mainEntity);}var ss=document.querySelectorAll('script[type="application/ld+json"]');for(var i=0;i<ss.length&&!hit;i++){try{hit=find(JSON.parse(ss[i].textContent));}catch(e){}}completion(hit?JSON.stringify({format:'web-recipe',url:location.href,recipe:hit}):'No recipe found on this page.');`;
+const NO_WEB_RECIPE = 'No recipe found on this page.';
+function findSchemaRecipe(x, depth = 0) {
+  if (!x || typeof x !== 'object' || depth > 6) return null;
+  if (Array.isArray(x)) { for (const y of x) { const r = findSchemaRecipe(y, depth + 1); if (r) return r; } return null; }
+  const t = x['@type'];
+  if (t === 'Recipe' || (Array.isArray(t) && t.includes('Recipe'))) return x;
+  return findSchemaRecipe(x['@graph'], depth + 1) || findSchemaRecipe(x.mainEntity, depth + 1);
+}
+/* text from a page: tags out, entities (&amp; &#39; &frac12; …) decoded */
+function pageText(v) {
+  const s = sv(v).replace(/<br\s*\/?>/gi, '\n').replace(/<\/(p|li|div)>/gi, '\n').replace(/<[^>]*>/g, ' ');
+  if (!/&[#a-z0-9]+;/i.test(s)) return s;
+  const t = document.createElement('textarea'); t.innerHTML = s; return t.value;
+}
+/* ISO 8601 durations: "PT1H15M", "P0DT0H30M", "PT90M" -> minutes */
+function isoMinutes(v) {
+  const m = /^P(?:(\d+)D)?(?:T(?:(\d+(?:\.\d+)?)H)?(?:(\d+(?:\.\d+)?)M)?(?:(\d+(?:\.\d+)?)S)?)?$/i.exec(sv(v).trim());
+  if (!m || (!m[1] && !m[2] && !m[3] && !m[4])) return minutesOf(v);
+  const t = (+m[1] || 0) * 1440 + (+m[2] || 0) * 60 + (+m[3] || 0) + (+m[4] || 0) / 60;
+  return t > 0 ? Math.round(t) : null;
+}
+const WEB_CATS = [[/breakfast|brunch/, 'Breakfast'], [/side/, 'Sides'], [/soup|stew|chili|chowder/, 'Soup & stew'], [/salad/, 'Salad'], [/appeti|starter|snack|dip/, 'Appetizer'],
+  [/sauce|condiment|dressing|marinade|seasoning|rub/, 'Sauce & condiment'], [/bread|roll|biscuit/, 'Bread'], [/dessert|pie|pudding|ice cream/, 'Dessert'],
+  [/cookie|cake|baking|baked|muffin|brownie/, 'Baking'], [/drink|beverage|cocktail|smoothie/, 'Drink'], [/main|dinner|lunch|entr|supper|course/, 'Main dish']];
+function webCategory(c) {
+  const s = (Array.isArray(c) ? c.join(' ') : sv(c)).toLowerCase();
+  for (const [re, cat] of WEB_CATS) if (re.test(s)) return cat;
+  return 'Main dish';
+}
+/* steps: strings, HowToStep {text|name}, HowToSection {name, itemListElement} (a section's name titles its first step) */
+function webSteps(v, out = [], title = '') {
+  if (typeof v === 'string') { for (const l of splitSteps(pageText(v))) { out.push({ text: l, title }); title = ''; } return out; }
+  for (const it of arr(v)) {
+    if (typeof it === 'string') { webSteps(it, out, title); title = ''; continue; }
+    if (!it || typeof it !== 'object') continue;
+    if (it.itemListElement) { webSteps(it.itemListElement, out, flat(pageText(it.name), 80)); continue; }
+    const text = flat(pageText(it.text || it.name || it.description), 2000);
+    if (text) { out.push({ text, title }); title = ''; }
+  }
+  return out;
+}
+const webName = x => (typeof x === 'string' ? x : x && typeof x === 'object' ? sv(Array.isArray(x) ? (x[0] && x[0].name) || x[0] : x.name) : '');
+function fromWebRecipe(o, url) {
+  const title = flat(pageText(o.name || o.headline), 120);
+  const desc = flat(pageText(o.description), 600), short = (desc.match(/^.*?[.!?](\s|$)(.*?[.!?](\s|$))?/) || [desc])[0].trim();
+  const yields = arr(o.recipeYield).length ? o.recipeYield : [o.recipeYield];
+  const servings = yields.map(y => sv(y)).find(y => /\d/.test(y)) || '';
+  const kw = typeof o.keywords === 'string' ? o.keywords.split(',') : arr(o.keywords);
+  const tags = [...arr(o.recipeCuisine).length ? o.recipeCuisine : [o.recipeCuisine], ...kw].map(t => flat(pageText(t), 24)).filter(Boolean).slice(0, 6);
+  const src = flat(pageText(webName(o.publisher) || webName(o.author)), 120) || (() => { try { return new URL(url).hostname.replace(/^www\./, ''); } catch { return ''; } })();
+  return { title, description: short, category: webCategory(o.recipeCategory), tags, servings,
+    prepMin: isoMinutes(o.prepTime), cookMin: isoMinutes(o.cookTime), totalMin: isoMinutes(o.totalTime),
+    ingredients: arr(o.recipeIngredient || o.ingredients).map(l => pageText(l).replace(/^[\s▢☐□]+/, '').trim()).filter(Boolean),
+    steps: webSteps(o.recipeInstructions), source: src, sourceUrl: sv(url || o.url || (o.mainEntityOfPage && (o.mainEntityOfPage['@id'] || o.mainEntityOfPage))) };
+}
+
 /* returns { recipes, skipped, fromText } or throws an Error with a plain message */
 function readRecipes(text) {
   if (!sv(text).trim()) throw new Error('There’s nothing to import.');
+  if (sv(text).trim() === NO_WEB_RECIPE) throw new Error('That page doesn’t include recipe data the app can read. Copy the recipe text from the page and paste it instead, or ask Claude for it in the Recipes format.');
+  if (/^https?:\/\/\S+$/.test(sv(text).trim())) throw new Error('That’s a link. The app can’t open websites itself: on that page in Safari, tap Share, then “Add to Recipes” (Add, then From a website shows how to set it up).');
   const obj = extractJSON(text);
+  const web = obj && typeof obj === 'object' ? (obj.format === 'web-recipe' ? findSchemaRecipe(obj.recipe) : !obj.format && findSchemaRecipe(obj)) : null;
+  if (web) {
+    const r = normRecipe(fromWebRecipe(web, obj.format === 'web-recipe' ? obj.url : ''));
+    if (!r || (!r.ingredients.length && !r.steps.length)) throw new Error('That page’s recipe data has no ingredients or steps.');
+    return { recipes: [r], skipped: 0, fromText: false, fromWeb: true };
+  }
   if (obj !== null && typeof obj === 'object') {
     if (!Array.isArray(obj) && obj.format !== undefined && ![FORMAT, 'goobs-recipe-library'].includes(obj.format)) throw new Error('That isn’t a recipe from this app (its format says “' + flat(obj.format, 30) + '”).');
     if (!Array.isArray(obj) && isNum(obj.version) && obj.version > 1) throw new Error('That recipe uses a newer format. Close and reopen the app to update it, then try again.');
@@ -1191,7 +1259,7 @@ async function importText(text) {
   persist();
   location.hash = ids.length === 1 ? '#/r/' + ids[0] : '#/';
   render();
-  toast(fromText ? 'Imported from plain text. Please check it over.' : ids.length === 1 ? 'Recipe saved' : `Added ${plural(ids.length, 'recipe')}`);
+  toast(res.fromWeb ? 'Recipe saved from the website. Give it a quick look.' : fromText ? 'Imported from plain text. Please check it over.' : ids.length === 1 ? 'Recipe saved' : `Added ${plural(ids.length, 'recipe')}`);
   return true;
 }
 
@@ -1469,7 +1537,7 @@ async function copyText(text, okMsg = 'Copied') {
 }
 function pasteDialog(prefill = '') {
   formDialog({
-    title: 'Paste a recipe', intro: 'Paste what Claude gave you, or any recipe text.', submitLabel: 'Save recipe',
+    title: 'Paste a recipe', intro: 'Paste what the Add to Recipes shortcut copied, what Claude gave you, or any recipe text.', submitLabel: 'Save recipe',
     fields: [{ name: 'text', label: 'Recipe', type: 'textarea', value: prefill }],
     extra: [{ label: 'Paste from clipboard', onClick: async () => {
       try { const t = await navigator.clipboard.readText(); const ta = $('#dlg textarea'); if (ta && t) ta.value = t; else toast('The clipboard is empty.'); } catch { toast('Your browser blocked that. Long-press in the box and tap Paste.'); }
@@ -1478,9 +1546,28 @@ function pasteDialog(prefill = '') {
   });
   const ta = $('#dlg textarea'); if (ta) { ta.style.minHeight = '180px'; ta.focus(); }
 }
+/* one-time setup for the Safari share-sheet shortcut */
+function webHelp() {
+  const dlg = $('#dlg'); dlg.onclose = null;
+  dlg.innerHTML = `<div class="dlg-form"><h2>Add recipes from websites</h2>
+    <p>Most recipe sites include the recipe as data the app can read. A Shortcut copies it from Safari in one tap; then tap <b>+</b> here and it’s saved. Set it up once:</p>
+    <ol class="steps-help">
+      <li>iPhone <b>Settings → Apps → Shortcuts → Advanced</b>: turn on <b>Allow Running Scripts</b>.</li>
+      <li>Open <b>Shortcuts</b>, tap <b>+</b>, name it <b>Add to Recipes</b>.</li>
+      <li>Tap the <b>ⓘ</b> (Details) and turn on <b>Show in Share Sheet</b>; set it to receive <b>Safari web pages</b>.</li>
+      <li>Add the action <b>Run JavaScript on Web Page</b> (input: Shortcut Input). Replace its sample code with the script from the button below.</li>
+      <li>Add <b>Copy to Clipboard</b>, then <b>Show Notification</b> with the text “Recipe copied. Open Recipes and tap +.”</li>
+    </ol>
+    <p class="muted">Then, on any recipe page in Safari: <b>Share → Add to Recipes</b>, open Recipes, tap <b>+</b>, <b>Paste a recipe</b>. Paywalled sites (like NYT Cooking) may not share their data; paste the text or ask Claude instead.</p>
+    <div class="dlg-actions"><button type="button" class="btn" id="whClose">Close</button><span class="spacer"></span><button type="button" class="btn primary" id="whCopy">Copy the script</button></div></div>`;
+  if (!dlg.hasAttribute('open')) dlg.showModal();
+  $('#whClose').onclick = () => dlg.close();
+  $('#whCopy').onclick = () => copyText(WEB_SCRIPT, 'Script copied. Paste it into the Run JavaScript action.');
+}
 async function addMenu() {
   const c = await sheet('Add a recipe', [
-    { label: 'Paste a recipe', sub: 'Copy it from Claude first. Works with the app’s format or plain text.', value: 'paste', kind: 'primary' },
+    { label: 'Paste a recipe', sub: 'From the “Add to Recipes” shortcut, Claude, or any recipe text', value: 'paste', kind: 'primary' },
+    { label: 'From a website', sub: 'How to set up the one-tap “Add to Recipes” shortcut', value: 'web' },
     { label: 'Open a recipe file', sub: 'A .json file from Claude or a friend', value: 'file' },
     { label: 'Type one in', value: 'new' }]);
   if (c === 'paste') {
@@ -1489,6 +1576,7 @@ async function addMenu() {
     if (t && t.trim() && (extractJSON(t) !== null || /ingredient/i.test(t))) return importText(t);
     return pasteDialog(t || '');
   }
+  if (c === 'web') return webHelp();
   if (c === 'file') {
     const f = await pickFile('.json,.txt,.md,application/json,text/plain'); if (!f) return;
     let t; try { t = await readFileText(f); } catch { return msgBox('Couldn’t read that file', 'Try choosing it again.'); }
