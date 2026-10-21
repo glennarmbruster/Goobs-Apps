@@ -192,6 +192,12 @@ dialog::backdrop{background:rgba(10,15,12,.55)}
 .orow .ov{font-size:13px;color:var(--muted);margin-top:2px;overflow-wrap:anywhere}
 .keyrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 .keyrow .btn{flex:1 1 auto}
+.hs{width:46px;height:62px;object-fit:cover;border-radius:8px;flex:none;background:var(--soft)}
+.hs.big{width:92px;height:124px;border-radius:12px}
+.phead{display:flex;gap:14px;align-items:flex-start}
+.castctl{display:flex;flex-direction:column;gap:8px;padding:0 14px 10px}
+.castctl .chips{flex-wrap:nowrap;overflow-x:auto;padding-bottom:2px}
+.castctl .chip{flex:none}
 </style>
 </head>
 <body>
@@ -1142,14 +1148,18 @@ let ref = null, refInfo = null, refLoading = null, refErr = '';
 /* parsed file -> indexed database (throws a readable Error when the file isn't one) */
 function refBuild(o) {
   o = obj(o);
-  if (o.format !== REF_FORMAT || o.v !== 1) throw new Error('That isn’t a Watch Log database file.');
+  if (o.format !== REF_FORMAT || (o.v !== 1 && o.v !== 2)) throw new Error('That isn’t a Watch Log database file.');
   const T = obj(o.t), P = obj(o.p), C = obj(o.c);
-  const nT = arr(T.n).length, nP = arr(P.n).length, nC = arr(C.t).length;
-  const same = (x, n, ks) => ks.every(k => Array.isArray(x[k]) && x[k].length === n);
+  const isCol = a => Array.isArray(a) || ArrayBuffer.isView(a), same = (x, n, ks) => ks.every(k => isCol(x[k]) && x[k].length === n);
+  const len = a => (isCol(a) ? a.length : 0), nT = len(T.n), nP = len(P.n), nC = len(C.t);
   if (!nT || !nP || !nC || !same(T, nT, ['id', 'k', 'n', 'y', 'e', 'r', 'v', 'g']) || !same(P, nP, ['id', 'n', 'b', 'd', 'f']) || !same(C, nC, ['t', 'p', 'r', 'ch']))
     throw new Error('That database file is incomplete or damaged.');
-  if (C.e != null && !(Array.isArray(C.e) && C.e.length === nC)) throw new Error('That database file is incomplete or damaged.');
-  const ct = Int32Array.from(C.t), cp = Int32Array.from(C.p), ce = C.e ? Int32Array.from(C.e) : new Int32Array(nC);
+  for (const k of ['e', 's']) if (C[k] != null && !(isCol(C[k]) && C[k].length === nC)) throw new Error('That database file is incomplete or damaged.');
+  /* numbers go into typed arrays: half the memory of plain arrays, which matters with millions of credits */
+  const I32 = a => (a instanceof Int32Array ? a : Int32Array.from(a));
+  for (const k of ['id', 'k', 'y', 'e', 'r', 'v', 'g']) T[k] = I32(T[k]);
+  for (const k of ['id', 'b', 'd', 'f']) P[k] = I32(P[k]);
+  const ct = I32(C.t), cp = I32(C.p), cr = Int8Array.from(C.r), ce = C.e ? I32(C.e) : new Int32Array(nC), cs = C.s ? I32(C.s) : new Int32Array(nC);
   for (let i = 0; i < nC; i++) if (!(ct[i] >= 0 && ct[i] < nT && cp[i] >= 0 && cp[i] < nP) || (i && ct[i] < ct[i - 1])) throw new Error('That database file is incomplete or damaged.');
   const tStart = new Int32Array(nT + 1), pStart = new Int32Array(nP + 1);
   for (let i = 0; i < nC; i++) { tStart[ct[i] + 1]++; pStart[cp[i] + 1]++; }
@@ -1157,18 +1167,20 @@ function refBuild(o) {
   for (let i = 0; i < nP; i++) pStart[i + 1] += pStart[i];
   const pList = new Int32Array(nC), at = pStart.slice(0, nP);
   for (let i = 0; i < nC; i++) pList[at[cp[i]]++] = i;
-  return { built: /^\d{4}-\d\d-\d\d$/.test(str(o.built)) ? o.built : '', g: arr(o.g).map(x => str(x)), t: T, p: P, c: { t: ct, p: cp, r: C.r, ch: C.ch, e: ce }, nT, nP, nC, tStart, pStart, pList, x: {} };
+  return { built: /^\d{4}-\d\d-\d\d$/.test(str(o.built)) ? o.built : '', g: arr(o.g).map(x => str(x)), t: T, p: P, c: { t: ct, p: cp, r: cr, ch: C.ch, e: ce, s: cs }, nT, nP, nC, tStart, pStart, pList, x: {} };
 }
 /* lazily built lookups, kept on the database object */
 const refMemo = (k, f) => ref.x[k] || (ref.x[k] = f());
-const refTKeys = () => refMemo('tk', () => ref.t.n.map(n => refNorm(str(n)).replace(/^(the|a|an) /, '')));
+const refTKeys = () => refMemo('tk', () => ref.t.n.map(n => titleKey(n)));
 const refPKeys = () => refMemo('pk', () => ref.p.n.map(n => refNorm(str(n))));
-const refChKeys = () => refMemo('ck', () => ref.c.ch.map(s => (s ? refNorm(str(s)) : '')));
 const refIdMap = (k, col) => refMemo(k, () => { const m = new Map(); col.forEach((x, i) => m.set(x, i)); return m; });
 const refTById = id => { const i = refIdMap('ti', ref.t.id).get(+id); return i == null ? -1 : i; };
 const refPById = id => { const i = refIdMap('pi', ref.p.id).get(+id); return i == null ? -1 : i; };
-const refNameMap = (k, keys) => refMemo(k, () => { const m = new Map(); keys.forEach((x, i) => { if (!m.has(x)) m.set(x, []); m.get(x).push(i); }); return m; });
-const refTByName = () => refNameMap('tn', ref.t.n.map(n => refNorm(str(n))));
+/* name -> index, or -> [indexes] when several share the name (most names are unique: keeps memory down) */
+const refNameMap = (k, keys) => refMemo(k, () => { const m = new Map(); keys.forEach((x, i) => { const v = m.get(x); if (v === undefined) m.set(x, i); else if (typeof v === 'number') m.set(x, [v, i]); else v.push(i); }); return m; });
+const refNamed = (m, key) => { const v = m.get(key); return v === undefined ? [] : typeof v === 'number' ? [v] : v; };
+const titleKey = n => refNorm(str(n)).replace(/^(the|a|an) /, '');
+const refTByName = () => refNameMap('tn', refTKeys());   /* same keys as search: leading The/A/An dropped */
 const refPByName = () => refNameMap('pn', refPKeys());
 /* build the search keys in steps, giving the page a moment between them so it stays responsive while loading */
 async function refWarm() { for (const f of [refTKeys, refTByName, refPKeys, refPByName]) { if (!ref) return; f(); await wait(15); } }
@@ -1183,7 +1195,7 @@ function refYears(ti) {
 const refMain = ti => refCast(ti).filter(c => !c.dir && !c.guest);
 const refRating = ti => (ref.t.r[ti] > 0 ? (ref.t.r[ti] / 10).toFixed(1) : '');
 /* one credit -> {ci, ti, pi, dir, guest, ch, e} (guest: only in episode casts; e: episodes, series only) */
-const refC = ci => ({ ci, ti: ref.c.t[ci], pi: ref.c.p[ci], dir: ref.c.r[ci] === 1, guest: ref.c.r[ci] === 2, ch: str(ref.c.ch[ci]), e: ref.c.e[ci] });
+const refC = ci => ({ ci, ti: ref.c.t[ci], pi: ref.c.p[ci], dir: ref.c.r[ci] === 1, guest: ref.c.r[ci] === 2, ch: str(ref.c.ch[ci]), e: ref.c.e[ci], s: ref.c.s[ci] });
 /* a title's credits: main cast and directors in billing order, then episode cast by episodes */
 function refCast(ti) { const out = []; for (let i = ref.tStart[ti]; i < ref.tStart[ti + 1]; i++) out.push(refC(i)); return out; }
 /* a person's credits, newest first */
@@ -1195,7 +1207,17 @@ function refCredits(pi) {
 const epsText = e => (e > 0 ? plural(e, 'episode') : '');
 /* best-known credits -> title names (starring roles first, then the biggest guest roles) */
 const refKnownFor = (pi, n = 2) => refCredits(pi).sort((a, b) => (a.guest - b.guest) || a.dir - b.dir || ref.t.v[b.ti] * (a.guest ? Math.min(b.e, 10) : 1) - ref.t.v[a.ti] * (a.guest ? Math.min(a.e, 10) : 1)).slice(0, n).map(c => refName(c.ti));
-const refLife = pi => { const b = ref.p.b[pi], d = ref.p.d[pi]; return b && d ? `${b}–${d}` : b ? `Born ${b}` : d ? `Died ${d}` : ''; };
+/* "Born 1956 · about 70" / "1940–2019 · died at about 79" (birth years only, so ages can be a year off) */
+const refLife = pi => {
+  const b = ref.p.b[pi], d = ref.p.d[pi], now = new Date().getFullYear();
+  if (b && d) return `${b}–${d} · died at about ${d - b}`;
+  if (b) return `Born ${b} · about ${now - b}`;
+  return d ? `Died ${d}` : '';
+};
+/* seasons a series credit covers: s = first*1000 + last (0: not known) */
+const sFirst = s => Math.floor(s / 1000), sLast = s => s % 1000;
+const inSeason = (c, n) => !n || !c.s || (sFirst(c.s) <= n && n <= sLast(c.s));
+const seasonText = s => (!s ? '' : sFirst(s) === sLast(s) ? `season ${sFirst(s)}` : `seasons ${sFirst(s)}–${sLast(s)}`);
 
 /* search: every word must appear; exact name first, then names that start with it, then a word that starts with it */
 function refRank(key, q, w0) { return key === q ? 0 : key.startsWith(q) ? 1 : (' ' + key).includes(' ' + w0) ? 2 : 3; }
@@ -1215,11 +1237,12 @@ function refSearchPeople(query, n = 15) {
   hits.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
   return hits.slice(0, n).map(h => h[1]);
 }
-/* characters (3+ letters) -> [{ci, pi, ti, ch}] from the most-voted titles */
+/* characters (3+ letters) -> [{ci, pi, ti, ch}] from the most-voted titles. Scans the character text directly (no
+   index: with millions of credits one would cost too much memory on a phone); case is ignored, accents are not. */
 function refSearchCharacters(query, n = 10) {
   const qt = tokens(query); if (!ref || qt.join('').length < 3) return [];
-  const keys = refChKeys(), hits = [];
-  for (let i = 0; i < keys.length; i++) { const k = keys[i]; if (k && qt.every(w => k.includes(w))) hits.push(i); }
+  const res = qt.map(w => new RegExp('(^|[^\\p{L}\\p{N}])' + w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'iu')), ch = ref.c.ch, hits = [];
+  for (let i = 0; i < ch.length; i++) { const s = ch[i]; if (s && res.every(r => r.test(s))) hits.push(i); }
   return hits.sort((a, b) => ref.t.v[ref.c.t[b]] - ref.t.v[ref.c.t[a]]).slice(0, n).map(refC);
 }
 
@@ -1228,7 +1251,7 @@ function refSearchCharacters(query, n = 10) {
 function refTitleOf(t) {
   if (!ref || !t) return -1;
   if (t.imdb) { const i = refTById(+t.imdb.slice(2)); if (i >= 0) return i; }
-  const c = (refTByName().get(refNorm(t.name)) || []).filter(i => refKindLog(ref.t.k[i]) === t.kind && (t.year == null || Math.abs(ref.t.y[i] - t.year) <= 1));
+  const c = refNamed(refTByName(), titleKey(t.name)).filter(i => refKindLog(ref.t.k[i]) === t.kind && (t.year == null || Math.abs(ref.t.y[i] - t.year) <= 1));
   return c.length ? c.reduce((a, b) => (ref.t.v[b] > ref.t.v[a] ? b : a)) : -1;
 }
 let _lr = null;
@@ -1244,7 +1267,7 @@ function refPersonOf(p) {
   const L = logRef(); if (L.person.has(p.id)) return L.person.get(p.id);
   let r = p.imdb ? refPById(+p.imdb.slice(2)) : -1;
   if (r < 0) {
-    const c = refPByName().get(refNorm(p.name)) || [];
+    const c = refNamed(refPByName(), refNorm(p.name));
     if (c.length === 1) r = c[0];
     else if (c.length > 1) {
       const mine = new Set(creditsOfPerson(p.id).map(x => L.byTitle.get(x.titleId)).filter(x => x != null));
@@ -1263,17 +1286,35 @@ function refInLog(pi, excludeTi = -1) {
   return out;
 }
 
-/* ---- storing + loading (the raw file is kept as imported: gzip bytes or JSON text) ---- */
-async function gunzipText(buf) {
-  if (typeof DecompressionStream === 'undefined') throw new Error('This browser can’t unzip files. Update iOS (16.4 or later), or import the unzipped .json file instead.');
-  const rd = new ReadableStream({ start(c) { c.enqueue(new Uint8Array(buf)); c.close(); } }).pipeThrough(new DecompressionStream('gzip')).getReader();
-  const parts = []; let n = 0;
-  for (;;) { const { done, value } = await rd.read(); if (done) break; parts.push(value); n += value.length; }
-  const all = new Uint8Array(n); let o = 0; for (const p of parts) { all.set(p, o); o += p.length; }
-  return new TextDecoder().decode(all);
-}
+/* ---- storing + loading. The file is gzip text: v1 is one JSON object; v2 is a header line, then one line per column
+   ("t.n<TAB>[...]"), so it is unpacked and parsed a column at a time instead of as one huge string. ---- */
 const isGzip = buf => { const u = new Uint8Array(buf, 0, Math.min(2, buf.byteLength)); return u[0] === 0x1f && u[1] === 0x8b; };
-const refTextOf = raw => (typeof raw === 'string' ? raw : isGzip(raw) ? gunzipText(raw) : new TextDecoder().decode(new Uint8Array(raw)));
+async function refLines(raw, onLine) {
+  if (typeof raw === 'string') { for (const l of raw.split('\n')) onLine(l); return; }
+  let src = new ReadableStream({ start(c) { c.enqueue(new Uint8Array(raw)); c.close(); } });
+  if (isGzip(raw)) {
+    if (typeof DecompressionStream === 'undefined') throw new Error('This browser can’t unzip files. Update iOS (16.4 or later).');
+    src = src.pipeThrough(new DecompressionStream('gzip'));
+  }
+  const rd = src.getReader(), dec = new TextDecoder(); let parts = [];
+  const feed = text => { let i; while ((i = text.indexOf('\n')) >= 0) { parts.push(text.slice(0, i)); onLine(parts.join('')); parts = []; text = text.slice(i + 1); } if (text) parts.push(text); };
+  for (;;) { const { done, value } = await rd.read(); if (done) break; feed(dec.decode(value, { stream: true })); }
+  feed(dec.decode()); if (parts.length) onLine(parts.join(''));
+}
+const COL_NUM = /^(t\.(id|k|y|e|r|v|g)|p\.(id|b|d|f)|c\.(t|p|e|s))$/;
+async function refParse(raw) {
+  let o = null;
+  await refLines(raw, line => {
+    if (!line.trim()) return;
+    if (!o) { o = JSON.parse(line); if (obj(o).v === 2) Object.assign(o, { t: {}, p: {}, c: {} }); return; }
+    const tab = line.indexOf('\t'), key = line.slice(0, tab), m = key.match(/^([tpc])\.([a-z]{1,3})$/);
+    if (o.v !== 2 || !m) throw new Error('That database file is incomplete or damaged.');
+    const v = JSON.parse(line.slice(tab + 1));
+    o[m[1]][m[2]] = COL_NUM.test(key) && Array.isArray(v) ? Int32Array.from(v) : v;   /* typed right away: lower peak memory */
+  });
+  if (!o) throw new SyntaxError('empty');
+  return o;
+}
 function normRefInfo(i) {
   i = obj(i); const n = k => intIn(i[k], 0, 1e9) ?? 0;
   return i.titles ? { built: /^\d{4}-\d\d-\d\d$/.test(str(i.built)) ? i.built : '', titles: n('titles'), people: n('people'), credits: n('credits'), bytes: n('bytes'), at: isoDT(i.at) || '' } : null;
@@ -1286,8 +1327,7 @@ function ensureRef() {
     try {
       const raw = await idbGet(db, 'refData');
       if (!raw) throw new Error('The database is missing from this device’s storage. Import the file again.');
-      const text = await refTextOf(raw); await wait(15);
-      const o = JSON.parse(text); await wait(15);
+      const o = await refParse(raw); await wait(15);
       ref = refBuild(o); _lr = null; await refWarm();
     } catch (e) { console.error(e); ref = null; refErr = e instanceof SyntaxError ? 'The stored database is damaged. Import the file again.' : e.message || String(e); }
     finally { refLoading = null; }
@@ -1341,12 +1381,12 @@ async function importRefFile(f) {
   try { buf = await readFileBuf(f); } catch { return fail('Couldn’t read that file', 'Try choosing it again.'); }
   try {
     txt('Unpacking…'); await wait(20);
-    const text = await refTextOf(buf);
+    const o = await refParse(buf);
     txt('Checking…'); await wait(20);
-    R = refBuild(JSON.parse(text));
+    R = refBuild(o);
   } catch (e) { return fail('Can’t use that file', e instanceof SyntaxError ? 'That isn’t a Watch Log database file.' : e.message); }
   const info = { built: R.built, titles: R.nT, people: R.nP, credits: R.nC, bytes: buf.byteLength, at: new Date().toISOString() };
-  try { txt('Saving on this device…'); await idbPut(db, 'refData', isGzip(buf) ? buf : new TextDecoder().decode(new Uint8Array(buf))); await idbPut(db, 'refInfo', JSON.stringify(info)); }
+  try { txt('Saving on this device…'); await idbPut(db, 'refData', buf); await idbPut(db, 'refInfo', JSON.stringify(info)); }
   catch (e) { console.error(e); return fail('Couldn’t save the database', 'This device’s storage refused it (it may be full). Nothing was changed.'); }
   ref = R; refInfo = info; refErr = ''; _lr = null;
   txt('Indexing…'); await wait(20); await refWarm();
@@ -1681,7 +1721,7 @@ function readTitleForm(v, existing) {
 /* ===================== UI ===================== */
 const view = $('#view');
 const ui = {
-  tab: 'log', titleId: null, personId: null, refT: null, refP: null, stack: [], logSeg: null,
+  tab: 'log', titleId: null, personId: null, refT: null, refP: null, refSeason: 0, castq: '', stack: [], logSeg: null,
   tf: { q: '', kind: 'all', status: 'all', rating: 'any', sort: 'name', dir: 'asc' }, pq: '',
   conn: { tab: 'shared', a: '', b: '', pa: '', pb: '', w: '', s: '' }, lastPick: null
 };
@@ -1717,7 +1757,8 @@ function logSegment() {
 function quickActions(t) {
   const b = (a, l, k = '') => `<button type="button" class="btn small ${k}" data-action="${a}" data-id="${esc(t.id)}">${l}</button>`;
   if (t.status === 'want') return b('q-start', '▶ Start') + b('q-watched', '✓ Watched');
-  if (t.status === 'watching') return (t.kind === 'series' ? b('q-ep', '+ Episode') : '') + b('q-watched', '✓ Watched') + b('q-drop', 'Drop', 'danger');
+  const who = ref && logRef().byTitle.has(t.id) ? b('who', '👥 Who’s in this?') : '';
+  if (t.status === 'watching') return who + (t.kind === 'series' ? b('q-ep', '+ Episode') : '') + b('q-watched', '✓ Watched') + b('q-drop', 'Drop', 'danger');
   if (t.status === 'watched') return b('rate', t.rating > 0 ? `★ ${fmtR(t.rating)} · Rate` : '★ Rate') + b('q-again', '↻ Watched again');
   return b('q-start', '▶ Resume') + b('q-want', 'Back to want');
 }
@@ -1765,7 +1806,7 @@ function refTitlesHTML(q) {
   if (!ref) return refLoadingHTML();
   const L = logRef(), hits = refSearchTitles(q, 60).filter(i => !L.byRef.has(i)).slice(0, 15);
   if (!hits.length) return '';
-  return `<div class="sec-h"><span>In the movie database</span></div><div class="card">${hits.map(ti => refTitleRowHTML(ti, [REF_KIND[ref.t.k[ti]], refRating(ti) ? '★ ' + refRating(ti) : '', refMain(ti).slice(0, 2).map(c => ref.p.n[c.pi]).join(', ')].filter(Boolean).join(' · '))).join('')}</div>`;
+  return `<div class="sec-h"><span>In the movie database</span></div><div class="card">${hits.map(ti => refTitleRowHTML(ti, [REF_KIND[ref.t.k[ti]], refGenres(ti).slice(0, 3).join(', '), refRating(ti) ? '★ ' + refRating(ti) : '', refMain(ti).slice(0, 2).map(c => ref.p.n[c.pi]).join(', ')].filter(Boolean).join(' · '))).join('')}</div>`;
 }
 function refTitleRowHTML(ti, sub) {
   const t = logRef().byRef.get(ti);
@@ -1842,7 +1883,7 @@ function refTitleCardHTML(t) {
   const facts = [REF_KIND[ref.t.k[ti]], refYears(ti), refRating(ti) ? `★ ${refRating(ti)} on IMDb (${nfmt(ref.t.v[ti])} votes)` : ''].filter(Boolean).join(' · ');
   return `<section class="card pad" id="refTitle"><h3>Movie database</h3><p class="fine" style="margin-top:0">${esc(facts)}</p>
     ${has ? '' : `<p>${plural(actors.length, 'main cast member')}: ${esc(actors.slice(0, 4).map(c => ref.p.n[c.pi]).join(', '))}${actors.length > 4 ? '…' : ''}</p>`}
-    <div class="btnrow">${has ? '' : `<button type="button" class="btn primary" data-action="rt-cast" data-id="${esc(t.id)}">Add this cast to the title</button>`}<button type="button" class="btn" data-action="open-rt" data-i="${ref.t.id[ti]}">Cast &amp; details</button></div></section>`;
+    <div class="btnrow">${has ? '' : `<button type="button" class="btn primary" data-action="rt-cast" data-id="${esc(t.id)}">Add this cast to the title</button>`}<button type="button" class="btn" data-action="who" data-id="${esc(t.id)}">👥 Who’s in this?</button></div></section>`;
 }
 
 /* the "where do I know them from?" card on a title: each cast member and the other titles in your log they're in */
@@ -1892,6 +1933,7 @@ function renderPerson() {
   sm.titles = kf.length; sm.watched = kw.length; sm.avgRating = kr.length ? Math.round(kr.reduce((a, r) => a + r.title.rating, 0) / kr.length * 100) / 100 : null;
   const co = sm.coStars.map(c => `<div class="row" data-action="open-person" data-id="${esc(c.personId)}" role="button" tabindex="0"><div class="row-main"><div class="row-title">${esc(c.name)}</div></div><span class="muted">${plural(c.count, 'title')}</span></div>`).join('');
   return `<div class="stack">
+    ${personHeadHTML(p)}
     <section class="card pad"><div class="tilesb" style="margin-top:0"><div class="card tile"><div class="lbl">Titles</div><div class="val">${sm.titles}</div></div><div class="card tile"><div class="lbl">Watched</div><div class="val">${sm.watched}</div></div><div class="card tile"><div class="lbl">Avg rating</div><div class="val">${sm.avgRating == null ? '–' : fmtR(sm.avgRating)}</div></div></div>
       ${p.notes ? `<div class="note" style="white-space:pre-wrap">${esc(p.notes)}</div>` : ''}
       <div class="btnrow"><button type="button" class="btn" data-action="edit-person" data-id="${esc(p.id)}">Edit</button><button type="button" class="btn danger" data-action="del-person" data-id="${esc(p.id)}">Delete</button></div></section>
@@ -1900,6 +1942,12 @@ function renderPerson() {
     ${refPersonCardHTML(p)}
     ${filmoCardHTML(p, refPersonOf(p) >= 0)}
   </div>`;
+}
+/* top of a person page in your log: photo (when looked up) and age, when the movie database knows them */
+function personHeadHTML(p) {
+  const nm = logPersonNm(p), pi = ref ? refPersonOf(p) : -1, life = pi >= 0 ? refLife(pi) : '';
+  if (!nm && !life) return '';
+  return `<section class="card pad"><div class="phead">${nm ? photoImg(nm, true) : ''}<div style="flex:1;min-width:0">${life ? `<div class="muted" style="font-size:14px">${esc(life)}</div>` : ''}${nm && !photos.has(nm) ? `<button type="button" class="btn small" style="margin-top:6px" data-action="photo" data-nm="${esc(nm)}">📷 Photo</button>` : nm && !photos.get(nm) ? '<p class="fine">No photo on TMDB.</p>' : ''}</div></div></section>`;
 }
 /* rows of a database person's credits: logged titles open in your log, the rest open their database page */
 function refFilmoRowsHTML(pi) {
@@ -1915,26 +1963,99 @@ const refFootHTML = () => `<p class="fine">From the offline movie database (IMDb
 function refPersonCardHTML(p) {
   if (!ref) return refStatus() === 'loading' ? '<p class="fine" style="margin:0 4px">Loading the movie database…</p>' : '';
   const pi = refPersonOf(p); if (pi < 0) return '';
-  const n = ref.pStart[pi + 1] - ref.pStart[pi], life = refLife(pi);
+  const n = ref.pStart[pi + 1] - ref.pStart[pi];
   return `<details class="card eg" id="refFilmo"${n <= 30 ? ' open' : ''}><summary>Everything they’ve been in <span class="fine">· ${n}</span></summary>${refFilmoRowsHTML(pi)}
-    <div class="pad">${life ? `<p class="fine">${esc(life)}</p>` : ''}${refFootHTML()}<a class="btn small ghost" href="https://www.imdb.com/name/${nmId(ref.p.id[pi])}/" target="_blank" rel="noopener noreferrer">IMDb page ↗</a></div></details>`;
+ <div class="pad">${refFootHTML()}<a class="btn small ghost" href="https://www.imdb.com/name/${nmId(ref.p.id[pi])}/" target="_blank" rel="noopener noreferrer">IMDb page ↗</a></div></details>`;
 }
 
+/* ---- photos: looked up on TMDB only when you tap a 📷 button; kept for this session only ---- */
+const photos = new Map();   /* IMDb person id -> image URL, or '' when TMDB has none */
+const PHOTO_PATH = /^\/[\w-]{5,80}\.(jpg|jpeg|png)$/i;
+const photoImg = (nm, big) => { const u = photos.get(nm); return u ? `<img class="hs${big ? ' big' : ''}" src="${esc(u)}" alt="" loading="lazy" referrerpolicy="no-referrer">` : ''; };
+async function fetchPhoto(nm) {
+  if (photos.has(nm)) return photos.get(nm);
+  const r = tmdbRequest(`/find/${nm}`, { external_source: 'imdb_id' }, state.settings.tmdbKey);
+  const path = str(obj(arr(obj(await netGet(r.url, r.headers)).person_results)[0]).profile_path);
+  const u = PHOTO_PATH.test(path) ? 'https://image.tmdb.org/t/p/w185' + path : '';
+  photos.set(nm, u); return u;
+}
+const photoBusy = { on: false };
+/* the 📷 buttons: look up these people's photos now (and only now) */
+async function lookUpPhotos(ids) {
+  if (photoBusy.on) return;
+  if (!state.settings.tmdbKey) return msgBox('Photos need a TMDB key', 'Photos come from TMDB. Add your free TMDB key in Backup → Online lookup, then tap 📷 again.');
+  const off = offlineMsg(); if (off) return msgBox('Offline', 'Photos need a connection. Everything else works offline.');
+  const todo = [...new Set(ids)].filter(nm => IMDB_NM.test(nm) && !photos.has(nm)).slice(0, 25);
+  if (!todo.length) return toast(ids.length ? 'Already looked up' : 'Nobody to look up');
+  photoBusy.on = true; toast(`Looking up ${plural(todo.length, 'photo')}…`);
+  let found = 0, err = '';
+  try { for (const nm of todo) { try { if (await fetchPhoto(nm)) found++; } catch (e) { err = e.message; break; } await wait(40); } }
+  finally { photoBusy.on = false; }
+  if (ui.refT != null) paintCast(); else render();
+  toast(err ? 'Stopped: ' + err : found ? `${plural(found, 'photo')} found` : 'No photos on TMDB for them');
+}
+const personNm = pi => nmId(ref.p.id[pi]);
+/* ---- descriptions: IMDb's free data has none, so 📝 looks one up online (TMDB, or TVMaze for shows without a key) ---- */
+const descs = new Map();    /* IMDb title id -> description, or '' when none was found (this session) */
+async function fetchDesc(tt, series) {
+  let d = '';
+  if (state.settings.tmdbKey) {
+    const r = tmdbRequest(`/find/${tt}`, { external_source: 'imdb_id' }, state.settings.tmdbKey), j = obj(await netGet(r.url, r.headers));
+    d = cleanName(obj(arr(j.movie_results)[0] || arr(j.tv_results)[0]).overview);
+  } else if (series) {
+    try { d = stripHtml(obj(await netGet('https://api.tvmaze.com/lookup/shows?imdb=' + tt)).summary); } catch (e) { if (!/Not found/.test(e.message)) throw e; }
+  } else throw new Error('Movie descriptions come from TMDB. Add your free TMDB key in Backup → Online lookup.');
+  return d.slice(0, 2000);
+}
+async function lookUpDesc(ti) {
+  const tt = ttId(ref.t.id[ti]), off = offlineMsg();
+  if (off) return msgBox('Offline', 'Descriptions need a connection. Everything else works offline.');
+  const btn = $('[data-action="rt-desc"]'); if (btn) { btn.disabled = true; btn.textContent = 'Looking it up…'; }
+  try { descs.set(tt, await fetchDesc(tt, refKindLog(ref.t.k[ti]) === 'series')); }
+  catch (e) { if (btn) { btn.disabled = false; btn.textContent = '📝 Description'; } return msgBox('Couldn’t get a description', e.message); }
+  /* a title in your log keeps it, so it's there offline next time */
+  const lt = logRef().byRef.get(ti), d = descs.get(tt);
+  if (lt && d && !lt.synopsis) { lt.synopsis = d; persist({ touch: false }); }
+  render();
+}
+const descOf = ti => { const tt = ttId(ref.t.id[ti]), lt = logRef().byRef.get(ti); return descs.has(tt) ? descs.get(tt) : lt && lt.synopsis ? lt.synopsis : null; };
+const logPersonNm = p => (p.imdb || (refPersonOf(p) >= 0 ? personNm(refPersonOf(p)) : ''));
+
 /* ---- database pages: a title or person that isn't in your log ---- */
-function renderRefTitle() {
-  const ti = refTById(ui.refT), lt = logRef().byRef.get(ti), cast = refCast(ti), gen = refGenres(ti);
-  const facts = [REF_KIND[ref.t.k[ti]], refYears(ti), refRating(ti) ? `★ ${refRating(ti)} IMDb` : ''].filter(Boolean).join(' · ');
+/* the cast of a database title, narrowed to a season and/or a name or character you type */
+function refCastRows(ti) {
+  const cast = refCast(ti), n = ui.refSeason, q = tokens(ui.castq);
+  const hit = c => !q.length || q.every(w => refNorm(str(ref.p.n[c.pi]) + ' ' + c.ch).includes(w));
+  const pick = c => inSeason(c, n) && hit(c);
+  return { acts: cast.filter(c => !c.dir && !c.guest && pick(c)), dirs: cast.filter(c => c.dir && !n && hit(c)), guests: cast.filter(c => c.guest && pick(c)), all: cast };
+}
+function refCastHTML(ti) {
+  const { acts, dirs, guests: g0 } = refCastRows(ti), n = ui.refSeason, filtered = !!(n || tokens(ui.castq).length);
   const row = (c, inLog = refInLog(c.pi, ti)) => {
     const lp = logPersonOfRef(c.pi);
     const attrs = lp ? `data-action="open-person" data-id="${esc(lp.id)}"` : `data-action="open-rp" data-i="${ref.p.id[c.pi]}"`;
     const also = inLog.slice(0, 3).map(r => `<div class="row-sub">${esc(r.title.name)}${r.title.year ? ' (' + r.title.year + ')' : ''}${r.dir ? ' – director' : r.ch ? ' – ' + esc(r.ch) : ''} ${statusBadge(r.title.status)}</div>`).join('');
-    const role = [c.ch ? 'as ' + c.ch : '', epsText(c.e)].filter(Boolean).join(' · ');
-    return `<div class="row" ${attrs} role="button" tabindex="0"><div class="row-main"><div class="cname">${esc(ref.p.n[c.pi])}</div>${role ? `<div class="cchar">${esc(role)}</div>` : ''}${also}${inLog.length > 3 ? `<div class="row-sub">+ ${inLog.length - 3} more in your log</div>` : ''}</div></div>`;
+    const role = [c.ch ? 'as ' + c.ch : '', epsText(c.e), c.guest || n ? seasonText(c.s) : ''].filter(Boolean).join(' · ');
+    return `<div class="row" ${attrs} role="button" tabindex="0">${photoImg(personNm(c.pi))}<div class="row-main"><div class="cname">${esc(ref.p.n[c.pi])}</div>${role ? `<div class="cchar">${esc(role)}</div>` : ''}${also}${inLog.length > 3 ? `<div class="row-sub">+ ${inLog.length - 3} more in your log</div>` : ''}</div></div>`;
   };
-  const acts = cast.filter(c => !c.dir && !c.guest), dirs = cast.filter(c => c.dir);
-  const GMAX = 300, guests = cast.filter(c => c.guest).map(c => ({ c, inLog: refInLog(c.pi, ti) }));
+  const GMAX = 300, guests = g0.map(c => ({ c, inLog: refInLog(c.pi, ti) }));
   const gs = [...guests.filter(g => g.inLog.length), ...guests.filter(g => !g.inLog.length)], known = guests.filter(g => g.inLog.length).length;
-  const guestHTML = gs.length ? `<details class="card eg" id="refGuests"><summary>Episode cast <span class="fine">· ${nfmt(gs.length)}${known ? ` · ${known} in your log` : ''}</span></summary><p class="fine pad" style="padding-bottom:0">Guest and recurring roles${known ? ', people you’ve seen elsewhere first' : ''}, then by number of episodes.</p>${gs.slice(0, GMAX).map(g => row(g.c, g.inLog)).join('')}${gs.length > GMAX ? `<p class="fine pad">+ ${nfmt(gs.length - GMAX)} more with fewer episodes. Search a name in People to find anyone.</p>` : ''}</details>` : '';
+  const main = acts.map(c => row(c)).join('') + (dirs.length ? `<div class="pad" style="padding-bottom:0"><div class="sub-h">Directed by</div></div>${dirs.map(c => row(c)).join('')}` : '');
+  const guestHTML = gs.length ? `<details class="eg" id="refGuests"${filtered ? ' open' : ''} style="border-top:1px solid var(--line)"><summary>Episode cast <span class="fine">· ${nfmt(gs.length)}${known ? ` · ${known} in your log` : ''}</span></summary><p class="fine pad" style="padding-bottom:0;padding-top:0">Guest and recurring roles${known ? ', people you’ve seen elsewhere first' : ''}, then by number of episodes.</p>${gs.slice(0, GMAX).map(g => row(g.c, g.inLog)).join('')}${gs.length > GMAX ? `<p class="fine pad">+ ${nfmt(gs.length - GMAX)} more with fewer episodes. Pick a season or type a name to narrow it down.</p>` : ''}</details>` : '';
+  return (main || guestHTML ? main + guestHTML : `<p class="muted pad">${filtered ? 'Nobody matches. Try another season or fewer letters.' : 'No cast listed.'}</p>`);
+}
+function paintCast() { const b = document.getElementById('castBox'); if (b && ui.refT != null) b.innerHTML = refCastHTML(refTById(ui.refT)); }
+/* who to look up photos for: the main cast shown, plus the first episode-cast people when narrowed down */
+function castPhotoIds(ti) {
+  const { acts, guests } = refCastRows(ti), filtered = !!(ui.refSeason || tokens(ui.castq).length);
+  return [...acts.slice(0, 15), ...(filtered ? guests.slice(0, 15) : [])].map(c => personNm(c.pi));
+}
+function renderRefTitle() {
+  const ti = refTById(ui.refT), lt = logRef().byRef.get(ti), gen = refGenres(ti), series = refKindLog(ref.t.k[ti]) === 'series', desc = descOf(ti);
+  const facts = [REF_KIND[ref.t.k[ti]], refYears(ti), refRating(ti) ? `★ ${refRating(ti)} IMDb` : ''].filter(Boolean).join(' · ');
+  const maxS = series ? Math.min(60, Math.max(0, ...refCast(ti).map(c => sLast(c.s)))) : 0;
+  if (ui.refSeason > maxS) ui.refSeason = 0;
+  const chips = maxS > 1 ? `<div class="chips" role="group" aria-label="Season">${[0, ...Array.from({ length: maxS }, (_, i) => i + 1)].map(n => `<button type="button" class="chip" data-action="rt-season" data-v="${n}" aria-pressed="${ui.refSeason === n}">${n ? 'S' + n : 'All seasons'}</button>`).join('')}</div>` : '';
   const add = lt ? `<div class="note">In your log ${statusBadge(lt.status)} <button type="button" class="btn small" style="margin-left:8px" data-action="open-title" data-id="${esc(lt.id)}">Open</button></div>`
     : `<div class="sub-h">Add to your log</div><div class="btnrow" style="margin-top:4px">${[['want', '+ Watchlist'], ['watching', '▶ Watching'], ['watched', '✓ Watched']].map(([k, l]) => `<button type="button" class="btn${k === 'want' ? ' primary' : ''}" data-action="rt-add" data-s="${k}">${l}</button>`).join('')}</div>`;
   return `<div class="stack">
@@ -1942,21 +2063,22 @@ function renderRefTitle() {
       <div class="muted" style="font-size:14px">${esc(facts)}</div>
       <h2 style="margin:2px 0 10px">${esc(refName(ti))}</h2>
       ${gen.length ? `<div class="pill-row" style="margin-bottom:10px">${gen.map(g => `<span class="pill">${esc(g)}</span>`).join('')}</div>` : ''}
+      ${desc ? `<p class="synopsis" id="rtDesc">${esc(desc)}</p>` : desc === '' ? '<p class="fine" id="rtDesc">No description found online.</p>' : `<div class="btnrow" style="margin:0 0 12px"><button type="button" class="btn" data-action="rt-desc">📝 Description</button></div>`}
       ${add}
       <div class="btnrow"><a class="btn ghost" href="https://www.imdb.com/title/${ttId(ref.t.id[ti])}/" target="_blank" rel="noopener noreferrer">IMDb page ↗</a><a class="btn ghost" href="${esc(ytSearch({ name: refName(ti), year: ref.t.y[ti], kind: refKindLog(ref.t.k[ti]) }))}" target="_blank" rel="noopener noreferrer">▶ Trailer on YouTube</a></div>
     </section>
-    <section class="card"><div class="pad" style="padding-bottom:4px"><h3>Cast</h3><p class="fine" style="margin:0">Under each name: the titles in your log they’re in.</p></div>${acts.map(c => row(c)).join('') || '<p class="muted pad">No cast listed.</p>'}
-      ${dirs.length ? `<div class="pad" style="padding-bottom:0"><div class="sub-h">Directed by</div></div>${dirs.map(c => row(c)).join('')}` : ''}
+    <section class="card" id="refCast"><div class="pad" style="padding-bottom:8px;display:flex;align-items:center;gap:10px"><h3 style="margin:0;flex:1">Cast</h3><button type="button" class="btn small" data-action="cast-photos">📷 Photos</button></div>
+      <div class="castctl">${chips}<input id="castq" type="search" placeholder="Filter by name or character" value="${esc(ui.castq)}" autocomplete="off" aria-label="Filter the cast"><p class="fine" style="margin:0">Under each name: the titles in your log they’re in.</p></div>
+      <div id="castBox">${refCastHTML(ti)}</div>
       <div class="pad">${refFootHTML()}</div></section>
-    ${guestHTML}
   </div>`;
 }
 function renderRefPerson() {
   const pi = refPById(ui.refP), inLog = refInLog(pi), n = ref.pStart[pi + 1] - ref.pStart[pi], life = refLife(pi);
   const logRows = inLog.map(r => `<div class="row" data-action="open-title" data-id="${esc(r.title.id)}" role="button" tabindex="0"><div class="row-main"><div class="row-title">${tName(r.title)}</div><div class="row-sub">${esc([r.dir ? 'Director' : r.ch ? 'as ' + r.ch : '', epsText(r.e)].filter(Boolean).join(' · '))}</div></div>${ratingTag(r.title.rating)}${statusBadge(r.title.status)}</div>`).join('');
   return `<div class="stack">
-    <section class="card pad">${life ? `<div class="muted" style="font-size:14px">${esc(life)}</div>` : ''}<h2 style="margin:2px 0 10px">${esc(ref.p.n[pi])}</h2>
-      <div class="btnrow" style="margin-top:0"><a class="btn ghost" href="https://www.imdb.com/name/${nmId(ref.p.id[pi])}/" target="_blank" rel="noopener noreferrer">IMDb page ↗</a></div></section>
+    <section class="card pad"><div class="phead">${photoImg(personNm(pi), true)}<div style="flex:1;min-width:0">${life ? `<div class="muted" style="font-size:14px">${esc(life)}</div>` : ''}<h2 style="margin:2px 0 10px">${esc(ref.p.n[pi])}</h2></div></div>
+      <div class="btnrow" style="margin-top:0">${photos.has(personNm(pi)) ? '' : `<button type="button" class="btn" data-action="photo" data-nm="${personNm(pi)}">📷 Photo</button>`}<a class="btn ghost" href="https://www.imdb.com/name/${nmId(ref.p.id[pi])}/" target="_blank" rel="noopener noreferrer">IMDb page ↗</a></div></section>
     <section class="card"><div class="pad" style="padding-bottom:4px"><h3>In your log</h3></div>${logRows || '<p class="muted pad">Nothing you’ve logged.</p>'}</section>
     <details class="card eg" id="refFilmo" open><summary>Everything they’ve been in <span class="fine">· ${n}</span></summary>${refFilmoRowsHTML(pi)}<div class="pad">${refFootHTML()}</div></details>
   </div>`;
@@ -2090,7 +2212,7 @@ function renderBackup() {
       <div class="field"><label for="tmdbKey">TMDB key</label><input id="tmdbKey" type="password" value="${esc(state.settings.tmdbKey)}" placeholder="Paste key" autocomplete="off" autocapitalize="none"></div>
       <div class="keyrow"><button type="button" class="btn" data-action="save-key">Save key</button><button type="button" class="btn" data-action="test-key">Test</button></div>
       <div id="testRes" class="note hide" role="status"></div>
-      <p class="hint">Only the search text, a title id or a person id is sent, and only to api.themoviedb.org and api.tvmaze.com. No pictures are loaded. Trailers open on YouTube only when you tap them.</p></section>
+      <p class="hint">Only the search text, a title id or a person id is sent, and only to api.themoviedb.org and api.tvmaze.com. Photos and descriptions for titles from the movie database load only when you tap 📷 or 📝. Trailers open on YouTube only when you tap them.</p></section>
     <section class="card pad" id="filmoCard"><h3>Where do I know them from?</h3>
       <p>When you add a title online, the top ${FILMO_TOP} cast members’ other work is looked up automatically and matched to your log. Use this once for titles you added before (it also fills in synopses and trailers), or to refresh everything.</p>
       <p class="fine">${plural(state.people.filter(p => p.tmdbId || p.tvmazeId).length, 'person')} linked · ${plural(Object.keys(filmo).length, 'filmography', 'filmographies')} saved on this device (not in backups; they can be fetched again).</p>
@@ -2125,6 +2247,8 @@ function render() {
   if (refInfo && !ref && (detail || ['titles', 'people', 'connect'].includes(ui.tab))) ensureRef();
   view.innerHTML = ui.titleId ? renderTitle() : ui.personId ? renderPerson() : ui.refT != null ? renderRefTitle() : ui.refP != null ? renderRefPerson() : { log: renderLog, titles: renderTitles, people: renderPeople, connect: renderConnect, stats: renderStats, backup: renderBackup }[ui.tab]();
   $$('nav.tabs button').forEach(b => b.setAttribute('aria-current', !detail && b.dataset.tab === ui.tab ? 'page' : 'false'));
+  const selS = $('[data-action="rt-season"][aria-pressed="true"]');   /* keep the chosen season chip in view */
+  if (selS && selS.parentElement) selS.parentElement.scrollLeft = Math.max(0, selS.offsetLeft - selS.parentElement.offsetLeft - 80);
   const hd = $('header.top .wrap'); let back = $('#backLink');
   const ex = $('a.exit', hd); if (ex) ex.classList.toggle('hide', detail);
   if (detail && !back) { back = document.createElement('a'); back.id = 'backLink'; back.className = 'back'; back.href = '#'; back.textContent = '‹ Back'; hd.insertBefore(back, hd.firstChild); }
@@ -2138,12 +2262,12 @@ function render() {
 }
 const DETAIL0 = { titleId: null, personId: null, refT: null, refP: null };
 function go(t) { ui.tab = t; Object.assign(ui, DETAIL0); ui.stack = []; render(); window.scrollTo(0, 0); }
-function nav(fn) { ui.stack.push({ tab: ui.tab, titleId: ui.titleId, personId: ui.personId, refT: ui.refT, refP: ui.refP }); if (ui.stack.length > 50) ui.stack.shift(); Object.assign(ui, DETAIL0); fn(); render(); window.scrollTo(0, 0); }
+function nav(fn) { ui.stack.push({ tab: ui.tab, titleId: ui.titleId, personId: ui.personId, refT: ui.refT, refP: ui.refP, refSeason: ui.refSeason, castq: ui.castq }); if (ui.stack.length > 50) ui.stack.shift(); Object.assign(ui, DETAIL0); fn(); render(); window.scrollTo(0, 0); }
 const openTitle = id => nav(() => { ui.titleId = id; });
 const openPerson = id => nav(() => { ui.personId = id; });
-const openRefTitle = id => nav(() => { ui.refT = +id; });
+const openRefTitle = (id, season = 0) => nav(() => { ui.refT = +id; ui.refSeason = season; ui.castq = ''; });
 const openRefPerson = id => nav(() => { ui.refP = +id; });
-function goBack() { const s = ui.stack.pop(); Object.assign(ui, DETAIL0); if (s) Object.assign(ui, { tab: s.tab, titleId: s.titleId, personId: s.personId, refT: s.refT ?? null, refP: s.refP ?? null }); render(); window.scrollTo(0, 0); }
+function goBack() { const s = ui.stack.pop(); Object.assign(ui, DETAIL0); if (s) Object.assign(ui, { tab: s.tab, titleId: s.titleId, personId: s.personId, refT: s.refT ?? null, refP: s.refP ?? null, refSeason: s.refSeason || 0, castq: s.castq || '' }); render(); window.scrollTo(0, 0); }
 
 /* ---- dialogs ---- */
 const RATING_OPTS = [[0, 'Unrated'], ...Array.from({ length: 20 }, (_, i) => [(i + 1) / 2, fmtR((i + 1) / 2)])];
@@ -2544,6 +2668,14 @@ view.addEventListener('click', e => {
     case 'wipe': doWipe(); break;
     case 'install': runInstall(); break;
     case 'open-rt': openRefTitle(el.dataset.i); break;
+    case 'who': {   /* a title in your log -> its database cast, on the season you're watching */
+      const t = titleById(id), ti = t && ref ? logRef().byTitle.get(t.id) : null; if (ti == null) break;
+      openRefTitle(ref.t.id[ti], t.kind === 'series' && t.status === 'watching' ? t.currentSeason || 0 : 0); break;
+    }
+    case 'rt-season': ui.refSeason = +el.dataset.v || 0; $$('[data-action="rt-season"]').forEach(b => b.setAttribute('aria-pressed', String(b === el))); paintCast(); break;
+    case 'cast-photos': if (ui.refT != null) lookUpPhotos(castPhotoIds(refTById(ui.refT))); break;
+    case 'photo': lookUpPhotos([el.dataset.nm]); break;
+    case 'rt-desc': if (ui.refT != null) lookUpDesc(refTById(ui.refT)); break;
     case 'open-rp': openRefPerson(el.dataset.i); break;
     case 'rt-add': {
       if (!ref || ui.refT == null) break;
@@ -2567,6 +2699,7 @@ view.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ')
 view.addEventListener('input', e => {
   const t = e.target;
   if (t.id === 'q') { ui.tf.q = t.value; $('#tres').innerHTML = titlesResultHTML(); }
+  else if (t.id === 'castq') { ui.castq = t.value; clearTimeout(ui.castT); ui.castT = setTimeout(paintCast, 150); }
   else if (t.id === 'pq') { ui.pq = t.value; $('#pres').innerHTML = peopleListHTML(); }
   else if (t.id in { ca: 1, cb: 1, cpa: 1, cpb: 1, cw: 1, cs: 1 }) {
     const key = { ca: 'a', cb: 'b', cpa: 'pa', cpb: 'pb', cw: 'w', cs: 's' }[t.id]; ui.conn[key] = t.value;
