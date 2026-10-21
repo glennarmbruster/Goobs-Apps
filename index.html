@@ -22,6 +22,7 @@ a.app b{display:block;font-size:17px}
 a.app span{color:var(--muted);font-size:13px;line-height:1.35;display:block}
 .bar{margin-top:18px;font-size:14px;display:flex;gap:16px;flex-wrap:wrap}
 .bar button{font:inherit;background:none;border:0;padding:0;color:var(--muted);text-decoration:underline;cursor:pointer}
+.bar a{color:var(--ink);font-weight:600}
 [hidden]{display:none!important}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;margin:0}
 #pick{display:none;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-top:12px}
@@ -68,7 +69,7 @@ a.app span{color:var(--muted);font-size:13px;line-height:1.35;display:block}
   <a class="app" data-k="sports" href="sports/"><img src="sports/icon-192.png" alt=""><div><b>Sports</b><span>Schedules, standings and rivalry records</span></div></a>
   <a class="app" data-k="houston" href="houston/"><img src="houston/icon-192.png" alt=""><div><b>Houston Events</b><span>Things to do around Houston, with shared picks</span></div></a>
   </div>
-  <div class="bar"><button id="arr" type="button">Rearrange apps</button><button id="cust" type="button">Choose which apps to show</button><button id="reord" type="button" hidden>Reset order</button><button id="all" type="button" hidden>Show all apps</button></div>
+  <div class="bar"><a href="backup/">💾 Back up all apps</a><button id="arr" type="button">Rearrange apps</button><button id="cust" type="button">Choose which apps to show</button><button id="reord" type="button" hidden>Reset order</button><button id="all" type="button" hidden>Show all apps</button></div>
   <div id="pick"></div>
 </main>
 <script>

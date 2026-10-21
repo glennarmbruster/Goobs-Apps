@@ -1,0 +1,685 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Back up all apps</title>
+<meta name="description" content="One backup file for every Goobs app on this device, and restore from it.">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#f5f4ef" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1311" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Backup">
+<style>
+:root{
+  --bg:#f5f4ef; --card:#ffffff; --ink:#1b2420; --muted:#66736d; --line:#e2e0d6; --soft:#efede5;
+  --accent:#0f766e; --accent-ink:#ffffff; --accent-soft:#d9f0ec;
+  --bad:#b42318; --bad-soft:#fde8e6; --warn:#9a5b00; --warn-soft:#fdf0d5; --ok:#166534; --ok-soft:#dcf5e3;
+  --radius:14px; --shadow:0 1px 2px rgba(16,24,20,.06),0 6px 18px rgba(16,24,20,.06);
+  color-scheme:light dark;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0e1311; --card:#171f1c; --ink:#e7eeeb; --muted:#97a69f; --line:#27332e; --soft:#1e2824;
+    --accent:#2dd4bf; --accent-ink:#06211d; --accent-soft:#12332e;
+    --bad:#ff8a80; --bad-soft:#3a1a18; --warn:#f6c26b; --warn-soft:#3a2c12; --ok:#7ee2a0; --ok-soft:#14301f;
+    --shadow:none;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation;
+  padding-bottom:calc(92px + env(safe-area-inset-bottom));
+}
+a{color:var(--accent)}
+h1,h2,h3{margin:0;line-height:1.2}
+h3{font-size:16px}
+p{margin:0 0 8px}
+.wrap{max-width:720px;margin:0 auto;padding:0 16px}
+.muted{color:var(--muted)} .bad{color:var(--bad)} .warn{color:var(--warn)} .ok{color:var(--ok)}
+.num{font-variant-numeric:tabular-nums}
+.hide{display:none!important}
+.pad{padding:14px 16px}
+.hint{font-size:13px;color:var(--muted);margin-top:4px}
+
+/* header */
+header.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top)}
+header.top .wrap{display:flex;align-items:center;gap:12px;min-height:58px}
+header.top .grow{flex:1;min-width:0}
+header.top h1{font-size:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+header.top .sub{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.back{display:inline-flex;align-items:center;min-height:44px;padding-right:6px;text-decoration:none;font-weight:600}
+
+/* cards, tiles, lists */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+.tile{padding:12px}
+.tile .lbl{font-size:12px;color:var(--muted);font-weight:600}
+.tile .val{font-size:20px;font-weight:700;margin-top:2px}
+.sec-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin:22px 4px 8px;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700}
+.sec-h .btn{text-transform:none;letter-spacing:0}
+.list{list-style:none;margin:0;padding:0}
+.row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-top:1px solid var(--line);cursor:pointer}
+.row:first-child{border-top:0}
+.row.static{cursor:default}
+.row-main{flex:1;min-width:0}
+.row-title{font-weight:600;overflow-wrap:anywhere}
+.row-sub{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.row-amt{font-weight:700;white-space:nowrap}
+.row.faded{opacity:.6}
+.badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 7px;border-radius:999px;background:var(--soft);color:var(--muted);vertical-align:middle;margin-left:6px}
+.badge.ok{background:var(--ok-soft);color:var(--ok)} .badge.warn{background:var(--warn-soft);color:var(--warn)} .badge.bad{background:var(--bad-soft);color:var(--bad)} .badge.acc{background:var(--accent-soft);color:var(--accent)}
+.empty{text-align:center;padding:40px 20px;color:var(--muted)}
+.empty .big{font-size:40px;line-height:1;margin-bottom:10px}
+.empty h2{color:var(--ink);font-size:18px;margin-bottom:6px}
+.empty .btn{margin-top:14px}
+.banner{padding:12px 14px;border-radius:12px;background:var(--warn-soft);color:var(--warn);font-size:14px;margin:14px 0;display:flex;gap:10px;justify-content:space-between;align-items:center}
+.banner.bad{background:var(--bad-soft);color:var(--bad)}
+.bar{height:8px;border-radius:99px;background:var(--soft);overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--accent);border-radius:99px}
+.bar.over>i{background:var(--bad)}
+
+/* buttons */
+.btn{white-space:nowrap;appearance:none;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-weight:600;min-height:44px;padding:0 16px;border-radius:12px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.danger{color:var(--bad)}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--accent)}
+.btn.small{min-height:36px;padding:0 12px;font-size:14px;border-radius:10px}
+.btn.block{width:100%}
+.btn:active{transform:translateY(1px)}
+.btn:disabled{opacity:.5;cursor:default}
+.btn:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible,.chip:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 14px;min-height:36px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+
+/* bottom nav + fab */
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+nav.tabs .wrap{display:flex;padding:0}
+nav.tabs a,nav.tabs button{flex:1;min-height:58px;border:0;background:none;color:var(--muted);font:inherit;font-size:11px;font-weight:600;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;text-decoration:none}
+nav.tabs .ico{font-size:20px;line-height:1}
+nav.tabs [aria-current="page"]{color:var(--accent)}
+.fab{position:fixed;right:max(16px,calc(50vw - 344px));bottom:calc(74px + env(safe-area-inset-bottom));z-index:7;width:56px;height:56px;border-radius:50%;border:0;background:var(--accent);color:var(--accent-ink);font-size:30px;line-height:1;box-shadow:0 6px 18px rgba(0,0,0,.28);cursor:pointer}
+.fab:active{transform:scale(.96)}
+
+/* forms + dialogs */
+input,select,textarea{width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-height:44px}
+textarea{min-height:92px;resize:vertical}
+input[type=checkbox]{width:22px;height:22px;min-height:0;padding:0;accent-color:var(--accent);flex:none}
+.field label{display:block;font-size:13px;font-weight:600;color:var(--muted);margin-bottom:4px}
+.field.check{display:flex;align-items:center;gap:10px}
+.field.check label{margin:0;color:var(--ink);font-size:16px;font-weight:500}
+.fields2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+dialog{border:0;border-radius:18px;padding:0;width:calc(100vw - 24px);max-width:520px;background:var(--card);color:var(--ink);box-shadow:0 20px 60px rgba(0,0,0,.35)}
+dialog::backdrop{background:rgba(10,15,12,.55)}
+.dlg-form{padding:20px;display:flex;flex-direction:column;gap:12px;max-height:85vh;max-height:85dvh;overflow:auto}
+.dlg-form h2{font-size:19px}
+.dlg-actions{display:flex;gap:8px;align-items:center;margin-top:6px;flex-wrap:wrap}
+.dlg-actions .spacer{flex:1}
+.ask-actions{justify-content:flex-end}
+.dlg-err{color:var(--bad);font-size:14px}
+.dlg-err:empty{display:none}
+.ask-body{font-size:15px;color:var(--ink)}
+.ask-body p{margin:0 0 8px}
+.checkgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px}
+.checkgrid .field.check label{font-size:15px}
+
+/* toast */
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom));background:#1b2420;color:#fff;padding:12px 16px;border-radius:12px;display:flex;gap:14px;align-items:center;z-index:60;max-width:calc(100vw - 24px);box-shadow:0 8px 24px rgba(0,0,0,.35);font-size:15px}
+.toast button{background:none;border:0;color:#7dd3c8;font:inherit;font-weight:700;cursor:pointer;min-height:36px}
+
+@media (prefers-reduced-motion:no-preference){.btn,.fab{transition:transform .08s}}
+
+.syncbadge{flex:none;white-space:nowrap;border:1px solid var(--line,#d5dbe0);background:var(--card,#fff);color:inherit;border-radius:999px;padding:4px 10px;font:inherit;font-size:.82rem;cursor:pointer;white-space:nowrap}
+.syncbadge.ok{color:#15803d}.syncbadge.bad{color:#b91c1c}
+.seg{display:flex;gap:8px;margin-top:6px}.seg .chip{flex:1;text-align:center}
+
+.stack{display:flex;flex-direction:column;gap:14px;margin-top:14px;padding-bottom:30px}
+.alist{list-style:none;margin:6px 0 0;padding:0}
+.alist li{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-top:1px solid var(--line);font-size:15px}
+.alist li:first-child{border-top:0}
+.alist .m{color:var(--muted);font-size:13px;text-align:right;white-space:nowrap}
+.chk{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-top:1px solid var(--line)}
+.chk:first-of-type{border-top:0}
+.chk input{width:22px;height:22px;flex:none;margin-top:1px}
+.chk .m{display:block;color:var(--muted);font-size:13px}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap"><div class="grow"><h1 id="title">Back up all apps</h1><div class="sub" id="sub">Every app’s data in one file</div></div></div></header>
+<main class="wrap" id="view"><p class="muted" style="margin-top:20px">Looking at what’s on this device…</p></main>
+<script>
+'use strict';
+/* ===================== shared helpers (identical in every Goobs app) ===================== */
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => Array.from(el.querySelectorAll(s));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const isNum = v => typeof v === 'number' && Number.isFinite(v);
+const str = v => (typeof v === 'string' ? v : v == null ? '' : String(v));
+
+/* ---- dates: always local calendar dates stored as 'YYYY-MM-DD' ---- */
+const pad = n => String(n).padStart(2, '0');
+const fmtISO = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const parseISO = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+const isISO = s => typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s) && fmtISO(parseISO(s)) === s;
+const todayISO = () => fmtISO(new Date());
+const daysBetween = (a, b) => Math.round((parseISO(b) - parseISO(a)) / 86400000);
+const addDays = (s, n) => { const d = parseISO(s); d.setDate(d.getDate() + n); return fmtISO(d); };
+function addMonths(s, n, anchorDay) {
+  const d = parseISO(s);
+  const day = anchorDay || d.getDate();
+  const first = new Date(d.getFullYear(), d.getMonth() + n, 1);
+  const last = new Date(first.getFullYear(), first.getMonth() + 1, 0).getDate();
+  first.setDate(Math.min(day, last));
+  return fmtISO(first);
+}
+const monthEndISO = s => { const d = parseISO(s); return fmtISO(new Date(d.getFullYear(), d.getMonth() + 1, 0)); };
+
+function fmtDate(s, withWeekday = true) {
+  const d = parseISO(s);
+  const o = { month: 'short', day: 'numeric' };
+  if (withWeekday) o.weekday = 'short';
+  if (d.getFullYear() !== new Date().getFullYear()) o.year = 'numeric';
+  return d.toLocaleDateString(undefined, o);
+}
+function fmtDateTime(iso) {
+  const d = new Date(iso);
+  return isNaN(d) ? 'unknown date' : d.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+}
+const _mf = {};
+function money(n, cur = 'USD') {
+  if (!_mf[cur]) {
+    try { _mf[cur] = new Intl.NumberFormat(undefined, { style: 'currency', currency: cur }); }
+    catch { _mf[cur] = new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }); }
+  }
+  return _mf[cur].format(n);
+}
+const csvCell = v => {
+  let s = String(v ?? '');
+  if (/^[=+\-@\t\r]/.test(s)) s = "'" + s; // neutralise spreadsheet formula injection
+  return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+};
+function safeUrl(u) {
+  let s = String(u ?? '').trim();
+  if (!s) return '';
+  if (!/^[a-z][a-z0-9+.-]*:/i.test(s)) s = 'https://' + s;
+  try { const x = new URL(s); return /^https?:$/.test(x.protocol) ? x.href : ''; } catch { return ''; }
+}
+
+/* ---- storage: one JSON string under one key in IndexedDB ---- */
+function openDB(name) {
+  return new Promise((res, rej) => {
+    if (!window.indexedDB) return rej(new Error('IndexedDB unavailable'));
+    const r = indexedDB.open(name, 1);
+    r.onupgradeneeded = () => { r.result.createObjectStore('kv'); };
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+    r.onblocked = () => rej(new Error('Database blocked'));
+  });
+}
+function idbGet(db, key) {
+  return new Promise((res, rej) => {
+    const q = db.transaction('kv').objectStore('kv').get(key);
+    q.onsuccess = () => res(q.result);
+    q.onerror = () => rej(q.error);
+  });
+}
+function idbPut(db, key, val) {
+  return new Promise((res, rej) => {
+    const tx = db.transaction('kv', 'readwrite');
+    tx.objectStore('kv').put(val, key);
+    tx.oncomplete = () => res();
+    tx.onerror = () => rej(tx.error);
+    tx.onabort = () => rej(tx.error || new Error('Write aborted'));
+  });
+}
+
+/* ---- toast ---- */
+function toast(msg, action) {
+  const old = $('.toast'); if (old) old.remove();
+  const t = document.createElement('div');
+  t.className = 'toast'; t.setAttribute('role', 'status');
+  t.innerHTML = `<span>${esc(msg)}</span>` + (action ? `<button type="button">${esc(action.label)}</button>` : '');
+  if (action) t.querySelector('button').onclick = () => { t.remove(); action.fn(); };
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), action ? 8000 : 3200);
+}
+
+/* ---- dialogs ---- */
+if (!$('#dlg')) document.body.insertAdjacentHTML('beforeend', '<dialog id="dlg"></dialog><dialog id="ask"></dialog>');
+{
+  const dlg = $('#dlg'); let down = false;
+  dlg.addEventListener('pointerdown', e => { down = e.target === dlg; });
+  dlg.addEventListener('click', e => { if (e.target === dlg && down) dlg.close(); });
+}
+
+function fieldHTML(f) {
+  const id = 'f_' + f.name, v = f.value ?? '';
+  if (f.type === 'checkbox')
+    return `<div class="field check"><input type="checkbox" id="${id}" name="${f.name}"${f.value ? ' checked' : ''}><label for="${id}">${esc(f.label)}</label></div>`;
+  let ctl;
+  if (f.type === 'select') {
+    ctl = `<select id="${id}" name="${f.name}">${f.options.map(o => {
+      const [val, label] = Array.isArray(o) ? o : [o, o];
+      return `<option value="${esc(val)}"${String(val) === String(v) ? ' selected' : ''}>${esc(label)}</option>`;
+    }).join('')}</select>`;
+  } else if (f.type === 'textarea') {
+    ctl = `<textarea id="${id}" name="${f.name}" placeholder="${esc(f.placeholder || '')}">${esc(v)}</textarea>`;
+  } else {
+    const t = f.type || 'text';
+    const extra = t === 'number' ? ` inputmode="decimal" step="${f.step || 'any'}"` : '';
+    ctl = `<input id="${id}" name="${f.name}" type="${t}" value="${esc(v)}" placeholder="${esc(f.placeholder || '')}"${extra}${f.min != null ? ` min="${f.min}"` : ''}${f.max != null ? ` max="${f.max}"` : ''} autocomplete="${f.autocomplete || 'off'}" autocapitalize="${f.capitalize || (t === 'email' || t === 'password' ? 'none' : 'sentences')}">`;
+  }
+  return `<div class="field"><label for="${id}">${esc(f.label)}${f.required ? ' *' : ''}</label>${ctl}${f.hint ? `<div class="hint">${esc(f.hint)}</div>` : ''}</div>`;
+}
+
+/* formDialog: fields -> values. onSubmit(values) may return an error string (keeps dialog open).
+   onDelete() may return true to close. extra: [{label, kind, onClick}] extra buttons. */
+function formDialog({ title, intro = '', fields, submitLabel = 'Save', onSubmit, onDelete, deleteLabel = 'Delete', extra = [], onClose, grid = '' }) {
+  const dlg = $('#dlg');
+  const body = grid ? `<div class="${grid}">${fields.map(fieldHTML).join('')}</div>` : fields.map(fieldHTML).join('');
+  dlg.innerHTML = `<form class="dlg-form" novalidate>
+    <h2>${esc(title)}</h2>${intro ? `<p class="muted">${esc(intro)}</p>` : ''}${body}
+    <div class="dlg-err" role="alert"></div>
+    <div class="dlg-actions">
+      ${onDelete ? `<button type="button" class="btn danger" data-k="del">${esc(deleteLabel)}</button>` : ''}
+      ${extra.map((x, i) => `<button type="button" class="btn ${x.kind || ''}" data-x="${i}">${esc(x.label)}</button>`).join('')}
+      <span class="spacer"></span>
+      <button type="button" class="btn ghost" data-k="cancel">Cancel</button>
+      <button type="submit" class="btn primary">${esc(submitLabel)}</button>
+    </div></form>`;
+  const form = $('form', dlg), err = $('.dlg-err', dlg);
+  const collect = () => {
+    const vals = {};
+    for (const f of fields) { const el = form.elements[f.name]; vals[f.name] = f.type === 'checkbox' ? el.checked : el.value; }
+    return vals;
+  };
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const vals = collect();
+    for (const f of fields) if (f.required && !String(vals[f.name]).trim()) { err.textContent = `${f.label} is required.`; return; }
+    err.textContent = '';
+    let msg;
+    try { msg = await onSubmit(vals); } catch (ex) { msg = ex.message || 'Something went wrong.'; }
+    if (msg) err.textContent = msg; else dlg.close();
+  });
+  $('[data-k="cancel"]', dlg).onclick = () => dlg.close();
+  if (onDelete) $('[data-k="del"]', dlg).onclick = async () => { if (await onDelete()) dlg.close(); };
+  $$('[data-x]', dlg).forEach(b => { b.onclick = () => extra[+b.dataset.x].onClick(collect()); });
+  dlg.onclose = () => { dlg.onclose = null; if (onClose) onClose(); };
+  dlg.showModal();
+  const first = form.querySelector('input:not([type=checkbox]),textarea');
+  if (first && !first.value) first.focus(); // new-item forms open ready to type; edit forms don't pop the keyboard
+}
+
+function askDialog({ title, body = '', buttons }) {
+  return new Promise(resolve => {
+    const d = $('#ask'); let done = false;
+    d.innerHTML = `<div class="dlg-form"><h2>${esc(title)}</h2>${body ? `<div class="ask-body">${body}</div>` : ''}
+      <div class="dlg-actions ask-actions">${buttons.map((b, i) => `<button type="button" class="btn ${b.kind || ''}" data-i="${i}">${esc(b.label)}</button>`).join('')}</div></div>`;
+    const finish = v => { if (done) return; done = true; d.close(); resolve(v); };
+    $$('button', d).forEach(btn => { btn.onclick = () => finish(buttons[+btn.dataset.i].value); });
+    d.oncancel = () => { done = true; resolve(undefined); };
+    d.showModal();
+  });
+}
+const confirmBox = async (title, bodyText, okLabel = 'Delete', danger = true) =>
+  (await askDialog({ title, body: bodyText ? `<p>${esc(bodyText)}</p>` : '', buttons: [{ label: 'Cancel', value: false }, { label: okLabel, value: true, kind: danger ? 'danger' : 'primary' }] })) === true;
+const msgBox = (title, bodyText) =>
+  askDialog({ title, body: `<p>${esc(bodyText)}</p>`, buttons: [{ label: 'OK', value: true, kind: 'primary' }] });
+
+/* ---- backup: optional AES-GCM passphrase encryption (Web Crypto, PBKDF2-SHA256) ---- */
+const b64 = buf => { let s = ''; const b = new Uint8Array(buf); for (let i = 0; i < b.length; i += 0x8000) s += String.fromCharCode.apply(null, b.subarray(i, i + 0x8000)); return btoa(s); };
+const unb64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+async function deriveKey(pass, salt, iterations) {
+  const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(pass), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey({ name: 'PBKDF2', salt, iterations, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+}
+async function encryptPayload(obj, pass) {
+  const salt = crypto.getRandomValues(new Uint8Array(16)), iv = crypto.getRandomValues(new Uint8Array(12));
+  const iterations = 250000;
+  const key = await deriveKey(pass, salt, iterations);
+  const ct = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, new TextEncoder().encode(JSON.stringify(obj)));
+  return { encrypted: true, kdf: 'PBKDF2-SHA256', iterations, salt: b64(salt), iv: b64(iv), data: b64(ct) };
+}
+async function decryptPayload(env, pass) {
+  const key = await deriveKey(pass, unb64(env.salt), env.iterations);
+  try {
+    const pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: unb64(env.iv) }, key, unb64(env.data));
+    return JSON.parse(new TextDecoder().decode(pt));
+  } catch { throw new Error('Wrong passphrase, or the file is damaged.'); }
+}
+function promptDecrypt(env) {
+  return new Promise(resolve => {
+    let result = null;
+    formDialog({
+      title: 'Encrypted backup', intro: 'Enter the passphrase you chose when you made this backup.',
+      fields: [{ name: 'pass', label: 'Passphrase', type: 'password', required: true }], submitLabel: 'Unlock',
+      onSubmit: async v => { try { result = await decryptPayload(env, v.pass); } catch (e) { return e.message; } },
+      onClose: () => resolve(result)
+    });
+  });
+}
+const Backup = {
+  async build({ appId, schema, data, passphrase }) {
+    const head = { app: appId, schemaVersion: schema, exportedAt: new Date().toISOString() };
+    if (passphrase) return JSON.stringify({ ...head, ...(await encryptPayload(data, passphrase)) });
+    return JSON.stringify({ ...head, encrypted: false, data }, null, 2);
+  },
+  /* returns {data, exportedAt, schemaVersion}, or null if the user cancelled the passphrase prompt; throws Error with a friendly message */
+  async parse(text, { appId, schema }) {
+    let env;
+    try { env = JSON.parse(text); } catch { throw new Error('That file isn’t a valid backup (it isn’t JSON).'); }
+    if (!env || typeof env !== 'object' || env.app !== appId)
+      throw new Error(env && typeof env === 'object' && env.app ? `That backup belongs to a different app (${String(env.app).slice(0, 40)}).` : 'That file isn’t a backup from this app.');
+    if (!Number.isInteger(env.schemaVersion) || env.schemaVersion < 1) throw new Error('The backup is missing its version number.');
+    if (env.schemaVersion > schema) throw new Error('That backup was made by a newer version of the app. Close and reopen this app to update it, then try again.');
+    let data;
+    if (env.encrypted) {
+      if (!(window.crypto && crypto.subtle)) throw new Error('Encrypted backups need a secure (https) connection.');
+      if (!(env.iterations >= 1000 && env.iterations <= 2000000) || typeof env.salt !== 'string' || typeof env.iv !== 'string' || typeof env.data !== 'string')
+        throw new Error('The encrypted backup is damaged.');
+      data = await promptDecrypt(env);
+      if (data === null) return null;
+    } else data = env.data;
+    if (!data || typeof data !== 'object') throw new Error('The backup contains no data.');
+    return { data, exportedAt: typeof env.exportedAt === 'string' ? env.exportedAt : null, schemaVersion: env.schemaVersion };
+  }
+};
+
+/* share sheet when the platform supports sharing files (iPhone), otherwise a normal download */
+async function deliverFile(filename, text, mime = 'application/json') {
+  const file = new File([text], filename, { type: mime });
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try { await navigator.share({ files: [file], title: filename }); return 'shared'; }
+    catch (e) { if (e && e.name === 'AbortError') return 'cancelled'; /* otherwise fall back to a download */ }
+  }
+  const url = URL.createObjectURL(file);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.style.display = 'none';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 15000);
+  return 'downloaded';
+}
+function pickFile(accept = '.json,application/json') {
+  return new Promise(resolve => {
+    const i = document.createElement('input');
+    i.type = 'file'; i.accept = accept; i.style.display = 'none';
+    document.body.appendChild(i);
+    let done = false;
+    const fin = f => { if (done) return; done = true; i.remove(); resolve(f); };
+    i.addEventListener('change', () => fin((i.files && i.files[0]) || null));
+    i.addEventListener('cancel', () => fin(null));
+    i.click();
+  });
+}
+const readFileText = f => (f.text ? f.text() : new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = () => rej(r.error); r.readAsText(f); }));
+
+/* nag banner: only when there is data and no recent backup */
+function backupNag(meta, hasData) {
+  if (!hasData) return null;
+  if (!meta.lastBackup) return 'You have data but no backup yet. Make one so you can restore it if this device loses it.';
+  const age = (Date.now() - Date.parse(meta.lastBackup)) / 86400000;
+  const changed = meta.lastChange && Date.parse(meta.lastChange) > Date.parse(meta.lastBackup) + 1000;
+  if (changed && age >= 7) return `Your last backup was ${Math.floor(age)} days ago and you’ve made changes since.`;
+  return null;
+}
+
+/* ---- install helper ---- */
+let deferredInstall = null;
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferredInstall = e; if (typeof render === 'function') render(); });
+const isStandalone = () => (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+function installCardHTML() {
+  if (isStandalone()) return '';
+  const ios = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const msg = deferredInstall
+    ? '<p>Install it for its own window and full offline use.</p><button class="btn primary" data-action="install">Install app</button>'
+    : ios
+      ? '<p>In Safari tap <b>Share</b> → <b>Add to Home Screen</b>. <b>Do this before entering data</b> — the home-screen app keeps its own separate storage from the Safari tab. Then open it from the new icon.</p>'
+      : '<p>Use your browser’s menu → <b>Install app</b> (or <b>Add to Home Screen</b>).</p>';
+  return `<section class="card pad"><h3>Install on this device</h3>${msg}</section>`;
+}
+async function runInstall() { if (!deferredInstall) return; deferredInstall.prompt(); try { await deferredInstall.userChoice; } catch {} deferredInstall = null; if (typeof render === 'function') render(); }
+
+
+
+if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol))
+  window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
+
+/* Exit link: every app's top bar gets "‹ Apps" (back to the main apps page) unless that screen already has its own back link. */
+(function () {
+  const add = () => {
+    const w = document.querySelector('header.top .wrap');
+    if (!w || w.querySelector('a.back')) return;
+    const a = document.createElement('a');
+    a.className = 'back exit'; a.href = '../'; a.textContent = '‹ Apps'; a.setAttribute('aria-label', 'Exit to all apps');
+    w.insertBefore(a, w.firstChild);
+  };
+  const start = () => { add(); new MutationObserver(add).observe(document.body, { childList: true, subtree: true }); };
+  if (document.body) start(); else document.addEventListener('DOMContentLoaded', start);
+})();
+
+
+/* ===================== Back up all apps =====================
+   Every Goobs app keeps its data in its own IndexedDB database (a "kv" store) on this device. Opened from the same
+   Goobs Apps page, they share one origin, so this page can read and write all of them. One file, optionally encrypted. */
+const CFG = {"apps": {"goobs-bills-db": "Bills", "goobs-money-db": "Money", "goobs-grocery-db": "Grocery", "goobs-todo-db": "To-do", "goobs-recipes-db": "Recipes", "goobs-health-db": "Health", "goobs-va-db": "VA Claim", "goobs-house-db": "House", "goobs-inventory-db": "Inventory", "goobs-household-db": "Household", "goobs-occasions-db": "Occasions", "goobs-worklog-db": "Work Log", "goobs-pool-db": "Pool", "goobs-sousvide-db": "Cooking Temps", "goobs-watchlog-db": "Watch Log", "goobs-sports-db": "Sports", "goobs-houston-db": "Houston Events", "goobs-storage-db": "Food Storage", "goobs-calories-db": "Calorie Lookup", "goobs-travel-db": "Planner"}};
+const ALL_ID = 'goobs-all', ALL_SCHEMA = 1, LAST_KEY = 'goobs-all-backup-at';
+const PHOTOS_DB = 'goobs-inventory-photos';
+const NAMES = Object.assign({}, CFG.apps, { [PHOTOS_DB]: 'Inventory photos' });
+/* left out: things that download again or rebuild themselves, sync bookkeeping, damaged-copy leftovers */
+const SKIP_KEYS = new Set(['sync', 'cache', 'library', 'libfiles', 'geocache', 'filmo', 'refData', 'refInfo', 'timers']);
+const skipKey = k => SKIP_KEYS.has(k) || /^state-damaged-/.test(k);
+const ourDb = n => typeof n === 'string' && /^goobs-[a-z0-9-]+$/.test(n) && n !== 'goobs-launcher';
+const nameOf = n => NAMES[n] || n.replace(/^goobs-|-db$/g, '').replace(/-/g, ' ');
+const kb = n => (n >= 1e6 ? (n / 1e6).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1e3)) + ' KB');
+const sizeOf = v => (typeof v === 'string' ? v.length : JSON.stringify(v).length);
+const view = $('#view');
+
+/* ---- IndexedDB, without creating anything: open only what exists ---- */
+function openExisting(name) {
+  return new Promise((res, rej) => {
+    let created = false;
+    const r = indexedDB.open(name);
+    r.onupgradeneeded = () => { created = true; };   /* didn't exist: back out below */
+    r.onsuccess = () => {
+      const d = r.result;
+      if (created || !d.objectStoreNames.contains('kv')) { d.close(); if (created) indexedDB.deleteDatabase(name); return res(null); }
+      res(d);
+    };
+    r.onerror = () => rej(r.error);
+    r.onblocked = () => rej(new Error('Another copy of an app is holding its storage. Close other Goobs tabs and try again.'));
+  });
+}
+function readAll(d) {
+  return new Promise((res, rej) => {
+    const s = d.transaction('kv').objectStore('kv'), out = {};
+    const kq = s.getAllKeys(), vq = s.getAll();
+    vq.onsuccess = () => { kq.result.forEach((k, i) => { out[String(k)] = vq.result[i]; }); res(out); };
+    vq.onerror = () => rej(vq.error); kq.onerror = () => rej(kq.error);
+  });
+}
+function writeAll(d, entries, keep) {
+  return new Promise((res, rej) => {
+    const tx = d.transaction('kv', 'readwrite'), s = tx.objectStore('kv'), kq = s.getAllKeys();
+    kq.onsuccess = () => {
+      for (const k of kq.result) if (!keep(String(k))) s.delete(k);
+      for (const [k, v] of Object.entries(entries)) s.put(v, k);
+    };
+    tx.oncomplete = () => res(); tx.onerror = () => rej(tx.error); tx.onabort = () => rej(tx.error || new Error('Write aborted'));
+  });
+}
+async function dbNames() {
+  let names = [];
+  if (indexedDB.databases) { try { names = (await indexedDB.databases()).map(x => x.name); } catch { names = []; } }
+  return [...new Set([...names, ...Object.keys(NAMES)])].filter(ourDb);
+}
+/* every app's data on this device -> {dbName: {key: value}} (only databases that exist and have data) */
+async function collect() {
+  const out = {};
+  for (const n of await dbNames()) {
+    let d; try { d = await openExisting(n); } catch (e) { console.error(e); continue; }
+    if (!d) continue;
+    try { const kv = await readAll(d); const keep = {}; for (const [k, v] of Object.entries(kv)) if (!skipKey(k) && v != null && !(v instanceof ArrayBuffer) && !ArrayBuffer.isView(v) && !(typeof Blob !== 'undefined' && v instanceof Blob)) keep[k] = v; if (Object.keys(keep).length) out[n] = keep; }
+    finally { d.close(); }
+  }
+  return out;
+}
+const syncOn = kv => { try { return !!JSON.parse(kv.sync || 'null').enabled; } catch { return false; } };
+const lastChangeOf = kv => { try { return JSON.parse(kv.state).meta.lastChange || ''; } catch { return ''; } };
+/* the TMDB key is a personal secret: out of the file unless asked for (same rule as Watch Log's own backup) */
+function stripSecrets(apps, keepKeys) {
+  const w = apps['goobs-watchlog-db'];
+  if (w && w.state && !keepKeys) { try { const s = JSON.parse(w.state); if (s.settings && s.settings.tmdbKey) { s.settings.tmdbKey = ''; w.state = JSON.stringify(s); } } catch { /* leave it */ } }
+}
+
+/* ---- screen ---- */
+let found = {}, deviceSync = {};
+const lastAll = () => { try { return localStorage.getItem(LAST_KEY) || ''; } catch { return ''; } };
+async function load() {
+  let raw = {};
+  try { raw = await collect(); } catch (e) { console.error(e); view.innerHTML = `<div class="banner bad">Couldn’t read this device’s storage: ${esc(e.message)}</div>`; return; }
+  found = raw; deviceSync = {};
+  for (const n of Object.keys(found)) deviceSync[n] = syncOn(found[n]);
+  /* sync bookkeeping is skipped from the file but still tells us which lists are shared */
+  for (const n of await dbNames()) { if (deviceSync[n]) continue; const d = await openExisting(n).catch(() => null); if (!d) continue; try { const kv = await readAll(d); deviceSync[n] = syncOn(kv); } finally { d.close(); } }
+  render();
+}
+function render() {
+  const names = Object.keys(found).sort((a, b) => cmp(nameOf(a), nameOf(b)));
+  const photos = found[PHOTOS_DB], nPhotos = photos ? Object.keys(photos).length : 0;
+  const total = names.reduce((s, n) => s + Object.values(found[n]).reduce((t, v) => t + sizeOf(v), 0), 0);
+  const last = lastAll(), canEncrypt = !!(window.crypto && crypto.subtle);
+  const rows = names.map(n => {
+    const size = Object.values(found[n]).reduce((t, v) => t + sizeOf(v), 0), ch = lastChangeOf(found[n]);
+    const meta = [n === PHOTOS_DB ? plural(nPhotos, 'photo') : '', kb(size), ch ? 'changed ' + fmtDate(ch.slice(0, 10), false) : '', deviceSync[n] ? 'shared' : ''].filter(Boolean).join(' · ');
+    return `<li><span>${esc(nameOf(n))}</span><span class="m">${esc(meta)}</span></li>`;
+  }).join('');
+  view.innerHTML = `<div class="stack">
+    <section class="card pad"><h3>Back up</h3>
+      <p class="muted">${last ? `Last full backup: ${esc(fmtDateTime(last))}.` : 'No full backup made yet.'}</p>
+      <p>One file with the data from every app below. On iPhone it opens the share sheet; save it to Files or OneDrive. Keep it out of your GitHub repo.</p>
+      ${canEncrypt ? `<div class="field"><label for="pass">Passphrase (optional — encrypts the file)</label><input id="pass" type="password" autocomplete="new-password"></div>
+      <div class="field" style="margin-top:8px"><label for="pass2">Repeat passphrase</label><input id="pass2" type="password" autocomplete="new-password"></div>
+      <p class="hint">Recommended: this file holds health, VA, money and household details. Without the passphrase it can’t be opened.</p>` : ''}
+      ${nPhotos ? `<div class="field check" style="margin-top:10px"><input type="checkbox" id="incPhotos" checked><label for="incPhotos">Include inventory photos (${plural(nPhotos, 'photo')}, ${kb(Object.values(photos).reduce((t, v) => t + sizeOf(v), 0))})</label></div>` : ''}
+      ${found['goobs-watchlog-db'] ? `<div class="field check" style="margin-top:6px"><input type="checkbox" id="incKey"><label for="incKey">Include my TMDB key (Watch Log)</label></div>` : ''}
+      <button type="button" class="btn primary block" style="margin-top:12px" data-action="export"${names.length ? '' : ' disabled'}>Back up all apps</button></section>
+    <section class="card pad"><h3>On this device <span class="muted" style="font-weight:500">(${plural(names.length, 'app')}, ${kb(total)})</span></h3>
+      ${names.length ? `<ul class="alist">${rows}</ul>` : '<p class="muted">No app data on this device yet.</p>'}
+      <p class="hint">Not in the file: Watch Log’s movie database (import it again), things that download again (recipe library, event listings, weather places, saved filmographies), and sign-ins for shared lists.</p></section>
+    <section class="card pad"><h3>Restore</h3><p>Pick a file made here. You choose which apps to restore; each one you pick is replaced by the copy in the file. Apps you don’t pick aren’t touched.</p>
+      <button type="button" class="btn block" data-action="restore">Choose backup file…</button></section>
+  </div>`;
+}
+const cmp = (a, b) => (a < b ? -1 : a > b ? 1 : 0);
+const plural = (n, w) => `${n.toLocaleString('en-US')} ${n === 1 ? w : w + 's'}`;
+
+/* ---- back up ---- */
+async function doExport() {
+  const pass = ($('#pass') || {}).value || '', pass2 = ($('#pass2') || {}).value || '';
+  if (pass) {
+    if (pass.length < 8) return toast('Use at least 8 characters for the passphrase.');
+    if (pass !== pass2) return toast('The two passphrases don’t match.');
+  }
+  const btn = $('[data-action="export"]'); btn.disabled = true; btn.textContent = 'Gathering…';
+  try {
+    const apps = await collect();
+    if (!($('#incPhotos') || {}).checked) delete apps[PHOTOS_DB];
+    stripSecrets(apps, !!($('#incKey') || {}).checked);
+    const data = { apps, names: Object.fromEntries(Object.keys(apps).map(n => [n, nameOf(n)])) };
+    const at = new Date().toISOString();
+    const text = await Backup.build({ appId: ALL_ID, schema: ALL_SCHEMA, data, passphrase: pass || null });
+    const r = await deliverFile(`goobs-all-apps-backup-${todayISO()}${pass ? '-encrypted' : ''}.json`, text, 'application/json');
+    if (r === 'cancelled') return;
+    try { localStorage.setItem(LAST_KEY, at); } catch { /* fine */ }
+    await markBackedUp(Object.keys(apps), at);
+    toast(r === 'shared' ? 'Backup shared' : 'Backup saved to your downloads');
+    await load();
+  } catch (e) { console.error(e); toast('Backup failed: ' + e.message); }
+  finally { const b = $('[data-action="export"]'); if (b) { b.disabled = false; b.textContent = 'Back up all apps'; } }
+}
+/* each app's own "Last backup" date (and its reminder) counts this backup too */
+async function markBackedUp(names, at) {
+  for (const n of names) {
+    const d = await openExisting(n).catch(() => null); if (!d) continue;
+    try {
+      const raw = await idbGet(d, 'state'); if (typeof raw !== 'string') continue;
+      const s = JSON.parse(raw);
+      if (s && typeof s === 'object' && s.meta && typeof s.meta === 'object') { s.meta.lastBackup = at; await idbPut(d, 'state', JSON.stringify(s)); }
+    } catch (e) { console.error(e); } finally { d.close(); }
+  }
+}
+
+/* ---- restore ---- */
+async function doRestore() {
+  const f = await pickFile(); if (!f) return;
+  let text; try { text = await readFileText(f); } catch { return msgBox('Couldn’t read that file', 'Try choosing it again.'); }
+  let parsed;
+  try { parsed = await Backup.parse(text, { appId: ALL_ID, schema: ALL_SCHEMA }); }
+  catch (e) {
+    let app = ''; try { app = JSON.parse(text).app || ''; } catch { /* not JSON */ }
+    return msgBox('Can’t restore that file', /^goobs-/.test(app) && app !== ALL_ID ? 'That’s a backup from one app. Restore it inside that app (its Backup tab).' : e.message);
+  }
+  if (!parsed) return;
+  const apps = obj(parsed.data.apps), names = Object.keys(apps).filter(n => ourDb(n) && apps[n] && typeof apps[n] === 'object').sort((a, b) => cmp(nameOf(a), nameOf(b)));
+  if (!names.length) return msgBox('Nothing to restore', 'That backup has no app data in it.');
+  const when = parsed.exportedAt ? fmtDateTime(parsed.exportedAt) : 'unknown date';
+  const dlg = $('#dlg'); dlg.onclose = null;
+  dlg.innerHTML = `<form class="dlg-form" id="rf" method="dialog"><h2>Restore which apps?</h2><p class="muted">Backup made ${esc(when)}. Each app you tick is replaced by its copy in the file.</p>
+    ${names.map(n => {
+      const shared = deviceSync[n];
+      return `<label class="chk"><input type="checkbox" name="a" value="${esc(n)}"${shared ? '' : ' checked'}><span>${esc(nameOf(n))}${shared ? '<span class="m">Shared with the other phone: it syncs back on its own, so you usually don’t need this.</span>' : found[n] ? '' : '<span class="m">Not on this device yet</span>'}</span></label>`;
+    }).join('')}
+    <div class="dlg-actions"><button type="button" class="btn" id="rCancel">Cancel</button><span class="spacer"></span><button type="submit" class="btn primary">Restore</button></div></form>`;
+  if (!dlg.hasAttribute('open')) dlg.showModal();
+  $('#rCancel').onclick = () => dlg.close();
+  $('#rf').onsubmit = async e => {
+    e.preventDefault();
+    const pick = [...dlg.querySelectorAll('input[name="a"]:checked')].map(i => i.value);
+    if (!pick.length) return toast('Tick at least one app.');
+    dlg.close();
+    if (!(await confirmBox('Replace their data?', `${pick.map(nameOf).join(', ')} will be replaced by the copy from ${when}. Anything added since then in ${pick.length === 1 ? 'that app' : 'those apps'} is lost.`, 'Restore'))) return;
+    let ok = 0; const fails = [];
+    for (const n of pick) {
+      try {
+        const d = await openDB(n);   /* creates the app's storage if this device never had it */
+        try {
+          const entries = Object.assign({}, apps[n]);
+          if (n === 'goobs-watchlog-db') entries.state = keepTmdbKey(entries.state, await idbGet(d, 'state'));
+          await writeAll(d, entries, skipKey);   /* caches, the movie database and sync bookkeeping stay */
+          ok++;
+        } finally { d.close(); }
+      } catch (err) { console.error(err); fails.push(nameOf(n)); }
+    }
+    await load();
+    if (fails.length) msgBox('Some apps weren’t restored', `${fails.join(', ')} couldn’t be written. The others were restored.`);
+    else toast(`Restored ${plural(ok, 'app')}`);
+  };
+}
+/* a file made without the TMDB key keeps the key already on this phone */
+function keepTmdbKey(restored, current) {
+  try {
+    const r = JSON.parse(restored), c = JSON.parse(current || 'null');
+    if (r && r.settings && !r.settings.tmdbKey && c && c.settings && c.settings.tmdbKey) { r.settings.tmdbKey = c.settings.tmdbKey; return JSON.stringify(r); }
+  } catch { /* leave it */ }
+  return restored;
+}
+const obj = x => (x && typeof x === 'object' && !Array.isArray(x) ? x : {});
+
+view.addEventListener('click', e => {
+  const el = e.target.closest('[data-action]'); if (!el) return;
+  if (el.dataset.action === 'export') doExport();
+  else if (el.dataset.action === 'restore') doRestore();
+});
+load();
+</script>
+</body>
+</html>
