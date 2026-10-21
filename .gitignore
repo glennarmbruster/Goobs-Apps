@@ -1,0 +1,4 @@
+   # IMDb data is for personal use only: never commit it to this public repo
+   watchlog-database*.json*
+   *.tsv.gz
+   *.tsv
