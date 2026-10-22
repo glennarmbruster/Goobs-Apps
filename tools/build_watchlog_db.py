@@ -18,7 +18,8 @@ c = credits grouped by title).
   (lower for the last two years, so new releases are in); for each, IMDb's principal cast with characters,
   people appearing as themselves (documentaries, reality), and directors; for series, also everyone credited
   in the series' episodes (guest and recurring roles) with an episode count. Plus everyone's filmography:
-  any other title they were in (main cast), however few votes it has (see FILMO_* below).
+  any other title they were in (main cast), however few votes it has (see FILMO_* below). Actors whose IMDb
+  "known for" titles include a kept movie or special they aren't credited on are added to its cast.
 """
 import gzip, json, math, os, shutil, subprocess, sys, datetime, collections
 
@@ -141,6 +142,23 @@ def build(src, out_path):
     flush(); del extra, known
     say(f'filmography titles added: {added:,}')
 
+    # "known for": IMDb's people file names up to four titles each person is known for. An actor missing from one of
+    # those titles' principal cast (IMDb's list is sometimes incomplete) is added to its cast, after the principals.
+    credited = {(ti, r[1]) for ti, rs in rows.items() for r in rs}
+    in_db = {r[1] for rs in rows.values() for r in rs} | {nc for (si, nc), g in guest.items() if g[0] > 1 or si in one_ep}   # only people already in the database
+    kf_added = 0
+    for line in lines(os.path.join(src, 'name.basics.tsv.gz')):
+        a = line.rstrip('\n').split('\t')
+        if len(a) < 6 or not N(a[5]) or a[4].split(',')[0] not in ('actor', 'actress'): continue   # acting is their main job
+        nc = a[0]
+        for tc in a[5].split(','):
+            ti = tix.get(tc)
+            if ti is None or (ti, nc) in credited or nc not in in_db: continue
+            if titles[ti][1] in (1, 2): continue        # series: their episode casts already cover this
+            rows.setdefault(ti, []).append([900, nc, 3, '', 0, 0]); credited.add((ti, nc)); kf_added += 1   # role 3: more cast
+    del credited, in_db
+    say(f'cast added from people\'s "known for" titles: {kf_added:,}')
+
     def merged(rs):   # one row per person and role (IMDb lists several characters as several rows)
         out, at = [], {}
         for o, nc, role, ch, e, ss in sorted(rs):
@@ -182,7 +200,8 @@ def build(src, out_path):
             needed.add(nc)
             if role == 1: fame[nc] += v * 0.3
             elif role == 0: fame[nc] += v / (1 + 0.35 * rank); rank += 1
-            else: fame[nc] += v * min(e, 20) / 400       # guest roles count a little
+            elif role == 2: fame[nc] += v * min(e, 20) / 400       # guest roles count a little
+            else: fame[nc] += v / 200                               # "known for" cast
     people = {}
     for line in lines(os.path.join(src, 'name.basics.tsv.gz')):
         nc, rest = line.split('\t', 1)
@@ -208,7 +227,7 @@ def build(src, out_path):
         ('t.g', [sum(1 << gi[g] for g in t[5]) for t in titles]),
         ('p.id', [int(nc[2:]) for nc in pl]), ('p.n', [people[nc][0] for nc in pl]), ('p.b', [people[nc][1] for nc in pl]),
         ('p.d', [people[nc][2] for nc in pl]), ('p.f', [round(math.log10(1 + fame[nc]) * 100) for nc in pl]),
-        # r: 0 cast, 1 director, 2 episode cast only; e: episodes (series); s: first*1000 + last season
+        # r: 0 cast, 1 director, 2 episode cast only, 3 more cast (from "known for"); e: episodes (series); s: first*1000 + last season
         ('c.t', ct), ('c.p', cp), ('c.r', cr), ('c.ch', cc), ('c.e', ce), ('c.s', cs)]
     size = 0
     with gzip.open(out_path, 'wb', compresslevel=9) as f:

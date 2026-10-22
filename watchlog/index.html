@@ -1192,10 +1192,10 @@ function refYears(ti) {
   if (k === 1) return e ? (e === y ? String(y) : `${y}–${e}`) : `${y}–`;
   return e && e !== y ? `${y}–${e}` : String(y);
 }
-const refMain = ti => refCast(ti).filter(c => !c.dir && !c.guest);
+const refMain = ti => refCast(ti).filter(c => !c.dir && !c.guest && !c.more);
 const refRating = ti => (ref.t.r[ti] > 0 ? (ref.t.r[ti] / 10).toFixed(1) : '');
 /* one credit -> {ci, ti, pi, dir, guest, ch, e} (guest: only in episode casts; e: episodes, series only) */
-const refC = ci => ({ ci, ti: ref.c.t[ci], pi: ref.c.p[ci], dir: ref.c.r[ci] === 1, guest: ref.c.r[ci] === 2, ch: str(ref.c.ch[ci]), e: ref.c.e[ci], s: ref.c.s[ci] });
+const refC = ci => ({ ci, ti: ref.c.t[ci], pi: ref.c.p[ci], dir: ref.c.r[ci] === 1, guest: ref.c.r[ci] === 2, more: ref.c.r[ci] === 3, ch: str(ref.c.ch[ci]), e: ref.c.e[ci], s: ref.c.s[ci] });
 /* a title's credits: main cast and directors in billing order, then episode cast by episodes */
 function refCast(ti) { const out = []; for (let i = ref.tStart[ti]; i < ref.tStart[ti + 1]; i++) out.push(refC(i)); return out; }
 /* a person's credits, newest first */
@@ -1206,7 +1206,7 @@ function refCredits(pi) {
 }
 const epsText = e => (e > 0 ? plural(e, 'episode') : '');
 /* best-known credits -> title names (starring roles first, then the biggest guest roles) */
-const refKnownFor = (pi, n = 2) => refCredits(pi).sort((a, b) => (a.guest - b.guest) || a.dir - b.dir || ref.t.v[b.ti] * (a.guest ? Math.min(b.e, 10) : 1) - ref.t.v[a.ti] * (a.guest ? Math.min(a.e, 10) : 1)).slice(0, n).map(c => refName(c.ti));
+const refKnownFor = (pi, n = 2) => refCredits(pi).sort((a, b) => ((a.guest || a.more) - (b.guest || b.more)) || a.dir - b.dir || ref.t.v[b.ti] * (a.guest ? Math.min(b.e, 10) : 1) - ref.t.v[a.ti] * (a.guest ? Math.min(a.e, 10) : 1)).slice(0, n).map(c => refName(c.ti));
 /* "Born 1956 · about 70" / "1940–2019 · died at about 79" (birth years only, so ages can be a year off) */
 const refLife = pi => {
   const b = ref.p.b[pi], d = ref.p.d[pi], now = new Date().getFullYear();
@@ -1346,7 +1346,7 @@ function refreshAfterRef() {
 
 /* ---- adding from the database ---- */
 function refParsedCast(ti) {
-  const cs = refCast(ti).filter(c => !c.guest);
+  const cs = refCast(ti).filter(c => !c.guest && !c.more);   /* main cast and directors: the extra lists stay in the database */
   return [...cs.filter(c => c.dir), ...cs.filter(c => !c.dir)].map(c => ({ name: str(ref.p.n[c.pi]), role: c.dir ? 'director' : 'actor', character: c.ch.slice(0, 120), imdb: nmId(ref.p.id[c.pi]) }));
 }
 function addRefCastTo(titleId, ti) {
@@ -2027,7 +2027,8 @@ function refCastRows(ti) {
   const cast = refCast(ti), n = ui.refSeason, q = tokens(ui.castq);
   const hit = c => !q.length || q.every(w => refNorm(str(ref.p.n[c.pi]) + ' ' + c.ch).includes(w));
   const pick = c => inSeason(c, n) && hit(c);
-  return { acts: cast.filter(c => !c.dir && !c.guest && pick(c)), dirs: cast.filter(c => c.dir && !n && hit(c)), guests: cast.filter(c => c.guest && pick(c)), all: cast };
+  const extra = c => c.guest || c.more;   /* episode cast (series) or more cast (movies, from IMDb's "known for" lists) */
+  return { acts: cast.filter(c => !c.dir && !extra(c) && pick(c)), dirs: cast.filter(c => c.dir && !n && hit(c)), guests: cast.filter(c => extra(c) && pick(c)), all: cast };
 }
 function refCastHTML(ti) {
   const { acts, dirs, guests: g0 } = refCastRows(ti), n = ui.refSeason, filtered = !!(n || tokens(ui.castq).length);
@@ -2041,7 +2042,8 @@ function refCastHTML(ti) {
   const GMAX = 300, guests = g0.map(c => ({ c, inLog: refInLog(c.pi, ti) }));
   const gs = [...guests.filter(g => g.inLog.length), ...guests.filter(g => !g.inLog.length)], known = guests.filter(g => g.inLog.length).length;
   const main = acts.map(c => row(c)).join('') + (dirs.length ? `<div class="pad" style="padding-bottom:0"><div class="sub-h">Directed by</div></div>${dirs.map(c => row(c)).join('')}` : '');
-  const guestHTML = gs.length ? `<details class="eg" id="refGuests"${filtered ? ' open' : ''} style="border-top:1px solid var(--line)"><summary>Episode cast <span class="fine">· ${nfmt(gs.length)}${known ? ` · ${known} in your log` : ''}</span></summary><p class="fine pad" style="padding-bottom:0;padding-top:0">Guest and recurring roles${known ? ', people you’ve seen elsewhere first' : ''}, then by number of episodes.</p>${gs.slice(0, GMAX).map(g => row(g.c, g.inLog)).join('')}${gs.length > GMAX ? `<p class="fine pad">+ ${nfmt(gs.length - GMAX)} more with fewer episodes. Pick a season or type a name to narrow it down.</p>` : ''}</details>` : '';
+  const eps = gs.some(g => g.c.guest);
+  const guestHTML = gs.length ? `<details class="eg" id="refGuests"${filtered ? ' open' : ''} style="border-top:1px solid var(--line)"><summary>${eps ? 'Episode cast' : 'More cast'} <span class="fine">· ${nfmt(gs.length)}${known ? ` · ${known} in your log` : ''}</span></summary><p class="fine pad" style="padding-bottom:0;padding-top:0">${eps ? `Guest and recurring roles${known ? ', people you’ve seen elsewhere first' : ''}, then by number of episodes.` : `Others in the cast (from IMDb’s “known for” lists; no character names)${known ? ', people you’ve seen elsewhere first' : ''}.`}</p>${gs.slice(0, GMAX).map(g => row(g.c, g.inLog)).join('')}${gs.length > GMAX ? `<p class="fine pad">+ ${nfmt(gs.length - GMAX)} more with fewer episodes. Pick a season or type a name to narrow it down.</p>` : ''}</details>` : '';
   return (main || guestHTML ? main + guestHTML : `<p class="muted pad">${filtered ? 'Nobody matches. Try another season or fewer letters.' : 'No cast listed.'}</p>`);
 }
 function paintCast() { const b = document.getElementById('castBox'); if (b && ui.refT != null) b.innerHTML = refCastHTML(refTById(ui.refT)); }
