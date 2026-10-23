@@ -476,7 +476,7 @@ const PHOTOS_DB = 'goobs-inventory-photos';
 const NAMES = Object.assign({}, CFG.apps, { [PHOTOS_DB]: 'Inventory photos' });
 /* left out: things that download again or rebuild themselves, sync bookkeeping, damaged-copy leftovers */
 const SKIP_KEYS = new Set(['sync', 'cache', 'library', 'libfiles', 'geocache', 'filmo', 'refData', 'refInfo', 'timers']);
-const skipKey = k => SKIP_KEYS.has(k) || /^state-damaged-|^refDesc:/.test(k);   /* refDesc: chunks of Watch Log's movie database */
+const skipKey = k => SKIP_KEYS.has(k) || /^state-damaged-|^refDesc:|^refData/.test(k);   /* refDesc: chunks of Watch Log's movie database */
 const ourDb = n => typeof n === 'string' && /^goobs-[a-z0-9-]+$/.test(n) && n !== 'goobs-launcher';
 const nameOf = n => NAMES[n] || n.replace(/^goobs-|-db$/g, '').replace(/-/g, ' ');
 const kb = n => (n >= 1e6 ? (n / 1e6).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1e3)) + ' KB');

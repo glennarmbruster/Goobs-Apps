@@ -1296,10 +1296,11 @@ async function refLines(raw, onLine) {
     if (typeof DecompressionStream === 'undefined') throw new Error('This browser can’t unzip files. Update iOS (16.4 or later).');
     src = src.pipeThrough(new DecompressionStream('gzip'));
   }
+  /* onLine may return a promise (e.g. a storage write): it is awaited before more is unpacked, so nothing piles up */
   const rd = src.getReader(), dec = new TextDecoder(); let parts = [];
-  const feed = text => { let i; while ((i = text.indexOf('\n')) >= 0) { parts.push(text.slice(0, i)); onLine(parts.join('')); parts = []; text = text.slice(i + 1); } if (text) parts.push(text); };
-  for (;;) { const { done, value } = await rd.read(); if (done) break; feed(dec.decode(value, { stream: true })); }
-  feed(dec.decode()); if (parts.length) onLine(parts.join(''));
+  const feed = async text => { let i, at = 0; while ((i = text.indexOf('\n', at)) >= 0) { parts.push(text.slice(at, i)); const line = parts.join(''); parts = []; at = i + 1; const r = onLine(line); if (r && r.then) await r; } if (at < text.length) parts.push(text.slice(at)); };
+  for (;;) { const { done, value } = await rd.read(); if (done) break; await feed(dec.decode(value, { stream: true })); }
+  await feed(dec.decode()); if (parts.length) { const r = onLine(parts.join('')); if (r && r.then) await r; }
 }
 const COL_NUM = /^(t\.(id|k|y|e|r|v|g|ds)|p\.(id|b|d|f)|c\.(t|p|e|s))$/;
 async function refParse(raw, { onDesc = null } = {}) {
@@ -1322,19 +1323,25 @@ async function refParse(raw, { onDesc = null } = {}) {
 function normRefInfo(i) {
   i = obj(i); const n = k => intIn(i[k], 0, 1e9) ?? 0;
   const g = /^[A-Za-z0-9]{1,20}$/.test(str(i.descGen)) ? str(i.descGen) : '';
-  return i.titles ? { built: /^\d{4}-\d\d-\d\d$/.test(str(i.built)) ? i.built : '', titles: n('titles'), people: n('people'), credits: n('credits'), bytes: n('bytes'), at: isoDT(i.at) || '', descChunks: g ? n('descChunks') : 0, descGen: g } : null;
+  return i.titles ? { built: /^\d{4}-\d\d-\d\d$/.test(str(i.built)) ? i.built : '', titles: n('titles'), people: n('people'), credits: n('credits'), bytes: n('bytes'), at: isoDT(i.at) || '', descChunks: g ? n('descChunks') : 0, descGen: g, dataKey: i.dataKey === 'refDataB' ? 'refDataB' : 'refData' } : null;
 }
 const refStatus = () => (ref ? 'ready' : refLoading ? 'loading' : refErr ? 'error' : refInfo ? 'stored' : 'none');
 /* load the stored database into memory (once); screens that need it re-render when it's ready */
+/* the stored file lives under refInfo.dataKey ('refData' or 'refDataB': an import writes the other one, so the old copy
+   stays usable until the new one has loaded) */
+const refDataKey = i => (i && i.dataKey === 'refDataB' ? 'refDataB' : 'refData');
+async function loadStoredRef(info) {
+  let raw = await idbGet(db, refDataKey(info));
+  if (!raw) throw new Error('The database is missing from this device’s storage. Import the file again.');
+  const o = await refParse(raw); raw = null; await wait(15);
+  const R = refBuild(o); return R;
+}
+let refImporting = false;   /* while an import runs, nothing else loads a database (one at a time in memory) */
 function ensureRef() {
-  if (ref || refLoading || !refInfo || !db || refErr) return refLoading;
+  if (ref || refLoading || refImporting || !refInfo || !db || refErr) return refLoading;
   refLoading = (async () => {
-    try {
-      const raw = await idbGet(db, 'refData');
-      if (!raw) throw new Error('The database is missing from this device’s storage. Import the file again.');
-      const o = await refParse(raw); await wait(15);
-      ref = refBuild(o); _lr = null; await refWarm();
-    } catch (e) { console.error(e); ref = null; refErr = e instanceof SyntaxError ? 'The stored database is damaged. Import the file again.' : e.message || String(e); }
+    try { ref = await loadStoredRef(refInfo); _lr = null; await refWarm(); }
+    catch (e) { console.error(e); ref = null; refErr = e instanceof SyntaxError ? 'The stored database is damaged. Import the file again.' : e.message || String(e); }
     finally { refLoading = null; }
     refreshAfterRef();
   })();
@@ -1374,39 +1381,61 @@ async function readFileBuf(f) {
   if (f.arrayBuffer) return f.arrayBuffer();
   return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = () => rej(r.error); r.readAsArrayBuffer(f); });
 }
-/* Backup tab -> Import database file: check it fully before replacing anything */
+/* Backup tab -> Import database file. Kept light on memory (a phone page gets only so much): the database already in
+   memory is let go first; one pass over the new file stores its description blocks; the file is saved next to the old
+   one; then it is loaded exactly as at app start. If that fails, the old one comes back and nothing is lost. */
 async function importRefFile(f) {
+  refImporting = true;
+  try { return await importRefFileInner(f); } finally { refImporting = false; if (!ref && refInfo && !refErr) { ensureRef(); } }
+}
+async function importRefFileInner(f) {
   if (!db) { await msgBox('Storage unavailable', 'This browser isn’t allowing storage (private mode?), so the database can’t be kept.'); return false; }
   const dlg = $('#dlg'); dlg.onclose = null;
   dlg.innerHTML = `<div class="dlg-form"><h2>Movie database</h2><p id="refTxt" role="status">Reading the file…</p></div>`;
   if (!dlg.hasAttribute('open')) dlg.showModal();
   const txt = m => { const e = document.getElementById('refTxt'); if (e) e.textContent = m; };
   const fail = async (h, m) => { if (dlg.hasAttribute('open')) dlg.close(); await msgBox(h, m); return false; };
-  let buf, R;
-  try { buf = await readFileBuf(f); } catch { return fail('Couldn’t read that file', 'Try choosing it again.'); }
-  /* description blocks are written as they stream past, under a new name; the old set is removed only once this import works */
-  const gen = uid().replace(/[^a-z0-9]/gi, '').slice(0, 10) || String(Date.now()), puts = []; let descN = 0;
+  if (refLoading) { txt('Finishing the current load…'); await refLoading.catch(() => {}); }
+  const old = refInfo, newKey = refDataKey(old) === 'refData' ? 'refDataB' : 'refData';
+  ref = null; _lr = null; descChunks.clear(); ui.refT = null; ui.refP = null;   /* let go of the current database first */
+  const backToOld = () => { refInfo = old; refErr = ''; if (old) ensureRef(); };
+  let buf;
+  try { buf = await readFileBuf(f); } catch { backToOld(); return fail('Couldn’t read that file', 'Try choosing it again.'); }
+  const gen = uid().replace(/[^a-z0-9]/gi, '').slice(0, 10) || String(Date.now()), puts = []; let descN = 0, head = null;
   const dropGen = (g, n) => Promise.all(Array.from({ length: n }, (_, k) => idbPut(db, `refDesc:${g}:${k}`, null).catch(() => {})));
+  /* 1. one pass: check the header, store the description blocks (nothing else is unpacked into memory here) */
   try {
     txt('Unpacking…'); await wait(20);
-    const o = await refParse(buf, { onDesc: (k, s) => { descN = Math.max(descN, k + 1); puts.push(idbPut(db, `refDesc:${gen}:${k}`, s)); } });
-    txt('Checking…'); await wait(20);
-    R = refBuild(o);
+    await refLines(buf, line => {
+      if (!head) { head = JSON.parse(line); if (obj(head).format !== REF_FORMAT || (head.v !== 1 && head.v !== 2)) throw new Error('That isn’t a Watch Log database file.'); return; }
+      if (line.startsWith('d.')) { const tab = line.indexOf('\t'), key = line.slice(0, tab); if (/^d\.\d{1,5}$/.test(key)) { const k = +key.slice(2); descN = Math.max(descN, k + 1); const w = idbPut(db, `refDesc:${gen}:${k}`, line.slice(tab + 1)); puts.push(w); return w; } }
+    });
+    if (!head || head.format !== REF_FORMAT || (head.v !== 1 && head.v !== 2)) throw new Error('That isn’t a Watch Log database file.');
     await Promise.all(puts);
   } catch (e) {
-    await Promise.allSettled(puts); await dropGen(gen, descN);
-    return fail(e && e.name === 'QuotaExceededError' ? 'Couldn’t save the database' : 'Can’t use that file', e instanceof SyntaxError ? 'That isn’t a Watch Log database file.' : e && e.name === 'QuotaExceededError' ? 'This device’s storage is full. Nothing was changed.' : e.message);
+    await Promise.allSettled(puts); await dropGen(gen, descN); backToOld();
+    return fail('Can’t use that file', e instanceof SyntaxError ? 'That isn’t a Watch Log database file.' : e && e.name === 'QuotaExceededError' ? 'This device’s storage is full. Nothing was changed.' : e.message);
   }
-  const info = { built: R.built, titles: R.nT, people: R.nP, credits: R.nC, bytes: buf.byteLength, at: new Date().toISOString(), descChunks: descN, descGen: descN ? gen : '' };
-  try { txt('Saving on this device…'); await idbPut(db, 'refData', buf); await idbPut(db, 'refInfo', JSON.stringify(info)); }
-  catch (e) { console.error(e); await dropGen(gen, descN); return fail('Couldn’t save the database', 'This device’s storage refused it (it may be full). Nothing was changed.'); }
-  buf = null;
-  const old = refInfo;
-  if (old && old.descChunks) await dropGen(old.descGen, old.descChunks);
-  await Promise.all(Array.from({ length: 600 }, (_, k) => idbPut(db, 'refDesc:' + k, null).catch(() => {})));   /* leftovers from the first version */
-  descChunks.clear();
+  /* 2. save the file beside the old one */
+  try { txt('Saving on this device…'); await idbPut(db, newKey, buf); }
+  catch (e) { console.error(e); await dropGen(gen, descN); backToOld(); return fail('Couldn’t save the database', 'This device’s storage refused it (it may be full). Nothing was changed.'); }
+  const bytes = buf.byteLength; buf = null;
+  /* 3. load it the normal way; keep it only if that works */
+  let R;
+  try { txt('Loading…'); await wait(20); R = await loadStoredRef({ dataKey: newKey }); }
+  catch (e) {
+    await idbPut(db, newKey, null).catch(() => {}); await dropGen(gen, descN); backToOld();
+    return fail('Can’t use that file', e instanceof SyntaxError ? 'That isn’t a Watch Log database file.' : e.message);
+  }
+  const info = { built: R.built, titles: R.nT, people: R.nP, credits: R.nC, bytes, at: new Date().toISOString(), descChunks: descN, descGen: descN ? gen : '', dataKey: newKey };
+  try { await idbPut(db, 'refInfo', JSON.stringify(info)); }
+  catch (e) { console.error(e); R = null; await idbPut(db, newKey, null).catch(() => {}); await dropGen(gen, descN); backToOld(); return fail('Couldn’t save the database', 'This device’s storage refused it (it may be full). Nothing was changed.'); }
   ref = R; refInfo = info; refErr = ''; _lr = null;
   txt('Indexing…'); await wait(20); await refWarm();
+  /* the old copy and its descriptions go now */
+  await idbPut(db, newKey === 'refData' ? 'refDataB' : 'refData', null).catch(() => {});
+  if (old && old.descChunks) await dropGen(old.descGen, old.descChunks);
+  await Promise.all(Array.from({ length: 600 }, (_, k) => idbPut(db, 'refDesc:' + k, null).catch(() => {})));   /* leftovers from the first version */
   if (!persistAsked && navigator.storage && navigator.storage.persist) { persistAsked = true; navigator.storage.persist().catch(() => {}); }
   if (dlg.hasAttribute('open')) dlg.close();
   render(); toast(`Movie database ready: ${nfmt(R.nT)} titles, ${nfmt(R.nP)} people`);
@@ -1416,7 +1445,7 @@ async function doRefImport() { const f = await pickFile(''); if (f) await import
 async function clearRef() {
   const old = refInfo;   /* read before refInfo is cleared */
   ref = null; refInfo = null; refErr = ''; refLoading = null; _lr = null; ui.refT = null; ui.refP = null;
-  if (db) { try { await idbPut(db, 'refData', null); await idbPut(db, 'refInfo', null); if (old && old.descChunks) for (let k = 0; k < old.descChunks; k++) await idbPut(db, `refDesc:${old.descGen}:${k}`, null); } catch (e) { console.error(e); } }
+  if (db) { try { await idbPut(db, 'refData', null); await idbPut(db, 'refDataB', null); await idbPut(db, 'refInfo', null); if (old && old.descChunks) for (let k = 0; k < old.descChunks; k++) await idbPut(db, `refDesc:${old.descGen}:${k}`, null); } catch (e) { console.error(e); } }
   descChunks.clear();
 }
 async function doRefRemove() {
