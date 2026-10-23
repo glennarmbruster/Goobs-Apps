@@ -150,6 +150,11 @@ dialog::backdrop{background:rgba(10,15,12,.55)}
 .scroll-chips{display:flex;gap:8px;overflow-x:auto;padding:12px 2px 4px;margin:0 -2px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .scroll-chips::-webkit-scrollbar{display:none}
 .scroll-chips .chip{flex:none;white-space:nowrap}
+.wrap-chips{display:flex;flex-wrap:wrap;gap:6px;padding:6px 0 2px}
+.wrap-chips .chip{padding:4px 11px;min-height:32px;font-size:13px;white-space:nowrap}
+.mealbtn.slim{padding:10px 14px;border-radius:12px;gap:10px}
+.mealbtn.slim b{display:inline;font-size:16px}.mealbtn.slim span{font-size:13px}
+.venue-h{margin:6px 4px 0;font-size:19px}
 .row .kc{font-weight:800;white-space:nowrap;text-align:right;font-size:17px}
 .row .kc small{display:block;font-weight:500;font-size:12px;color:var(--muted)}
 .portion{display:flex;gap:8px;align-items:center;margin-top:12px}
@@ -1030,6 +1035,7 @@ function renderDrinks() {
 const SHIPS = [
   { name: 'Disney Magic', short: 'Magic', brand: 'Disney', words: 'disney dcl magic',
     venues: ["Animator's Palate", "Rapunzel's Royal Table", "Lumiere's", 'Pirate Night', 'Let the Magic Begin', 'Embarkation lunch', 'Palo (dinner, extra charge)', 'Palo brunch (extra charge)', 'Pool deck and room service'],
+    chips: { "Rapunzel's Royal Table": "Rapunzel's", 'Palo (dinner, extra charge)': 'Palo dinner ($)', 'Palo brunch (extra charge)': 'Palo brunch ($)', 'Pool deck and room service': 'Pool deck & room service' },
     menus: 'Disney Cruise Line menus posted by DCLcruisingDAD (dclcruisingdad.com), updated May–June 2026; dishes and portions change.',
     notes: {
       "Animator's Palate": 'Dinner rotates through Animator’s Palate, Rapunzel’s Royal Table and Lumiere’s. The grilled sirloin is on every dinner menu.',
@@ -1043,11 +1049,13 @@ const SHIPS = [
       'Pool deck and room service': 'Pinocchio’s, Duck-In Diner and Eye Scream don’t post full menus, so those are typical portions. Room service items are from the posted menu. The Cabanas buffet isn’t listed: use Foods search for buffet items.' } },
   { name: 'Norwegian Viva', short: 'Viva', brand: 'Norwegian', words: 'ncl norwegian viva',
     venues: ['Main Dining', "Cagney's Steakhouse", 'Le Bistro', 'Onda by Scarpetta', 'Palomar', 'Hasuki', 'Food Republic', 'Nama Sushi & Sashimi', 'Los Lobos', 'Indulge Food Hall', 'The Garden', 'The Local Bar & Grill', 'Vibe, Pool Bar & Room Service', 'Bars'],
+    chips: { "Cagney's Steakhouse": "Cagney's", 'Onda by Scarpetta': 'Onda', 'Nama Sushi & Sashimi': 'Nama', 'Indulge Food Hall': 'Indulge', 'The Local Bar & Grill': 'The Local', 'Vibe, Pool Bar & Room Service': 'Pool & room service' },
     menus: 'Norwegian Viva menus posted by guests on cruisedealstipsandtricks.com; dishes and portions change.',
     notes: { 'Main Dining': 'Main dining menus change nightly. These are two sample nights of Norwegian’s fleet-wide menu (posted from Norwegian Getaway); the Cagney’s à la carte list appears every night.' } },
 ];
 const shipOf = name => SHIPS.find(x => x.name === name) || { name, short: name, brand: 'The cruise line', words: '', venues: [], menus: '', notes: {} };
 const shipShort = name => shipOf(name).short;
+const venueChip = (sh, v) => (sh.chips || {})[v] || v;
 const shipWords = name => shipOf(name).words;
 const shipFoods = name => FOODS.filter(f => f.src === 'ship' && f.ship === name);
 const shipsHere = () => SHIPS.filter(x => FOODS.some(f => f.src === 'ship' && f.ship === x.name));
@@ -1075,11 +1083,12 @@ function renderCruise() {
   return `<div class="stack">
     ${missing ? `<section class="card pad" role="status"><p style="margin:0"><b>${esc(missing)}</b> menus aren’t in Calorie Lookup yet. These ships are:</p></section>` : ''}
     <section class="card pad">
-      <div class="scroll-chips" style="padding-top:0">${order.map(x => `<button type="button" class="chip" data-action="ship" data-v="${esc(x.name)}" aria-pressed="${x.name === sh.name}">${esc(x.name)}</button>`).join('')}</div>
+      <div class="wrap-chips" style="padding-top:0">${order.map(x => `<button type="button" class="chip" data-action="ship" data-v="${esc(x.name)}" aria-pressed="${x.name === sh.name}">${esc(x.name)}</button>`).join('')}</div>
       <p class="fine" style="margin:8px 0 0">${d ? `Your sailing: <b>${esc(sailText(d))}</b> · <a href="#" data-action="sail-edit">Change</a>` : `<a href="#" data-action="sail-edit">Add your sailing dates</a> so this tab opens on your next cruise.`}</p></section>
-    <section class="card pad"><p style="margin:0"><b>Estimates.</b> ${esc(sh.brand)} doesn’t publish nutrition for its menus, so each dish here is matched to similar USDA restaurant foods at a typical restaurant portion. Use them as ballpark numbers; the food page shows what each estimate is built from.</p></section>
-    <button type="button" class="mealbtn" data-action="meal-open"><span class="big" aria-hidden="true">🍽️</span><div><b>Make me a meal</b><span>Pick a restaurant and what matters to you: low calorie, low fat, low sodium</span></div></button>
-    <div class="scroll-chips" style="padding-top:2px">${venues.map(x => `<button type="button" class="chip" data-action="venue" data-v="${esc(x)}" aria-pressed="${x === v}">${esc(x)}</button>`).join('')}</div>
+    <button type="button" class="mealbtn slim" data-action="meal-open"><span aria-hidden="true">🍽️</span><div><b>Make me a meal</b> <span>· low calorie, low fat and/or low sodium</span></div></button>
+    <div class="wrap-chips" role="group" aria-label="Restaurants">${venues.map(x => `<button type="button" class="chip" data-action="venue" data-v="${esc(x)}" aria-pressed="${x === v}">${esc(venueChip(sh, x))}</button>`).join('')}</div>
+    <h2 class="venue-h">${esc(v)}</h2>
+    <p class="fine" style="margin:0 4px">These are best estimates only.</p>
     ${secs.map(sec => `<div>${sec ? `<div class="sec-h"><span>${esc(sec)}</span></div>` : ''}<div class="card">${list.filter(f => (f.c || '') === sec).map(f => foodRow(f)).join('')}</div></div>`).join('')}
     ${sh.notes[v] ? `<p class="fine" style="margin:0 4px">${esc(sh.notes[v])}</p>` : ''}
     <p class="src">Menus: ${esc(sh.menus)} Nutrition: estimates from USDA FNDDS 2021–2023 and SR28.</p></div>`;
@@ -1146,7 +1155,7 @@ function renderMeal() {
     <button type="button" class="linkbtn" data-action="meal-close" style="align-self:flex-start">‹ All ${esc(curShip().short)} menus</button>
     <section class="card pad">
       <div class="fine">Restaurant</div>
-      <div class="scroll-chips" style="padding-top:4px">${venues.map(x => `<button type="button" class="chip" data-action="meal-venue" data-v="${esc(x)}" aria-pressed="${x === m.v}">${esc(x)}</button>`).join('')}</div>
+      <div class="wrap-chips" role="group" aria-label="Restaurants">${venues.map(x => `<button type="button" class="chip" data-action="meal-venue" data-v="${esc(x)}" aria-pressed="${x === m.v}">${esc(venueChip(curShip(), x))}</button>`).join('')}</div>
       <div class="fine" style="margin-top:6px">I want</div>
       <div class="crit">${CRIT.map(([k, label]) => `<button type="button" role="checkbox" aria-checked="${!!m.c[k]}" data-action="meal-crit" data-k="${k}"><span class="box" aria-hidden="true">${m.c[k] ? '✓' : ''}</span>${label}</button>`).join('')}</div>
       <p class="fine" style="margin:10px 0 0">${crit.length ? `Each course lists ${esc(m.v)}’s dishes with the ${crit.map(c => c[0] === 'kcal' ? 'fewest calories' : c[0] === 'fat' ? 'least fat' : 'least sodium').join(crit.length > 2 ? ', ' : ' and ').replace(/, ([^,]+)$/, ' and $1')} first. That means lowest on this menu, not an official “low” label.` : 'Tick one or more boxes. With none ticked, dishes are listed lowest calorie first.'}</p></section>
