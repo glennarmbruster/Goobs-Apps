@@ -222,7 +222,7 @@ dialog::backdrop{background:rgba(10,15,12,.55)}
   <button type="button" data-tab="foods"><span class="ico">🔎</span>Foods</button>
   <button type="button" data-tab="steak"><span class="ico">🥩</span>Steak</button>
   <button type="button" data-tab="drinks"><span class="ico">🍸</span>Drinks</button>
-  <button type="button" data-tab="viva"><span class="ico">🚢</span>Viva</button>
+  <button type="button" data-tab="cruise"><span class="ico">🚢</span>Cruise</button>
   <button type="button" data-tab="saved"><span class="ico">⭐</span>Saved</button>
 </div></nav>
 <script>
@@ -539,7 +539,7 @@ if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol))
 
 
 /* ===================== Calorie Lookup =====================
-   Offline data: USDA FNDDS 2021–2023 and SR28 (public domain), official chain menus, Norwegian Viva estimates; shipped as foods.json.
+   Offline data: USDA FNDDS 2021–2023 and SR28 (public domain), official chain menus, cruise ship dish estimates (Norwegian Viva, Disney Magic); shipped as foods.json.
    Online (optional): USDA FoodData Central search API for current generic, restaurant-style and packaged foods.
    Only the search text is sent; the shared DEMO_KEY is USDA's public demo key, and you can paste your own free key. */
 const APP_ID = 'goobs-calories', DB_NAME = 'goobs-calories-db';
@@ -588,7 +588,7 @@ const FASTGROUPS = () => [DATA.groups.indexOf('Fast food'), DATA.groups.indexOf(
 function titleOf(f) {
   if (f.t) return f.t;
   const parts = f.n.split(', ');
-  if (f.src === 'ncl') return (f.t = f.n);
+  if (f.src === 'ship') return (f.t = f.n);
   if (f.src === 'fndds') return (f.t = DATA.fams[f.fam] || f.n);
   if (f.src === 'menu') return (f.t = (famOf(f).length > 1 ? DATA.fams[f.fam] : f.n).split(', ').slice(1).join(', '));
   if (/^Cocktail$/.test(parts[0])) return (f.t = parts.slice(1).join(', '));
@@ -601,8 +601,8 @@ function titleOf(f) {
 }
 const prettyVar = s => String(s || '').replace(/separable lean and fat/g, 'lean and fat').replace(/separable lean only/g, 'lean only').replace(/trimmed to ([^ ,]+) fat/g, '$1 trim').replace(/,? ?URMIS #[\d/, #]+/g, '').replace(/\bNS as to fat eaten\b/g, 'fat not specified').replace(/\bNFS\b/g, 'not further specified').replace(/^, |, $/g, '');
 function subOf(f) {
-  if (f.s != null && f.src !== 'ncl') return f.s;
-  if (f.src === 'ncl') return (f.s = ui.tab === 'viva' && !ui.id ? f.vr : [f.cat, f.vr].filter(Boolean).join(' · '));
+  if (f.s != null && f.src !== 'ship') return f.s;
+  if (f.src === 'ship') return (f.s = ui.tab === 'cruise' && !ui.id ? f.vr : [shipShort(f.ship), f.cat, f.vr].filter(Boolean).join(' · '));
   if (f.src === 'fndds') return (f.s = [prettyVar(f.vr), f.cat].filter(Boolean).join(' · '));
   if (f.src === 'menu') return (f.s = [f.mf, f.vr, f.cat].filter(Boolean).join(' · '));
   const parts = f.n.split(', '), t = titleOf(f);
@@ -643,7 +643,7 @@ function gramsFor(f, unit, n) {
 }
 function defaultPortion(f) {
   if (/^Alcoholic beverage, (distilled|liqueur)|creme de menthe/i.test(f.n) && gPerFlOz(f)) return ['shot', 1];
-  if (f.src === 'menu' || f.src === 'ncl') return ['m0', 1];
+  if (f.src === 'menu' || f.src === 'ship') return ['m0', 1];
   if (/espresso/i.test(f.n) && gPerFlOz(f)) return ['floz', 2];
   /* the most natural single serving: "1 can", "1 sandwich", USDA's typical serving, "1 medium", "1 breast"… never a
      single fluid ounce of a drink, one floret of broccoli, a whole raw package or a 1.4 kg turkey breast */
@@ -682,7 +682,7 @@ function buildIndex() {
   HAY = FOODS.map(f => {
     let extra = ''; for (const [re, w] of ALIAS) if (re.test(f.n)) extra += ' ' + w;
     const name = norm(f.n), first = norm(f.n.split(',')[0]);
-    if (f.src === 'ncl') extra += ' ncl norwegian cruise ' + f.cat + ' ' + f.vr;
+    if (f.src === 'ship') extra += ' cruise ship ' + shipWords(f.ship) + ' ' + f.cat + ' ' + f.vr;
     const all = ' ' + [name, norm(f.c), norm(f.mf), norm(GROUP(f.g)), norm(extra)].join(' ').split(' ').filter(Boolean).map(stem).join(' ') + ' ';
     return { f, all, nameS: ' ' + name.split(' ').map(stem).join(' ') + ' ', firstS: ' ' + first.split(' ').map(stem).join(' ') + ' ', len: name.split(' ').length, extraS: ' ' + norm(extra).split(' ').map(stem).join(' ') + ' ' };
   });
@@ -725,7 +725,7 @@ const PICKS = { 'dr pepper': [14153], 'diet dr pepper': [14416],
   wine: [14096, 14106], 'red wine': [14096], 'white wine': [14106], coke: [14148], cola: [14148], soda: [14148], pop: [14148], vodka: [14051], rum: [14050], gin: [14049],
   whiskey: [14052], bourbon: [14052], scotch: [14052], tequila: [14037], liquor: [14037], shot: [14037], mezcal: [14037], brandy: [14037], 'ground beef': [23573, 23572] };
 let lastFix = '';
-const SHIP_RE = /^(viva|ncl|norwegian|cruise|ship|cagney|bistro|onda|scarpetta|palomar|hasuki|nama|lobo|indulge|tamara|nudl|garden|local|vibe)/;
+const SHIP_RE = /^(viva|ncl|norwegian|cruise|ship|cagney|bistro|onda|scarpetta|palomar|hasuki|nama|lobo|indulge|tamara|nudl|garden|local|vibe|disney|dcl|magic|animator|rapunzel|lumiere|palo|pirate|pinocchio|embark)/;
 function searchFoods(q) {
   lastFix = '';
   const words = queryWords(q);
@@ -761,7 +761,7 @@ function rank(words, q) {
     if ((f.mf || /[A-Z][a-z]+'s,/.test(f.n)) && !wantBrand) s -= 2;
     if (!isLocalId(f.id)) s -= 1;
     if (f.src === 'menu') s += wantBrand ? 6 : -1;
-    if (f.src === 'ncl') s += wantShip ? 6 : -3;
+    if (f.src === 'ship') s += wantShip ? 6 : -3;
     if (/\b(dry|powder|concentrate|unprepared|dry mix|freeze-dried|dehydrated)\b/i.test(f.n) && !wantDry) s -= 4;
     out.push([s, f]);
   }
@@ -776,7 +776,7 @@ const COND_RE = /^(Catsup|Mustard|Mayonnaise|Salad dressing|Sauce|Sauces|Relish|
 const isCondiment = f => COND_RE.test(f.n) && !/Restaurant|Fast food/.test(GROUP(f.g));
 
 /* ---------- state ---------- */
-let db = null, store = { favs: [], recent: [], misses: [], key: '', online: {} };
+let db = null, store = { favs: [], recent: [], misses: [], key: '', online: {}, sail: {}, ship: '' };
 const save = () => { if (db) idbPut(db, 'state', JSON.stringify(store)).catch(() => {}); };
 const isFav = id => store.favs.some(x => String(x) === String(id));
 function toggleFav(id) { store.favs = isFav(id) ? store.favs.filter(x => String(x) !== String(id)) : [id, ...store.favs].slice(0, 300); keepOnline(); save(); render(); }
@@ -795,7 +795,7 @@ const FDC_NUT = { 1008: 'kcal', 2047: 'kcal_a', 2048: 'kcal_b', 1003: 'pro', 100
   1093: 'na', 1092: 'k', 1087: 'ca', 1089: 'fe', 1090: 'mg', 1091: 'p', 1095: 'zn', 1103: 'se', 1098: 'cu', 1101: 'mn', 1106: 'vitA', 1162: 'vitC', 1114: 'vitD', 1109: 'vitE',
   1185: 'vitK', 1165: 'b1', 1166: 'b2', 1167: 'b3', 1170: 'b5', 1175: 'b6', 1190: 'fol', 1178: 'b12', 1180: 'cho', 1051: 'water', 1107: 'bcar', 1122: 'lyc', 1123: 'lutz', 1018: 'alc' };
 const DT_LABEL = { 'Survey (FNDDS)': 'USDA survey foods', Foundation: 'USDA foundation', 'SR Legacy': 'USDA SR Legacy', Branded: 'Packaged brand' };
-const ui = { tab: 'foods', q: '', grp: '', id: null, stack: [], portion: null, cut: 'ribeye', cooked: false, lean: false, oz: 8, onl: { q: '', brands: false, busy: false, results: [], err: '' } };
+const ui = { tab: 'foods', q: '', grp: '', id: null, ship: null, venue: null, stack: [], portion: null, cut: 'ribeye', cooked: false, lean: false, oz: 8, onl: { q: '', brands: false, busy: false, results: [], err: '' } };
 const apiKey = () => (store.key || '').trim() || 'DEMO_KEY';
 function parseFdc(x) {
   if (!x || !isNum(x.fdcId) || typeof x.description !== 'string') return null;
@@ -912,7 +912,7 @@ function renderFood() {
   const src = f.src === 'fdc'
     ? `USDA FoodData Central (${esc(DT_LABEL[f.dt] || f.dt)}), food #${esc(String(f.id).slice(4))}.${f.dt === 'Branded' ? ' Numbers come from the product label as reported to USDA.' : ''}`
     : f.src === 'menu' ? `Official nutrition information from ${esc(f.mf)}, retrieved October 2026.`
-    : f.src === 'ncl' ? `Estimate for Norwegian Viva’s ${esc(f.cat)}: Norwegian doesn’t publish nutrition, so this dish is built from similar USDA foods (FNDDS 2021–2023 and SR28) at a typical restaurant portion. Real plates vary.`
+    : f.src === 'ship' ? `Estimate for ${esc(f.ship)}’s ${esc(f.cat)}: ${esc(shipOf(f.ship).brand)} doesn’t publish nutrition, so this dish is built from similar USDA foods (FNDDS 2021–2023 and SR28) at a typical restaurant portion. Real plates vary.`
     : f.src === 'fndds' ? `USDA FNDDS 2021–2023 survey data, food #${f.id}.` : f.id >= 900000 ? 'Estimated from USDA SR28 values for each ingredient.' : `USDA SR28 (2015), food #${f.id}.`;
   return `<div class="stack">
     <section class="card pad"><div style="display:flex;gap:8px;align-items:flex-start"><div style="flex:1;min-width:0"><div class="fine">${esc(GROUP(f.g) || DT_LABEL[f.dt] || '')}</div><h2 style="margin:2px 0 0">${esc(titleOf(f))}</h2>${subOf(f) ? `<div class="muted" style="font-size:14px">${esc(subOf(f))}</div>` : ''}</div><button type="button" class="star" data-action="fav" data-id="${esc(f.id)}" aria-pressed="${isFav(f.id)}" aria-label="${isFav(f.id) ? 'Remove from saved' : 'Save'}">★</button></div>
@@ -1025,32 +1025,84 @@ function renderDrinks() {
     <p class="src">Spirits, beer, wine and cocktails by name are USDA survey data (2021–2023) with measured alcohol. The proof list and the wine varietals are USDA SR28. A spirit’s calories come almost entirely from its alcohol, so any spirit at the same proof has about the same calories.</p></div>`;
 }
 
-/* ---------- Norwegian Viva (estimates) ---------- */
-const vivaFoods = () => FOODS.filter(f => f.src === 'ncl');
-const VENUES = ['Main Dining', "Cagney's Steakhouse", 'Le Bistro', 'Onda by Scarpetta', 'Palomar', 'Hasuki', 'Food Republic', 'Nama Sushi & Sashimi', 'Los Lobos', 'Indulge Food Hall', 'The Garden', 'The Local Bar & Grill', 'Vibe, Pool Bar & Room Service', 'Bars'];
-function renderViva() {
+/* ---------- Cruise: dishes on each ship (estimates) ---------- */
+/* one tab for every ship; sailing dates are typed in on the phone (never in the public code) and pick which ship opens */
+const SHIPS = [
+  { name: 'Disney Magic', short: 'Magic', brand: 'Disney', words: 'disney dcl magic',
+    venues: ["Animator's Palate", "Rapunzel's Royal Table", "Lumiere's", 'Pirate Night', 'Let the Magic Begin', 'Embarkation lunch', 'Palo (dinner, extra charge)', 'Palo brunch (extra charge)', 'Pool deck and room service'],
+    menus: 'Disney Cruise Line menus posted by DCLcruisingDAD (dclcruisingdad.com), updated May–June 2026; dishes and portions change.',
+    notes: {
+      "Animator's Palate": 'Dinner rotates through Animator’s Palate, Rapunzel’s Royal Table and Lumiere’s. The grilled sirloin is on every dinner menu.',
+      "Rapunzel's Royal Table": 'Dinner rotates through Animator’s Palate, Rapunzel’s Royal Table and Lumiere’s. The grilled sirloin is on every dinner menu.',
+      "Lumiere's": 'Dinner rotates through Animator’s Palate, Rapunzel’s Royal Table and Lumiere’s. Lumiere’s also serves breakfast and lunch (not listed).',
+      'Pirate Night': 'Served one night in whichever dining room you’re assigned to.',
+      'Let the Magic Begin': 'A dining-room menu Disney serves on some sailings; yours may not include it.',
+      'Embarkation lunch': 'Sit-down lunch on boarding day.',
+      'Palo (dinner, extra charge)': 'Adults only, extra charge. À la carte menu as posted in October 2026.',
+      'Palo brunch (extra charge)': 'Adults only, extra charge.',
+      'Pool deck and room service': 'Pinocchio’s, Duck-In Diner and Eye Scream don’t post full menus, so those are typical portions. Room service items are from the posted menu. The Cabanas buffet isn’t listed: use Foods search for buffet items.' } },
+  { name: 'Norwegian Viva', short: 'Viva', brand: 'Norwegian', words: 'ncl norwegian viva',
+    venues: ['Main Dining', "Cagney's Steakhouse", 'Le Bistro', 'Onda by Scarpetta', 'Palomar', 'Hasuki', 'Food Republic', 'Nama Sushi & Sashimi', 'Los Lobos', 'Indulge Food Hall', 'The Garden', 'The Local Bar & Grill', 'Vibe, Pool Bar & Room Service', 'Bars'],
+    menus: 'Norwegian Viva menus posted by guests on cruisedealstipsandtricks.com; dishes and portions change.',
+    notes: { 'Main Dining': 'Main dining menus change nightly. These are two sample nights of Norwegian’s fleet-wide menu (posted from Norwegian Getaway); the Cagney’s à la carte list appears every night.' } },
+];
+const shipOf = name => SHIPS.find(x => x.name === name) || { name, short: name, brand: 'The cruise line', words: '', venues: [], menus: '', notes: {} };
+const shipShort = name => shipOf(name).short;
+const shipWords = name => shipOf(name).words;
+const shipFoods = name => FOODS.filter(f => f.src === 'ship' && f.ship === name);
+const shipsHere = () => SHIPS.filter(x => FOODS.some(f => f.src === 'ship' && f.ship === x.name));
+const sailOf = name => (store.sail || {})[name] || null;
+/* upcoming sailings first (soonest first), then ships with no dates, then past sailings */
+function shipOrder() {
+  const t = todayISO(), key = x => { const d = sailOf(x.name); return !d ? 1 : d.to < t ? 2 : 0; };
+  return shipsHere().map((x, i) => [x, i]).sort((a, b) => key(a[0]) - key(b[0]) || ((sailOf(a[0].name) || {}).from || '').localeCompare((sailOf(b[0].name) || {}).from || '') || a[1] - b[1]).map(x => x[0]);
+}
+function curShip() {
+  const order = shipOrder(), names = order.map(x => x.name);
+  if (names.includes(ui.ship)) return shipOf(ui.ship);
+  const next = order.find(x => { const d = sailOf(x.name); return d && d.to >= todayISO(); });
+  ui.ship = next ? next.name : names.includes(store.ship) ? store.ship : names[0];
+  return shipOf(ui.ship);
+}
+const shipVenues = sh => { const seen = [...new Set(shipFoods(sh.name).map(f => f.cat))]; return [...sh.venues.filter(x => seen.includes(x)), ...seen.filter(x => !sh.venues.includes(x))]; };
+const sailText = d => d ? `${fmtDate(d.from)} – ${fmtDate(d.to)}` : '';
+function renderCruise() {
   if (ui.meal) return renderMeal();
-  const all = vivaFoods(), seen = [...new Set(all.map(f => f.cat))];
-  const venues = [...VENUES.filter(x => seen.includes(x)), ...seen.filter(x => !VENUES.includes(x))];
+  const sh = curShip(), order = shipOrder(), all = shipFoods(sh.name), venues = shipVenues(sh);
   const v = venues.includes(ui.venue) ? ui.venue : venues[0];
-  const list = all.filter(f => f.cat === v);
-  const secs = [...new Set(list.map(f => f.c || ''))];
+  const list = all.filter(f => f.cat === v), secs = [...new Set(list.map(f => f.c || ''))], d = sailOf(sh.name);
   return `<div class="stack">
-    <section class="card pad"><p style="margin:0"><b>Estimates.</b> Norwegian doesn’t publish nutrition for its menus, so each dish here is matched to similar USDA restaurant foods at a typical restaurant portion. Use them as ballpark numbers; the food page shows what each estimate is built from.</p></section>
+    <section class="card pad">
+      <div class="scroll-chips" style="padding-top:0">${order.map(x => `<button type="button" class="chip" data-action="ship" data-v="${esc(x.name)}" aria-pressed="${x.name === sh.name}">${esc(x.name)}</button>`).join('')}</div>
+      <p class="fine" style="margin:8px 0 0">${d ? `Your sailing: <b>${esc(sailText(d))}</b> · <a href="#" data-action="sail-edit">Change</a>` : `<a href="#" data-action="sail-edit">Add your sailing dates</a> so this tab opens on your next cruise.`}</p></section>
+    <section class="card pad"><p style="margin:0"><b>Estimates.</b> ${esc(sh.brand)} doesn’t publish nutrition for its menus, so each dish here is matched to similar USDA restaurant foods at a typical restaurant portion. Use them as ballpark numbers; the food page shows what each estimate is built from.</p></section>
     <button type="button" class="mealbtn" data-action="meal-open"><span class="big" aria-hidden="true">🍽️</span><div><b>Make me a meal</b><span>Pick a restaurant and what matters to you: low calorie, low fat, low sodium</span></div></button>
     <div class="scroll-chips" style="padding-top:2px">${venues.map(x => `<button type="button" class="chip" data-action="venue" data-v="${esc(x)}" aria-pressed="${x === v}">${esc(x)}</button>`).join('')}</div>
     ${secs.map(sec => `<div>${sec ? `<div class="sec-h"><span>${esc(sec)}</span></div>` : ''}<div class="card">${list.filter(f => (f.c || '') === sec).map(f => foodRow(f)).join('')}</div></div>`).join('')}
-    ${v === 'Main Dining' ? '<p class="fine" style="margin:0 4px">Main dining menus change nightly. These are two sample nights of Norwegian’s fleet-wide menu (posted from Norwegian Getaway); the Cagney’s à la carte list appears every night.</p>' : ''}
-    <p class="src">Menus: Norwegian Viva menus posted by guests on cruisedealstipsandtricks.com; dishes and portions change. Nutrition: estimates from USDA FNDDS 2021–2023 and SR28.</p></div>`;
+    ${sh.notes[v] ? `<p class="fine" style="margin:0 4px">${esc(sh.notes[v])}</p>` : ''}
+    <p class="src">Menus: ${esc(sh.menus)} Nutrition: estimates from USDA FNDDS 2021–2023 and SR28.</p></div>`;
+}
+async function editSail() {
+  const sh = curShip(), d = sailOf(sh.name) || {};
+  const v = await askDialog({ title: `${sh.name} sailing`, body: `<p class="fine" style="margin:0 0 8px">Kept on this phone only. The Cruise tab opens on your next sailing.</p>
+      <label class="fine" for="sailFrom">Leaves</label><input id="sailFrom" type="date" value="${esc(d.from || '')}" style="width:100%;margin-bottom:8px">
+      <label class="fine" for="sailTo">Returns</label><input id="sailTo" type="date" value="${esc(d.to || '')}" style="width:100%">`,
+    buttons: [...(d.from ? [{ label: 'Remove', value: 'del', kind: 'danger' }] : []), { label: 'Cancel', value: false }, { label: 'Save', value: 'save', kind: 'primary' }] });
+  if (v === 'del') { delete store.sail[sh.name]; save(); render(); return; }
+  if (v !== 'save') return;
+  let from = ($('#sailFrom') || {}).value || '', to = ($('#sailTo') || {}).value || '';
+  if (!isISO(from)) { msgBox('Pick the day the cruise leaves', ''); return; }
+  if (!isISO(to) || to < from) to = from;
+  store.sail = { ...(store.sail || {}), [sh.name]: { from, to } }; save(); render();
 }
 
-/* ---------- Make me a meal (Viva) ---------- */
+/* ---------- Make me a meal (Cruise) ---------- */
 /* each restaurant's dishes by course; every ticked box ranks the course's dishes from lowest to highest (per serving),
    the ranks are averaged, and the closest match comes first */
 const COURSES = [['included', 'Comes with every entrée'], ['starter', 'Starter'], ['main', 'Main'], ['side', 'Side'], ['dessert', 'Dessert']];
 const CRIT = [['kcal', 'Low calorie', 'cal'], ['fat', 'Low fat', 'g fat'], ['na', 'Low sodium', 'mg sodium']];
 const courseOf = f => (DATA.course || {})[f.id] || '';
-const mealVenues = () => { const seen = []; for (const f of vivaFoods()) if (courseOf(f) && !seen.includes(f.cat)) seen.push(f.cat); return [...VENUES.filter(v => seen.includes(v)), ...seen.filter(v => !VENUES.includes(v))]; };
+const mealVenues = () => { const sh = curShip(), fs = shipFoods(sh.name); return shipVenues(sh).filter(v => fs.some(f => f.cat === v && courseOf(f))); };
 const serving = f => f.m[0] ? f.m[0][0] : 100;
 const per = (f, k) => { const v = amt(f, k, serving(f)); return v == null ? null : v; };
 function rankCourse(list, crit) {
@@ -1061,7 +1113,7 @@ function rankCourse(list, crit) {
 }
 function mealPlan() {
   const m = ui.meal, crit = CRIT.map(c => c[0]).filter(k => m.c[k]);
-  const dishes = vivaFoods().filter(f => f.cat === m.v && courseOf(f));
+  const dishes = shipFoods(curShip().name).filter(f => f.cat === m.v && courseOf(f));
   return COURSES.map(([key, label]) => {
     const list = dishes.filter(f => courseOf(f) === key);
     if (!list.length) return null;
@@ -1089,7 +1141,7 @@ function renderMeal() {
       ${c.list.length > 3 ? `<button type="button" class="linkbtn" data-action="meal-more" data-course="${c.key}">${m.more[c.key] ? 'Show fewer' : `Show all ${c.list.length}`}</button>` : ''}</div>`;
   };
   return `<div class="stack">
-    <button type="button" class="linkbtn" data-action="meal-close" style="align-self:flex-start">‹ All Viva menus</button>
+    <button type="button" class="linkbtn" data-action="meal-close" style="align-self:flex-start">‹ All ${esc(curShip().short)} menus</button>
     <section class="card pad">
       <div class="fine">Restaurant</div>
       <div class="scroll-chips" style="padding-top:4px">${venues.map(x => `<button type="button" class="chip" data-action="meal-venue" data-v="${esc(x)}" aria-pressed="${x === m.v}">${esc(x)}</button>`).join('')}</div>
@@ -1100,7 +1152,7 @@ function renderMeal() {
       <div class="mtot"><div><b>${tot('kcal').toLocaleString()}</b><span>calories</span></div><div><b>${tot('fat')} g</b><span>fat · ${Math.round(tot('fat') / DV.fat * 100)}% DV</span></div><div><b>${tot('na').toLocaleString()} mg</b><span>sodium · ${Math.round(tot('na') / DV.na * 100)}% DV</span></div></div>
       <p class="fine" style="margin:8px 0 0">${chosen.map(f => esc(f.n)).join(' + ') || 'Nothing picked yet.'}</p></section>
     ${plan.map(courseHTML).join('')}
-    <p class="src">Estimates built from USDA foods at typical restaurant portions; Norwegian doesn’t publish nutrition. %DV is for a 2,000-calorie day (sodium 2,300 mg).</p></div>`;
+    <p class="src">Estimates built from USDA foods at typical restaurant portions; ${esc(curShip().brand)} doesn’t publish nutrition. %DV is for a 2,000-calorie day (sodium 2,300 mg).</p></div>`;
 }
 
 /* ---------- saved ---------- */
@@ -1119,17 +1171,17 @@ function renderSaved() {
 }
 
 /* ---------- render / nav ---------- */
-const TITLES = { foods: 'Calorie Lookup', steak: 'Steak by grade', drinks: 'Drinks & alcohol', viva: 'Norwegian Viva', saved: 'Saved' };
+const TITLES = { foods: 'Calorie Lookup', steak: 'Steak by grade', drinks: 'Drinks & alcohol', cruise: 'Cruise dining', saved: 'Saved' };
 function render() {
   if (!DATA) return;
   const y = window.scrollY, detail = ui.id != null && byId.has(ui.id);
-  view.innerHTML = detail ? renderFood() : { foods: renderFoods, steak: renderSteak, drinks: renderDrinks, viva: renderViva, saved: renderSaved }[ui.tab]();
+  view.innerHTML = detail ? renderFood() : { foods: renderFoods, steak: renderSteak, drinks: renderDrinks, cruise: renderCruise, saved: renderSaved }[ui.tab]();
   $$('nav.tabs button').forEach(b => b.setAttribute('aria-current', !detail && b.dataset.tab === ui.tab ? 'page' : 'false'));
   const hd = $('header.top .wrap'); let back = $('#backLink');
   const ex = $('a.exit', hd); if (ex) ex.classList.toggle('hide', detail);
   if (detail && !back) { back = document.createElement('a'); back.id = 'backLink'; back.className = 'back'; back.href = '#'; back.textContent = '‹ Back'; hd.insertBefore(back, hd.firstChild); }
   if (!detail && back) back.remove();
-  $('#title').textContent = detail ? titleOf(byId.get(ui.id)) : ui.tab === 'viva' && ui.meal ? 'Make me a meal' : TITLES[ui.tab];
+  $('#title').textContent = detail ? titleOf(byId.get(ui.id)) : ui.tab === 'cruise' ? (ui.meal ? 'Make me a meal' : curShip().name || TITLES.cruise) : TITLES[ui.tab];
   $('#sub').textContent = detail ? '' : ui.tab === 'foods' ? `${FOODS.length.toLocaleString()} foods · USDA data` : '';
   window.scrollTo(0, detail ? 0 : y);
 }
@@ -1173,6 +1225,8 @@ view.addEventListener('click', e => {
     case 'onl-type': ui.onl.brands = el.dataset.v === '1'; ui.onl.results = []; ui.onl.err = ''; ui.onl.q = ''; paintOnline(); if (ui.q.trim()) runOnline(); break;
     case 'cut': ui.cut = el.dataset.v; render(); break;
     case 'venue': ui.venue = el.dataset.v; render(); break;
+    case 'ship': ui.ship = el.dataset.v; store.ship = ui.ship; ui.venue = null; save(); render(); break;
+    case 'sail-edit': e.preventDefault(); editSail(); break;
     case 'meal-open': ui.meal = { v: ui.venue && mealVenues().includes(ui.venue) ? ui.venue : (store.meal && store.meal.v) || mealVenues()[0], c: { ...((store.meal && store.meal.c) || {}) }, pick: {}, more: {} }; render(); window.scrollTo(0, 0); break;
     case 'meal-close': ui.meal = null; render(); window.scrollTo(0, 0); break;
     case 'meal-venue': ui.meal.v = el.dataset.v; ui.meal.pick = {}; ui.meal.more = {}; store.meal = { v: ui.meal.v, c: ui.meal.c }; save(); render(); break;
@@ -1216,7 +1270,7 @@ function loadData(json) {
   FOODS = DATA.foods.map(([id, g, n, c, vs, m, mf, note, y, ci, fam, vr]) => {
     const parts = String(vs).split('|'), v = {};
     DATA.nut.forEach((k, i) => { const x = parts[i]; v[k] = x === '' || x == null ? null : +x; });
-    return { id, g, n, c: c || '', v, m: m || [], mf: mf || '', note: note || '', y: !!y, cat: ci >= 0 ? DATA.cats[ci] : '', fam, vr: vr || '', src: id >= 4000000000 ? 'ncl' : id >= 3000000000 ? 'menu' : id > 1000000 ? 'fndds' : 'sr' };
+    return { id, g, n, c: c || '', v, m: m || [], mf: mf || '', note: note || '', y: !!y, cat: ci >= 0 ? DATA.cats[ci] : '', fam, vr: vr || '', ship: id >= 4000000000 ? DATA.groups[g] : '', src: id >= 4000000000 ? 'ship' : id >= 3000000000 ? 'menu' : id > 1000000 ? 'fndds' : 'sr' };
   });
   byId = new Map(FOODS.map(f => [f.id, f]));
   FAM = new Map();
@@ -1228,11 +1282,11 @@ let FAM = new Map();
 const getFood = id => byId.get(id) || (DATA && DATA.redir && byId.get(DATA.redir[id])) || null;
 const famOf = f => (f && isLocalId(f.id) ? FAM.get(f.fam) || [f] : [f]);
 (async function init() {
-  try { db = await openDB(DB_NAME); const raw = await idbGet(db, 'state'); if (raw) { const s = JSON.parse(raw); for (const k of ['favs', 'recent', 'misses']) if (Array.isArray(s[k])) store[k] = s[k].slice(0, 300); if (typeof s.key === 'string') store.key = s.key; if (s.meal && typeof s.meal === 'object') store.meal = { v: String(s.meal.v || ''), c: { kcal: !!(s.meal.c || {}).kcal, fat: !!(s.meal.c || {}).fat, na: !!(s.meal.c || {}).na } }; if (s.online && typeof s.online === 'object') store.online = s.online; } }
+  try { db = await openDB(DB_NAME); const raw = await idbGet(db, 'state'); if (raw) { const s = JSON.parse(raw); for (const k of ['favs', 'recent', 'misses']) if (Array.isArray(s[k])) store[k] = s[k].slice(0, 300); if (typeof s.key === 'string') store.key = s.key; if (s.meal && typeof s.meal === 'object') store.meal = { v: String(s.meal.v || ''), c: { kcal: !!(s.meal.c || {}).kcal, fat: !!(s.meal.c || {}).fat, na: !!(s.meal.c || {}).na } }; if (s.online && typeof s.online === 'object') store.online = s.online; if (typeof s.ship === 'string') store.ship = s.ship; if (s.sail && typeof s.sail === 'object') for (const [k, d] of Object.entries(s.sail)) if (d && isISO(d.from) && isISO(d.to) && d.to >= d.from) store.sail[k] = { from: d.from, to: d.to }; } }
   catch (e) { console.error(e); }
   try {
     /* the offline copy of foods.json is replaced when a new version of the list ships */
-    const FILEV = '0f78ccd31cbc';
+    const FILEV = '0bff24a044f8';
     try { for (const k of await caches.keys()) if (k.startsWith('goobs-calories-')) { const c = await caches.open(k); for (const r of await c.keys()) { const u = new URL(r.url); if (/\/foods\.json$/.test(u.pathname) && u.searchParams.get('v') !== FILEV) await c.delete(r); } } } catch (e) {}
     const res = await fetch('foods.json?v=' + FILEV); if (!res.ok) throw new Error('HTTP ' + res.status);
     loadData(await res.json());
