@@ -1150,7 +1150,7 @@ function refBuild(o) {
   o = obj(o);
   if (o.format !== REF_FORMAT || (o.v !== 1 && o.v !== 2)) throw new Error('That isn’t a Watch Log database file.');
   const T = obj(o.t), P = obj(o.p), C = obj(o.c);
-  const isCol = a => Array.isArray(a) || ArrayBuffer.isView(a), same = (x, n, ks) => ks.every(k => isCol(x[k]) && x[k].length === n);
+  const isCol = a => Array.isArray(a) || ArrayBuffer.isView(a) || a instanceof RefText, same = (x, n, ks) => ks.every(k => isCol(x[k]) && x[k].length === n);
   const len = a => (isCol(a) ? a.length : 0), nT = len(T.n), nP = len(P.n), nC = len(C.t);
   if (!nT || !nP || !nC || !same(T, nT, ['id', 'k', 'n', 'y', 'e', 'r', 'v', 'g']) || !same(P, nP, ['id', 'n', 'b', 'd', 'f']) || !same(C, nC, ['t', 'p', 'r', 'ch']))
     throw new Error('That database file is incomplete or damaged.');
@@ -1195,7 +1195,8 @@ function refYears(ti) {
 const refMain = ti => refCast(ti).filter(c => !c.dir && !c.guest && !c.more);
 const refRating = ti => (ref.t.r[ti] > 0 ? (ref.t.r[ti] / 10).toFixed(1) : '');
 /* one credit -> {ci, ti, pi, dir, guest, ch, e} (guest: only in episode casts; e: episodes, series only) */
-const refC = ci => ({ ci, ti: ref.c.t[ci], pi: ref.c.p[ci], dir: ref.c.r[ci] === 1, guest: ref.c.r[ci] === 2, more: ref.c.r[ci] === 3, ch: str(ref.c.ch[ci]), e: ref.c.e[ci], s: ref.c.s[ci] });
+const refCh = ci => (ref.c.ch instanceof RefText ? ref.c.ch.get(ci) : str(ref.c.ch[ci]));
+const refC = ci => ({ ci, ti: ref.c.t[ci], pi: ref.c.p[ci], dir: ref.c.r[ci] === 1, guest: ref.c.r[ci] === 2, more: ref.c.r[ci] === 3, ch: refCh(ci), e: ref.c.e[ci], s: ref.c.s[ci] });
 /* a title's credits: main cast and directors in billing order, then episode cast by episodes */
 function refCast(ti) { const out = []; for (let i = ref.tStart[ti]; i < ref.tStart[ti + 1]; i++) out.push(refC(i)); return out; }
 /* a person's credits, newest first */
@@ -1241,8 +1242,21 @@ function refSearchPeople(query, n = 15) {
    index: with millions of credits one would cost too much memory on a phone); case is ignored, accents are not. */
 function refSearchCharacters(query, n = 10) {
   const qt = tokens(query); if (!ref || qt.join('').length < 3) return [];
-  const res = qt.map(w => new RegExp('(^|[^\\p{L}\\p{N}])' + w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'iu')), ch = ref.c.ch, hits = [];
-  for (let i = 0; i < ch.length; i++) { const s = ch[i]; if (s && res.every(r => r.test(s))) hits.push(i); }
+  const pat = w => '(^|[^\\p{L}\\p{N}])' + w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const res = qt.map(w => new RegExp(pat(w), 'iu')), ch = ref.c.ch, hits = [];
+  if (ch instanceof RefText) {
+    /* one pass over each text block for the first word, then the other words on just those names */
+    /* quick plain search for the longest word (matches least often); the exact word-start test runs on just those names */
+    const w0 = qt.reduce((x, y) => (y.length > x.length ? y : x)), g = new RegExp(w0.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+    for (let b = 0; b < ch.blocks.length; b++) {
+      const s = ch.blocks[b]; g.lastIndex = 0; let m;
+      while ((m = g.exec(s))) {
+        const i = ch.entryAt(b, m.index), name = ch.get(i);
+        if (res.every(r => r.test(name))) hits.push(i);
+        const next = i + 1 < ch.first[b + 1] ? ch.off[i + 1] : s.length; if (g.lastIndex < next) g.lastIndex = next;
+      }
+    }
+  } else for (let i = 0; i < ch.length; i++) { const s = ch[i]; if (s && res.every(r => r.test(s))) hits.push(i); }
   return hits.sort((a, b) => ref.t.v[ref.c.t[b]] - ref.t.v[ref.c.t[a]]).slice(0, n).map(refC);
 }
 
@@ -1289,33 +1303,155 @@ function refInLog(pi, excludeTi = -1) {
 /* ---- storing + loading. The file is gzip text: v1 is one JSON object; v2 is a header line, then one line per column
    ("t.n<TAB>[...]"), so it is unpacked and parsed a column at a time instead of as one huge string. ---- */
 const isGzip = buf => { const u = new Uint8Array(buf, 0, Math.min(2, buf.byteLength)); return u[0] === 0x1f && u[1] === 0x8b; };
-async function refLines(raw, onLine) {
-  if (typeof raw === 'string') { for (const l of raw.split('\n')) onLine(l); return; }
-  let src = new ReadableStream({ start(c) { c.enqueue(new Uint8Array(raw)); c.close(); } });
-  if (isGzip(raw)) {
-    if (typeof DecompressionStream === 'undefined') throw new Error('This browser can’t unzip files. Update iOS (16.4 or later).');
-    src = src.pipeThrough(new DecompressionStream('gzip'));
+/* the file is read a slice at a time (so the unzipper never runs ahead of the reader), and each column is parsed
+   straight into its final form: numbers into typed arrays, character names into a few large text blocks. No line is
+   ever held whole (the character names alone are ~60 MB of text), which keeps a phone well inside its memory limit. */
+const REF_BAD = () => new Error('That database file is incomplete or damaged.');
+async function refScan(raw, { head, sink }) {
+  let src;
+  if (typeof raw === 'string') { const s = raw; let p = 0; src = new ReadableStream({ pull(c) { if (p >= s.length) c.close(); else c.enqueue(new TextEncoder().encode(s.slice(p, p += 1 << 18))); } }, { highWaterMark: 0 }); }
+  else {
+    const u8 = new Uint8Array(raw); let p = 0;
+    src = new ReadableStream({ pull(c) { if (p >= u8.length) c.close(); else c.enqueue(u8.subarray(p, p += 1 << 18)); } }, { highWaterMark: 0 });
+    if (isGzip(raw)) {
+      if (typeof DecompressionStream === 'undefined') throw new Error('This browser can’t unzip files. Update iOS (16.4 or later).');
+      src = src.pipeThrough(new DecompressionStream('gzip'));
+    }
   }
-  /* onLine may return a promise (e.g. a storage write): it is awaited before more is unpacked, so nothing piles up */
-  const rd = src.getReader(), dec = new TextDecoder(); let parts = [];
-  const feed = async text => { let i, at = 0; while ((i = text.indexOf('\n', at)) >= 0) { parts.push(text.slice(at, i)); const line = parts.join(''); parts = []; at = i + 1; const r = onLine(line); if (r && r.then) await r; } if (at < text.length) parts.push(text.slice(at)); };
+  const rd = src.getReader(), dec = new TextDecoder();
+  let first = true, headParts = [], key = '', cur = null;   /* cur: the sink of the line being read; null = reading a key */
+  const endLine = async () => { const s = cur; cur = null; key = ''; const r = s.end(); if (r && r.then) await r; };
+  const feed = async text => {
+    let i = 0;
+    while (i < text.length) {
+      if (first) {
+        const nl = text.indexOf('\n', i);
+        if (nl < 0) { headParts.push(text.slice(i)); return; }
+        headParts.push(text.slice(i, nl)); i = nl + 1; first = false;
+        const h = headParts.join(''); headParts = null; if (!h.trim()) throw new SyntaxError('empty'); head(h); continue;
+      }
+      if (!cur) {
+        const tab = text.indexOf('\t', i), nl = text.indexOf('\n', i);
+        if (nl >= 0 && (tab < 0 || nl < tab)) { if ((key + text.slice(i, nl)).trim()) throw REF_BAD(); key = ''; i = nl + 1; continue; }   /* blank line */
+        if (tab < 0) { key += text.slice(i); if (key.length > 40) throw REF_BAD(); return; }
+        key += text.slice(i, tab); i = tab + 1; cur = sink(key); continue;
+      }
+      const nl = text.indexOf('\n', i);
+      if (nl < 0) { cur.feed(text.slice(i)); return; }
+      if (nl > i) cur.feed(text.slice(i, nl));
+      i = nl + 1; await endLine();
+    }
+  };
   for (;;) { const { done, value } = await rd.read(); if (done) break; await feed(dec.decode(value, { stream: true })); }
-  await feed(dec.decode()); if (parts.length) { const r = onLine(parts.join('')); if (r && r.then) await r; }
+  await feed(dec.decode());
+  if (first && headParts && headParts.join('').trim()) { head(headParts.join('')); first = false; }
+  if (cur) await endLine();
+  if (first) throw new SyntaxError('empty');
 }
-const COL_NUM = /^(t\.(id|k|y|e|r|v|g|ds)|p\.(id|b|d|f)|c\.(t|p|e|s))$/;
+const SINK_SKIP = { feed() {}, end() {} };
+const sinkText = done => { const parts = []; return { feed(s) { parts.push(s); }, end() { return done(parts.join('')); } }; };
+/* a JSON array of whole numbers -> Int32Array (null counts as 0) */
+function sinkInts(done) {
+  let a = new Int32Array(1 << 16), n = 0, cur = 0, neg = false, inNum = false, open = false;
+  const push = v => { if (n === a.length) { const b = new Int32Array(a.length * 2); b.set(a); a = b; } a[n++] = v; };
+  return {
+    feed(s) {
+      for (let i = 0; i < s.length; i++) {
+        const c = s.charCodeAt(i);
+        if (c >= 48 && c <= 57) { cur = cur * 10 + c - 48; inNum = true; continue; }
+        if (inNum) { push(neg ? -cur : cur); cur = 0; neg = false; inNum = false; }
+        if (c === 44 || c === 32) continue;
+        if (c === 45) neg = true;
+        else if (c === 110) push(0);   /* null */
+        else if (c === 117 || c === 108) continue;
+        else if (c === 91) { if (open) throw REF_BAD(); open = true; }
+        else if (c === 93) open = false;
+        else throw REF_BAD();
+      }
+    },
+    end() { if (inNum) push(neg ? -cur : cur); done(a.slice(0, n)); }
+  };
+}
+/* text column kept as a few hundred large blocks (each name followed by a newline) plus where each name starts:
+   far less memory than millions of separate strings */
+class RefText {
+  constructor(blocks, first, off, n) { this.blocks = blocks; this.first = first; this.off = off; this.length = n; }
+  blockOf(i) { const f = this.first; let lo = 0, hi = this.blocks.length - 1; while (lo < hi) { const m = (lo + hi + 1) >> 1; if (f[m] <= i) lo = m; else hi = m - 1; } return lo; }
+  get(i) {
+    if (!(i >= 0 && i < this.length)) return '';
+    const b = this.blockOf(i), s = this.blocks[b], end = i + 1 < this.first[b + 1] ? this.off[i + 1] - 1 : s.length - 1;
+    return s.slice(this.off[i], end);
+  }
+  entryAt(b, pos) { const off = this.off; let lo = this.first[b], hi = this.first[b + 1] - 1; while (lo < hi) { const m = (lo + hi + 1) >> 1; if (off[m] <= pos) lo = m; else hi = m - 1; } return lo; }
+}
+/* a JSON array of strings -> plain array (blocks = false) or RefText (blocks = true) */
+function sinkStrs(blocks, done) {
+  const out = []; let pieces = [], inStr = false, esc = 0, hex = '', nextBs = -1, open = false;
+  let bParts = [], bLen = 0, bList = [], bFirst = [0], off = new Int32Array(blocks ? 1 << 16 : 1), n = 0;
+  const flush = () => { if (bParts.length) { bList.push(bParts.join('')); bParts = []; bLen = 0; bFirst.push(n); } };
+  const emit = () => {
+    if (!blocks) { out.push(pieces.length === 1 ? pieces[0] : pieces.join('')); pieces = []; return; }
+    if (n === off.length) { const b = new Int32Array(off.length * 2); b.set(off); off = b; }
+    off[n++] = bLen;
+    for (const p of pieces) { const q = p.indexOf('\n') >= 0 || p.indexOf('\r') >= 0 ? p.replace(/[\r\n]/g, ' ') : p; bParts.push(q); bLen += q.length; }
+    bParts.push('\n'); bLen++; pieces = [];
+    if (bLen >= 1 << 16) flush();
+  };
+  const ESC = { '"': '"', '\\': '\\', '/': '/', b: '\b', f: '\f', n: '\n', r: '\r', t: '\t' };
+  return {
+    feed(s) {
+      let i = 0; nextBs = s.indexOf('\\');
+      while (i < s.length) {
+        if (esc) {
+          if (esc === 1) { const ch = s[i++]; if (ch === 'u') { esc = 2; hex = ''; continue; } if (!(ch in ESC)) throw REF_BAD(); pieces.push(ESC[ch]); esc = 0; continue; }
+          while (hex.length < 4 && i < s.length) hex += s[i++];
+          if (hex.length === 4) { if (!/^[0-9a-fA-F]{4}$/.test(hex)) throw REF_BAD(); pieces.push(String.fromCharCode(parseInt(hex, 16))); esc = 0; }
+          continue;
+        }
+        if (inStr) {
+          if (nextBs >= 0 && nextBs < i) nextBs = s.indexOf('\\', i);
+          let q = s.indexOf('"', i); if (q < 0) q = s.length;
+          if (nextBs >= 0 && nextBs < q) { if (nextBs > i) pieces.push(s.slice(i, nextBs)); esc = 1; i = nextBs + 1; continue; }
+          if (q > i) pieces.push(s.slice(i, q));
+          if (q === s.length) return;
+          emit(); inStr = false; i = q + 1; continue;
+        }
+        const c = s.charCodeAt(i++);
+        if (c === 34) inStr = true;
+        else if (c === 110) emit();   /* null -> '' */
+        else if (c === 44 || c === 32 || c === 117 || c === 108) continue;
+        else if (c === 91) { if (open) throw REF_BAD(); open = true; }
+        else if (c === 93) open = false;
+        else throw REF_BAD();
+      }
+    },
+    end() {
+      if (inStr || esc) throw REF_BAD();
+      if (!blocks) return done(out);
+      flush();
+      const first = Int32Array.from(bFirst.length > bList.length ? bFirst : [...bFirst, n]);
+      done(new RefText(bList, first, off.slice(0, n), n));
+    }
+  };
+}
+const COL_NUM = /^(t\.(id|k|y|e|r|v|g|ds)|p\.(id|b|d|f)|c\.(t|p|r|e|s))$/;
 async function refParse(raw, { onDesc = null } = {}) {
   let o = null;
-  await refLines(raw, line => {
-    if (!line.trim()) return;
-    if (!o) { o = JSON.parse(line); if (obj(o).v === 2) Object.assign(o, { t: {}, p: {}, c: {} }); return; }
-    const tab = line.indexOf('\t'), key = line.slice(0, tab);
-    /* descriptions ("d.N": 1,000 titles per line) go straight to storage at import and are skipped otherwise: never all in memory */
-    if (o.v === 2 && /^d\.\d{1,5}$/.test(key)) { if (onDesc) onDesc(+key.slice(2), line.slice(tab + 1)); return; }
-    if (key === 't.d') return;   /* an early single-line form: too big for a phone, ignored */
-    const m = key.match(/^([tpc])\.([a-z]{1,3})$/);
-    if (o.v !== 2 || !m) throw new Error('That database file is incomplete or damaged.');
-    const v = JSON.parse(line.slice(tab + 1));
-    o[m[1]][m[2]] = COL_NUM.test(key) && Array.isArray(v) ? Int32Array.from(v) : v;   /* typed right away: lower peak memory */
+  await refScan(raw, {
+    head(h) { o = JSON.parse(h); if (obj(o).v === 2) Object.assign(o, { t: {}, p: {}, c: {} }); },   /* v1: the whole database on one line */
+    sink(key) {
+      if (obj(o).v !== 2) throw REF_BAD();
+      /* descriptions ("d.N": 1,000 titles per line) go straight to storage at import and are skipped otherwise: never all in memory */
+      if (/^d\.\d{1,5}$/.test(key)) return onDesc ? sinkText(s => onDesc(+key.slice(2), s)) : SINK_SKIP;
+      if (key === 't.d') return SINK_SKIP;   /* an early single-line form: too big for a phone, ignored */
+      const m = key.match(/^([tpc])\.([a-z]{1,3})$/);
+      if (!m) throw REF_BAD();
+      const put = v => { o[m[1]][m[2]] = v; };
+      if (COL_NUM.test(key)) return sinkInts(put);
+      if (key === 'c.ch') return sinkStrs(true, put);
+      if (key === 't.n' || key === 'p.n') return sinkStrs(false, put);
+      return sinkText(s => put(JSON.parse(s)));
+    }
   });
   if (!o) throw new SyntaxError('empty');
   return o;
@@ -1330,6 +1466,17 @@ const refStatus = () => (ref ? 'ready' : refLoading ? 'loading' : refErr ? 'erro
 /* the stored file lives under refInfo.dataKey ('refData' or 'refDataB': an import writes the other one, so the old copy
    stays usable until the new one has loaded) */
 const refDataKey = i => (i && i.dataKey === 'refDataB' ? 'refDataB' : 'refData');
+/* crash guard: a mark is set while the database loads and cleared when it finishes. If the page was closed by the
+   phone mid-load (out of memory), the mark is still there next time, so the app opens without loading it and offers
+   to try again, instead of crashing every time it opens. */
+const REF_GUARD = 'goobs-watchlog-refload';
+const guardSet = () => { try { localStorage.setItem(REF_GUARD, String(Date.now())); } catch { /* storage blocked: no guard */ } };
+const guardClear = () => { try { localStorage.removeItem(REF_GUARD); } catch { /* fine */ } };
+const guardTripped = () => { try { return !!localStorage.getItem(REF_GUARD); } catch { return false; } };
+let refBlocked = false;
+/* closing or switching away from the app mid-load isn't a crash: the mark is dropped while the app is hidden */
+document.addEventListener('visibilitychange', () => { if (!refLoading) return; if (document.visibilityState === 'hidden') guardClear(); else guardSet(); });
+const REF_CRASHED = 'The movie database didn’t finish loading last time (the phone may have run short of memory), so it wasn’t loaded this time. Your log is fine. To try again, go to Backup.';
 async function loadStoredRef(info) {
   let raw = await idbGet(db, refDataKey(info));
   if (!raw) throw new Error('The database is missing from this device’s storage. Import the file again.');
@@ -1339,10 +1486,12 @@ async function loadStoredRef(info) {
 let refImporting = false;   /* while an import runs, nothing else loads a database (one at a time in memory) */
 function ensureRef() {
   if (ref || refLoading || refImporting || !refInfo || !db || refErr) return refLoading;
+  if (guardTripped()) { refBlocked = true; refErr = REF_CRASHED; refreshAfterRef(); return null; }
   refLoading = (async () => {
+    guardSet();
     try { ref = await loadStoredRef(refInfo); _lr = null; await refWarm(); }
     catch (e) { console.error(e); ref = null; refErr = e instanceof SyntaxError ? 'The stored database is damaged. Import the file again.' : e.message || String(e); }
-    finally { refLoading = null; }
+    finally { refLoading = null; guardClear(); }
     refreshAfterRef();
   })();
   return refLoading;
@@ -1398,7 +1547,7 @@ async function importRefFileInner(f) {
   if (refLoading) { txt('Finishing the current load…'); await refLoading.catch(() => {}); }
   const old = refInfo, newKey = refDataKey(old) === 'refData' ? 'refDataB' : 'refData';
   ref = null; _lr = null; descChunks.clear(); ui.refT = null; ui.refP = null;   /* let go of the current database first */
-  const backToOld = () => { refInfo = old; refErr = ''; if (old) ensureRef(); };
+  const backToOld = () => { refInfo = old; refErr = ''; refBlocked = false; if (old) ensureRef(); };
   let buf;
   try { buf = await readFileBuf(f); } catch { backToOld(); return fail('Couldn’t read that file', 'Try choosing it again.'); }
   const gen = uid().replace(/[^a-z0-9]/gi, '').slice(0, 10) || String(Date.now()), puts = []; let descN = 0, head = null;
@@ -1406,9 +1555,13 @@ async function importRefFileInner(f) {
   /* 1. one pass: check the header, store the description blocks (nothing else is unpacked into memory here) */
   try {
     txt('Unpacking…'); await wait(20);
-    await refLines(buf, line => {
-      if (!head) { head = JSON.parse(line); if (obj(head).format !== REF_FORMAT || (head.v !== 1 && head.v !== 2)) throw new Error('That isn’t a Watch Log database file.'); return; }
-      if (line.startsWith('d.')) { const tab = line.indexOf('\t'), key = line.slice(0, tab); if (/^d\.\d{1,5}$/.test(key)) { const k = +key.slice(2); descN = Math.max(descN, k + 1); const w = idbPut(db, `refDesc:${gen}:${k}`, line.slice(tab + 1)); puts.push(w); return w; } }
+    await refScan(buf, {
+      head(h) { head = JSON.parse(h); if (obj(head).format !== REF_FORMAT || (head.v !== 1 && head.v !== 2)) throw new Error('That isn’t a Watch Log database file.'); },
+      sink(key) {
+        if (!/^d\.\d{1,5}$/.test(key)) return SINK_SKIP;
+        const k = +key.slice(2); descN = Math.max(descN, k + 1);
+        return sinkText(t => { const w = idbPut(db, `refDesc:${gen}:${k}`, t); puts.push(w); return w; });
+      }
     });
     if (!head || head.format !== REF_FORMAT || (head.v !== 1 && head.v !== 2)) throw new Error('That isn’t a Watch Log database file.');
     await Promise.all(puts);
@@ -1422,15 +1575,16 @@ async function importRefFileInner(f) {
   const bytes = buf.byteLength; buf = null;
   /* 3. load it the normal way; keep it only if that works */
   let R;
-  try { txt('Loading…'); await wait(20); R = await loadStoredRef({ dataKey: newKey }); }
+  guardSet();
+  try { txt('Loading…'); await wait(20); R = await loadStoredRef({ dataKey: newKey }); guardClear(); }
   catch (e) {
-    await idbPut(db, newKey, null).catch(() => {}); await dropGen(gen, descN); backToOld();
+    guardClear(); await idbPut(db, newKey, null).catch(() => {}); await dropGen(gen, descN); backToOld();
     return fail('Can’t use that file', e instanceof SyntaxError ? 'That isn’t a Watch Log database file.' : e.message);
   }
   const info = { built: R.built, titles: R.nT, people: R.nP, credits: R.nC, bytes, at: new Date().toISOString(), descChunks: descN, descGen: descN ? gen : '', dataKey: newKey };
   try { await idbPut(db, 'refInfo', JSON.stringify(info)); }
   catch (e) { console.error(e); R = null; await idbPut(db, newKey, null).catch(() => {}); await dropGen(gen, descN); backToOld(); return fail('Couldn’t save the database', 'This device’s storage refused it (it may be full). Nothing was changed.'); }
-  ref = R; refInfo = info; refErr = ''; _lr = null;
+  ref = R; refInfo = info; refErr = ''; refBlocked = false; _lr = null;
   txt('Indexing…'); await wait(20); await refWarm();
   /* the old copy and its descriptions go now */
   await idbPut(db, newKey === 'refData' ? 'refDataB' : 'refData', null).catch(() => {});
@@ -1444,7 +1598,7 @@ async function importRefFileInner(f) {
 async function doRefImport() { const f = await pickFile(''); if (f) await importRefFile(f); }
 async function clearRef() {
   const old = refInfo;   /* read before refInfo is cleared */
-  ref = null; refInfo = null; refErr = ''; refLoading = null; _lr = null; ui.refT = null; ui.refP = null;
+  ref = null; refInfo = null; refErr = ''; refBlocked = false; refLoading = null; _lr = null; ui.refT = null; ui.refP = null;
   if (db) { try { await idbPut(db, 'refData', null); await idbPut(db, 'refDataB', null); await idbPut(db, 'refInfo', null); if (old && old.descChunks) for (let k = 0; k < old.descChunks; k++) await idbPut(db, `refDesc:${old.descGen}:${k}`, null); } catch (e) { console.error(e); } }
   descChunks.clear();
 }
@@ -2297,7 +2451,7 @@ function renderBackup() {
 
 function refCardHTML() {
   const i = refInfo, st = refStatus();
-  const body = i ? `<p><b>${nfmt(i.titles)}</b> titles and <b>${nfmt(i.people)}</b> people${i.built ? `, built ${esc(fmtDate(i.built, false))}` : ''}.${st === 'error' ? '' : st === 'ready' ? ' Ready.' : ' Loading…'}</p>${st === 'error' ? `<div class="note bad">${esc(refErr)}</div>` : ''}<p>Search it from Titles, People and Connect → Who’s that?, even with no connection.</p>`
+  const body = i ? `<p><b>${nfmt(i.titles)}</b> titles and <b>${nfmt(i.people)}</b> people${i.built ? `, built ${esc(fmtDate(i.built, false))}` : ''}.${st === 'error' ? '' : st === 'ready' ? ' Ready.' : ' Loading…'}</p>${st === 'error' ? `<div class="note bad">${esc(refErr)}</div>${refBlocked ? '<div class="btnrow"><button type="button" class="btn primary" data-action="ref-retry">Try loading it again</button></div>' : ''}` : ''}<p>Search it from Titles, People and Connect → Who’s that?, even with no connection.</p>`
     : `<p>Look up any movie or show and its main cast, and everything an actor has been in, with no connection. Import the database file (<b>watchlog-database.json.gz</b>, about 20 MB) once.</p>`;
   return `<section class="card pad" id="refCard"><h3>Offline movie &amp; TV database</h3>${body}
     <p class="hint">Built from IMDb’s data for personal use${ref && ref.t.ds ? '; descriptions from TVMaze (CC BY-SA) and TMDB. This product uses the TMDB API but is not endorsed or certified by TMDB' : ''}. It stays on this device: it isn’t in backups and isn’t sent anywhere.</p>
@@ -2762,6 +2916,7 @@ view.addEventListener('click', e => {
     }
     case 'ref-import': doRefImport(); break;
     case 'ref-remove': doRefRemove(); break;
+    case 'ref-retry': guardClear(); refBlocked = false; refErr = ''; ensureRef(); render(); break;
   }
 });
 view.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('.row[role=button]')) { e.preventDefault(); e.target.click(); } });
