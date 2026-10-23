@@ -1301,14 +1301,15 @@ async function refLines(raw, onLine) {
   for (;;) { const { done, value } = await rd.read(); if (done) break; feed(dec.decode(value, { stream: true })); }
   feed(dec.decode()); if (parts.length) onLine(parts.join(''));
 }
-const COL_NUM = /^(t\.(id|k|y|e|r|v|g)|p\.(id|b|d|f)|c\.(t|p|e|s))$/;
-async function refParse(raw) {
+const COL_NUM = /^(t\.(id|k|y|e|r|v|g|ds)|p\.(id|b|d|f)|c\.(t|p|e|s))$/;
+async function refParse(raw, { withDesc = false } = {}) {
   let o = null;
   await refLines(raw, line => {
     if (!line.trim()) return;
     if (!o) { o = JSON.parse(line); if (obj(o).v === 2) Object.assign(o, { t: {}, p: {}, c: {} }); return; }
     const tab = line.indexOf('\t'), key = line.slice(0, tab), m = key.match(/^([tpc])\.([a-z]{1,3})$/);
     if (o.v !== 2 || !m) throw new Error('That database file is incomplete or damaged.');
+    if (key === 't.d') { if (withDesc) o.t.dRaw = line.slice(tab + 1); return; }   /* descriptions live in storage, not memory (see refSaveDesc) */
     const v = JSON.parse(line.slice(tab + 1));
     o[m[1]][m[2]] = COL_NUM.test(key) && Array.isArray(v) ? Int32Array.from(v) : v;   /* typed right away: lower peak memory */
   });
@@ -1317,7 +1318,7 @@ async function refParse(raw) {
 }
 function normRefInfo(i) {
   i = obj(i); const n = k => intIn(i[k], 0, 1e9) ?? 0;
-  return i.titles ? { built: /^\d{4}-\d\d-\d\d$/.test(str(i.built)) ? i.built : '', titles: n('titles'), people: n('people'), credits: n('credits'), bytes: n('bytes'), at: isoDT(i.at) || '' } : null;
+  return i.titles ? { built: /^\d{4}-\d\d-\d\d$/.test(str(i.built)) ? i.built : '', titles: n('titles'), people: n('people'), credits: n('credits'), bytes: n('bytes'), at: isoDT(i.at) || '', descChunks: n('descChunks') } : null;
 }
 const refStatus = () => (ref ? 'ready' : refLoading ? 'loading' : refErr ? 'error' : refInfo ? 'stored' : 'none');
 /* load the stored database into memory (once); screens that need it re-render when it's ready */
@@ -1381,11 +1382,14 @@ async function importRefFile(f) {
   try { buf = await readFileBuf(f); } catch { return fail('Couldn’t read that file', 'Try choosing it again.'); }
   try {
     txt('Unpacking…'); await wait(20);
-    const o = await refParse(buf);
+    const o = await refParse(buf, { withDesc: true });
     txt('Checking…'); await wait(20);
     R = refBuild(o);
   } catch (e) { return fail('Can’t use that file', e instanceof SyntaxError ? 'That isn’t a Watch Log database file.' : e.message); }
-  const info = { built: R.built, titles: R.nT, people: R.nP, credits: R.nC, bytes: buf.byteLength, at: new Date().toISOString() };
+  let descN = 0;
+  try { if (R.t.dRaw || (refInfo && refInfo.descChunks)) { txt('Saving descriptions…'); await wait(20); descN = await refSaveDesc(R.t, (refInfo && refInfo.descChunks) || 0); } }
+  catch (e) { console.error(e); return fail('Couldn’t save the database', 'This device’s storage refused it (it may be full). Nothing was changed.'); }
+  const info = { built: R.built, titles: R.nT, people: R.nP, credits: R.nC, bytes: buf.byteLength, at: new Date().toISOString(), descChunks: descN };
   try { txt('Saving on this device…'); await idbPut(db, 'refData', buf); await idbPut(db, 'refInfo', JSON.stringify(info)); }
   catch (e) { console.error(e); return fail('Couldn’t save the database', 'This device’s storage refused it (it may be full). Nothing was changed.'); }
   ref = R; refInfo = info; refErr = ''; _lr = null;
@@ -1397,8 +1401,10 @@ async function importRefFile(f) {
 }
 async function doRefImport() { const f = await pickFile(''); if (f) await importRefFile(f); }
 async function clearRef() {
+  const oldChunks = (refInfo && refInfo.descChunks) || 0;   /* read before refInfo is cleared */
   ref = null; refInfo = null; refErr = ''; refLoading = null; _lr = null; ui.refT = null; ui.refP = null;
-  if (db) { try { await idbPut(db, 'refData', null); await idbPut(db, 'refInfo', null); } catch (e) { console.error(e); } }
+  if (db) { try { await idbPut(db, 'refData', null); await idbPut(db, 'refInfo', null); for (let k = 0; k < oldChunks; k++) await idbPut(db, 'refDesc:' + k, null); } catch (e) { console.error(e); } }
+  descChunks.clear();
 }
 async function doRefRemove() {
   if (!(await confirmBox('Remove the movie database?', 'Deletes it from this device. Your log isn’t touched. You can import the file again any time.', 'Remove'))) return;
@@ -1860,7 +1866,7 @@ function renderTitle() {
     <section class="card pad">
       <div class="muted" style="font-size:14px">${t.kind === 'series' ? 'TV series' : 'Movie'}${t.year ? ' · ' + t.year : ''}</div>
       <h2 style="margin:2px 0 10px">${esc(t.name)}</h2>
-      ${t.synopsis ? `<p class="synopsis" id="synopsis">${esc(t.synopsis)}</p>` : ''}
+      ${t.synopsis ? `<p class="synopsis" id="synopsis">${esc(t.synopsis)}</p>` : (() => { const ti = ref ? logRef().byTitle.get(t.id) : null, d = ti != null ? refDesc(ti) || '' : ''; return d ? `<p class="synopsis" id="synopsis">${esc(d)}</p><p class="fine" style="margin:-8px 0 12px">Description: ${esc(refDescSrc(ti))}</p>` : ''; })()}
       <div class="btnrow" style="margin:0 0 12px">${t.trailer ? `<a class="btn" id="trailer" href="${esc(ytWatch(t.trailer))}" target="_blank" rel="noopener noreferrer">▶ Watch trailer</a>` : `<a class="btn ghost" id="trailerSearch" href="${esc(ytSearch(t))}" target="_blank" rel="noopener noreferrer">▶ Find trailer on YouTube</a>`}</div>
       <div class="chips" role="group" aria-label="Status">${STATUSES.map(([k, l]) => `<button type="button" class="chip" data-action="set-status" data-s="${k}" aria-pressed="${t.status === k}">${l}</button>`).join('')}</div>
       <div class="btnrow"><button type="button" class="btn" data-action="rate" data-id="${esc(t.id)}">${t.rating > 0 ? '★ ' + fmtR(t.rating) + ' / 10 · Change' : '★ Rate it'}</button>${t.kind === 'series' ? `<button type="button" class="btn" data-action="q-ep" data-id="${esc(t.id)}">+ Episode</button>` : ''}<button type="button" class="btn" data-action="q-again" data-id="${esc(t.id)}">↻ Watched again</button></div>
@@ -2018,7 +2024,37 @@ async function lookUpDesc(ti) {
   if (lt && d && !lt.synopsis) { lt.synopsis = d; persist({ touch: false }); }
   render();
 }
-const descOf = ti => { const tt = ttId(ref.t.id[ti]), lt = logRef().byRef.get(ti); return descs.has(tt) ? descs.get(tt) : lt && lt.synopsis ? lt.synopsis : null; };
+/* The database's own descriptions (TVMaze or TMDB, saved when it was built). At import they go into this device's storage
+   in chunks of DESC_CHUNK titles, and only the chunk a title needs is read, when it's shown: no memory cost otherwise. */
+const DESC_SRC = ['', 'TVMaze (CC BY-SA)', 'TMDB'], DESC_CHUNK = 1000;
+const descChunks = new Map();   /* chunk number -> array of descriptions (this session) */
+const hasRefDesc = ti => ti != null && ti >= 0 && !!ref.t.ds && ref.t.ds.length === ref.nT && !!ref.t.ds[ti];
+/* -> the text, '' when there is none, or undefined while its chunk is still being read (the page redraws when it arrives) */
+function refDesc(ti) {
+  if (!hasRefDesc(ti)) return '';
+  const k = Math.floor(ti / DESC_CHUNK), c = descChunks.get(k);
+  if (c) return str(c[ti % DESC_CHUNK]);
+  if (c === undefined && db) {
+    descChunks.set(k, null);
+    idbGet(db, 'refDesc:' + k).then(v => { let a = []; try { a = JSON.parse(v || '[]'); } catch { a = []; } descChunks.set(k, Array.isArray(a) ? a : []); if (!$('dialog[open]')) render(); })
+      .catch(e => { console.error(e); descChunks.set(k, []); });
+  }
+  return undefined;
+}
+/* import: write the descriptions out in chunks (and clear an older database's chunks) */
+async function refSaveDesc(T, oldChunks) {
+  let list = [];
+  if (T.dRaw) { try { const a = JSON.parse(T.dRaw); if (Array.isArray(a)) list = a; } catch { list = []; } }
+  T.dRaw = null;
+  const n = Math.ceil(list.length / DESC_CHUNK);
+  for (let k = 0; k < n; k++) await idbPut(db, 'refDesc:' + k, JSON.stringify(list.slice(k * DESC_CHUNK, (k + 1) * DESC_CHUNK)));
+  for (let k = n; k < oldChunks; k++) await idbPut(db, 'refDesc:' + k, null);
+  descChunks.clear();
+  return n;
+}
+const refDescSrc = ti => DESC_SRC[ref.t.ds && ref.t.ds[ti]] || '';
+/* what to show: one looked up this session, the title's own synopsis in your log, then the database's */
+const descOf = ti => { const tt = ttId(ref.t.id[ti]), lt = logRef().byRef.get(ti); if (descs.has(tt) && descs.get(tt)) return descs.get(tt); if (lt && lt.synopsis) return lt.synopsis; const d = refDesc(ti); return d === undefined ? undefined : d || (descs.has(tt) ? '' : null); };
 const logPersonNm = p => (p.imdb || (refPersonOf(p) >= 0 ? personNm(refPersonOf(p)) : ''));
 
 /* ---- database pages: a title or person that isn't in your log ---- */
@@ -2065,7 +2101,7 @@ function renderRefTitle() {
       <div class="muted" style="font-size:14px">${esc(facts)}</div>
       <h2 style="margin:2px 0 10px">${esc(refName(ti))}</h2>
       ${gen.length ? `<div class="pill-row" style="margin-bottom:10px">${gen.map(g => `<span class="pill">${esc(g)}</span>`).join('')}</div>` : ''}
-      ${desc ? `<p class="synopsis" id="rtDesc">${esc(desc)}</p>` : desc === '' ? '<p class="fine" id="rtDesc">No description found online.</p>' : `<div class="btnrow" style="margin:0 0 12px"><button type="button" class="btn" data-action="rt-desc">📝 Description</button></div>`}
+      ${desc === undefined ? '<p class="fine" id="rtDesc">…</p>' : desc ? `<p class="synopsis" id="rtDesc">${esc(desc)}</p>${desc === refDesc(ti) && refDescSrc(ti) ? `<p class="fine" style="margin:-8px 0 12px">Description: ${esc(refDescSrc(ti))}</p>` : ''}` : desc === '' ? '<p class="fine" id="rtDesc">No description found online.</p>' : `<div class="btnrow" style="margin:0 0 12px"><button type="button" class="btn" data-action="rt-desc">📝 Description</button></div>`}
       ${add}
       <div class="btnrow"><a class="btn ghost" href="https://www.imdb.com/title/${ttId(ref.t.id[ti])}/" target="_blank" rel="noopener noreferrer">IMDb page ↗</a><a class="btn ghost" href="${esc(ytSearch({ name: refName(ti), year: ref.t.y[ti], kind: refKindLog(ref.t.k[ti]) }))}" target="_blank" rel="noopener noreferrer">▶ Trailer on YouTube</a></div>
     </section>
@@ -2233,7 +2269,7 @@ function refCardHTML() {
   const body = i ? `<p><b>${nfmt(i.titles)}</b> titles and <b>${nfmt(i.people)}</b> people${i.built ? `, built ${esc(fmtDate(i.built, false))}` : ''}.${st === 'error' ? '' : st === 'ready' ? ' Ready.' : ' Loading…'}</p>${st === 'error' ? `<div class="note bad">${esc(refErr)}</div>` : ''}<p>Search it from Titles, People and Connect → Who’s that?, even with no connection.</p>`
     : `<p>Look up any movie or show and its main cast, and everything an actor has been in, with no connection. Import the database file (<b>watchlog-database.json.gz</b>, about 20 MB) once.</p>`;
   return `<section class="card pad" id="refCard"><h3>Offline movie &amp; TV database</h3>${body}
-    <p class="hint">Built from IMDb’s data for personal use. It stays on this device: it isn’t in backups and isn’t sent anywhere.</p>
+    <p class="hint">Built from IMDb’s data for personal use${ref && ref.t.ds ? '; descriptions from TVMaze (CC BY-SA) and TMDB. This product uses the TMDB API but is not endorsed or certified by TMDB' : ''}. It stays on this device: it isn’t in backups and isn’t sent anywhere.</p>
     <div class="btnrow"><button type="button" class="btn${i ? '' : ' primary'}" data-action="ref-import">${i ? 'Replace with a newer file…' : 'Import database file…'}</button>${i ? '<button type="button" class="btn danger" data-action="ref-remove">Remove</button>' : ''}</div></section>`;
 }
 

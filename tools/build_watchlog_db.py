@@ -9,6 +9,8 @@ OUT of this (public) repository. Only this script lives in the repo.
 2. Run:   python3 build_watchlog_db.py <that folder> [output file]
    Output defaults to <that folder>/watchlog-database.json.gz  (about 40 MB; takes a few minutes)
 3. In Watch Log: Backup tab -> Offline movie & TV database -> Import database file.
+   Optional: fetch_watchlog_descriptions.py (in this folder) downloads short descriptions into the same folder; run this
+   builder again afterwards and they are included.
 
 What is kept (vote counts are IMDb votes; see KEEP below):
 File: gzip text, a JSON header line, then one line per column (t = titles, p = people, most-known first;
@@ -21,7 +23,7 @@ c = credits grouped by title).
   any other title they were in (main cast), however few votes it has (see FILMO_* below). Actors whose IMDb
   "known for" titles include a kept movie or special they aren't credited on are added to its cast.
 """
-import gzip, json, math, os, shutil, subprocess, sys, datetime, collections
+import gzip, json, math, os, re, shutil, subprocess, sys, datetime, collections
 
 KIND = {'movie': 0, 'tvSeries': 1, 'tvMiniSeries': 2, 'tvMovie': 3, 'video': 4, 'tvSpecial': 5}
 #            normal floor, before-1976 floor
@@ -218,6 +220,20 @@ def build(src, out_path):
         for o, nc, role, ch, e, ss in rows.get(ti, []):
             if nc in pix: ct.append(ti); cp.append(pix[nc]); cr.append(role); cc.append(ch); ce.append(e); cs.append(ss)
 
+    # descriptions (optional): fetch_watchlog_descriptions.py's file in the same folder; two sentences each
+    dpath, td, tds = os.path.join(src, 'watchlog-descriptions.json.gz'), [], []
+    if os.path.exists(dpath):
+        with gzip.open(dpath, 'rt', encoding='utf-8') as f: dc = json.load(f)
+        tvm, tmdb = dc.get('tvmaze') or {}, dc.get('tmdb') or {}
+        def short(d):
+            d = d.strip(); m = re.match(r'^(.+?[.!?])(\s+.+?[.!?])?(\s|$)', d)
+            d = (m.group(0) if m else d).strip()
+            return d if len(d) <= 320 else d[:317].rsplit(' ', 1)[0] + '…'
+        for t in titles:
+            d, s = (tvm.get(t[0]), 1) if tvm.get(t[0]) else (tmdb.get(t[0]), 2) if tmdb.get(t[0]) else ('', 0)
+            td.append(short(d) if d else ''); tds.append(s)
+        say(f'descriptions: {sum(1 for x in tds if x):,} of {len(titles):,} titles')
+
     # v2 file: a header line, then one line per column ("t.n<TAB>[...]"), so the app can unpack it a column at a time
     head = {'format': 'goobs-watchlog-ref', 'v': 2, 'built': datetime.date.today().isoformat(),
             'src': 'IMDb non-commercial datasets (personal, non-commercial use only)', 'g': gen}
@@ -229,6 +245,7 @@ def build(src, out_path):
         ('p.d', [people[nc][2] for nc in pl]), ('p.f', [round(math.log10(1 + fame[nc]) * 100) for nc in pl]),
         # r: 0 cast, 1 director, 2 episode cast only, 3 more cast (from "known for"); e: episodes (series); s: first*1000 + last season
         ('c.t', ct), ('c.p', cp), ('c.r', cr), ('c.ch', cc), ('c.e', ce), ('c.s', cs)]
+    if td: cols += [('t.ds', tds), ('t.d', td)]        # t.d last: the app reads it only when a description is first needed
     size = 0
     with gzip.open(out_path, 'wb', compresslevel=9) as f:
         for line in [json.dumps(head, ensure_ascii=False, separators=(',', ':'))] + [k + '\t' + json.dumps(v, ensure_ascii=False, separators=(',', ':')) for k, v in cols]:
