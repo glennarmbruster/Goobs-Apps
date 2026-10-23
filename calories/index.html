@@ -1071,7 +1071,9 @@ function renderCruise() {
   const sh = curShip(), order = shipOrder(), all = shipFoods(sh.name), venues = shipVenues(sh);
   const v = venues.includes(ui.venue) ? ui.venue : venues[0];
   const list = all.filter(f => f.cat === v), secs = [...new Set(list.map(f => f.c || ''))], d = sailOf(sh.name);
+  const missing = ui.askShip && !shipsHere().some(x => x.name === ui.askShip) ? ui.askShip : '';
   return `<div class="stack">
+    ${missing ? `<section class="card pad" role="status"><p style="margin:0"><b>${esc(missing)}</b> menus aren’t in Calorie Lookup yet. These ships are:</p></section>` : ''}
     <section class="card pad">
       <div class="scroll-chips" style="padding-top:0">${order.map(x => `<button type="button" class="chip" data-action="ship" data-v="${esc(x.name)}" aria-pressed="${x.name === sh.name}">${esc(x.name)}</button>`).join('')}</div>
       <p class="fine" style="margin:8px 0 0">${d ? `Your sailing: <b>${esc(sailText(d))}</b> · <a href="#" data-action="sail-edit">Change</a>` : `<a href="#" data-action="sail-edit">Add your sailing dates</a> so this tab opens on your next cruise.`}</p></section>
@@ -1178,7 +1180,7 @@ function render() {
   view.innerHTML = detail ? renderFood() : { foods: renderFoods, steak: renderSteak, drinks: renderDrinks, cruise: renderCruise, saved: renderSaved }[ui.tab]();
   $$('nav.tabs button').forEach(b => b.setAttribute('aria-current', !detail && b.dataset.tab === ui.tab ? 'page' : 'false'));
   const hd = $('header.top .wrap'); let back = $('#backLink');
-  const ex = $('a.exit', hd); if (ex) ex.classList.toggle('hide', detail);
+  const ex = $('a.exit', hd); if (ex) { ex.classList.toggle('hide', detail); if (ui.backToTrip && !ex.dataset.trip) { ex.dataset.trip = '1'; ex.textContent = '‹ Trip'; ex.setAttribute('aria-label', 'Back to the trip'); ex.href = '../travel/'; ex.addEventListener('click', e => { if (history.length > 1) { e.preventDefault(); history.back(); } }); } }
   if (detail && !back) { back = document.createElement('a'); back.id = 'backLink'; back.className = 'back'; back.href = '#'; back.textContent = '‹ Back'; hd.insertBefore(back, hd.firstChild); }
   if (!detail && back) back.remove();
   $('#title').textContent = detail ? titleOf(byId.get(ui.id)) : ui.tab === 'cruise' ? (ui.meal ? 'Make me a meal' : curShip().name || TITLES.cruise) : TITLES[ui.tab];
@@ -1225,7 +1227,7 @@ view.addEventListener('click', e => {
     case 'onl-type': ui.onl.brands = el.dataset.v === '1'; ui.onl.results = []; ui.onl.err = ''; ui.onl.q = ''; paintOnline(); if (ui.q.trim()) runOnline(); break;
     case 'cut': ui.cut = el.dataset.v; render(); break;
     case 'venue': ui.venue = el.dataset.v; render(); break;
-    case 'ship': ui.ship = el.dataset.v; store.ship = ui.ship; ui.venue = null; save(); render(); break;
+    case 'ship': ui.ship = el.dataset.v; ui.askShip = ''; store.ship = ui.ship; ui.venue = null; save(); render(); break;
     case 'sail-edit': e.preventDefault(); editSail(); break;
     case 'meal-open': ui.meal = { v: ui.venue && mealVenues().includes(ui.venue) ? ui.venue : (store.meal && store.meal.v) || mealVenues()[0], c: { ...((store.meal && store.meal.c) || {}) }, pick: {}, more: {} }; render(); window.scrollTo(0, 0); break;
     case 'meal-close': ui.meal = null; render(); window.scrollTo(0, 0); break;
@@ -1294,8 +1296,21 @@ const famOf = f => (f && isLocalId(f.id) ? FAM.get(f.fam) || [f] : [f]);
   for (const [id, f] of Object.entries(store.online || {})) if (f && f.v && Array.isArray(f.m)) byId.set(id, { ...f, src: 'fdc' });
   const fix = id => { const f = getFood(id); return f ? f.id : null; };
   store.favs = [...new Set(store.favs.map(fix).filter(x => x != null))]; store.recent = [...new Set(store.recent.map(fix).filter(x => x != null))];
+  fromPlanner();
   render();
 })();
+/* Planner hand-off: ?ship=<ship name>&from=YYYY-MM-DD&to=YYYY-MM-DD&back=1 opens the Cruise tab on that ship and keeps the
+   trip's dates (on this phone only). With back=1 the top-left link goes back to the trip instead of to all apps. */
+function fromPlanner() {
+  let u; try { u = new URL(location.href); } catch { return; }
+  const name = (u.searchParams.get('ship') || '').trim().slice(0, 60);
+  if (!name) return;
+  const from = u.searchParams.get('from') || '', to = u.searchParams.get('to') || '';
+  if (isISO(from) && isISO(to) && to >= from) { store.sail = { ...(store.sail || {}), [name]: { from, to } }; save(); }
+  ui.tab = 'cruise'; ui.id = null; ui.stack = []; ui.meal = null; ui.venue = null;
+  ui.askShip = name; ui.ship = shipsHere().some(x => x.name === name) ? name : null;
+  if (u.searchParams.get('back') === '1') ui.backToTrip = true;
+}
 </script>
 </body>
 </html>

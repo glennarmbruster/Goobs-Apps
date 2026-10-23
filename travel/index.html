@@ -891,7 +891,16 @@ const normIdea = i => {
   return { id: str(i.id) || uid(), type: oneOf(i.type, IDEA_TYPES.map(x => x[0]), 'other'), title: str(i.title).trim().slice(0, 140), url: safeUrl(i.url), notes: str(i.notes).slice(0, 1000), planned: !!i.planned };
 };
 const normTodo = i => { if (!i || typeof i !== 'object' || !str(i.text).trim()) return null; return { id: str(i.id) || uid(), text: str(i.text).trim().slice(0, 140), done: !!i.done, pin: !!i.pin, notes: str(i.notes).slice(0, 3000) }; };
-const normCruise = c => { if (!c || typeof c !== 'object') return null; const seen = new Set(); return { ports: arr(c.ports).filter(id => typeof id === 'string' && portById(id) && !seen.has(id) && seen.add(id)) }; };
+const normCruise = c => { if (!c || typeof c !== 'object') return null; const seen = new Set(); const ship = str(c.ship).trim().slice(0, 60); return { ports: arr(c.ports).filter(id => typeof id === 'string' && portById(id) && !seen.has(id) && seen.add(id)), ...(ship ? { ship } : {}) }; };
+/* ship choices for cruise trips; the Nutrition button opens Calorie Lookup's Cruise tab for the ship (CAL_LINK off = no ship field, no button) */
+const CAL_LINK = true;
+const CRUISE_SHIPS = ['Disney Magic', 'Norwegian Viva', 'MSC Seascape'];
+function nutritionLink(t) {
+  const q = new URLSearchParams({ ship: t.cruise.ship });
+  if (t.startDate) { q.set('from', t.startDate); q.set('to', t.endDate || t.startDate); }
+  q.set('back', '1');
+  return '../calories/?' + q.toString();
+}
 /* ---- Split: shared expenses for group trips ----
    Money is stored as whole minor units (cents) so shares always add up exactly. People, expenses and payments are
    separate sync records (see KINDS), so two phones adding at the same time never overwrite each other. */
@@ -1564,6 +1573,7 @@ function tripDialog(t) {
       { name: 'name', label: 'Trip name', required: true, value: t && t.name, placeholder: 'e.g. Alabama beach week' },
       { name: 'type', label: 'Type', type: 'select', value: 'trip', options: [['trip', 'Trip'], ['event', 'Event (appointment or date)']], hint: 'Event hides packing, budget and plan. Anything already entered is kept if you switch back.' },
       { name: 'kind', label: 'Destination type', type: 'select', value: t && t.cruise ? 'cruise' : 'place', options: [['place', 'A place (type it below)'], ['cruise', CRUISE_KIND]], hint: 'Choose the cruise to get typical temperatures for the common Galveston ports on the Weather tab.' },
+      ...(CAL_LINK ? [{ name: 'ship', label: 'Ship (cruises)', type: 'select', value: (t && t.cruise && t.cruise.ship) || '', options: [['', 'Not set'], ...[...CRUISE_SHIPS, ...(t && t.cruise && t.cruise.ship && !CRUISE_SHIPS.includes(t.cruise.ship) ? [t.cruise.ship] : [])].map(x => [x, x])], hint: 'Adds a Nutrition button to the trip with that ship’s menus from Calorie Lookup.' }] : []),
       { name: 'destination', label: 'Destination', value: t && t.destination, placeholder: 'e.g. Gulf Shores, Alabama, or leave blank for a cruise', hint: 'Used for weather and lookup links.' },
       { name: 'startDate', label: 'Start date', type: 'date', value: t && t.startDate },
       { name: 'endDate', label: 'End date', type: 'date', value: t && t.endDate },
@@ -1606,11 +1616,12 @@ function tripDialog(t) {
         if (rec.destination !== t.destination || cruise !== wasCruise) { t.location = null; t.weather = null; ui.geo = null; }
         Object.assign(t, rec);
         t.cruise = cruise ? (t.cruise || { ports: [] }) : null;
+        if (t.cruise && CAL_LINK) { if (v.ship) t.cruise.ship = v.ship; else delete t.cruise.ship; }
         syncPackLists(t);
         if (cruise && !t.location) t.location = { ...GALVESTON };
         commit();
       } else {
-        const nt = normTrip({ ...rec, id: uid(), cruise: cruise ? { ports: [] } : null, location: cruise ? GALVESTON : null }, false);
+        const nt = normTrip({ ...rec, id: uid(), cruise: cruise ? { ports: [], ...(CAL_LINK && v.ship ? { ship: v.ship } : {}) } : null, location: cruise ? GALVESTON : null }, false);
         state.trips.push(nt); persist();
         location.hash = '#/trip/' + nt.id;
         render();
@@ -2235,7 +2246,7 @@ function overviewTab(t) {
       <a class="card tile" href="#/trip/${id}/pack"><div class="lbl">Packed</div><div class="val num">${pk.done}/${pk.total}</div></a>
       <a class="card tile" href="#/trip/${id}/budget"><div class="lbl">Projected cost</div><div class="val num">${money(b.projected, t.currency)}</div></a>
       <a class="card tile" href="#/trip/${id}/plan"><div class="lbl">Plan items</div><div class="val num">${t.plan.length}</div></a>
-    </div>${wx}
+    </div>${CAL_LINK && t.cruise && t.cruise.ship ? `<a class="btn" style="display:flex;align-items:center;justify-content:center;margin-top:12px" href="${esc(nutritionLink(t))}">🍽️ Nutrition · ${esc(t.cruise.ship)} menus</a>` : ''}${wx}
     <div class="sec-h"><span>Before you go</span><span class="num">${todosDone}/${t.todos.length}</span></div>
     ${t.todos.length ? '<p class="hint" style="margin:-2px 4px 8px">Tap Details to add notes. Tap 📌 to show a to-do on the Planner home screen.</p>' : ''}
     <div class="card">${t.todos.length ? `<ul class="list">${t.todos.map(todoRow).join('')}</ul>` : ''}
