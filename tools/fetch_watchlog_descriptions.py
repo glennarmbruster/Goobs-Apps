@@ -19,6 +19,7 @@ import getpass, gzip, html, json, os, re, sys, threading, time, urllib.error, ur
 from concurrent.futures import ThreadPoolExecutor
 
 MIN_VOTES = 200
+CHUNK = 1000                 # descriptions per d.N line (the app's DESC_CHUNK)
 TVMAZE = os.environ.get('TVMAZE_BASE', 'https://api.tvmaze.com')
 TMDB = os.environ.get('TMDB_BASE', 'https://api.themoviedb.org/3')
 UA = {'User-Agent': 'goobs-watchlog-descriptions/1 (personal use)'}
@@ -64,7 +65,8 @@ def short(d):
 
 
 def add_to_db(db_path, cache):
-    """write the descriptions into the database file itself (its t.ds / t.d lines), so it can be imported right away"""
+    """write the descriptions into the database file itself, so it can be imported right away: a t.ds line (where each
+    one came from) and d.0, d.1, ... lines of 1,000 titles each, which the app stores one at a time (little memory)"""
     tvm, tmdb = cache.get('tvmaze') or {}, cache.get('tmdb') or {}
     with gzip.open(db_path, 'rt', encoding='utf-8') as f: lines = f.read().split('\n')
     ids = next(json.loads(l.split('\t', 1)[1]) for l in lines if l.startswith('t.id\t'))
@@ -73,8 +75,9 @@ def add_to_db(db_path, cache):
         t = 'tt%07d' % i
         d, src = (tvm.get(t), 1) if tvm.get(t) else (tmdb.get(t), 2) if tmdb.get(t) else ('', 0)
         td.append(short(d) if d else ''); tds.append(src)
-    keep = [l for l in lines if l and not l.startswith(('t.d\t', 't.ds\t'))]
-    keep += ['t.ds\t' + json.dumps(tds, separators=(',', ':')), 't.d\t' + json.dumps(td, ensure_ascii=False, separators=(',', ':'))]
+    keep = [l for l in lines if l and not l.startswith(('t.d\t', 't.ds\t', 'd.'))]
+    keep += ['t.ds\t' + json.dumps(tds, separators=(',', ':'))]
+    keep += ['d.%d\t' % k + json.dumps(td[k * CHUNK:(k + 1) * CHUNK], ensure_ascii=False, separators=(',', ':')) for k in range((len(td) + CHUNK - 1) // CHUNK)]
     tmp = db_path + '.tmp'
     with gzip.open(tmp, 'wt', encoding='utf-8', compresslevel=9) as f: f.write('\n'.join(keep) + '\n')
     os.replace(tmp, db_path)
@@ -144,6 +147,7 @@ def main():
         except KeyboardInterrupt:
             print('\nStopped. Progress saved; run again to continue.')
         save(); print()
+    if not todo and os.path.exists(out_path): print('Nothing new to fetch; rewriting the database with the saved descriptions.')
     n = add_to_db(db_path, cache)
     print('Done: %s titles now have a description. Updated %s (%.1f MB): import it in Watch Log (Backup > Replace with a newer file).'
           % (format(n, ','), db_path, os.path.getsize(db_path) / 1e6))

@@ -245,7 +245,7 @@ def build(src, out_path):
         ('p.d', [people[nc][2] for nc in pl]), ('p.f', [round(math.log10(1 + fame[nc]) * 100) for nc in pl]),
         # r: 0 cast, 1 director, 2 episode cast only, 3 more cast (from "known for"); e: episodes (series); s: first*1000 + last season
         ('c.t', ct), ('c.p', cp), ('c.r', cr), ('c.ch', cc), ('c.e', ce), ('c.s', cs)]
-    if td: cols += [('t.ds', tds), ('t.d', td)]        # t.d last: the app reads it only when a description is first needed
+    if td: cols += [('t.ds', tds)] + [('d.%d' % k, td[k * 1000:(k + 1) * 1000]) for k in range((len(td) + 999) // 1000)]   # descriptions in blocks of 1,000: the app stores them one at a time
     size = 0
     with gzip.open(out_path, 'wb', compresslevel=9) as f:
         for line in [json.dumps(head, ensure_ascii=False, separators=(',', ':'))] + [k + '\t' + json.dumps(v, ensure_ascii=False, separators=(',', ':')) for k, v in cols]:
