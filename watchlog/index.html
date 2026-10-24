@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Watch Log</title>
-<meta name="description" content="Private TV and movie log: cast and crew you enter, who-was-in-what cross-reference, ratings, watchlist. Data stays on your device.">
+<meta name="description" content="Private TV and movie log: cast and crew you enter, who-was-in-what cross-reference, ratings, watchlist. Shared across your devices when you sign in.">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -201,7 +201,7 @@ dialog::backdrop{background:rgba(10,15,12,.55)}
 </style>
 </head>
 <body>
-<header class="top"><div class="wrap"><div class="grow"><h1 id="title">Watch Log</h1><div class="sub" id="sub"></div></div><button type="button" class="btn small primary hide" id="addBtn">+ Title</button></div></header>
+<header class="top"><div class="wrap"><div class="grow"><h1 id="title">Watch Log</h1><div class="sub" id="sub"></div></div><span id="syncSlot"></span><button type="button" class="btn small primary hide" id="addBtn">+ Title</button></div></header>
 <main class="wrap" id="view"></main>
 <nav class="tabs" aria-label="Sections"><div class="wrap">
   <button type="button" data-tab="log"><span class="ico">🎬</span>Log</button>
@@ -522,6 +522,253 @@ if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol))
   const start = () => { add(); new MutationObserver(add).observe(document.body, { childList: true, subtree: true }); };
   if (document.body) start(); else document.addEventListener('DOMContentLoaded', start);
 })();
+
+/* ---- Sync: optional shared database for two people (Firebase Auth + Firestore) ----
+   The app always works from its own on-device copy. This layer pushes local changes
+   (per item, last write wins) and merges in changes made on the other phone.
+   The Firebase calls live in firebaseBackend() only; everything else is plain logic. */
+const SYNC_CONFIG = {
+  apiKey: 'AIzaSyCztAn5kfhZ1yLjvia17D0dEsnDBvFzuKA',
+  authDomain: 'goobs-apps-aa819.firebaseapp.com',
+  projectId: 'goobs-apps-aa819',
+  storageBucket: 'goobs-apps-aa819.firebasestorage.app',
+  messagingSenderId: '1080769702714',
+  appId: '1:1080769702714:web:70a664d22a62ee9492fe03'
+};
+const SYNC_SDK = 'https://www.gstatic.com/firebasejs/12.19.0/';
+
+async function firebaseBackend() {
+  const [appM, authM, fsM] = await Promise.all([
+    import(SYNC_SDK + 'firebase-app.js'), import(SYNC_SDK + 'firebase-auth.js'), import(SYNC_SDK + 'firebase-firestore.js')
+  ]);
+  const app = appM.initializeApp(SYNC_CONFIG), auth = authM.getAuth(app), fs = fsM.getFirestore(app);
+  return {
+    onAuth: cb => authM.onAuthStateChanged(auth, u => cb(u ? { uid: u.uid, email: u.email || '' } : null)),
+    signIn: (email, pw) => authM.signInWithEmailAndPassword(auth, email, pw),
+    signOut: () => authM.signOut(auth),
+    watch: (coll, onDocs, onErr) => fsM.onSnapshot(fsM.collection(fs, coll),
+      snap => { if (!snap.metadata.fromCache) onDocs(snap.docs.map(d => ({ id: d.id, data: d.data() }))); },   // ignore cache-only snapshots: an empty one would look like "everything was deleted"
+      onErr),
+    // Last write wins: skip the write when the stored copy is newer than this change.
+    // First-time uploads (ts 0) never overwrite a copy that already exists.
+    write: op => {
+      const ref = fsM.doc(fs, op.coll, op.id);
+      return fsM.runTransaction(fs, async tx => {
+        const cur = await tx.get(ref);
+        if (cur.exists() && (op.ts === 0 || (cur.data()._u || 0) > op.ts)) return;
+        if (op.op === 'del') tx.delete(ref);
+        else tx.set(ref, { ...op.data, _u: op.ts, _n: op.n });
+      });
+    }
+  };
+}
+
+const Sync = (() => {
+  const ACK_MS = 120000;
+  let model = null, db = null, dbKey = 'sync', backend = null, user = null, state0 = 'off';
+  let st = { v: 1, enabled: false, joined: false, seen: {}, outbox: {}, order: {} };
+  let unsubs = [], remote = {}, ready = {}, flushing = false, retryTimer = null, retries = 0, lastTs = 0, lastN = 0, denied = false, errored = false;
+  const acked = new Map(), listeners = [];
+
+  const canon = v => JSON.stringify(v, (k, x) => (x && typeof x === 'object' && !Array.isArray(x)) ? Object.fromEntries(Object.keys(x).sort().map(y => [y, x[y]])) : x);
+  const nextTs = () => (lastTs = Math.max(Date.now(), lastTs + 1));
+  const nextN = () => (lastN = Math.max(Date.now() * 1000, lastN + 1));
+  const keyOf = (c, id) => c + '/' + id;
+  const pending = () => Object.keys(st.outbox).length;
+  const emit = () => { for (const f of listeners) try { f(); } catch (e) { console.error(e); } };
+  let saveChain = Promise.resolve();
+  function save() { if (!db) return; const s = JSON.stringify(st); saveChain = saveChain.then(() => idbPut(db, dbKey, s)).catch(e => console.error(e)); }
+
+  function status() {
+    if (!model) return 'off';
+    if (state0 === 'unavailable') return 'unavailable';
+    if (!user) return backend ? 'signed-out' : 'connecting';
+    if (denied) return 'denied';
+    if (errored) return 'error';
+    if (!model.colls.every(c => ready[c])) return 'connecting';
+    return pending() ? 'syncing' : 'live';
+  }
+
+  /* what changed on this device since we last synced -> queue it */
+  function localDiff() {
+    if (!st.enabled || !model) return;
+    const present = new Set(); let dirty = false;
+    for (const e of model.toEntities()) {
+      const k = keyOf(e.coll, e.id); present.add(k);
+      const j = canon(e.data);
+      if (st.seen[k] === j) continue;
+      st.seen[k] = j;
+      if (!(k in st.order)) st.order[k] = nextN();
+      st.outbox[k] = { op: 'set', coll: e.coll, id: e.id, data: JSON.parse(j), ts: st.joined ? nextTs() : 0, n: st.order[k] };
+      dirty = true;
+    }
+    for (const k of Object.keys(st.seen)) {
+      if (present.has(k)) continue;
+      delete st.seen[k];
+      const i = k.indexOf('/');
+      st.outbox[k] = { op: 'del', coll: k.slice(0, i), id: k.slice(i + 1), ts: st.joined ? nextTs() : 0 };
+      dirty = true;
+    }
+    if (dirty) save();
+  }
+
+  /* combine the other phone's data with ours and hand the result to the app */
+  function reconcile() {
+    if (!model || !user || !model.colls.every(c => ready[c])) return;
+    localDiff();
+    const now = Date.now(), out = {}, remoteKeys = new Set();
+    model.colls.forEach(c => { out[c] = []; });
+    for (const c of model.colls) for (const d of remote[c] || []) {
+      const k = keyOf(c, d.id), op = st.outbox[k], u = d.data._u || 0, a = acked.get(k);
+      remoteKeys.add(k);
+      if (op && op.ts > u) { if (op.op === 'set') out[c].push({ id: d.id, data: op.data, n: op.n }); continue; }
+      if (op) delete st.outbox[k];
+      if (a && a.op === 'del' && now - a.at < ACK_MS && u <= a.ts) continue;   // our delete just landed; the list is a moment behind
+      const { _u, _n, ...data } = d.data;
+      if (_n) st.order[k] = _n;
+      out[c].push({ id: d.id, data, n: _n || st.order[k] || 0 });
+    }
+    for (const e of model.toEntities()) {
+      const k = keyOf(e.coll, e.id);
+      if (remoteKeys.has(k)) continue;
+      const op = st.outbox[k], a = acked.get(k);
+      if ((op && op.op === 'set') || (a && a.op === 'set' && now - a.at < ACK_MS)) out[e.coll].push({ id: e.id, data: e.data, n: st.order[k] || 0 });
+      // otherwise it was deleted on the other phone: leave it out
+    }
+    for (const [k, a] of acked) if (now - a.at >= ACK_MS || (a.op === 'set') === remoteKeys.has(k)) acked.delete(k);
+    for (const c of model.colls) out[c].sort((x, y) => (x.n || 0) - (y.n || 0));
+    model.apply(out);
+    const inOut = new Set();
+    for (const c of model.colls) for (const o of out[c]) inOut.add(keyOf(c, o.id));
+    const seen = {};
+    for (const e of model.toEntities()) { const k = keyOf(e.coll, e.id); if (inOut.has(k)) seen[k] = canon(e.data); }
+    st.seen = seen; st.joined = true;
+    localDiff();            // anything the app created while merging (e.g. a starter list) gets queued
+    save(); emit(); flush();
+  }
+
+  async function flush() {
+    if (flushing || !backend || !user || !st.enabled) return;
+    if (!st.joined && !model.colls.every(c => ready[c])) return;   // first sign-in: read what is there before writing
+    flushing = true; let failed = false;
+    try {
+      for (const k of Object.keys(st.outbox)) {
+        const op = st.outbox[k];
+        await backend.write(op);
+        if (st.outbox[k] === op) delete st.outbox[k];
+        acked.set(k, { op: op.op, ts: op.ts, at: Date.now() });
+        retries = 0; errored = false;
+      }
+    } catch (e) {
+      failed = true; errored = !(typeof navigator !== 'undefined' && navigator.onLine === false);
+      console.warn('sync write failed', e && e.code || e);
+      if (e && e.code === 'permission-denied') { denied = true; errored = false; }
+      else { clearTimeout(retryTimer); retryTimer = setTimeout(flush, Math.min(60000, 3000 * 2 ** Math.min(retries++, 5))); }
+    }
+    flushing = false; save(); emit();
+    if (!failed && pending()) flush();
+  }
+
+  function watch() {
+    unwatch();
+    for (const c of model.colls) {
+      unsubs.push(backend.watch(c, docs => { remote[c] = docs; ready[c] = true; denied = false; reconcile(); },
+        e => { if (e && e.code === 'permission-denied') denied = true; else errored = true; emit(); }));
+    }
+  }
+  function unwatch() { unsubs.forEach(u => { try { u(); } catch {} }); unsubs = []; remote = {}; ready = {}; }
+
+  async function connect() {
+    try {
+      const injected = typeof window !== 'undefined' && window.__SYNC_BACKEND__;
+      backend = injected || await firebaseBackend();
+      state0 = 'ok';
+    } catch (e) { backend = null; state0 = 'unavailable'; emit(); return; }
+    backend.onAuth(u => {
+      user = u; denied = false; errored = false;
+      if (u) { if (!st.enabled) { st.enabled = true; save(); } localDiff(); watch(); flush(); }
+      else unwatch();
+      emit();
+    });
+  }
+
+  return {
+    /* the app gives us: db (IndexedDB handle), key, and a model { colls, toEntities(), apply(map) } */
+    async start({ db: d, key, model: m }) {
+      db = d; dbKey = key || 'sync'; model = m;
+      if (db) { try { const raw = await idbGet(db, dbKey); if (raw) { const p = JSON.parse(raw); if (p && p.v === 1) st = { ...st, ...p }; } } catch (e) { console.error(e); } }
+      if (typeof window !== 'undefined') window.addEventListener('online', () => { if (!backend) connect(); else { errored = false; flush(); } });
+      await connect();
+      emit();
+    },
+    touch() { if (!st.enabled) return; localDiff(); flush(); emit(); },
+    onChange(f) { listeners.push(f); },
+    status, pending, enabled: () => st.enabled, user: () => user,
+    async signIn(email, pw) { if (!backend) throw Object.assign(new Error('offline'), { code: 'auth/network-request-failed' }); await backend.signIn(email, pw); },
+    async signOut() { if (backend) await backend.signOut(); }
+  };
+})();
+
+/* ---- sign-in UI shared by every synced app ---- */
+function syncText() {
+  const s = Sync.status(), n = Sync.pending();
+  switch (s) {
+    case 'live': return { icon: '☁️', text: 'Shared and up to date', cls: 'ok' };
+    case 'syncing': return { icon: '🔄', text: `Syncing ${n} change${n === 1 ? '' : 's'}…`, cls: '' };
+    case 'connecting': return { icon: '🔄', text: 'Connecting…', cls: '' };
+    case 'signed-out': return { icon: '👤', text: 'Not signed in — only on this device', cls: '' };
+    case 'denied': return { icon: '⛔', text: 'This account isn’t allowed to use the shared data', cls: 'bad' };
+    case 'error': return { icon: '⚠️', text: 'Sync problem — will retry. Your changes are saved here.', cls: 'bad' };
+    case 'unavailable': return { icon: '📴', text: Sync.enabled() ? 'Offline — changes are saved here and will sync later' : 'Sharing isn’t available right now (no connection)', cls: '' };
+    default: return { icon: '', text: '', cls: '' };
+  }
+}
+function syncBadgeHTML() {
+  const s = Sync.status(); if (s === 'off') return '';
+  const t = syncText();
+  return `<button type="button" class="syncbadge ${t.cls}" data-action="sync-info" aria-label="Sharing status: ${esc(t.text)}">${t.icon} <span>${esc({ live: 'Shared', 'signed-out': 'Sign in', unavailable: 'Offline', connecting: 'Connecting', syncing: 'Syncing', denied: 'Not allowed', error: 'Sync issue' }[s] || 'Sharing')}</span></button>`;
+}
+function syncCardHTML(blurb = '') {
+  const s = Sync.status(); if (s === 'off') return '';
+  const t = syncText(), u = Sync.user();
+  const btn = s === 'signed-out' || s === 'unavailable' && !u
+    ? '<button type="button" class="btn primary block" data-action="sync-signin">Sign in to share</button>'
+    : u ? `<button type="button" class="btn block" data-action="sync-signout">Sign out (${esc(u.email)})</button>` : '';
+  return `<section class="card pad" id="syncCard"><h3>Sharing</h3><p>${t.icon} ${esc(t.text)}</p>${blurb ? `<p class="muted">${esc(blurb)}</p>` : ''}${btn}</section>`;
+}
+function syncSignInDialog() {
+  formDialog({
+    title: 'Sign in to share', intro: 'Use the email and password for this app’s shared account. You only have to do this once on each phone.',
+    fields: [
+      { name: 'email', label: 'Email', type: 'email', required: true, autocomplete: 'username' },
+      { name: 'password', label: 'Password', type: 'password', required: true, autocomplete: 'current-password' }
+    ], submitLabel: 'Sign in',
+    onSubmit: async v => {
+      try { await Sync.signIn(v.email.trim(), v.password); }
+      catch (e) {
+        const c = e && e.code || '';
+        if (/invalid-credential|wrong-password|user-not-found|invalid-email|missing-password/.test(c)) return 'That email or password isn’t right.';
+        if (/network/.test(c) || e.message === 'offline') return 'Can’t reach the sign-in service. Check your connection and try again.';
+        if (/too-many-requests/.test(c)) return 'Too many tries. Wait a few minutes and try again.';
+        return 'Couldn’t sign in' + (c ? ` (${c})` : '') + '.';
+      }
+    }
+  });
+}
+async function syncAction(a) {
+  if (a === 'sync-signin') { syncSignInDialog(); return true; }
+  if (a === 'sync-signout') {
+    if (await confirmBox('Sign out?', 'This phone keeps its own copy, but stops sharing until you sign in again.', 'Sign out', false)) await Sync.signOut();
+    return true;
+  }
+  if (a === 'sync-info') {
+    if (Sync.status() === 'signed-out') { syncSignInDialog(); return true; }   // the "Sign in" badge opens the sign-in form directly
+    const t = syncText();
+    await msgBox('Sharing', t.text);
+    return true;
+  }
+  return false;
+}
 
 
 /* ===================== Watch Log app ===================== */
@@ -1680,9 +1927,10 @@ const hasAnyData = () => state.titles.length > 0 || state.people.length > 0;
 
 /* ===================== persistence + lookups ===================== */
 let state = defaultState(), db = null, saveFailed = false, persistAsked = false, saveChain = Promise.resolve(), rev = 0;
-function persist({ touch = true } = {}) {
+function persist({ touch = true, sync = true } = {}) {
   rev++;
   if (touch) state.meta.lastChange = new Date().toISOString();
+  if (sync && !wlApplying) Sync.touch();   /* titles, people and credits are shared with your other devices when signed in */
   if (!db) return Promise.resolve();
   const snap = JSON.stringify(state);
   saveChain = saveChain.then(() => idbPut(db, 'state', snap)).then(() => { saveFailed = false; }).catch(err => { console.error(err); saveFailed = true; });
@@ -1690,6 +1938,40 @@ function persist({ touch = true } = {}) {
   return saveChain;
 }
 const commit = () => { persist(); render(); };
+
+/* ---- sharing between your devices (sync.js, the same Firebase sign-in as Planner, Grocery and Links).
+   Shared: titles, people and credits, one record each. Kept on each device: the TMDB key, the movie database file,
+   saved filmographies. ---- */
+const WL = { titles: 'wlTitles', people: 'wlPeople', credits: 'wlCredits' };
+let wlApplying = false, wlPending = false;
+const wlModel = {
+  colls: Object.values(WL),
+  toEntities() {
+    const out = [];
+    for (const k of DATA_KEYS) for (const x of state[k]) { const { id, ...rest } = x; out.push({ coll: WL[k], id, data: rest }); }
+    return out;
+  },
+  apply(out) {
+    const before = JSON.stringify(exportData()), raw = { settings: state.settings };
+    for (const k of DATA_KEYS) raw[k] = (out[WL[k]] || []).map(r => ({ ...r.data, id: r.id }));
+    const { data } = normalizeData(raw);
+    for (const k of DATA_KEYS) state[k] = data[k];
+    if (JSON.stringify(exportData()) === before) return;
+    wlApplying = true; try { persist({ touch: false, sync: false }); } finally { wlApplying = false; }
+    if (ui.titleId && !titleById(ui.titleId)) Object.assign(ui, DETAIL0);      /* deleted on another device while open here */
+    if (ui.personId && !personById(ui.personId)) Object.assign(ui, DETAIL0);
+    wlRenderIfSafe();
+  }
+};
+/* never redraw under an open dialog or while typing */
+function wlRenderIfSafe() {
+  const a = document.activeElement;
+  if ($('dialog[open]') || (a && a.matches && a.matches('input,textarea,select') && a.value)) { wlPending = true; const b = $('#syncSlot'); if (b) b.innerHTML = syncBadgeHTML(); return; }
+  wlPending = false; render();
+}
+document.addEventListener('close', () => { if (wlPending) setTimeout(() => { if (!$('dialog[open]')) wlRenderIfSafe(); }, 0); }, true);
+document.addEventListener('focusout', () => { if (wlPending) setTimeout(() => { if (wlPending) wlRenderIfSafe(); }, 0); });
+document.addEventListener('click', e => { const a = e.target.closest('[data-action^="sync-"]'); if (a) { e.preventDefault(); syncAction(a.dataset.action); } });
 let _ix = null;
 function ix() {
   const sig = rev + ':' + state.titles.length + ':' + state.people.length + ':' + state.credits.length;
@@ -2319,7 +2601,7 @@ function peopleListHTML() {
   }).join('')}</div>` + db_;
 }
 function renderPeople() {
-  return `<div class="ctrl"><input id="pq" type="search" placeholder="${refInfo ? 'Search people in your log and the movie database' : 'Search people'}" value="${esc(ui.pq)}" autocomplete="off" aria-label="Search people"></div><div id="pres">${peopleListHTML()}</div>`;
+  return `${ui.backLink ? '<div style="margin-top:10px"><button type="button" class="btn small" data-action="wl-back">‹ Back</button></div>' : ''}<div class="ctrl"><input id="pq" type="search" placeholder="${refInfo ? 'Search people in your log and the movie database' : 'Search people'}" value="${esc(ui.pq)}" autocomplete="off" aria-label="Search people"></div><div id="pres">${peopleListHTML()}</div>`;
 }
 
 /* ---- Connect ---- */
@@ -2420,6 +2702,7 @@ function renderBackup() {
   const last = state.meta.lastBackup ? `Last backup: ${esc(fmtDateTime(state.meta.lastBackup))}.` : 'No backup made yet.';
   const canEncrypt = !!(window.crypto && crypto.subtle);
   return storageBannerHTML() + installCardHTML() + `<div class="stack">
+    ${syncCardHTML('Sign in with the same account as Planner, Grocery and Links, and your titles, people and credits stay the same on every device. The movie database file, saved filmographies and your TMDB key stay on each device.')}
     <section class="card pad"><h3>Back up</h3>
       <p class="muted">${last}</p>
       <p>Saves one file with your titles, people and credits. On iPhone it opens the share sheet; save it to Files or OneDrive. Keep the file out of your GitHub repo.</p>
@@ -2444,7 +2727,7 @@ function renderBackup() {
       <button type="button" class="btn block" data-action="restore">Choose backup file…</button></section>
     <section class="card pad"><h3>Export titles (CSV)</h3><p>One row per title with status, rating, directors and cast, for Excel or Numbers.</p>
       <div class="btnrow"><button type="button" class="btn" data-action="csv">Save / share CSV</button><button type="button" class="btn" data-action="csv-copy">Copy CSV</button></div></section>
-    <section class="card pad"><h3>Danger zone</h3><p>Erases everything in this app on this device, including saved filmographies and the movie database.</p>
+    <section class="card pad"><h3>Danger zone</h3><p>Erases everything in this app on this device, including saved filmographies and the movie database.${Sync.enabled() ? ' Sharing is on, so your titles, people and credits are also erased on your other devices.' : ''}</p>
       <button type="button" class="btn danger block" data-action="wipe">Erase everything on this device</button></section>
     <p class="hint" style="text-align:center">Your data lives only on this device. Nothing is sent anywhere.</p></div>`;
 }
@@ -2476,6 +2759,7 @@ function render() {
   const ex = $('a.exit', hd); if (ex) ex.classList.toggle('hide', detail);
   if (detail && !back) { back = document.createElement('a'); back.id = 'backLink'; back.className = 'back'; back.href = '#'; back.textContent = '‹ Back'; hd.insertBefore(back, hd.firstChild); }
   if (!detail && back) back.remove();
+  $('#syncSlot').innerHTML = syncBadgeHTML();
   const add = $('#addBtn'), label = detail ? '' : ui.tab === 'titles' ? '+ Title' : ui.tab === 'people' ? '+ Person' : '';
   add.classList.toggle('hide', !label); if (label) add.textContent = label;
   const rt = ui.refT != null ? refTById(ui.refT) : -1, rp = ui.refP != null ? refPById(ui.refP) : -1;
@@ -2782,7 +3066,7 @@ async function restoreFromText(text) {
   const sum = `${plural(data.titles.length, 'title')}, ${plural(data.people.length, 'person')}, ${plural(data.credits.length, 'credit')}`;
   const when = parsed.exportedAt ? ` Backup made ${fmtDateTime(parsed.exportedAt)}.` : '';
   const skipped = dropped ? ` ${plural(dropped, 'unreadable item')} will be skipped.` : '';
-  const body = `<p>${esc(sum + '.' + when + skipped)}</p>` + (hasLocal ? '<p class="muted"><b>Replace all</b> swaps everything here for the backup. <b>Merge</b> adds what isn’t here yet.</p>' : '');
+  const body = `<p>${esc(sum + '.' + when + skipped)}</p>` + (hasLocal ? '<p class="muted"><b>Replace all</b> swaps everything here for the backup. <b>Merge</b> adds what isn’t here yet.</p>' : '') + (Sync.enabled() ? '<p class="muted"><b>Sharing is on:</b> your other devices get the same change.</p>' : '');
   const choice = await askDialog({
     title: 'Restore this backup?', body,
     buttons: hasLocal
@@ -2815,7 +3099,7 @@ async function doRestore() {
   await restoreFromText(text);
 }
 async function doWipe() {
-  if (!(await confirmBox('Erase everything?', 'This permanently deletes all titles, people and credits on this device, and the movie database. Make a backup first if you might want them.', 'Erase everything'))) return;
+  if (!(await confirmBox('Erase everything?', `This permanently deletes all titles, people and credits on this device${Sync.enabled() ? ' and on your other devices (sharing is on)' : ''}, and the movie database here. Make a backup first if you might want them.`, 'Erase everything'))) return;
   state = defaultState(); Object.assign(ui, DETAIL0); ui.stack = [];
   filmo = {}; filmoDirty = true; await saveFilmo(); await clearRef();
   await persist({ touch: false });
@@ -2853,6 +3137,7 @@ view.addEventListener('click', e => {
   const id = el.dataset.id;
   switch (el.dataset.action) {
     case 'add-title': onlineDialog({ add: true }); break;
+    case 'wl-back': ui.backLink = false; history.back(); break;
     case 'seg': ui.logSeg = el.dataset.v; render(); break;
     case 'open-title': openTitle(id); break;
     case 'open-person': openPerson(id); break;
@@ -2957,8 +3242,15 @@ document.addEventListener('visibilitychange', () => { if (!document.hidden && !$
     if (db) { try { const ri = await idbGet(db, 'refInfo'); if (ri) refInfo = normRefInfo(JSON.parse(ri)); } catch (e) { console.error(e); refInfo = null; } }
   }
   rev++;
+  /* opened from Movies (or elsewhere) with ?person=Name: show that person in People */
+  try {
+    const u = new URL(location.href), who = u.searchParams.get('person');
+    if (who) { ui.tab = 'people'; ui.pq = who.slice(0, 120); ui.backLink = u.searchParams.get('back') === '1'; u.searchParams.delete('person'); u.searchParams.delete('back'); history.replaceState(null, '', u.pathname + u.search + u.hash); }
+  } catch (e) { /* fine */ }
   render();
   if (refInfo) setTimeout(ensureRef, 300);
+  Sync.onChange(() => wlRenderIfSafe());
+  Sync.start({ db, key: 'sync', model: wlModel }).catch(e => console.error(e));
 })();
 </script>
 </body>

@@ -1,0 +1,1116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Movies</title>
+<meta name="description" content="Upcoming US digital and disc movie releases by week, search any movie, and a Watching list shared with Links.">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#f6f3fb" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#110e17" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Movies">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<style>
+:root{
+  --bg:#f5f4ef; --card:#ffffff; --ink:#1b2420; --muted:#66736d; --line:#e2e0d6; --soft:#efede5;
+  --accent:#0f766e; --accent-ink:#ffffff; --accent-soft:#d9f0ec;
+  --bad:#b42318; --bad-soft:#fde8e6; --warn:#9a5b00; --warn-soft:#fdf0d5; --ok:#166534; --ok-soft:#dcf5e3;
+  --radius:14px; --shadow:0 1px 2px rgba(16,24,20,.06),0 6px 18px rgba(16,24,20,.06);
+  color-scheme:light dark;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0e1311; --card:#171f1c; --ink:#e7eeeb; --muted:#97a69f; --line:#27332e; --soft:#1e2824;
+    --accent:#2dd4bf; --accent-ink:#06211d; --accent-soft:#12332e;
+    --bad:#ff8a80; --bad-soft:#3a1a18; --warn:#f6c26b; --warn-soft:#3a2c12; --ok:#7ee2a0; --ok-soft:#14301f;
+    --shadow:none;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation;
+  padding-bottom:calc(92px + env(safe-area-inset-bottom));
+}
+a{color:var(--accent)}
+h1,h2,h3{margin:0;line-height:1.2}
+h3{font-size:16px}
+p{margin:0 0 8px}
+.wrap{max-width:720px;margin:0 auto;padding:0 16px}
+.muted{color:var(--muted)} .bad{color:var(--bad)} .warn{color:var(--warn)} .ok{color:var(--ok)}
+.num{font-variant-numeric:tabular-nums}
+.hide{display:none!important}
+.pad{padding:14px 16px}
+.hint{font-size:13px;color:var(--muted);margin-top:4px}
+
+/* header */
+header.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top)}
+header.top .wrap{display:flex;align-items:center;gap:12px;min-height:58px}
+header.top .grow{flex:1;min-width:0}
+header.top h1{font-size:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+header.top .sub{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.back{display:inline-flex;align-items:center;min-height:44px;padding-right:6px;text-decoration:none;font-weight:600}
+
+/* cards, tiles, lists */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+.tile{padding:12px}
+.tile .lbl{font-size:12px;color:var(--muted);font-weight:600}
+.tile .val{font-size:20px;font-weight:700;margin-top:2px}
+.sec-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin:22px 4px 8px;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700}
+.sec-h .btn{text-transform:none;letter-spacing:0}
+.list{list-style:none;margin:0;padding:0}
+.row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-top:1px solid var(--line);cursor:pointer}
+.row:first-child{border-top:0}
+.row.static{cursor:default}
+.row-main{flex:1;min-width:0}
+.row-title{font-weight:600;overflow-wrap:anywhere}
+.row-sub{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.row-amt{font-weight:700;white-space:nowrap}
+.row.faded{opacity:.6}
+.badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 7px;border-radius:999px;background:var(--soft);color:var(--muted);vertical-align:middle;margin-left:6px}
+.badge.ok{background:var(--ok-soft);color:var(--ok)} .badge.warn{background:var(--warn-soft);color:var(--warn)} .badge.bad{background:var(--bad-soft);color:var(--bad)} .badge.acc{background:var(--accent-soft);color:var(--accent)}
+.empty{text-align:center;padding:40px 20px;color:var(--muted)}
+.empty .big{font-size:40px;line-height:1;margin-bottom:10px}
+.empty h2{color:var(--ink);font-size:18px;margin-bottom:6px}
+.empty .btn{margin-top:14px}
+.banner{padding:12px 14px;border-radius:12px;background:var(--warn-soft);color:var(--warn);font-size:14px;margin:14px 0;display:flex;gap:10px;justify-content:space-between;align-items:center}
+.banner.bad{background:var(--bad-soft);color:var(--bad)}
+.bar{height:8px;border-radius:99px;background:var(--soft);overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--accent);border-radius:99px}
+.bar.over>i{background:var(--bad)}
+
+/* buttons */
+.btn{white-space:nowrap;appearance:none;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-weight:600;min-height:44px;padding:0 16px;border-radius:12px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.danger{color:var(--bad)}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--accent)}
+.btn.small{min-height:36px;padding:0 12px;font-size:14px;border-radius:10px}
+.btn.block{width:100%}
+.btn:active{transform:translateY(1px)}
+.btn:disabled{opacity:.5;cursor:default}
+.btn:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible,.chip:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 14px;min-height:36px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+
+/* bottom nav + fab */
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+nav.tabs .wrap{display:flex;padding:0}
+nav.tabs a,nav.tabs button{flex:1;min-height:58px;border:0;background:none;color:var(--muted);font:inherit;font-size:11px;font-weight:600;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;text-decoration:none}
+nav.tabs .ico{font-size:20px;line-height:1}
+nav.tabs [aria-current="page"]{color:var(--accent)}
+.fab{position:fixed;right:max(16px,calc(50vw - 344px));bottom:calc(74px + env(safe-area-inset-bottom));z-index:7;width:56px;height:56px;border-radius:50%;border:0;background:var(--accent);color:var(--accent-ink);font-size:30px;line-height:1;box-shadow:0 6px 18px rgba(0,0,0,.28);cursor:pointer}
+.fab:active{transform:scale(.96)}
+
+/* forms + dialogs */
+input,select,textarea{width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-height:44px}
+textarea{min-height:92px;resize:vertical}
+input[type=checkbox]{width:22px;height:22px;min-height:0;padding:0;accent-color:var(--accent);flex:none}
+.field label{display:block;font-size:13px;font-weight:600;color:var(--muted);margin-bottom:4px}
+.field.check{display:flex;align-items:center;gap:10px}
+.field.check label{margin:0;color:var(--ink);font-size:16px;font-weight:500}
+.fields2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+dialog{border:0;border-radius:18px;padding:0;width:calc(100vw - 24px);max-width:520px;background:var(--card);color:var(--ink);box-shadow:0 20px 60px rgba(0,0,0,.35)}
+dialog::backdrop{background:rgba(10,15,12,.55)}
+.dlg-form{padding:20px;display:flex;flex-direction:column;gap:12px;max-height:85vh;max-height:85dvh;overflow:auto}
+.dlg-form h2{font-size:19px}
+.dlg-actions{display:flex;gap:8px;align-items:center;margin-top:6px;flex-wrap:wrap}
+.dlg-actions .spacer{flex:1}
+.ask-actions{justify-content:flex-end}
+.dlg-err{color:var(--bad);font-size:14px}
+.dlg-err:empty{display:none}
+.ask-body{font-size:15px;color:var(--ink)}
+.ask-body p{margin:0 0 8px}
+.checkgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px}
+.checkgrid .field.check label{font-size:15px}
+
+/* toast */
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom));background:#1b2420;color:#fff;padding:12px 16px;border-radius:12px;display:flex;gap:14px;align-items:center;z-index:60;max-width:calc(100vw - 24px);box-shadow:0 8px 24px rgba(0,0,0,.35);font-size:15px}
+.toast button{background:none;border:0;color:#7dd3c8;font:inherit;font-weight:700;cursor:pointer;min-height:36px}
+
+@media (prefers-reduced-motion:no-preference){.btn,.fab{transition:transform .08s}}
+
+.syncbadge{flex:none;white-space:nowrap;border:1px solid var(--line,#d5dbe0);background:var(--card,#fff);color:inherit;border-radius:999px;padding:4px 10px;font:inherit;font-size:.82rem;cursor:pointer;white-space:nowrap}
+.syncbadge.ok{color:#15803d}.syncbadge.bad{color:#b91c1c}
+.seg{display:flex;gap:8px;margin-top:6px}.seg .chip{flex:1;text-align:center}
+
+:root{--bg:#f6f3fb;--accent:#7c3aed;--accent-ink:#fff;--accent-soft:#ede5fb}
+@media (prefers-color-scheme:dark){:root{--bg:#110e17;--card:#1a1622;--line:#2c2538;--soft:#221c2c;--accent:#b794f6;--accent-ink:#1a0f2e;--accent-soft:#2a2040}}
+body{padding-bottom:calc(40px + env(safe-area-inset-bottom))}
+/* Movie releases styles (shared by Links and the Goobs Apps copy) */
+.search{position:sticky;top:calc(58px + env(safe-area-inset-top));z-index:4;background:var(--bg);padding:10px 0 4px}
+.search input{border-radius:12px;background:var(--card)}
+.hint.c{text-align:center}
+[hidden]{display:none!important}
+.calday{margin-top:12px;padding:14px}
+.wdname{font-size:26px;font-weight:800;line-height:1.1}
+.relrow{border-top:1px solid var(--line)}.relrow:first-child{border-top:0}.relrow.mine{background:var(--accent-soft)}
+.relmain{display:flex;gap:12px;align-items:center;width:100%;padding:10px 14px;background:none;border:0;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.relmain.static{cursor:default}
+.relline{display:flex;align-items:center;gap:6px;padding-right:12px}.relline .relmain{flex:1;min-width:0}.relline>.chip{flex:none}
+.poster{flex:none;width:46px;height:69px;border-radius:6px;object-fit:cover;background:var(--soft);display:grid;place-items:center;font-size:22px}
+.relb{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.reln{font-weight:650;line-height:1.3}.relm{font-size:13.5px;color:var(--muted);line-height:1.35}
+.relout{padding:12px 14px;margin:10px 0 0;border-left:4px solid var(--accent);font-size:14.5px}.relout b{display:block;margin-bottom:4px}.relout div{padding:2px 0}
+.relcast{margin:4px 0 10px;font-size:14.5px}.relcast p{margin:0 0 6px}.relcast ul{margin:0;padding:0;list-style:none;columns:1}.relcast li{padding:5px 0;border-top:1px solid var(--line)}.relcast li:first-child{border-top:0}.relcast a{text-decoration:none;font-weight:600}
+.relwhen{font-size:14px;line-height:1.4;font-weight:600;color:var(--ink)}.relwhen b{font-weight:600}.relwhen .muted{font-weight:400}
+.rellink{font-size:13px;font-weight:600;text-decoration:none}
+.relweek{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:12px 0 2px;text-align:center}
+.relweek h2{font-size:19px}.relweek .btn{font-size:26px;min-width:48px;min-height:44px}
+.linkbtn{border:0;background:none;color:var(--accent);font:inherit;font-weight:600;padding:0;cursor:pointer}
+.relmore{padding:0 14px 14px 72px}.relmore p{margin:0 0 8px;font-size:14.5px;line-height:1.45}.relmore .chips a.chip{text-decoration:none;display:inline-flex;align-items:center}
+@media (max-width:380px){.relmore{padding-left:14px}}.chk{display:inline-flex;gap:8px;align-items:center;font-size:15px}
+.tvbar{padding-bottom:6px}
+.tvdays{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:2px 0;-webkit-overflow-scrolling:touch}.tvdays::-webkit-scrollbar{display:none}
+.tvdays .chip{flex:none;white-space:nowrap;padding:6px 12px}
+.tvslots{margin-top:6px}
+.netlist{display:flex;flex-direction:column;max-height:50vh;overflow:auto;margin-top:8px;border-top:1px solid var(--line)}
+.netpick{display:flex;gap:10px;align-items:center;padding:10px 4px;border-bottom:1px solid var(--line);font-size:16px}.netpick input{width:20px;height:20px}.tvslots .chip{flex:1;min-height:32px;padding:4px 10px;font-size:13.5px}
+.tvsearch{position:static;padding-top:6px}
+.tvfind{display:flex;gap:8px}.tvfind input{flex:1;min-width:0;border-radius:12px;background:var(--card)}
+.tvlist{padding:0}
+.tvstar{color:#f5b301}:root[data-theme="halloween"] .tvstar{color:#ffb02e}
+.tvslots .chip{flex:1;min-height:32px;padding:4px 10px;font-size:13.5px}
+
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap"><div class="grow"><h1 id="title">Movies</h1><div class="sub" id="sub">US digital and disc releases</div></div><span id="syncSlot"></span></div></header>
+<main class="wrap" id="view"></main>
+<dialog id="dlg"></dialog><dialog id="ask"></dialog>
+<script>
+'use strict';
+/* ===================== shared helpers (identical in every Goobs app) ===================== */
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => Array.from(el.querySelectorAll(s));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const isNum = v => typeof v === 'number' && Number.isFinite(v);
+const str = v => (typeof v === 'string' ? v : v == null ? '' : String(v));
+
+/* ---- dates: always local calendar dates stored as 'YYYY-MM-DD' ---- */
+const pad = n => String(n).padStart(2, '0');
+const fmtISO = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const parseISO = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+const isISO = s => typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s) && fmtISO(parseISO(s)) === s;
+const todayISO = () => fmtISO(new Date());
+const daysBetween = (a, b) => Math.round((parseISO(b) - parseISO(a)) / 86400000);
+const addDays = (s, n) => { const d = parseISO(s); d.setDate(d.getDate() + n); return fmtISO(d); };
+function addMonths(s, n, anchorDay) {
+  const d = parseISO(s);
+  const day = anchorDay || d.getDate();
+  const first = new Date(d.getFullYear(), d.getMonth() + n, 1);
+  const last = new Date(first.getFullYear(), first.getMonth() + 1, 0).getDate();
+  first.setDate(Math.min(day, last));
+  return fmtISO(first);
+}
+const monthEndISO = s => { const d = parseISO(s); return fmtISO(new Date(d.getFullYear(), d.getMonth() + 1, 0)); };
+
+function fmtDate(s, withWeekday = true) {
+  const d = parseISO(s);
+  const o = { month: 'short', day: 'numeric' };
+  if (withWeekday) o.weekday = 'short';
+  if (d.getFullYear() !== new Date().getFullYear()) o.year = 'numeric';
+  return d.toLocaleDateString(undefined, o);
+}
+function fmtDateTime(iso) {
+  const d = new Date(iso);
+  return isNaN(d) ? 'unknown date' : d.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+}
+const _mf = {};
+function money(n, cur = 'USD') {
+  if (!_mf[cur]) {
+    try { _mf[cur] = new Intl.NumberFormat(undefined, { style: 'currency', currency: cur }); }
+    catch { _mf[cur] = new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }); }
+  }
+  return _mf[cur].format(n);
+}
+const csvCell = v => {
+  let s = String(v ?? '');
+  if (/^[=+\-@\t\r]/.test(s)) s = "'" + s; // neutralise spreadsheet formula injection
+  return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+};
+function safeUrl(u) {
+  let s = String(u ?? '').trim();
+  if (!s) return '';
+  if (!/^[a-z][a-z0-9+.-]*:/i.test(s)) s = 'https://' + s;
+  try { const x = new URL(s); return /^https?:$/.test(x.protocol) ? x.href : ''; } catch { return ''; }
+}
+
+/* ---- storage: one JSON string under one key in IndexedDB ---- */
+function openDB(name) {
+  return new Promise((res, rej) => {
+    if (!window.indexedDB) return rej(new Error('IndexedDB unavailable'));
+    const r = indexedDB.open(name, 1);
+    r.onupgradeneeded = () => { r.result.createObjectStore('kv'); };
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+    r.onblocked = () => rej(new Error('Database blocked'));
+  });
+}
+function idbGet(db, key) {
+  return new Promise((res, rej) => {
+    const q = db.transaction('kv').objectStore('kv').get(key);
+    q.onsuccess = () => res(q.result);
+    q.onerror = () => rej(q.error);
+  });
+}
+function idbPut(db, key, val) {
+  return new Promise((res, rej) => {
+    const tx = db.transaction('kv', 'readwrite');
+    tx.objectStore('kv').put(val, key);
+    tx.oncomplete = () => res();
+    tx.onerror = () => rej(tx.error);
+    tx.onabort = () => rej(tx.error || new Error('Write aborted'));
+  });
+}
+
+/* ---- toast ---- */
+function toast(msg, action) {
+  const old = $('.toast'); if (old) old.remove();
+  const t = document.createElement('div');
+  t.className = 'toast'; t.setAttribute('role', 'status');
+  t.innerHTML = `<span>${esc(msg)}</span>` + (action ? `<button type="button">${esc(action.label)}</button>` : '');
+  if (action) t.querySelector('button').onclick = () => { t.remove(); action.fn(); };
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), action ? 8000 : 3200);
+}
+
+/* ---- dialogs ---- */
+if (!$('#dlg')) document.body.insertAdjacentHTML('beforeend', '<dialog id="dlg"></dialog><dialog id="ask"></dialog>');
+{
+  const dlg = $('#dlg'); let down = false;
+  dlg.addEventListener('pointerdown', e => { down = e.target === dlg; });
+  dlg.addEventListener('click', e => { if (e.target === dlg && down) dlg.close(); });
+}
+
+function fieldHTML(f) {
+  const id = 'f_' + f.name, v = f.value ?? '';
+  if (f.type === 'checkbox')
+    return `<div class="field check"><input type="checkbox" id="${id}" name="${f.name}"${f.value ? ' checked' : ''}><label for="${id}">${esc(f.label)}</label></div>`;
+  let ctl;
+  if (f.type === 'select') {
+    ctl = `<select id="${id}" name="${f.name}">${f.options.map(o => {
+      const [val, label] = Array.isArray(o) ? o : [o, o];
+      return `<option value="${esc(val)}"${String(val) === String(v) ? ' selected' : ''}>${esc(label)}</option>`;
+    }).join('')}</select>`;
+  } else if (f.type === 'textarea') {
+    ctl = `<textarea id="${id}" name="${f.name}" placeholder="${esc(f.placeholder || '')}">${esc(v)}</textarea>`;
+  } else {
+    const t = f.type || 'text';
+    const extra = t === 'number' ? ` inputmode="decimal" step="${f.step || 'any'}"` : '';
+    ctl = `<input id="${id}" name="${f.name}" type="${t}" value="${esc(v)}" placeholder="${esc(f.placeholder || '')}"${extra}${f.min != null ? ` min="${f.min}"` : ''}${f.max != null ? ` max="${f.max}"` : ''} autocomplete="${f.autocomplete || 'off'}" autocapitalize="${f.capitalize || (t === 'email' || t === 'password' ? 'none' : 'sentences')}">`;
+  }
+  return `<div class="field"><label for="${id}">${esc(f.label)}${f.required ? ' *' : ''}</label>${ctl}${f.hint ? `<div class="hint">${esc(f.hint)}</div>` : ''}</div>`;
+}
+
+/* formDialog: fields -> values. onSubmit(values) may return an error string (keeps dialog open).
+   onDelete() may return true to close. extra: [{label, kind, onClick}] extra buttons. */
+function formDialog({ title, intro = '', fields, submitLabel = 'Save', onSubmit, onDelete, deleteLabel = 'Delete', extra = [], onClose, grid = '' }) {
+  const dlg = $('#dlg');
+  const body = grid ? `<div class="${grid}">${fields.map(fieldHTML).join('')}</div>` : fields.map(fieldHTML).join('');
+  dlg.innerHTML = `<form class="dlg-form" novalidate>
+    <h2>${esc(title)}</h2>${intro ? `<p class="muted">${esc(intro)}</p>` : ''}${body}
+    <div class="dlg-err" role="alert"></div>
+    <div class="dlg-actions">
+      ${onDelete ? `<button type="button" class="btn danger" data-k="del">${esc(deleteLabel)}</button>` : ''}
+      ${extra.map((x, i) => `<button type="button" class="btn ${x.kind || ''}" data-x="${i}">${esc(x.label)}</button>`).join('')}
+      <span class="spacer"></span>
+      <button type="button" class="btn ghost" data-k="cancel">Cancel</button>
+      <button type="submit" class="btn primary">${esc(submitLabel)}</button>
+    </div></form>`;
+  const form = $('form', dlg), err = $('.dlg-err', dlg);
+  const collect = () => {
+    const vals = {};
+    for (const f of fields) { const el = form.elements[f.name]; vals[f.name] = f.type === 'checkbox' ? el.checked : el.value; }
+    return vals;
+  };
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const vals = collect();
+    for (const f of fields) if (f.required && !String(vals[f.name]).trim()) { err.textContent = `${f.label} is required.`; return; }
+    err.textContent = '';
+    let msg;
+    try { msg = await onSubmit(vals); } catch (ex) { msg = ex.message || 'Something went wrong.'; }
+    if (msg) err.textContent = msg; else dlg.close();
+  });
+  $('[data-k="cancel"]', dlg).onclick = () => dlg.close();
+  if (onDelete) $('[data-k="del"]', dlg).onclick = async () => { if (await onDelete()) dlg.close(); };
+  $$('[data-x]', dlg).forEach(b => { b.onclick = () => extra[+b.dataset.x].onClick(collect()); });
+  dlg.onclose = () => { dlg.onclose = null; if (onClose) onClose(); };
+  dlg.showModal();
+  const first = form.querySelector('input:not([type=checkbox]),textarea');
+  if (first && !first.value) first.focus(); // new-item forms open ready to type; edit forms don't pop the keyboard
+}
+
+function askDialog({ title, body = '', buttons }) {
+  return new Promise(resolve => {
+    const d = $('#ask'); let done = false;
+    d.innerHTML = `<div class="dlg-form"><h2>${esc(title)}</h2>${body ? `<div class="ask-body">${body}</div>` : ''}
+      <div class="dlg-actions ask-actions">${buttons.map((b, i) => `<button type="button" class="btn ${b.kind || ''}" data-i="${i}">${esc(b.label)}</button>`).join('')}</div></div>`;
+    const finish = v => { if (done) return; done = true; d.close(); resolve(v); };
+    $$('button', d).forEach(btn => { btn.onclick = () => finish(buttons[+btn.dataset.i].value); });
+    d.oncancel = () => { done = true; resolve(undefined); };
+    d.showModal();
+  });
+}
+const confirmBox = async (title, bodyText, okLabel = 'Delete', danger = true) =>
+  (await askDialog({ title, body: bodyText ? `<p>${esc(bodyText)}</p>` : '', buttons: [{ label: 'Cancel', value: false }, { label: okLabel, value: true, kind: danger ? 'danger' : 'primary' }] })) === true;
+const msgBox = (title, bodyText) =>
+  askDialog({ title, body: `<p>${esc(bodyText)}</p>`, buttons: [{ label: 'OK', value: true, kind: 'primary' }] });
+
+/* ---- backup: optional AES-GCM passphrase encryption (Web Crypto, PBKDF2-SHA256) ---- */
+const b64 = buf => { let s = ''; const b = new Uint8Array(buf); for (let i = 0; i < b.length; i += 0x8000) s += String.fromCharCode.apply(null, b.subarray(i, i + 0x8000)); return btoa(s); };
+const unb64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+async function deriveKey(pass, salt, iterations) {
+  const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(pass), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey({ name: 'PBKDF2', salt, iterations, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+}
+async function encryptPayload(obj, pass) {
+  const salt = crypto.getRandomValues(new Uint8Array(16)), iv = crypto.getRandomValues(new Uint8Array(12));
+  const iterations = 250000;
+  const key = await deriveKey(pass, salt, iterations);
+  const ct = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, new TextEncoder().encode(JSON.stringify(obj)));
+  return { encrypted: true, kdf: 'PBKDF2-SHA256', iterations, salt: b64(salt), iv: b64(iv), data: b64(ct) };
+}
+async function decryptPayload(env, pass) {
+  const key = await deriveKey(pass, unb64(env.salt), env.iterations);
+  try {
+    const pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: unb64(env.iv) }, key, unb64(env.data));
+    return JSON.parse(new TextDecoder().decode(pt));
+  } catch { throw new Error('Wrong passphrase, or the file is damaged.'); }
+}
+function promptDecrypt(env) {
+  return new Promise(resolve => {
+    let result = null;
+    formDialog({
+      title: 'Encrypted backup', intro: 'Enter the passphrase you chose when you made this backup.',
+      fields: [{ name: 'pass', label: 'Passphrase', type: 'password', required: true }], submitLabel: 'Unlock',
+      onSubmit: async v => { try { result = await decryptPayload(env, v.pass); } catch (e) { return e.message; } },
+      onClose: () => resolve(result)
+    });
+  });
+}
+const Backup = {
+  async build({ appId, schema, data, passphrase }) {
+    const head = { app: appId, schemaVersion: schema, exportedAt: new Date().toISOString() };
+    if (passphrase) return JSON.stringify({ ...head, ...(await encryptPayload(data, passphrase)) });
+    return JSON.stringify({ ...head, encrypted: false, data }, null, 2);
+  },
+  /* returns {data, exportedAt, schemaVersion}, or null if the user cancelled the passphrase prompt; throws Error with a friendly message */
+  async parse(text, { appId, schema }) {
+    let env;
+    try { env = JSON.parse(text); } catch { throw new Error('That file isn’t a valid backup (it isn’t JSON).'); }
+    if (!env || typeof env !== 'object' || env.app !== appId)
+      throw new Error(env && typeof env === 'object' && env.app ? `That backup belongs to a different app (${String(env.app).slice(0, 40)}).` : 'That file isn’t a backup from this app.');
+    if (!Number.isInteger(env.schemaVersion) || env.schemaVersion < 1) throw new Error('The backup is missing its version number.');
+    if (env.schemaVersion > schema) throw new Error('That backup was made by a newer version of the app. Close and reopen this app to update it, then try again.');
+    let data;
+    if (env.encrypted) {
+      if (!(window.crypto && crypto.subtle)) throw new Error('Encrypted backups need a secure (https) connection.');
+      if (!(env.iterations >= 1000 && env.iterations <= 2000000) || typeof env.salt !== 'string' || typeof env.iv !== 'string' || typeof env.data !== 'string')
+        throw new Error('The encrypted backup is damaged.');
+      data = await promptDecrypt(env);
+      if (data === null) return null;
+    } else data = env.data;
+    if (!data || typeof data !== 'object') throw new Error('The backup contains no data.');
+    return { data, exportedAt: typeof env.exportedAt === 'string' ? env.exportedAt : null, schemaVersion: env.schemaVersion };
+  }
+};
+
+/* share sheet when the platform supports sharing files (iPhone), otherwise a normal download */
+async function deliverFile(filename, text, mime = 'application/json') {
+  const file = new File([text], filename, { type: mime });
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try { await navigator.share({ files: [file], title: filename }); return 'shared'; }
+    catch (e) { if (e && e.name === 'AbortError') return 'cancelled'; /* otherwise fall back to a download */ }
+  }
+  const url = URL.createObjectURL(file);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.style.display = 'none';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 15000);
+  return 'downloaded';
+}
+function pickFile(accept = '.json,application/json') {
+  return new Promise(resolve => {
+    const i = document.createElement('input');
+    i.type = 'file'; i.accept = accept; i.style.display = 'none';
+    document.body.appendChild(i);
+    let done = false;
+    const fin = f => { if (done) return; done = true; i.remove(); resolve(f); };
+    i.addEventListener('change', () => fin((i.files && i.files[0]) || null));
+    i.addEventListener('cancel', () => fin(null));
+    i.click();
+  });
+}
+const readFileText = f => (f.text ? f.text() : new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = () => rej(r.error); r.readAsText(f); }));
+
+/* nag banner: only when there is data and no recent backup */
+function backupNag(meta, hasData) {
+  if (!hasData) return null;
+  if (!meta.lastBackup) return 'You have data but no backup yet. Make one so you can restore it if this device loses it.';
+  const age = (Date.now() - Date.parse(meta.lastBackup)) / 86400000;
+  const changed = meta.lastChange && Date.parse(meta.lastChange) > Date.parse(meta.lastBackup) + 1000;
+  if (changed && age >= 7) return `Your last backup was ${Math.floor(age)} days ago and you’ve made changes since.`;
+  return null;
+}
+
+/* ---- install helper ---- */
+let deferredInstall = null;
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferredInstall = e; if (typeof render === 'function') render(); });
+const isStandalone = () => (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+function installCardHTML() {
+  if (isStandalone()) return '';
+  const ios = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const msg = deferredInstall
+    ? '<p>Install it for its own window and full offline use.</p><button class="btn primary" data-action="install">Install app</button>'
+    : ios
+      ? '<p>In Safari tap <b>Share</b> → <b>Add to Home Screen</b>. <b>Do this before entering data</b> — the home-screen app keeps its own separate storage from the Safari tab. Then open it from the new icon.</p>'
+      : '<p>Use your browser’s menu → <b>Install app</b> (or <b>Add to Home Screen</b>).</p>';
+  return `<section class="card pad"><h3>Install on this device</h3>${msg}</section>`;
+}
+async function runInstall() { if (!deferredInstall) return; deferredInstall.prompt(); try { await deferredInstall.userChoice; } catch {} deferredInstall = null; if (typeof render === 'function') render(); }
+
+
+
+if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol))
+  window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
+
+/* Exit link: every app's top bar gets "‹ Apps" (back to the main apps page) unless that screen already has its own back link. */
+(function () {
+  const add = () => {
+    const w = document.querySelector('header.top .wrap');
+    if (!w || w.querySelector('a.back')) return;
+    const a = document.createElement('a');
+    a.className = 'back exit'; a.href = '../'; a.textContent = '‹ Apps'; a.setAttribute('aria-label', 'Exit to all apps');
+    w.insertBefore(a, w.firstChild);
+  };
+  const start = () => { add(); new MutationObserver(add).observe(document.body, { childList: true, subtree: true }); };
+  if (document.body) start(); else document.addEventListener('DOMContentLoaded', start);
+})();
+
+/* ---- Sync: optional shared database for two people (Firebase Auth + Firestore) ----
+   The app always works from its own on-device copy. This layer pushes local changes
+   (per item, last write wins) and merges in changes made on the other phone.
+   The Firebase calls live in firebaseBackend() only; everything else is plain logic. */
+const SYNC_CONFIG = {
+  apiKey: 'AIzaSyCztAn5kfhZ1yLjvia17D0dEsnDBvFzuKA',
+  authDomain: 'goobs-apps-aa819.firebaseapp.com',
+  projectId: 'goobs-apps-aa819',
+  storageBucket: 'goobs-apps-aa819.firebasestorage.app',
+  messagingSenderId: '1080769702714',
+  appId: '1:1080769702714:web:70a664d22a62ee9492fe03'
+};
+const SYNC_SDK = 'https://www.gstatic.com/firebasejs/12.19.0/';
+
+async function firebaseBackend() {
+  const [appM, authM, fsM] = await Promise.all([
+    import(SYNC_SDK + 'firebase-app.js'), import(SYNC_SDK + 'firebase-auth.js'), import(SYNC_SDK + 'firebase-firestore.js')
+  ]);
+  const app = appM.initializeApp(SYNC_CONFIG), auth = authM.getAuth(app), fs = fsM.getFirestore(app);
+  return {
+    onAuth: cb => authM.onAuthStateChanged(auth, u => cb(u ? { uid: u.uid, email: u.email || '' } : null)),
+    signIn: (email, pw) => authM.signInWithEmailAndPassword(auth, email, pw),
+    signOut: () => authM.signOut(auth),
+    watch: (coll, onDocs, onErr) => fsM.onSnapshot(fsM.collection(fs, coll),
+      snap => { if (!snap.metadata.fromCache) onDocs(snap.docs.map(d => ({ id: d.id, data: d.data() }))); },   // ignore cache-only snapshots: an empty one would look like "everything was deleted"
+      onErr),
+    // Last write wins: skip the write when the stored copy is newer than this change.
+    // First-time uploads (ts 0) never overwrite a copy that already exists.
+    write: op => {
+      const ref = fsM.doc(fs, op.coll, op.id);
+      return fsM.runTransaction(fs, async tx => {
+        const cur = await tx.get(ref);
+        if (cur.exists() && (op.ts === 0 || (cur.data()._u || 0) > op.ts)) return;
+        if (op.op === 'del') tx.delete(ref);
+        else tx.set(ref, { ...op.data, _u: op.ts, _n: op.n });
+      });
+    }
+  };
+}
+
+const Sync = (() => {
+  const ACK_MS = 120000;
+  let model = null, db = null, dbKey = 'sync', backend = null, user = null, state0 = 'off';
+  let st = { v: 1, enabled: false, joined: false, seen: {}, outbox: {}, order: {} };
+  let unsubs = [], remote = {}, ready = {}, flushing = false, retryTimer = null, retries = 0, lastTs = 0, lastN = 0, denied = false, errored = false;
+  const acked = new Map(), listeners = [];
+
+  const canon = v => JSON.stringify(v, (k, x) => (x && typeof x === 'object' && !Array.isArray(x)) ? Object.fromEntries(Object.keys(x).sort().map(y => [y, x[y]])) : x);
+  const nextTs = () => (lastTs = Math.max(Date.now(), lastTs + 1));
+  const nextN = () => (lastN = Math.max(Date.now() * 1000, lastN + 1));
+  const keyOf = (c, id) => c + '/' + id;
+  const pending = () => Object.keys(st.outbox).length;
+  const emit = () => { for (const f of listeners) try { f(); } catch (e) { console.error(e); } };
+  let saveChain = Promise.resolve();
+  function save() { if (!db) return; const s = JSON.stringify(st); saveChain = saveChain.then(() => idbPut(db, dbKey, s)).catch(e => console.error(e)); }
+
+  function status() {
+    if (!model) return 'off';
+    if (state0 === 'unavailable') return 'unavailable';
+    if (!user) return backend ? 'signed-out' : 'connecting';
+    if (denied) return 'denied';
+    if (errored) return 'error';
+    if (!model.colls.every(c => ready[c])) return 'connecting';
+    return pending() ? 'syncing' : 'live';
+  }
+
+  /* what changed on this device since we last synced -> queue it */
+  function localDiff() {
+    if (!st.enabled || !model) return;
+    const present = new Set(); let dirty = false;
+    for (const e of model.toEntities()) {
+      const k = keyOf(e.coll, e.id); present.add(k);
+      const j = canon(e.data);
+      if (st.seen[k] === j) continue;
+      st.seen[k] = j;
+      if (!(k in st.order)) st.order[k] = nextN();
+      st.outbox[k] = { op: 'set', coll: e.coll, id: e.id, data: JSON.parse(j), ts: st.joined ? nextTs() : 0, n: st.order[k] };
+      dirty = true;
+    }
+    for (const k of Object.keys(st.seen)) {
+      if (present.has(k)) continue;
+      delete st.seen[k];
+      const i = k.indexOf('/');
+      st.outbox[k] = { op: 'del', coll: k.slice(0, i), id: k.slice(i + 1), ts: st.joined ? nextTs() : 0 };
+      dirty = true;
+    }
+    if (dirty) save();
+  }
+
+  /* combine the other phone's data with ours and hand the result to the app */
+  function reconcile() {
+    if (!model || !user || !model.colls.every(c => ready[c])) return;
+    localDiff();
+    const now = Date.now(), out = {}, remoteKeys = new Set();
+    model.colls.forEach(c => { out[c] = []; });
+    for (const c of model.colls) for (const d of remote[c] || []) {
+      const k = keyOf(c, d.id), op = st.outbox[k], u = d.data._u || 0, a = acked.get(k);
+      remoteKeys.add(k);
+      if (op && op.ts > u) { if (op.op === 'set') out[c].push({ id: d.id, data: op.data, n: op.n }); continue; }
+      if (op) delete st.outbox[k];
+      if (a && a.op === 'del' && now - a.at < ACK_MS && u <= a.ts) continue;   // our delete just landed; the list is a moment behind
+      const { _u, _n, ...data } = d.data;
+      if (_n) st.order[k] = _n;
+      out[c].push({ id: d.id, data, n: _n || st.order[k] || 0 });
+    }
+    for (const e of model.toEntities()) {
+      const k = keyOf(e.coll, e.id);
+      if (remoteKeys.has(k)) continue;
+      const op = st.outbox[k], a = acked.get(k);
+      if ((op && op.op === 'set') || (a && a.op === 'set' && now - a.at < ACK_MS)) out[e.coll].push({ id: e.id, data: e.data, n: st.order[k] || 0 });
+      // otherwise it was deleted on the other phone: leave it out
+    }
+    for (const [k, a] of acked) if (now - a.at >= ACK_MS || (a.op === 'set') === remoteKeys.has(k)) acked.delete(k);
+    for (const c of model.colls) out[c].sort((x, y) => (x.n || 0) - (y.n || 0));
+    model.apply(out);
+    const inOut = new Set();
+    for (const c of model.colls) for (const o of out[c]) inOut.add(keyOf(c, o.id));
+    const seen = {};
+    for (const e of model.toEntities()) { const k = keyOf(e.coll, e.id); if (inOut.has(k)) seen[k] = canon(e.data); }
+    st.seen = seen; st.joined = true;
+    localDiff();            // anything the app created while merging (e.g. a starter list) gets queued
+    save(); emit(); flush();
+  }
+
+  async function flush() {
+    if (flushing || !backend || !user || !st.enabled) return;
+    if (!st.joined && !model.colls.every(c => ready[c])) return;   // first sign-in: read what is there before writing
+    flushing = true; let failed = false;
+    try {
+      for (const k of Object.keys(st.outbox)) {
+        const op = st.outbox[k];
+        await backend.write(op);
+        if (st.outbox[k] === op) delete st.outbox[k];
+        acked.set(k, { op: op.op, ts: op.ts, at: Date.now() });
+        retries = 0; errored = false;
+      }
+    } catch (e) {
+      failed = true; errored = !(typeof navigator !== 'undefined' && navigator.onLine === false);
+      console.warn('sync write failed', e && e.code || e);
+      if (e && e.code === 'permission-denied') { denied = true; errored = false; }
+      else { clearTimeout(retryTimer); retryTimer = setTimeout(flush, Math.min(60000, 3000 * 2 ** Math.min(retries++, 5))); }
+    }
+    flushing = false; save(); emit();
+    if (!failed && pending()) flush();
+  }
+
+  function watch() {
+    unwatch();
+    for (const c of model.colls) {
+      unsubs.push(backend.watch(c, docs => { remote[c] = docs; ready[c] = true; denied = false; reconcile(); },
+        e => { if (e && e.code === 'permission-denied') denied = true; else errored = true; emit(); }));
+    }
+  }
+  function unwatch() { unsubs.forEach(u => { try { u(); } catch {} }); unsubs = []; remote = {}; ready = {}; }
+
+  async function connect() {
+    try {
+      const injected = typeof window !== 'undefined' && window.__SYNC_BACKEND__;
+      backend = injected || await firebaseBackend();
+      state0 = 'ok';
+    } catch (e) { backend = null; state0 = 'unavailable'; emit(); return; }
+    backend.onAuth(u => {
+      user = u; denied = false; errored = false;
+      if (u) { if (!st.enabled) { st.enabled = true; save(); } localDiff(); watch(); flush(); }
+      else unwatch();
+      emit();
+    });
+  }
+
+  return {
+    /* the app gives us: db (IndexedDB handle), key, and a model { colls, toEntities(), apply(map) } */
+    async start({ db: d, key, model: m }) {
+      db = d; dbKey = key || 'sync'; model = m;
+      if (db) { try { const raw = await idbGet(db, dbKey); if (raw) { const p = JSON.parse(raw); if (p && p.v === 1) st = { ...st, ...p }; } } catch (e) { console.error(e); } }
+      if (typeof window !== 'undefined') window.addEventListener('online', () => { if (!backend) connect(); else { errored = false; flush(); } });
+      await connect();
+      emit();
+    },
+    touch() { if (!st.enabled) return; localDiff(); flush(); emit(); },
+    onChange(f) { listeners.push(f); },
+    status, pending, enabled: () => st.enabled, user: () => user,
+    async signIn(email, pw) { if (!backend) throw Object.assign(new Error('offline'), { code: 'auth/network-request-failed' }); await backend.signIn(email, pw); },
+    async signOut() { if (backend) await backend.signOut(); }
+  };
+})();
+
+/* ---- sign-in UI shared by every synced app ---- */
+function syncText() {
+  const s = Sync.status(), n = Sync.pending();
+  switch (s) {
+    case 'live': return { icon: '☁️', text: 'Shared and up to date', cls: 'ok' };
+    case 'syncing': return { icon: '🔄', text: `Syncing ${n} change${n === 1 ? '' : 's'}…`, cls: '' };
+    case 'connecting': return { icon: '🔄', text: 'Connecting…', cls: '' };
+    case 'signed-out': return { icon: '👤', text: 'Not signed in — only on this device', cls: '' };
+    case 'denied': return { icon: '⛔', text: 'This account isn’t allowed to use the shared data', cls: 'bad' };
+    case 'error': return { icon: '⚠️', text: 'Sync problem — will retry. Your changes are saved here.', cls: 'bad' };
+    case 'unavailable': return { icon: '📴', text: Sync.enabled() ? 'Offline — changes are saved here and will sync later' : 'Sharing isn’t available right now (no connection)', cls: '' };
+    default: return { icon: '', text: '', cls: '' };
+  }
+}
+function syncBadgeHTML() {
+  const s = Sync.status(); if (s === 'off') return '';
+  const t = syncText();
+  return `<button type="button" class="syncbadge ${t.cls}" data-action="sync-info" aria-label="Sharing status: ${esc(t.text)}">${t.icon} <span>${esc({ live: 'Shared', 'signed-out': 'Sign in', unavailable: 'Offline', connecting: 'Connecting', syncing: 'Syncing', denied: 'Not allowed', error: 'Sync issue' }[s] || 'Sharing')}</span></button>`;
+}
+function syncCardHTML(blurb = '') {
+  const s = Sync.status(); if (s === 'off') return '';
+  const t = syncText(), u = Sync.user();
+  const btn = s === 'signed-out' || s === 'unavailable' && !u
+    ? '<button type="button" class="btn primary block" data-action="sync-signin">Sign in to share</button>'
+    : u ? `<button type="button" class="btn block" data-action="sync-signout">Sign out (${esc(u.email)})</button>` : '';
+  return `<section class="card pad" id="syncCard"><h3>Sharing</h3><p>${t.icon} ${esc(t.text)}</p>${blurb ? `<p class="muted">${esc(blurb)}</p>` : ''}${btn}</section>`;
+}
+function syncSignInDialog() {
+  formDialog({
+    title: 'Sign in to share', intro: 'Use the email and password for this app’s shared account. You only have to do this once on each phone.',
+    fields: [
+      { name: 'email', label: 'Email', type: 'email', required: true, autocomplete: 'username' },
+      { name: 'password', label: 'Password', type: 'password', required: true, autocomplete: 'current-password' }
+    ], submitLabel: 'Sign in',
+    onSubmit: async v => {
+      try { await Sync.signIn(v.email.trim(), v.password); }
+      catch (e) {
+        const c = e && e.code || '';
+        if (/invalid-credential|wrong-password|user-not-found|invalid-email|missing-password/.test(c)) return 'That email or password isn’t right.';
+        if (/network/.test(c) || e.message === 'offline') return 'Can’t reach the sign-in service. Check your connection and try again.';
+        if (/too-many-requests/.test(c)) return 'Too many tries. Wait a few minutes and try again.';
+        return 'Couldn’t sign in' + (c ? ` (${c})` : '') + '.';
+      }
+    }
+  });
+}
+async function syncAction(a) {
+  if (a === 'sync-signin') { syncSignInDialog(); return true; }
+  if (a === 'sync-signout') {
+    if (await confirmBox('Sign out?', 'This phone keeps its own copy, but stops sharing until you sign in again.', 'Sign out', false)) await Sync.signOut();
+    return true;
+  }
+  if (a === 'sync-info') {
+    if (Sync.status() === 'signed-out') { syncSignInDialog(); return true; }   // the "Sign in" badge opens the sign-in form directly
+    const t = syncText();
+    await msgBox('Sharing', t.text);
+    return true;
+  }
+  return false;
+}
+
+
+/* ===================== Movies (Goobs Apps): the same Movie releases screen as in Links ===================== */
+/* Shares the Watching list with Links (linkFollows, same sign-in). Actors open in Watch Log, here in the same app. */
+const APP_ID = 'goobs-movies', DB_NAME = 'goobs-movies-db';
+const view = $('#view');
+const clampStr = (v, n) => str(v).trim().slice(0, n);
+const pad2 = n => String(n).padStart(2, '0');
+const isoDate = d => `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+const parseIso = s => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(str(s)); if (!m) return null; const d = new Date(+m[1], +m[2] - 1, +m[3]); return d.getMonth() === +m[2] - 1 ? d : null; };
+const todayIso = () => isoDate(new Date());
+const fmtTime = t => new Date(t).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+const route = () => 'releases';
+function normRel(r) {
+  r = r && typeof r === 'object' ? r : {}; const seen = new Set();
+  return { type: 'disc', view: r.view === 'watching' ? 'watching' : 'list',
+    follow: (Array.isArray(r.follow) ? r.follow : []).filter(f => f && Number.isInteger(f.id) && f.id > 0 && !seen.has(f.id) && seen.add(f.id)).slice(0, 500)
+      .map(f => ({ id: f.id, title: str(f.title).slice(0, 120) || 'Movie', poster: /^\/[\w.-]{1,80}$/.test(str(f.poster)) ? f.poster : '' })) };
+}
+/* tvDocs: Links' followed TV shows, kept untouched so syncing here never removes them */
+const normState = s => ({ v: 1, rel: normRel(s && s.rel), tvDocs: (s && Array.isArray(s.tvDocs) ? s.tvDocs : []).filter(d => d && typeof d.id === 'string' && d.data && typeof d.data === 'object') });
+let state = normState({}), db = null, committing = false, pendingRender = false;
+function save() { if (db) idbPut(db, 'state', JSON.stringify(state)).catch(e => console.error(e)); }
+function commit() { save(); committing = true; try { Sync.touch(); } finally { committing = false; } render(); }
+function render() { $('#syncSlot').innerHTML = syncBadgeHTML(); renderReleases(); }
+function renderIfSafe() {
+  if (committing) return;
+  const a = document.activeElement;
+  if ($('dialog[open]') || (a && (a.id === 'rfind' || a.id === 'relkey') && a.value)) { pendingRender = true; return; }
+  render();
+}
+document.addEventListener('close', () => { if (pendingRender) setTimeout(() => { if (!$('dialog[open]')) { pendingRender = false; render(); } }, 0); }, true);
+document.addEventListener('click', e => { const a = e.target.closest('[data-action^="sync-"]'); if (a) { e.preventDefault(); syncAction(a.dataset.action); } });
+const C_FOLLOWS = 'linkFollows';
+const syncModel = {
+  colls: [C_FOLLOWS],
+  toEntities() {
+    return [...state.rel.follow.map(f => ({ coll: C_FOLLOWS, id: 'm' + f.id, data: { kind: 'movie', ref: f.id, name: f.title, poster: f.poster } })),
+      ...state.tvDocs.map(d => ({ coll: C_FOLLOWS, id: d.id, data: d.data }))];
+  },
+  apply(out) {
+    const before = JSON.stringify([state.rel.follow, state.tvDocs]), docs = out[C_FOLLOWS] || [];
+    state.rel.follow = normRel({ follow: docs.filter(r => r.data && r.data.kind === 'movie').map(r => ({ id: r.data.ref, title: r.data.name, poster: r.data.poster })) }).follow;
+    state.tvDocs = docs.filter(r => !r.data || r.data.kind !== 'movie').map(r => ({ id: r.id, data: JSON.parse(JSON.stringify(r.data || {})) }));
+    if (JSON.stringify([state.rel.follow, state.tvDocs]) === before) return;
+    save(); renderIfSafe();
+  }
+};
+/* the TMDB key Watch Log already keeps on this device */
+async function REL_KEY_FALLBACK() {
+  const d = await openDB('goobs-watchlog-db'), raw = await idbGet(d, 'state');
+  const k = raw ? str((JSON.parse(raw).settings || {}).tmdbKey) : '';
+  return /^[A-Za-z0-9._-]{20,400}$/.test(k) ? k : '';
+}
+const REL_PERSON_HREF = c => `../watchlog/?person=${encodeURIComponent(c.n)}&back=1`;
+
+/* ===================== Movie releases: upcoming US digital and disc (DVD / Blu-ray / 4K) dates, from TMDB ===================== */
+/* Your TMDB key is kept on this device only, in its own little database: not in the code, not synced, not in backups.
+   The phone asks TMDB directly; nothing goes through GitHub. TMDB release types: 4 = digital, 5 = physical. */
+const TMDB = 'https://api.themoviedb.org/3', TMDB_IMG = 'https://image.tmdb.org/t/p/';
+const REL_FRESH = 12 * 3600e3, REL_PAGES = 10;   /* up to 200 movies a week */
+const relUi = { week: 0, cast: '', open: '', all: false, find: '', found: null, finding: false, err: '', loading: false, checking: false };
+const relMem = {}, relTried = {}, relDetTried = {};            // type -> { at, from, to, items }
+let relKey = null, relKeyLoaded = false, relGenres = null, relInfo = {};   // relInfo: movie id -> details (formats, rating, IMDb id)
+
+/* ---- the key: its own database, so "Back up all apps" never picks it up ---- */
+let relDbP = null;
+const relDb = () => (relDbP = relDbP || openDB('goobs-links-keys').catch(() => null));
+async function relLoadKey() {
+  if (relKeyLoaded) return relKey;
+  try { const d = await relDb(); relKey = d ? (await idbGet(d, 'tmdb')) || '' : ''; } catch { relKey = ''; }
+  /* the Goobs Apps copy can borrow the key Watch Log already has on this device */
+  if (!relKey && typeof REL_KEY_FALLBACK === 'function') { try { relKey = str(await REL_KEY_FALLBACK()); } catch { relKey = ''; } }
+  relKeyLoaded = true; return relKey;
+}
+async function relSaveKey(k) { relKey = k; relKeyLoaded = true; const d = await relDb(); if (d) await idbPut(d, 'tmdb', k); }
+let relCacheP = null;
+const relCache = () => (relCacheP = relCacheP || openDB('goobs-links-cache').catch(() => null));
+async function relCacheGet(k) { try { const d = await relCache(); return d ? JSON.parse((await idbGet(d, k)) || 'null') : null; } catch { return null; } }
+async function relCachePut(k, v) { try { const d = await relCache(); if (d) await idbPut(d, k, JSON.stringify(v)); } catch { /* fine */ } }
+
+/* v3 API key -> ?api_key=…; v4 read access token (starts with eyJ) -> Authorization: Bearer … */
+async function tmdbGet(path, params = {}, key = relKey) {
+  const q = new URLSearchParams(params), headers = { accept: 'application/json' };
+  if (/^eyJ/.test(key)) headers.Authorization = 'Bearer ' + key; else q.set('api_key', key);
+  const r = await fetch(`${TMDB}${path}?${q}`, { headers, cache: 'no-store' });
+  if (r.status === 401) throw Object.assign(new Error('TMDB didn’t accept the key. Check it under 🔑 Key.'), { auth: true });
+  if (r.status === 429) { await new Promise(res => setTimeout(res, 1500)); return tmdbGet(path, params, key); }
+  if (!r.ok) throw new Error('TMDB ' + r.status);
+  return r.json();
+}
+const relDay = n => { const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() + n); return isoDate(d); };
+const slimMovie = (m, at) => ({ id: m.id, title: str(m.title).slice(0, 120), date: str(at || m.release_date), year: str(m.release_date).slice(0, 4), poster: str(m.poster_path),
+  votes: m.vote_count || 0, rating: Math.round((m.vote_average || 0) * 10) / 10, pop: m.popularity || 0, genres: (m.genre_ids || []).slice(0, 3), sum: str(m.overview).slice(0, 700) });
+
+/* one week (Sunday–Saturday) of US releases, digital (type 4) and disc (type 5) together */
+const relWeek = (off = relUi.week) => { const ws = weekStart(todayIso()), d = parseIso(ws); d.setDate(d.getDate() + off * 7); const a = isoDate(d); d.setDate(d.getDate() + 6); return [a, isoDate(d)]; };
+const relKeyOf = ws => `rel3:${ws}`;
+/* TMDB lists a movie for the week if any of its US releases of that type falls in it, but reports the movie's FIRST such date.
+   So a new edition (a 4K re-release of a 1999 film) came back dated 1999. Those get their real date in this week, the
+   edition's note (4K, Criterion…) and the year the movie first came out. */
+async function relFetchWeek(t, from, to) {
+  const items = [], seen = new Set();
+  for (let page = 1; page <= REL_PAGES; page++) {
+    const r = await tmdbGet('/discover/movie', { region: 'US', with_release_type: String(t), 'release_date.gte': from, 'release_date.lte': to, sort_by: 'popularity.desc', include_adult: 'false', language: 'en-US', page: String(page) });
+    for (const m of r.results || []) if (!seen.has(m.id) && m.release_date) { seen.add(m.id); items.push(slimMovie(m)); }
+    if (page >= (r.total_pages || 1)) break;
+  }
+  const odd = items.filter(m => m.date < from || m.date > to);
+  for (let i = 0; i < odd.length; i += 6) await Promise.all(odd.slice(i, i + 6).map(async m => {
+    try {
+      const r = await tmdbGet(`/movie/${m.id}/release_dates`), us = (r.results || []).find(x => x.iso_3166_1 === 'US'), rd = (us && us.release_dates) || [];
+      const hits = rd.filter(x => x.type === t && str(x.release_date).slice(0, 10) >= from && str(x.release_date).slice(0, 10) <= to);
+      if (!hits.length) { m.drop = true; return; }
+      m.date = hits.map(x => str(x.release_date).slice(0, 10)).sort()[0];
+      m.edition = true; m.note = [...new Set(hits.map(x => str(x.note).trim()).filter(Boolean))].join(', ').slice(0, 80);
+      m.year = rd.map(x => str(x.release_date).slice(0, 4)).filter(Boolean).sort()[0] || '';
+    } catch { m.drop = true; }
+  }));
+  return items.filter(m => !m.drop);
+}
+/* both kinds for one week, one entry per movie: { …movie, digital: date|'', disc: date|'', date: the first of them } */
+async function relFetchBoth(from, to) {
+  const byId = new Map();
+  for (const [t, kind] of [[4, 'digital'], [5, 'disc']]) for (const m of await relFetchWeek(t, from, to)) {
+    const e = byId.get(m.id) || { ...m, digital: '', disc: '', edition: false, note: '' };
+    e[kind] = m.date; if (m.edition) { e.edition = true; if (kind === 'disc' && m.note) e.note = m.note; if (m.year) e.year = m.year; }
+    e.date = [e.digital, e.disc].filter(Boolean).sort()[0]; byId.set(m.id, e);
+  }
+  return [...byId.values()];
+}
+/* "Tue, Nov 10 – Digital, Disc" or two lines when the days differ */
+function relWhen(digital, disc) {
+  if (digital && digital === disc) return [`${relFmt(digital)} – Digital, Disc`];
+  return [[digital, 'Digital'], [disc, 'Disc']].filter(x => x[0]).sort((a, b) => a[0].localeCompare(b[0])).map(([d, k]) => `${relFmt(d)} – ${k}`);
+}
+async function relLoad(force) {
+  const [from, to] = relWeek(), k = relKeyOf(from);
+  let hit = relMem[k] || await relCacheGet(k);
+  if (hit && !force && Date.now() - hit.at < REL_FRESH) { const had = relMem[k] === hit; relMem[k] = hit; if (!had && route() === 'releases') renderIfSafe(); return; }
+  if (hit && !relMem[k]) { relMem[k] = hit; if (route() === 'releases') renderIfSafe(); }   /* show the saved copy while a fresh one loads */
+  if (relUi.loading || (!force && Date.now() - (relTried[k] || 0) < 120e3)) return;   /* after a failed try, wait 2 minutes (or Refresh) */
+  relUi.loading = true; relUi.err = ''; relTried[k] = Date.now();
+  try {
+    await relEnsureGenres();
+    const items = await relFetchBoth(from, to);
+    hit = { at: Date.now(), from, to, items }; relMem[k] = hit; relCachePut(k, hit);
+  } catch (e) { console.warn(e); relUi.err = e.auth ? e.message : navigator.onLine ? 'TMDB didn’t answer. Try again in a minute.' : 'You’re offline, and this week isn’t saved on this device.'; if (hit) relMem[k] = hit; }
+  finally { relUi.loading = false; }
+  if (route() === 'releases') renderIfSafe();
+  /* keep the week before and after ready, so ‹ › are instant */
+  if (!force) for (const o of [1, -1]) { const ws = relWeek(relUi.week + o)[0]; if (!relMem[relKeyOf(ws)] && !(await relCacheGet(relKeyOf(ws)))) { await relPreload(relUi.week + o); } }
+}
+async function relPreload(off) {
+  const [from, to] = relWeek(off), k = relKeyOf(from);
+  try {
+    const items = await relFetchBoth(from, to);
+    const hit = { at: Date.now(), from, to, items }; relMem[k] = hit; relCachePut(k, hit);
+  } catch { /* fine: it loads when you go there */ }
+}
+/* details on tap (and for movies you watch for): every US release date, disc formats, rating, IMDb id */
+async function relDetails(id, force) {
+  const c = relInfo[id] || await relCacheGet('m:' + id);
+  if (c && !force && Date.now() - c.at < REL_FRESH) { relInfo[id] = c; return c; }
+  if (c) relInfo[id] = c;   /* the saved copy meanwhile */
+  if (!force && Date.now() - (relDetTried[id] || 0) < 120e3) return c || null;   /* after a failed try, wait 2 minutes (or Refresh) */
+  relDetTried[id] = Date.now();
+  try {
+    const m = await tmdbGet(`/movie/${id}`, { append_to_response: 'release_dates,external_ids,credits', language: 'en-US' });
+    const us = ((m.release_dates && m.release_dates.results) || []).find(r => r.iso_3166_1 === 'US');
+    const rd = (us && us.release_dates) || [], first = t => rd.filter(r => r.type === t).map(r => str(r.release_date).slice(0, 10)).sort()[0] || '';
+    /* digital and disc: the next one coming (a new 4K edition), else the first */
+    const soon = t => { const all = rd.filter(r => r.type === t).map(r => str(r.release_date).slice(0, 10)).sort(); return all.find(d => d >= relDay(-14)) || all[0] || ''; };
+    const info = { at: Date.now(), id, title: str(m.title), year: str(m.release_date).slice(0, 4), poster: str(m.poster_path), runtime: m.runtime || 0,
+      cert: (rd.find(r => r.certification) || {}).certification || '', imdb: (m.external_ids && m.external_ids.imdb_id) || m.imdb_id || '', sum: str(m.overview).slice(0, 700),
+      genres: (m.genres || []).map(g => str(g.name)).filter(Boolean).slice(0, 3),
+      cast: ((m.credits && m.credits.cast) || []).slice(0, 15).map(c => ({ id: c.id, n: str(c.name).slice(0, 80), c: str(c.character).slice(0, 80) })),
+      director: ((m.credits && m.credits.crew) || []).filter(c => c.job === 'Director').map(c => str(c.name)).slice(0, 3),
+      theater: first(3) || first(2), digital: soon(4), disc: soon(5), formats: [...new Set(rd.filter(r => r.type === 5).map(r => str(r.note).trim()).filter(Boolean))].slice(0, 6) };
+    relInfo[id] = info; relCachePut('m:' + id, info); return info;
+  } catch (e) { console.warn(e); return c || null; }
+}
+
+/* genre names (Action, Comedy…): kept on the device, loaded once */
+let relGenresP = null;
+function relEnsureGenres() {
+  if (relGenres) return Promise.resolve(relGenres);
+  return (relGenresP = relGenresP || (async () => {
+    relGenres = await relCacheGet('genres');
+    if (!relGenres) { const g = await tmdbGet('/genre/movie/list', { language: 'en-US' }); relGenres = Object.fromEntries((g.genres || []).map(x => [x.id, x.name])); relCachePut('genres', relGenres); }
+    if (route() === 'releases') renderIfSafe(); return relGenres;
+  })().catch(() => { relGenresP = null; return null; }));
+}
+/* saved details for the movies you watch for, read from this device (no network): the Calendar and the
+   "out this week" note on the Movie releases button use them */
+async function relWarm() {
+  let changed = false;
+  for (const f of state.rel.follow) if (!relInfo[f.id]) { const c = await relCacheGet('m:' + f.id); if (c) { relInfo[f.id] = c; changed = true; } }
+  return changed;
+}
+/* movies you watch for that come out this week (Sunday–Saturday) */
+function relOutThisWeek() {
+  const a = weekStart(todayIso()), d = parseIso(a); d.setDate(d.getDate() + 6); const b = isoDate(d);
+  return state.rel.follow.map(f => ({ f, i: relInfo[f.id] })).filter(({ i }) => i && [i.digital, i.disc].some(x => x && x >= a && x <= b))
+    .map(({ f, i }) => ({ id: f.id, title: f.title, when: relWhen(i.digital >= a && i.digital <= b ? i.digital : '', i.disc >= a && i.disc <= b ? i.disc : '') }));
+}
+/* ---- screen ---- */
+const relFmt = iso => parseIso(iso).toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric', year: iso.slice(0, 4) === todayIso().slice(0, 4) ? undefined : 'numeric' });   /* the year only when it isn't this year */
+const relWatching = id => state.rel.follow.some(f => f.id === id);
+const weekStart = iso => { const d = parseIso(iso); d.setDate(d.getDate() - d.getDay()); return isoDate(d); };   // weeks start Sunday, like the calendar
+/* the tap-to-open part: description, rating, runtime, theaters, links (dates too, when the row doesn't already show them) */
+function relMoreHTML(m, info, withDates) {
+  const sum = (info && info.sum) || m.sum || '', w = relWatching(m.id);
+  return `<div class="relmore">${sum ? `<p>${esc(sum)}</p>` : info ? '<p class="muted">No description on TMDB yet.</p>' : ''}${info ? `<p class="muted">${esc([info.cert, info.runtime ? `${info.runtime} min` : '', info.theater ? `In theaters ${relFmt(info.theater)}` : ''].filter(Boolean).join(' · '))}</p>
+    ${withDates ? `<p class="relwhen">${relDatesHTML(info)}</p>` : ''}${withDates && info.formats.length ? `<p class="muted">Formats: ${esc(info.formats.join(', '))}</p>` : ''}` : '<p class="muted">Getting details…</p>'}
+    ${relUi.cast === String(m.id) ? relCastHTML(info) : ''}
+    <div class="chips"><button type="button" class="chip" data-rel="watch" data-id="${m.id}" aria-pressed="${w}">${w ? '★ Watching for it' : '☆ Watch for it'}</button>
+    <button type="button" class="chip" data-rel="cast" data-id="${m.id}" aria-pressed="${relUi.cast === String(m.id)}">👥 Cast</button>
+    ${info && info.imdb ? `<a class="chip" href="https://www.imdb.com/title/${esc(info.imdb)}/" target="_blank" rel="noopener">IMDb</a>` : ''}
+    <a class="chip" href="https://www.themoviedb.org/movie/${m.id}" target="_blank" rel="noopener">TMDB</a></div></div>`;
+}
+/* genre names: from the movie's genre ids (lists, search) or its details (Watching) */
+const relGenreNames = (m, info) => { const g = (m.genres || []).map(x => (typeof x === 'number' ? relGenres && relGenres[x] : x)).filter(Boolean); return (g.length ? g : (info && info.genres) || []).slice(0, 3).join(', '); };
+/* an actor: Watch Log in the Goobs Apps copy (same app, same data), TMDB's page in Links */
+const relPersonLink = c => (typeof REL_PERSON_HREF === 'function' ? `<a href="${esc(REL_PERSON_HREF(c))}">${esc(c.n)}</a>` : `<a href="https://www.themoviedb.org/person/${c.id}" target="_blank" rel="noopener">${esc(c.n)}</a>`);
+/* cast on request: director, then the top-billed actors with their roles */
+function relCastHTML(info) {
+  if (!info || !info.cast) return '<p class="muted">Getting the cast…</p>';
+  if (!info.cast.length && !info.director.length) return '<p class="muted">TMDB has no cast listed yet.</p>';
+  return `<div class="relcast">${info.director.length ? `<p><b>Director</b> ${esc(info.director.join(', '))}</p>` : ''}<ul>${info.cast.map(c => `<li>${relPersonLink(c)}${c.c ? ` <span class="muted">as ${esc(c.c)}</span>` : ''}</li>`).join('')}</ul></div>`;
+}
+const relPosterHTML = p => (p ? `<img class="poster" alt="" loading="lazy" src="${TMDB_IMG}w92${esc(p)}">` : '<span class="poster none">🎬</span>');
+function relRow(m) {
+  const open = relUi.open === String(m.id), info = relInfo[m.id], w = relWatching(m.id);
+  const gen = relGenreNames(m, info);
+  let h = `<div class="relrow${open ? ' open' : ''}${w ? ' mine' : ''}"><button type="button" class="relmain" data-rel="open" data-id="${m.id}" aria-expanded="${open}">
+    ${m.poster ? `<img class="poster" alt="" loading="lazy" src="${TMDB_IMG}w92${esc(m.poster)}">` : '<span class="poster none">🎬</span>'}
+    <span class="relb"><span class="reln">${w ? '<span class="tvstar">★</span> ' : ''}${esc(m.title)}${m.year && m.year !== m.date.slice(0, 4) ? ` <span class="muted">(${esc(m.year)})</span>` : ''}${m.edition ? ` <span class="badge">New edition${m.note ? ': ' + esc(m.note) : ''}</span>` : ''}</span>
+    <span class="relwhen">${relWhen(m.digital, m.disc).map(esc).join('<br>')}</span>
+    <span class="relm">${esc([m.votes >= 5 ? `★ ${m.rating.toFixed(1)}` : '', gen].filter(Boolean).join(' · '))}</span></span></button>`;
+  if (open) h += relMoreHTML(m, info, true);
+  return h + '</div>';
+}
+function renderReleases() {
+  if (!relKeyLoaded) { relLoadKey().then(() => { if (route() === 'releases') render(); }); view.innerHTML = '<div class="empty"><p class="muted">Loading…</p></div>'; return; }
+  if (!relKey) { view.innerHTML = relKeyHTML(); return; }
+  if (!relGenres && !relGenresP) relEnsureGenres();   /* a saved week shown from this device still gets its genre names */
+  const my = state.rel.view === 'watching';
+  let html = `<div class="search tvbar"><div class="tvdays tvslots"><button type="button" class="chip" data-rel="list" aria-pressed="${!my}">🎬 Releases</button><button type="button" class="chip" data-rel="my" aria-pressed="${my}">★ Watching (${state.rel.follow.length})</button></div></div>`;
+  html += `<div class="search tvsearch"><form id="rfindf" class="tvfind"><input id="rfind" type="search" placeholder="Search any movie" value="${esc(relUi.find)}" autocomplete="off" enterkeyhint="search" aria-label="Search any movie"><button type="submit" class="btn small primary">Search</button></form></div>`;
+  if (relUi.finding || relUi.found) { view.innerHTML = html + relSearchHTML(); return; }
+  if (my) { view.innerHTML = html + relWatchingHTML(); return; }
+  const [from, to] = relWeek(), hit = relMem[relKeyOf(from)];
+  const n = relUi.week, label = n === 0 ? 'New Releases This Week' : n === 1 ? 'Next Week' : n === -1 ? 'Last Week' : n > 0 ? `${n} Weeks Ahead` : `${-n} Weeks Ago`;
+  const span = `${parseIso(from).toLocaleDateString([], { month: 'short', day: 'numeric' })} – ${parseIso(to).toLocaleDateString([], { month: parseIso(from).getMonth() === parseIso(to).getMonth() ? undefined : 'short', day: 'numeric' })}`;
+  html += `<div class="relweek"><button type="button" class="btn small ghost" data-rel="wk" data-d="-1" aria-label="Previous week">‹</button><div><h2>${esc(label)}</h2><div class="muted">${esc(span)}${n ? ' · <button type="button" class="linkbtn" data-rel="wk" data-d="0">This week</button>' : ''}</div></div><button type="button" class="btn small ghost" data-rel="wk" data-d="1" aria-label="Next week">›</button></div>`;
+  if (!hit || Date.now() - hit.at > REL_FRESH) relLoad();
+  if (n === 0) { const out = relOutThisWeek(); if (out.length) html += `<div class="card relout"><b>★ Out this week from your Watching list</b>${out.map(o => `<div>${esc(o.title)} <span class="muted">· ${esc(o.when.join(' · '))}</span></div>`).join('')}</div>`; }
+  if (!hit) { view.innerHTML = html + (relUi.err ? `<div class="empty"><h2>No list</h2><p>${esc(relUi.err)}</p><div class="foot"><button type="button" class="btn primary" data-rel="refresh">Try again</button></div></div>` : '<div class="empty"><p class="muted">Getting release dates from TMDB…</p></div>'); return; }
+  const all = hit.items.slice().sort((a, b) => a.date.localeCompare(b.date) || b.pop - a.pop);
+  const shown = all;   /* everything, most popular first within each day */
+  let day = '', openCard = false;
+  for (const m of shown) {   /* by day: disc mostly Tuesdays, digital Tuesdays and Fridays */
+    if (m.date !== day) { if (openCard) html += '</div>'; html += `<div class="sec-h"><span>${esc(parseIso(m.date).toLocaleDateString([], { weekday: 'long', month: 'short', day: 'numeric' }))}</span></div><div class="card tvlist">`; day = m.date; openCard = true; }
+    html += relRow(m);
+  }
+  if (openCard) html += '</div>';
+  if (!shown.length) html += `<div class="empty"><h2>Nothing listed</h2></div>`;
+  html += `<p class="hint c" style="margin-top:22px">US releases: Digital = buy or rent online; Disc = DVD, Blu-ray or 4K${hit.at ? ` · updated ${esc(fmtTime(hit.at))}` : ''}.${relUi.err ? ` ${esc(relUi.err)}` : ''}<br>
+    Dates come from TMDB’s community and can change. This product uses the TMDB API but is not endorsed or certified by TMDB.</p>
+    <div class="foot"><button type="button" class="btn small ghost" data-rel="refresh">Refresh</button><button type="button" class="btn small ghost" data-rel="key">🔑 Key</button></div>`;
+  view.innerHTML = html;
+}
+function relWatchingHTML() {
+  const need = state.rel.follow.filter(f => (!relInfo[f.id] || Date.now() - relInfo[f.id].at > REL_FRESH) && Date.now() - (relDetTried[f.id] || 0) >= 120e3);
+  if (need.length && !relUi.checking) { relUi.checking = true; (async () => { for (const f of need) { await relDetails(f.id); } relUi.checking = false; if (route() === 'releases') renderIfSafe(); })(); }
+  let html = `<div class="sec-h"><span>Movies you’re watching for</span><span>${state.rel.follow.length || ''}</span></div>`;
+  if (!state.rel.follow.length) return html + '<div class="empty"><p>Tap ☆ Watch for it on any movie, or search for one above. Its theater, digital and disc dates show here as TMDB learns them.</p></div>';
+  const key = f => { const i = relInfo[f.id]; return (i && [i.digital, i.disc].filter(d => d && d >= todayIso()).sort()[0]) || '9999'; };
+  html += `<div class="card tvlist">${state.rel.follow.slice().sort((a, b) => key(a).localeCompare(key(b)) || a.title.localeCompare(b.title)).map(f => {
+    const i = relInfo[f.id], open = relUi.open === String(f.id);
+    return `<div class="relrow${open ? ' open' : ''}"><div class="relline"><button type="button" class="relmain" data-rel="open" data-id="${f.id}" aria-expanded="${open}">${relPosterHTML(f.poster)}<span class="relb"><span class="reln">${esc(f.title)}${i && i.year ? ` <span class="muted">(${esc(i.year)})</span>` : ''}</span><span class="relwhen">${relDatesHTML(i)}</span><span class="relm">${esc([relGenreNames(f, i), i && i.formats.length ? i.formats.join(', ') : ''].filter(Boolean).join(' · '))}</span></span></button>
+      <button type="button" class="chip" data-rel="watchid" data-id="${f.id}" aria-pressed="true" aria-label="Stop watching for ${esc(f.title)}">★</button></div>${open ? relMoreHTML(f, i, false) : ''}</div>`; }).join('')}</div>
+    <div class="foot"><button type="button" class="btn small ghost" data-rel="refreshmine">Refresh</button></div>`;
+  return html;
+}
+/* US dates for a movie: theaters, digital, disc (and formats when TMDB has them) */
+function relDatesHTML(i) {
+  if (!i) return '<span class="muted">Checking dates…</span>';
+  const lines = relWhen(i.digital, i.disc);
+  if (!i.digital && i.disc) lines.push('Digital not announced yet'); else if (i.digital && !i.disc) lines.push('Disc not announced yet'); else if (!lines.length) lines.push('Digital and disc not announced yet');
+  return lines.map((l, n) => (/not announced/.test(l) ? `<span class="muted">${esc(l)}</span>` : `<b>${esc(l)}</b>`)).join('<br>') + (i.theater ? `<br><span class="muted">In theaters ${esc(relFmt(i.theater))}</span>` : '');
+}
+function relSearchHTML() {
+  if (relUi.finding) return '<p class="muted c">Searching…</p>';
+  let html = `<div class="sec-h"><span>Results for “${esc(relUi.find)}”</span><button type="button" class="btn small ghost" data-rel="clearfind">Close</button></div>`;
+  if (!relUi.found.length) return html + '<p class="muted c">No movies found.</p>';
+  return html + `<div class="card tvlist">${relUi.found.map(m => { const i = relInfo[m.id], open = relUi.open === String(m.id);
+    return `<div class="relrow${relWatching(m.id) ? ' mine' : ''}${open ? ' open' : ''}"><div class="relline"><button type="button" class="relmain" data-rel="open" data-id="${m.id}" aria-expanded="${open}">${relPosterHTML(m.poster)}<span class="relb"><span class="reln">${esc(m.title)}${m.year ? ` <span class="muted">(${esc(m.year)})</span>` : ''}</span><span class="relwhen">${relDatesHTML(i)}</span><span class="relm">${esc([m.votes >= 5 ? `★ ${m.rating.toFixed(1)}` : '', relGenreNames(m, i)].filter(Boolean).join(' · '))}</span></span></button>
+      <button type="button" class="chip" data-rel="watchid" data-id="${m.id}" aria-pressed="${relWatching(m.id)}">${relWatching(m.id) ? '★' : '☆ Watch'}</button></div>${open ? relMoreHTML(m, i, false) : ''}</div>`; }).join('')}</div>
+    <p class="hint c">Tap a movie for its description.</p>`;
+}
+function relKeyHTML() {
+  return `<div class="card calday"><h2 style="font-size:20px;margin-bottom:6px">Connect to TMDB</h2>
+    <p>Release dates come from TMDB, the free movie database. Paste your TMDB key (the API key, or the longer API read access token). It’s the same key Watch Log uses.</p>
+    <p class="muted">Get one free at themoviedb.org → Settings → API. The key is kept on this device only: it isn’t in the app’s code, isn’t synced and isn’t in backups. Each device needs it once.</p>
+    <form id="relkeyf" class="tvfind" style="margin-top:10px"><input id="relkey" type="password" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="TMDB key" aria-label="TMDB key"><button type="submit" class="btn primary">Save</button></form>
+    <div class="dlg-err" id="relkeyerr" role="alert"></div></div>`;
+}
+async function relKeyDialog() {
+  const v = await askDialog({ title: 'TMDB key', body: '<p class="muted">Kept on this device only. Remove it to stop the Releases list from asking TMDB.</p>', buttons: [{ label: 'Replace key', value: 'replace' }, { label: 'Remove key', value: 'remove', kind: 'danger' }, { label: 'Cancel', value: null, kind: 'ghost' }] });
+  if (v === 'replace' || v === 'remove') { await relSaveKey(''); for (const k in relMem) delete relMem[k]; render(); if (v === 'remove') toast('TMDB key removed from this device'); }
+}
+function relToggleWatch(m) {
+  const i = state.rel.follow.findIndex(f => f.id === m.id);
+  if (i >= 0) { state.rel.follow.splice(i, 1); toast(`Stopped watching for ${m.title}`); }
+  else { state.rel.follow.push({ id: m.id, title: m.title, poster: m.poster || '' }); toast(`Watching for ${m.title}`); relDetails(m.id).then(() => { if (route() === 'releases') renderIfSafe(); }); }
+  commit();   /* shared with your other devices */
+}
+const relItem = id => { for (const t in relMem) { const m = relMem[t].items.find(x => x.id === id); if (m) return m; } return (relUi.found || []).find(x => x.id === id) || state.rel.follow.find(x => x.id === id) || null; };
+
+view.addEventListener('click', e => {
+  const el = e.target.closest('[data-rel]'); if (!el || route() !== 'releases') return;
+  const id = +el.dataset.id;
+  switch (el.dataset.rel) {
+    case 'list': state.rel.view = 'list'; relUi.open = ''; save(); render(); window.scrollTo(0, 0); break;
+    case 'my': state.rel.view = 'watching'; save(); render(); window.scrollTo(0, 0); break;
+    case 'cast': relUi.cast = relUi.cast === String(id) ? '' : String(id); render();
+      if (relUi.cast && !(relInfo[id] && relInfo[id].cast)) relDetails(id, true).then(() => { if (route() === 'releases') renderIfSafe(); });   /* details saved before cast was added */
+      break;
+    case 'open': relUi.open = relUi.open === String(id) ? '' : String(id); render(); if (relUi.open) relDetails(id).then(() => { if (route() === 'releases') renderIfSafe(); }); break;
+    case 'watch': { const m = relItem(id); if (m) relToggleWatch(m); break; }
+    case 'watchid': { const f = state.rel.follow.find(x => x.id === id) || (relUi.found || []).find(x => x.id === id); if (f) relToggleWatch(f); break; }
+    case 'wk': relUi.week = el.dataset.d === '0' ? 0 : relUi.week + +el.dataset.d; relUi.open = ''; render(); window.scrollTo(0, 0); break;
+    case 'refresh': relLoad(true); render(); break;
+    case 'refreshmine': for (const f of state.rel.follow) { delete relInfo[f.id]; delete relDetTried[f.id]; relCachePut('m:' + f.id, null); } render(); break;
+    case 'key': relKeyDialog(); break;
+    case 'clearfind': relUi.found = null; relUi.find = ''; render(); break;
+  }
+});
+view.addEventListener('submit', async e => {
+  if (e.target.id === 'relkeyf') {
+    e.preventDefault(); const k = $('#relkey').value.trim(), err = $('#relkeyerr');
+    if (!/^[A-Za-z0-9._-]{20,400}$/.test(k)) { err.textContent = 'That doesn’t look like a TMDB key.'; return; }
+    err.textContent = 'Checking the key with TMDB…';
+    try { await tmdbGet('/configuration', {}, k); } catch (ex) { err.textContent = ex.auth ? 'TMDB didn’t accept that key.' : 'Couldn’t reach TMDB to check it. Try again when you’re online.'; return; }
+    await relSaveKey(k); toast('TMDB key saved on this device'); render(); return;
+  }
+  if (e.target.id === 'rfindf') {
+    e.preventDefault(); relUi.find = $('#rfind').value.trim(); if (!relUi.find) return;
+    relUi.finding = true; render();
+    try { await relEnsureGenres();
+      const r = await tmdbGet('/search/movie', { query: relUi.find, include_adult: 'false', language: 'en-US' }); relUi.found = (r.results || []).slice(0, 10).map(m => slimMovie(m)); }
+    catch (ex) { relUi.found = []; toast(ex.auth ? ex.message : 'TMDB didn’t answer.'); }
+    relUi.finding = false; render();
+    /* then each result's US dates, top result first */
+    const q = relUi.find;
+    for (const m of relUi.found || []) { if (relUi.find !== q || !relUi.found) break; await relDetails(m.id); if (route() === 'releases') renderIfSafe(); }
+  }
+});
+
+
+(async function init() {
+  try { db = await openDB(DB_NAME); const raw = await idbGet(db, 'state'); if (raw) state = normState(JSON.parse(raw)); } catch (e) { console.error(e); }
+  Sync.onChange(() => renderIfSafe());
+  render();
+  Sync.start({ db, key: 'sync', model: syncModel }).catch(e => console.error(e));
+})();
+</script>
+</body>
+</html>
