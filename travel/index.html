@@ -1056,7 +1056,7 @@ function normLists(t, packing) { const out = []; for (const n of [...arr(t.packL
 function normTrip(t, keepWeather) {
   if (!t || typeof t !== 'object' || !str(t.name).trim()) return null;
   const trip = {
-    id: str(t.id) || uid(), kind: t.kind === 'event' ? 'event' : 'trip', time: /^([01]\d|2[0-3]):[0-5]\d$/.test(str(t.time)) ? t.time : '', privNotes: str(t.privNotes).slice(0, 5000), name: str(t.name).trim().slice(0, 100), destination: str(t.destination).trim().slice(0, 120),
+    id: str(t.id) || uid(), kind: t.kind === 'event' ? 'event' : 'trip', yearly: t.kind === 'event' && !!t.yearly, time: /^([01]\d|2[0-3]):[0-5]\d$/.test(str(t.time)) ? t.time : '', privNotes: str(t.privNotes).slice(0, 5000), name: str(t.name).trim().slice(0, 100), destination: str(t.destination).trim().slice(0, 120),
     startDate: isISO(t.startDate) ? t.startDate : '', endDate: isISO(t.endDate) ? t.endDate : '',
     travelers: clampInt(t.travelers, 1, 99, 1), currency: /^[A-Z]{3}$/.test(str(t.currency)) ? t.currency : 'USD',
     budgetTotal: numOrNull(t.budgetTotal), notes: str(t.notes).slice(0, 10000), location: normLoc(t.location),
@@ -1106,7 +1106,7 @@ let noteTimer = null;
 
 /* ---- sharing between two phones (sync.js): trips and their items are stored as separate records ---- */
 const KINDS = [['packing', normPack], ['plan', normPlan], ['budget', normBudget], ['ideas', normIdea], ['todos', normTodo], ['people', normPerson], ['expenses', normExpense], ['payments', normPayment]];
-const TRIP_FIELDS = ['kind', 'time', 'name', 'destination', 'startDate', 'endDate', 'travelers', 'currency', 'budgetTotal', 'notes', 'location', 'cruise', 'travelerNames', 'packLists', 'splitFam', 'createdAt'];
+const TRIP_FIELDS = ['kind', 'yearly', 'time', 'name', 'destination', 'startDate', 'endDate', 'travelers', 'currency', 'budgetTotal', 'notes', 'location', 'cruise', 'travelerNames', 'packLists', 'splitFam', 'createdAt'];
 function uniqueItemIds() {            // item ids must be unique across all trips, since each item is its own shared record
   const seen = new Set(); let fixed = false;
   for (const t of state.trips) for (const [k] of KINDS) for (const i of t[k]) { if (seen.has(i.id)) { i.id = uid(); fixed = true; } seen.add(i.id); }
@@ -1541,16 +1541,17 @@ function eventDialog(t, pre) {
       { name: 'startDate', label: 'Date', type: 'date', required: true, value: t ? t.startDate : pre && pre.startDate },
       { name: 'time', label: 'Time (optional)', type: 'time', value: t ? t.time : pre ? pre.time : '' },
       { name: 'destination', label: 'Place (optional)', value: t ? t.destination : pre && pre.destination, placeholder: 'e.g. 123 Main St, Friendswood' },
+      { name: 'yearly', label: 'Every year (birthdays, anniversaries)', type: 'checkbox', value: t ? t.yearly : false },
       { name: 'type', label: 'Type', type: 'select', value: 'event', options: [['event', 'Event (appointment or date)'], ['trip', 'Trip (packing, plan, budget…)']], hint: t ? 'Changing to Trip opens the trip form.' : '' }
     ],
     submitLabel: t ? 'Save' : 'Add event',
     onSubmit: v => {
       if (!isISO(v.startDate)) return 'Pick a date.';
-      const rec = { name: v.name.trim(), startDate: v.startDate, endDate: v.startDate, time: v.time || '', destination: v.destination.trim() };
+      const rec = { name: v.name.trim(), startDate: v.startDate, endDate: v.startDate, time: v.time || '', destination: v.destination.trim(), yearly: !!v.yearly };
       if (!rec.name) return 'Give the event a name.';
       if (t) {
         Object.assign(t, rec);
-        if (v.type === 'trip') { t.kind = 'trip'; t.time = ''; commit(); setTimeout(() => tripDialog(t), 80); return; }
+        if (v.type === 'trip') { t.kind = 'trip'; t.time = ''; t.yearly = false; commit(); setTimeout(() => tripDialog(t), 80); return; }
         commit(); return;
       }
       if (v.type === 'trip') { setTimeout(() => tripDialog(null), 80); return; }
@@ -2182,24 +2183,33 @@ function storageBannerHTML() {
 const nagHTML = () => '';
 const syncLineHTML = () => { const b = syncBadgeHTML(); return b ? `<div style="margin:0 0 10px;text-align:right">${b}</div>` : ''; };
 const isEv = t => t.kind === 'event';
+/* yearly events (birthdays, anniversaries) count from their next date; Feb 29 falls on Feb 28 in other years */
+function nextYearly(iso, from = todayISO()) {
+  if (iso >= from) return iso;
+  const md = iso.slice(5); let y = +from.slice(0, 4);
+  const on = yr => (md === '02-29' && new Date(yr, 1, 29).getMonth() !== 1 ? `${yr}-02-28` : `${yr}-${md}`);
+  return on(y) >= from ? on(y) : on(y + 1);
+}
+const evDate = t => (isEv(t) && t.yearly && t.startDate ? nextYearly(t.startDate) : t.startDate);
+const evYears = t => (t.yearly && t.startDate ? +evDate(t).slice(0, 4) - +t.startDate.slice(0, 4) : 0);
 function evStatus(t) {
-  const d = t.startDate ? daysBetween(todayISO(), t.startDate) : null;
+  const d = t.startDate ? daysBetween(todayISO(), evDate(t)) : null;
   if (d == null) return { short: 'No date', cls: '', big: '—', label: 'Set a date' };
   if (d > 1) return { short: `in ${d} days`, cls: 'acc', big: String(d), label: 'days to go' };
   if (d === 1) return { short: 'Tomorrow', cls: 'acc', big: '1', label: 'day to go' };
   if (d === 0) return { short: 'Today', cls: 'ok', big: 'Today', label: t.time ? time12(t.time) : '' };
   return { short: 'Past', cls: '', big: '✓', label: 'Past' };
 }
-const evWhen = t => (t.startDate ? fmtDate(t.startDate) : 'No date yet') + (t.time ? ' · ' + time12(t.time) : '');
+const evWhen = t => (t.startDate ? fmtDate(evDate(t)) : 'No date yet') + (t.time ? ' · ' + time12(t.time) : '') + (t.yearly ? ` · 🔁 every year${evYears(t) > 0 ? ` (${evYears(t)} yrs)` : ''}` : '');
 function homeScreen() {
   const today = todayISO();
-  const sortUp = (a, b) => (a.startDate || '9999').localeCompare(b.startDate || '9999') || (a.time || '').localeCompare(b.time || '') || a.name.localeCompare(b.name);
-  const upcoming = state.trips.filter(t => !t.endDate || t.endDate >= today).sort(sortUp);
-  const past = state.trips.filter(t => t.endDate && t.endDate < today).sort((a, b) => b.endDate.localeCompare(a.endDate));
+  const sortUp = (a, b) => (evDate(a) || '9999').localeCompare(evDate(b) || '9999') || (a.time || '').localeCompare(b.time || '') || a.name.localeCompare(b.name);
+  const upcoming = state.trips.filter(t => t.yearly || !t.endDate || t.endDate >= today).sort(sortUp);
+  const past = state.trips.filter(t => !t.yearly && t.endDate && t.endDate < today).sort((a, b) => b.endDate.localeCompare(a.endDate));
   const evRow = t => {
-    const st = evStatus(t), dt = t.startDate ? new Date(t.startDate + 'T12:00:00') : null;
+    const st = evStatus(t), dt = t.startDate ? new Date(evDate(t) + 'T12:00:00') : null;
     return `<a class="card evrow" href="#/trip/${esc(t.id)}"><div class="evd">${dt ? `<b>${dt.getDate()}</b><span>${dt.toLocaleString('en-US', { month: 'short' })}</span>` : '<b>—</b>'}</div>
-      <div class="evm"><div class="row-title">${esc(t.name)}</div><div class="row-sub">${esc([dt ? dt.toLocaleString('en-US', { weekday: 'short' }) : '', t.time ? time12(t.time) : '', t.destination].filter(Boolean).join(' · ') || 'Event')}</div></div><span class="badge ${st.cls}">${esc(st.short)}</span></a>`;
+      <div class="evm"><div class="row-title">${esc(t.name)}</div><div class="row-sub">${esc([dt ? dt.toLocaleString('en-US', { weekday: 'short' }) : '', t.time ? time12(t.time) : '', t.destination, t.yearly ? `🔁${evYears(t) > 0 ? ` ${evYears(t)} yrs` : ''}` : ''].filter(Boolean).join(' · ') || 'Event')}</div></div><span class="badge ${st.cls}">${esc(st.short)}</span></a>`;
   };
   const card = t => {
     if (isEv(t)) return evRow(t);
