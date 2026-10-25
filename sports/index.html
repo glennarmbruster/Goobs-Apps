@@ -946,6 +946,7 @@ const espnScheduleUrl = (p, id, season, post) => {
   const q = [/^\d{4}$/.test(String(season || '')) ? `season=${season}` : '', post ? 'seasontype=3' : ''].filter(Boolean).join('&');
   return `${ESPN_HOST}apis/site/v2/sports/${p}/teams/${id}/schedule` + (q ? '?' + q : '');
 };
+const espnScoreboardUrl = (p, ymd) => (LEAGUE_KEYS.includes(p) ? `${ESPN_HOST}apis/site/v2/sports/${p}/scoreboard` + (/^\d{8}$/.test(ymd || '') ? `?dates=${ymd}` : '') : null);
 const espnStandingsUrl = p => (LEAGUE_KEYS.includes(p) ? `${ESPN_HOST}apis/v2/sports/${p}/standings` : null);
 const arr = v => (Array.isArray(v) ? v : []);
 const obj = v => (v && typeof v === 'object' ? v : {});
@@ -1287,6 +1288,21 @@ function refreshEspn({ auto = false, only = null } = {}) {
         added += rp.added; updated += rp.updated;
       } catch (e) { if (['offline', 'timeout', 'network'].includes(e.kind)) stop = true; }
     }
+    /* During a league's postseason, also bring in the teams still playing (World Series, WNBA Finals…) even when
+       they aren't your teams: one scoreboard look, then each of those teams' postseason schedule. */
+    if (!only) for (const p of [...new Set(teams.map(t => t.espnPath))]) {
+      if (stop) break;
+      try {
+        const ids = await espnPostseasonTeams(p), mine = new Set(teams.filter(t => t.espnPath === p).map(t => t.espnId));
+        for (const id of ids) {
+          if (stop || mine.has(id)) continue;
+          try {
+            const rp = mergeEspnGames(state, p, parseEspnSchedule(await espnGet(espnScheduleUrl(p, id, null, true)), true));
+            added += rp.added; updated += rp.updated;
+          } catch (e) { if (['offline', 'timeout', 'network'].includes(e.kind)) stop = true; }
+        }
+      } catch (e) { if (['offline', 'timeout', 'network'].includes(e.kind)) stop = true; }
+    }
     for (const p of [...new Set(teams.map(t => t.espnPath))]) {
       if (stop) break;
       try {
@@ -1309,6 +1325,18 @@ function refreshEspn({ auto = false, only = null } = {}) {
   espnBusy = espnBusy.catch(e => { ui.espn = { state: 'error', msg: (e && e.message) || 'Unknown problem.' }; return null; })
     .finally(() => { espnBusy = null; if (espnViewTab()) render(); else paintEspnStatus(); });
   return espnBusy;
+}
+/* teams playing in a league's postseason right now: today's scoreboard, or the next few days' on an off day */
+async function espnPostseasonTeams(p) {
+  const ids = new Set(), pick = j => { for (const ev of arr(obj(j).events)) for (const c of arr(obj(arr(ev.competitions)[0]).competitors)) { const id = str(obj(c.team).id); if (/^\d{1,10}$/.test(id)) ids.add(id); } };
+  const sb = await espnGet(espnScoreboardUrl(p)), lg = obj(arr(obj(sb).leagues)[0]), st = obj(obj(lg.season).type);
+  if (Number(st.type != null ? st.type : st.id) !== 3) return [];   /* not postseason */
+  pick(sb);
+  for (let d = 1; !ids.size && d <= 4; d++) {
+    const t = new Date(); t.setDate(t.getDate() + (d <= 3 ? d : -1));
+    pick(await espnGet(espnScoreboardUrl(p, `${t.getFullYear()}${String(t.getMonth() + 1).padStart(2, '0')}${String(t.getDate()).padStart(2, '0')}`)));
+  }
+  return [...ids].slice(0, 16);
 }
 function maybeAutoRefresh() {
   if (!syncedTeams().length || espnBusy || navigator.onLine === false) return;
