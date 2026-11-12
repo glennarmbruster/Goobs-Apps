@@ -1,0 +1,43 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "lemon-caper-sauce",
+  "title": "Lemon Caper Cream Sauce",
+  "description": "A thick, glossy lemon caper sauce built to cling to mahi-mahi, chicken, or pasta, with plenty extra for spooning.",
+  "category": "Sauce & condiment",
+  "tags": ["fish", "mahi-mahi", "quick", "extra sauce"],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 5,
+  "cookMin": 15,
+  "equipment": ["Anova Precision Oven", "Stainless skillet or small saucepan"],
+  "ingredients": [
+    { "id": "butter", "qty": 2, "unit": "tbsp", "name": "unsalted butter", "note": "for the sauce base" },
+    { "id": "garlic", "qty": 2, "unit": "tsp", "name": "jarred minced garlic" },
+    { "id": "flour", "qty": 1, "unit": "tbsp", "name": "all-purpose flour" },
+    { "id": "broth", "qty": 0.75, "unit": "cup", "name": "low-sodium chicken broth" },
+    { "id": "cream", "qty": 0.5, "unit": "cup", "name": "heavy cream" },
+    { "id": "zest", "qty": 1, "unit": "tsp", "name": "lemon zest", "note": "from 1 large lemon" },
+    { "id": "umami", "qty": 0.25, "unit": "tsp", "name": "Trader Joe's Umami seasoning" },
+    { "id": "brine", "qty": 1, "unit": "tbsp", "name": "caper brine" },
+    { "id": "lemon", "qty": 3, "unit": "tbsp", "name": "fresh lemon juice", "note": "from the same lemon" },
+    { "id": "capers", "qty": 3, "unit": "tbsp", "name": "capers", "note": "drained" },
+    { "id": "butterfin", "qty": 1, "unit": "tbsp", "name": "unsalted butter", "note": "cold, to finish" },
+    { "id": "salt", "name": "kosher salt", "note": "to taste, go light because capers are salty" },
+    { "id": "pepper", "name": "black pepper", "note": "freshly ground, to taste" },
+    { "id": "parsley", "qty": 2, "unit": "tbsp", "name": "fresh flat-leaf parsley", "note": "chopped, for finishing" }
+  ],
+  "steps": [
+    { "title": "Prep", "text": "Zest the lemon for {zest}, then juice it for {lemon}. Drain the jar of capers and measure {capers} and {brine}. Have {broth} and {cream} measured and ready." },
+    { "title": "Reheat the mahi", "text": "Put the chilled mahi-mahi in the Anova Precision Oven at 120°F with 100% steam, bagless, with the probe in the thickest fillet. Cook until it reads 120°F to 125°F. Start checking at 20 minutes. Begin the sauce about 10 minutes before the fish is ready. Do not go above the original cook temperature or the fish will dry out." },
+    { "title": "Melt the butter", "text": "Melt {butter} in a stainless skillet or small saucepan over medium heat. Avoid bare cast iron here, because the lemon and capers will strip the seasoning and can taste metallic." },
+    { "title": "Cook the garlic", "text": "Add {garlic} and stir for about 30 seconds until fragrant. Jarred garlic burns quickly, so do not let it brown." },
+    { "title": "Make the roux", "text": "Whisk in {flour} and cook for 1 minute, stirring constantly, until it smells slightly nutty. This is what gives the sauce body so it clings." },
+    { "title": "Add the liquids", "text": "Slowly whisk in {broth} so there are no lumps, then whisk in {cream}. Bring to a gentle simmer and cook for 4 to 5 minutes, stirring often, until the sauce coats the back of a spoon." },
+    { "title": "Season", "text": "Stir in {umami}. If the sauce is thinner than you want, simmer another 1 to 2 minutes before moving on." },
+    { "title": "Finish off the heat", "text": "Remove the pan from the heat. Stir in {lemon} and {capers}, then add {butterfin} and swirl until melted and glossy. Adding the lemon off the heat keeps the flavor bright and keeps the cream from breaking. Taste, then adjust with {salt} and {pepper}." },
+    { "title": "Serve", "text": "Pull the mahi when the probe reads 120°F to 125°F. If you want a little more heat in the center, finish it in a hot pan for a minute per side. Spoon a generous amount of sauce over the fish and top with {parsley}." }
+  ],
+  "notes": "Extra sauce is built in. If it is too thin, whisk 1 tsp cornstarch into 1 tbsp cold water and stir it in at a simmer for 1 minute. Make-ahead: the sauce keeps 2 days in the fridge. It thickens when cold, so rewarm gently over low heat with a splash of chicken broth and whisk until smooth. Also works on chicken piccata-style cutlets or Impastable pasta.",
+  "source": "Developed with Claude"
+}
