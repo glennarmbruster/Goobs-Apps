@@ -41,6 +41,17 @@ a.app span{color:var(--muted);font-size:13px;line-height:1.35;display:block}
 #editbar.on{display:flex}
 #editbar span{flex:1;color:var(--muted);font-size:14px}
 #editbar button{font:inherit;font-weight:700;border:0;border-radius:999px;padding:8px 18px;background:var(--ink);color:var(--bg);cursor:pointer}
+/* desktop (window 1000px and wider): more apps per row, icon beside the name */
+@media (min-width:1000px){
+  body{padding:28px 32px 48px}
+  main{max-width:1320px}
+  #apps{grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px}
+  a.app{flex-direction:row;align-items:center;gap:14px;padding:16px}
+  a.app:hover{box-shadow:0 4px 16px rgba(0,0,0,.10);transform:translateY(-1px)}
+  #apps.editing a.app:hover{transform:none}
+  #pick{max-width:640px}
+}
+@media (prefers-reduced-motion:no-preference){a.app{transition:box-shadow .12s,transform .12s}}
 </style>
 </head>
 <body>

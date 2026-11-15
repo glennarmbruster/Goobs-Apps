@@ -198,6 +198,57 @@ dialog::backdrop{background:rgba(10,15,12,.55)}
 .castctl{display:flex;flex-direction:column;gap:8px;padding:0 14px 10px}
 .castctl .chips{flex-wrap:nowrap;overflow-x:auto;padding-bottom:2px}
 .castctl .chip{flex:none}
+/* ===== Desktop layout (window 1000px and wider). Phone/iPad-portrait layout above is unchanged. ===== */
+@media (min-width:1000px){
+  body{padding-bottom:40px}
+  .wrap{max-width:1180px;padding-left:32px;padding-right:32px}
+  header.top .wrap{min-height:62px}
+  header.top h1{font-size:22px}
+  body:has(nav.tabs) header.top{padding-bottom:46px}
+  nav.tabs{top:var(--gk-navtop,63px);bottom:auto;left:0;right:0;background:transparent;border:0;padding:0;pointer-events:none}
+  nav.tabs .wrap{display:flex;gap:2px;align-items:flex-end;height:46px;padding-left:24px;padding-right:32px}
+  nav.tabs a,nav.tabs button{pointer-events:auto;flex:0 0 auto;flex-direction:row;gap:8px;min-height:40px;padding:0 14px;font-size:14px;color:var(--muted);border-bottom:3px solid transparent;border-radius:8px 8px 0 0;text-decoration:none}
+  nav.tabs .ico{font-size:17px}
+  nav.tabs a:hover,nav.tabs button:hover{background:var(--soft);color:var(--ink)}
+  nav.tabs [aria-current="page"]{color:var(--ink);border-bottom-color:var(--accent)}
+  nav.tabs .wrap::after{content:var(--gk-keys,"");margin-left:auto;align-self:center;font-size:12px;color:var(--muted);white-space:nowrap}
+  .toast{bottom:28px}
+  dialog{max-width:640px}
+  .dlg-form{padding:24px 26px}
+  .row:not(.static):hover,a.row:hover{background:var(--soft)}
+  .card a.row:hover,.list .row:hover{border-radius:inherit}
+  .stack{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}
+  .stack>.wide,.stack>.full{grid-column:1/-1}
+  .tiles{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+  .empty{padding:64px 20px}
+}
+@media (min-width:1000px){
+  .gk-cols{columns:2;column-gap:24px}
+  .gk-cols.one{columns:auto}
+  .gk-sec{break-inside:avoid;padding-top:1px}
+  .gk-cols>.gk-sec:first-child>.sec-h{margin-top:10px}
+  .gk-sec:has(table td:nth-child(6),table th:nth-child(6)){column-span:all}
+  .gk-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:12px;align-items:start;margin:12px 0}
+  .gk-grid>*{margin:0!important;min-width:0}
+  .gk-cols:not(.one) .gk-grid{grid-template-columns:1fr}
+  .list:has(>:nth-child(9)):not(.gk-cols:not(.one) *):not(.gk-grid *):not(dialog *):not(.md *),.card:has(>.row:nth-child(9)):not(.gk-cols:not(.one) *):not(.gk-grid *):not(dialog *):not(.md *){columns:2;column-gap:0;column-rule:1px solid var(--line)}
+  .list:has(>:nth-child(9))>*,.card:has(>.row:nth-child(9))>.row{break-inside:avoid}
+  .stack>:not(.card){grid-column:1/-1}
+}
+@media (min-width:1360px){
+  .wrap{max-width:1320px}
+  .gk-cols.many{columns:3}
+}
+@media (min-width:1000px){
+  .md{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:24px;align-items:start;margin-top:12px}
+  .md-list{position:sticky;top:calc(var(--gk-navtop,63px) + 58px);max-height:calc(100dvh - var(--gk-navtop,63px) - 74px);overflow:auto;overscroll-behavior:contain;padding:0 4px 12px;border-right:1px solid var(--line)}
+  .md-list .list{columns:auto!important}
+  .md-detail{min-width:0}
+  .md-list .row.sel{background:var(--accent-soft)}
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));align-items:start}
+  .md .cards{grid-template-columns:1fr}
+
+}
 </style>
 </head>
 <body>
@@ -2742,6 +2793,8 @@ function refCardHTML() {
 }
 
 /* ---- render + navigation ---- */
+const DESK = matchMedia('(min-width: 1000px)');
+DESK.addEventListener('change', () => render());
 const TITLES = { log: 'Watch Log', titles: 'Titles', people: 'People', connect: 'Connect', stats: 'Stats', backup: 'Backup & restore' };
 function render() {
   const y = window.scrollY;
@@ -2751,8 +2804,14 @@ function render() {
   if (ui.refP != null && !(ref && refPById(ui.refP) >= 0)) ui.refP = null;
   const detail = !!(ui.titleId || ui.personId || ui.refT != null || ui.refP != null);
   if (refInfo && !ref && (detail || ['titles', 'people', 'connect'].includes(ui.tab))) ensureRef();
-  view.innerHTML = ui.titleId ? renderTitle() : ui.personId ? renderPerson() : ui.refT != null ? renderRefTitle() : ui.refP != null ? renderRefPerson() : { log: renderLog, titles: renderTitles, people: renderPeople, connect: renderConnect, stats: renderStats, backup: renderBackup }[ui.tab]();
-  $$('nav.tabs button').forEach(b => b.setAttribute('aria-current', !detail && b.dataset.tab === ui.tab ? 'page' : 'false'));
+  const listFn = { log: renderLog, titles: renderTitles, people: renderPeople, connect: renderConnect, stats: renderStats, backup: renderBackup }[ui.tab];
+  const detFn = ui.titleId ? renderTitle : ui.personId ? renderPerson : ui.refT != null ? renderRefTitle : ui.refP != null ? renderRefPerson : null;
+  /* desktop: Log, Titles and People keep their list on the left and show the picked title or person on the right */
+  const split = !!detFn && DESK.matches && ['log', 'titles', 'people'].includes(ui.tab);
+  view.innerHTML = split ? `<div class="md"><div class="md-list">${listFn()}</div><section class="md-detail" aria-label="Details">${detFn()}</section></div>` : detFn ? detFn() : listFn();
+  if (split) { const sel = ui.titleId ? `[data-action="open-title"][data-id="${CSS.escape(ui.titleId)}"]` : ui.personId ? `[data-action="open-person"][data-id="${CSS.escape(ui.personId)}"]` : ''; if (sel) $$('.md-list ' + sel).forEach(el => el.classList.add('sel')); }
+  document.body.classList.toggle('split', split);
+  $$('nav.tabs button').forEach(b => b.setAttribute('aria-current', (!detail || split) && b.dataset.tab === ui.tab ? 'page' : 'false'));
   const selS = $('[data-action="rt-season"][aria-pressed="true"]');   /* keep the chosen season chip in view */
   if (selS && selS.parentElement) selS.parentElement.scrollLeft = Math.max(0, selS.offsetLeft - selS.parentElement.offsetLeft - 80);
   const hd = $('header.top .wrap'); let back = $('#backLink');
@@ -3251,6 +3310,81 @@ document.addEventListener('visibilitychange', () => { if (!document.hidden && !$
   if (refInfo) setTimeout(ensureRef, 300);
   Sync.onChange(() => wlRenderIfSafe());
   Sync.start({ db, key: 'sync', model: wlModel }).catch(e => console.error(e));
+})();
+</script>
+<script>
+/* ===== Desktop helpers: tab bar position + keyboard shortcuts (window 1000px and wider) ===== */
+(function () {
+  const mq = matchMedia('(min-width: 1000px)');
+  const root = document.documentElement;
+  const vis = el => el && el.offsetParent !== null;
+  let queued = false;
+  /* Desktop arrangement, re-applied after every screen change (phone layout never runs this):
+     1) "section heading + its content" become blocks that sit side by side;
+     2) runs of 2+ cards in a row become a card grid. */
+  const SKIP = /^(DIALOG|SCRIPT|NAV|TEMPLATE)$/;
+  function group(box) {
+    const kids = [...box.children];
+    if (!kids.some(k => k.classList.contains('sec-h'))) return;
+    const secs = []; let cur = null;
+    for (const k of kids) {
+      if (k.classList.contains('sec-h')) { cur = [k]; secs.push(cur); }
+      else if (cur && !SKIP.test(k.tagName)) cur.push(k);
+    }
+    const cols = document.createElement('div');
+    cols.className = 'gk-cols' + (secs.length < 2 ? ' one' : secs.length >= 5 ? ' many' : '');
+    secs[0][0].before(cols);
+    for (const s of secs) { const w = document.createElement('div'); w.className = 'gk-sec'; w.append(...s); cols.append(w); }
+  }
+  const isCard = k => k.classList.contains('card') && !k.classList.contains('list') && !k.classList.contains('hero') && !k.classList.contains('gk-solo');
+  function cardRuns(box) {
+    let run = [];
+    const flush = () => { if (run.length >= 2) { const g = document.createElement('div'); g.className = 'gk-grid'; run[0].before(g); g.append(...run); } run = []; };
+    for (const k of [...box.children]) { if (isCard(k)) run.push(k); else flush(); }
+    flush();
+  }
+  function arrange() {
+    for (const m of document.querySelectorAll('main')) {
+      if (m.closest('dialog') || document.body.classList.contains('gk-off')) continue;
+      const boxes = new Set([m]);
+      m.querySelectorAll('.sec-h').forEach(h => { const p = h.parentElement; if (p && !p.closest('dialog,.card,.gk-sec')) boxes.add(p); });
+      boxes.forEach(group);
+      [m, ...m.querySelectorAll('.gk-sec, .gk-cols.one>.gk-sec')].forEach(cardRuns);
+    }
+  }
+  function place() {
+    queued = false;
+    if (mq.matches) arrange();
+    const hd = document.querySelector('header.top'), nav = document.querySelector('nav.tabs');
+    if (!mq.matches || !hd || !nav) { root.style.removeProperty('--gk-keys'); return; }
+    root.style.setProperty('--gk-navtop', Math.max(0, hd.getBoundingClientRect().height - 46) + 'px');
+    const n = nav.querySelectorAll('a,button').length, parts = [];
+    if (n > 1) parts.push('1–' + Math.min(n, 9) + ' switch tabs');
+    if (addBtn()) parts.push('N adds');
+    if (searchBox()) parts.push('/ searches');
+    root.style.setProperty('--gk-keys', parts.length ? JSON.stringify('Keys: ' + parts.join(' · ')) : '""');
+  }
+  const queue = () => { if (!queued) { queued = true; requestAnimationFrame(place); } };
+  const addBtn = () => [...document.querySelectorAll('header.top .btn.primary')].find(b => vis(b) && /^\s*\+/.test(b.textContent));
+  const searchBox = () => [...document.querySelectorAll('input[type=search],input[placeholder^="Search" i],input[placeholder^="Find" i]')].find(vis);
+  new MutationObserver(queue).observe(document.body, { childList: true, subtree: true });
+  addEventListener('resize', queue); mq.addEventListener ? mq.addEventListener('change', queue) : mq.addListener(queue);
+  queue();
+  document.addEventListener('keydown', e => {
+    if (!mq.matches || e.metaKey || e.ctrlKey || e.altKey || e.defaultPrevented) return;
+    const t = e.target;
+    if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
+    if (document.querySelector('dialog[open]')) return;
+    if (/^[1-9]$/.test(e.key)) {
+      const tabs = [...document.querySelectorAll('nav.tabs a, nav.tabs button')], el = tabs[+e.key - 1];
+      if (el) { e.preventDefault(); el.click(); }
+    } else if (e.key === 'n' || e.key === 'N') { const b = addBtn(); if (b) { e.preventDefault(); b.click(); } }
+    else if (e.key === 'Escape') {
+      const b = [...document.querySelectorAll('header.top a.back, header.top #backLink')].find(a => vis(a) && !a.classList.contains('exit') && !/^\.\.\//.test(a.getAttribute('href') || '') && !/Apps/.test(a.textContent));
+      if (b) { e.preventDefault(); b.click(); }
+    }
+    else if (e.key === '/') { const s = searchBox(); if (s) { e.preventDefault(); s.focus(); s.select && s.select(); } }
+  });
 })();
 </script>
 </body>
