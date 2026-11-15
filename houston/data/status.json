@@ -1,15 +1,15 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-14T17:11:10Z",
+  "generatedAt": "2026-11-15T17:47:11Z",
   "demo": false,
   "sources": [
     {
       "id": "ticketmaster",
       "name": "Ticketmaster",
       "ok": true,
-      "lastAttempt": "2026-11-14T17:11:10Z",
-      "lastSuccess": "2026-11-14T17:11:10Z",
-      "count": 1065,
+      "lastAttempt": "2026-11-15T17:47:11Z",
+      "lastSuccess": "2026-11-15T17:47:11Z",
+      "count": 1041,
       "error": null,
       "stale": false
     },
@@ -17,7 +17,7 @@
       "id": "seatgeek",
       "name": "SeatGeek",
       "ok": false,
-      "lastAttempt": "2026-11-14T17:11:10Z",
+      "lastAttempt": "2026-11-15T17:47:11Z",
       "lastSuccess": null,
       "count": 0,
       "error": "key not configured",
@@ -27,19 +27,19 @@
       "id": "feed-houston-arboretum",
       "name": "Houston Arboretum & Nature Center",
       "ok": true,
-      "lastAttempt": "2026-11-14T17:11:10Z",
-      "lastSuccess": "2026-11-14T17:11:10Z",
-      "count": 92,
+      "lastAttempt": "2026-11-15T17:47:11Z",
+      "lastSuccess": "2026-11-15T17:47:11Z",
+      "count": 89,
       "error": null,
       "stale": false,
-      "capped": 35
+      "capped": 34
     },
     {
       "id": "feed-hermann-park",
       "name": "Hermann Park Conservancy",
       "ok": true,
-      "lastAttempt": "2026-11-14T17:11:10Z",
-      "lastSuccess": "2026-11-14T17:11:10Z",
+      "lastAttempt": "2026-11-15T17:47:11Z",
+      "lastSuccess": "2026-11-15T17:47:11Z",
       "count": 16,
       "error": null,
       "stale": false
@@ -48,31 +48,31 @@
       "id": "feed-buffalo-bayou",
       "name": "Buffalo Bayou Partnership",
       "ok": true,
-      "lastAttempt": "2026-11-14T17:11:10Z",
-      "lastSuccess": "2026-11-14T17:11:10Z",
-      "count": 48,
+      "lastAttempt": "2026-11-15T17:47:11Z",
+      "lastSuccess": "2026-11-15T17:47:11Z",
+      "count": 46,
       "error": null,
       "stale": false,
-      "capped": 18
+      "capped": 17
     },
     {
       "id": "feed-space-center",
       "name": "Space Center Houston",
       "ok": true,
-      "lastAttempt": "2026-11-14T17:11:10Z",
-      "lastSuccess": "2026-11-14T17:11:10Z",
+      "lastAttempt": "2026-11-15T17:47:11Z",
+      "lastSuccess": "2026-11-15T17:47:11Z",
       "count": 80,
       "error": null,
       "stale": false,
-      "capped": 1915
+      "capped": 1906
     },
     {
       "id": "feed-hobby-center",
       "name": "Hobby Center for the Performing Arts",
       "ok": true,
-      "lastAttempt": "2026-11-14T17:11:10Z",
-      "lastSuccess": "2026-11-14T17:11:10Z",
-      "count": 161,
+      "lastAttempt": "2026-11-15T17:47:11Z",
+      "lastSuccess": "2026-11-15T17:47:11Z",
+      "count": 160,
       "error": null,
       "stale": false,
       "capped": 38
@@ -81,20 +81,20 @@
       "id": "feed-memorial-park",
       "name": "Memorial Park Conservancy",
       "ok": true,
-      "lastAttempt": "2026-11-14T17:11:10Z",
-      "lastSuccess": "2026-11-14T17:11:10Z",
+      "lastAttempt": "2026-11-15T17:47:11Z",
+      "lastSuccess": "2026-11-15T17:47:11Z",
       "count": 26,
       "error": null,
       "stale": false,
-      "capped": 42
+      "capped": 44
     },
     {
       "id": "feed-galveston-historical",
       "name": "Galveston Historical Foundation",
       "ok": true,
-      "lastAttempt": "2026-11-14T17:11:10Z",
-      "lastSuccess": "2026-11-14T17:11:10Z",
-      "count": 42,
+      "lastAttempt": "2026-11-15T17:47:11Z",
+      "lastSuccess": "2026-11-15T17:47:11Z",
+      "count": 40,
       "error": null,
       "stale": false
     }
