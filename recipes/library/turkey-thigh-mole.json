@@ -36,7 +36,7 @@
     },
     {
       "id": "chicken_broth",
-      "qty": 1.5,
+      "qty": 1.75,
       "unit": "cup",
       "name": "low-sodium chicken broth",
       "group": "Lazy Mole Sauce"
@@ -129,30 +129,44 @@
       "group": "Lazy Mole Sauce"
     },
     {
+      "id": "cornstarch",
+      "qty": 1,
+      "unit": "tbsp",
+      "name": "cornstarch",
+      "group": "Slurry & Garnish"
+    },
+    {
+      "id": "cold_water",
+      "qty": 1,
+      "unit": "tbsp",
+      "name": "cold water",
+      "group": "Slurry & Garnish"
+    },
+    {
       "id": "sesame_seeds",
       "qty": 1,
       "unit": "tbsp",
       "name": "toasted sesame seeds",
       "note": "optional garnish",
-      "group": "Lazy Mole Sauce"
+      "group": "Slurry & Garnish"
     }
   ],
   "steps": [
     {
       "title": "Whisk the lazy mole sauce",
-      "text": "In a medium bowl or large measuring cup, whisk together {chicken_broth}, {tomato_sauce}, {peanut_butter}, {cocoa_powder}, {hot_honey}, {coconut_aminos}, {black_garlic_puree}, {chili_powder}, {smoked_paprika}, {ground_cumin}, {granulated_onion}, {ground_cinnamon}, and {mexican_oregano} until mostly smooth."
+      "text": "In a medium bowl or large glass measuring cup, whisk together {chicken_broth}, {tomato_sauce}, {peanut_butter}, {cocoa_powder}, {hot_honey}, {coconut_aminos}, {black_garlic_puree}, {chili_powder}, {smoked_paprika}, {ground_cumin}, {granulated_onion}, {ground_cinnamon}, and {mexican_oregano} until mostly smooth."
     },
     {
       "title": "Season and sear the turkey thighs",
-      "text": "Pat {turkey_thighs} dry and season evenly with {kosher_salt} and {black_pepper}. Heat {avocado_oil} in a large 12-inch HexClad skillet over medium-high heat and sear the turkey pieces for 3 to 4 minutes total, turning once or twice just to get light color on the outside."
+      "text": "Pat {turkey_thighs} dry and season evenly with {kosher_salt} and {black_pepper}. Heat {avocado_oil} in a 12-inch lidded HexClad skillet over medium-high heat and sear the turkey pieces for 3 to 4 minutes total, turning once or twice just to get light color on the outside."
     },
     {
       "title": "Simmer the turkey in the sauce",
-      "text": "Pour the whisked mole sauce directly over the turkey in the HexClad skillet, stirring to scrape up any browned bits. Bring to a gentle simmer, lower the heat to medium-low, cover with a lid, and simmer for 12 to 15 minutes until the turkey is tender and registers at least 175 degrees F internally."
+      "text": "Pour the whisked mole sauce directly over the turkey in the skillet, stirring to lift any browned bits. Bring to a gentle simmer, lower the heat to medium-low, cover with a lid, and simmer for 15 minutes until the turkey is tender and registers 175 to 180 degrees F internally."
     },
     {
-      "title": "Thicken and finish",
-      "text": "Uncover the skillet and simmer for 2 to 3 minutes, stirring frequently so the peanut butter and cocoa solids do not stick, until the sauce turns glossy and thick enough to cling heavily to every piece. Garnish with {sesame_seeds} if using and serve immediately."
+      "title": "Thicken with slurry and finish",
+      "text": "In a small cup, stir {cornstarch} and {cold_water} until completely smooth. Uncover the skillet over medium heat, pour in the cornstarch slurry while stirring constantly, and simmer for 1 to 2 minutes until the sauce turns glossy and thick enough to cling heavily to every piece. Garnish with {sesame_seeds} if using and serve immediately."
     }
   ]
 }
