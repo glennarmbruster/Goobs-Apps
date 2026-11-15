@@ -1,0 +1,193 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "turkey-thigh-mole",
+  "title": "Braised Turkey Thigh Mole",
+  "category": "Main dish",
+  "servings": 4,
+  "ingredients": [
+    {
+      "id": "turkey_thighs",
+      "qty": 1.5,
+      "unit": "lb",
+      "name": "boneless, skinless turkey thighs, cut into 2-inch chunks",
+      "group": "Turkey"
+    },
+    {
+      "id": "kosher_salt_turkey",
+      "qty": 0.75,
+      "unit": "tsp",
+      "name": "kosher salt",
+      "group": "Turkey"
+    },
+    {
+      "id": "black_pepper",
+      "qty": 0.5,
+      "unit": "tsp",
+      "name": "black pepper",
+      "group": "Turkey"
+    },
+    {
+      "id": "avocado_oil",
+      "qty": 2,
+      "unit": "tbsp",
+      "name": "avocado oil",
+      "group": "Turkey"
+    },
+    {
+      "id": "ancho_chiles",
+      "qty": 3,
+      "name": "dried ancho chiles, stemmed and seeded",
+      "group": "Mole Sauce"
+    },
+    {
+      "id": "guajillo_chiles",
+      "qty": 2,
+      "name": "dried guajillo chiles, stemmed and seeded",
+      "group": "Mole Sauce"
+    },
+    {
+      "id": "pasilla_chile",
+      "qty": 1,
+      "name": "dried pasilla chile, stemmed and seeded",
+      "group": "Mole Sauce"
+    },
+    {
+      "id": "chicken_broth",
+      "qty": 2.5,
+      "unit": "cup",
+      "name": "low-sodium chicken broth",
+      "group": "Mole Sauce"
+    },
+    {
+      "id": "yellow_onion",
+      "qty": 0.5,
+      "name": "medium yellow onion, sliced",
+      "group": "Mole Sauce"
+    },
+    {
+      "id": "jarred_garlic",
+      "qty": 1.5,
+      "unit": "tbsp",
+      "name": "jarred minced garlic",
+      "group": "Mole Sauce"
+    },
+    {
+      "id": "roma_tomatoes",
+      "qty": 2,
+      "name": "medium Roma tomatoes, halved",
+      "group": "Mole Sauce"
+    },
+    {
+      "id": "sesame_seeds",
+      "qty": 2,
+      "unit": "tbsp",
+      "name": "raw sesame seeds",
+      "note": "plus extra for garnish if desired",
+      "group": "Mole Sauce"
+    },
+    {
+      "id": "slivered_almonds",
+      "qty": 0.25,
+      "unit": "cup",
+      "name": "slivered almonds",
+      "group": "Mole Sauce"
+    },
+    {
+      "id": "corn_tortilla",
+      "qty": 1,
+      "name": "corn tortilla, torn into pieces",
+      "group": "Mole Sauce"
+    },
+    {
+      "id": "raisins",
+      "qty": 2,
+      "unit": "tbsp",
+      "name": "seedless raisins",
+      "group": "Mole Sauce"
+    },
+    {
+      "id": "peanut_butter",
+      "qty": 1,
+      "unit": "tbsp",
+      "name": "creamy peanut butter",
+      "group": "Mole Sauce"
+    },
+    {
+      "id": "ground_cumin",
+      "qty": 0.75,
+      "unit": "tsp",
+      "name": "ground cumin",
+      "group": "Mole Sauce"
+    },
+    {
+      "id": "ground_cinnamon",
+      "qty": 0.5,
+      "unit": "tsp",
+      "name": "ground cinnamon",
+      "group": "Mole Sauce"
+    },
+    {
+      "id": "mexican_oregano",
+      "qty": 0.5,
+      "unit": "tsp",
+      "name": "dried Mexican oregano",
+      "group": "Mole Sauce"
+    },
+    {
+      "id": "ground_cloves",
+      "qty": 0.125,
+      "unit": "tsp",
+      "name": "ground cloves",
+      "group": "Mole Sauce"
+    },
+    {
+      "id": "mexican_chocolate",
+      "qty": 1.5,
+      "unit": "oz",
+      "name": "Mexican chocolate (such as Abuelita or Ibarra), chopped",
+      "group": "Mole Sauce"
+    },
+    {
+      "id": "kosher_salt_sauce",
+      "qty": 0.5,
+      "unit": "tsp",
+      "name": "kosher salt",
+      "group": "Mole Sauce"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Toast the dried chiles",
+      "text": "Heat a dry 12-inch HexClad skillet over medium heat. Press {ancho_chiles}, {guajillo_chiles}, and {pasilla_chile} flat against the pan in batches for 10 to 15 seconds per side until fragrant and pliable, taking care not to burn them or the sauce will turn bitter."
+    },
+    {
+      "title": "Rehydrate the chiles",
+      "text": "Transfer the toasted chiles to a heatproof bowl and pour {chicken_broth} (warmed to a simmer) over them. Submerge with a small plate and soak for 20 minutes until completely softened."
+    },
+    {
+      "title": "Toast the nuts, seeds, and tortilla",
+      "text": "In the same dry HexClad skillet over medium-low heat, toast {sesame_seeds}, {slivered_almonds}, and {corn_tortilla} for 3 to 4 minutes, stirring constantly until golden and nutty. Transfer to your Vitamix blender."
+    },
+    {
+      "title": "Char the aromatics and tomatoes",
+      "text": "Add 1 tbsp of {avocado_oil} to the HexClad skillet over medium-high heat. Sear {yellow_onion} and {roma_tomatoes} cut-side down for 6 to 8 minutes until deeply charred and softened. Stir in {jarred_garlic} for the final 60 seconds until fragrant, then transfer everything to the Vitamix."
+    },
+    {
+      "title": "Blend the mole base",
+      "text": "Add the soaked chiles, their soaking broth, {raisins}, {peanut_butter}, {ground_cumin}, {ground_cinnamon}, {mexican_oregano}, {ground_cloves}, and {kosher_salt_sauce} to the Vitamix. Blend on high for 2 minutes until completely velvety and smooth."
+    },
+    {
+      "title": "Sear the turkey thighs",
+      "text": "Pat {turkey_thighs} dry and season evenly with {kosher_salt_turkey} and {black_pepper}. Heat the remaining 1 tbsp of {avocado_oil} in your Dutch oven or deep HexClad pan over medium-high heat and sear the turkey pieces for 2 to 3 minutes per side until lightly browned."
+    },
+    {
+      "title": "Simmer the mole and braise the turkey",
+      "text": "Pour the blended mole sauce over the seared turkey in the pan. Bring to a gentle simmer over medium-low heat, cover with a tight-fitting lid, and braise for 25 to 30 minutes until the turkey is tender and registers at least 175 degrees F internally."
+    },
+    {
+      "title": "Melt the chocolate and finish",
+      "text": "Uncover the pan, stir in {mexican_chocolate}, and simmer gently for 5 minutes until melted and glossy. Check the consistency and splash in extra broth or water if needed so the sauce stays thick, velvety, and coats every piece generously."
+    }
+  ]
+}
