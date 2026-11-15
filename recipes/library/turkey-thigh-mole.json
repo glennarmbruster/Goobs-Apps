@@ -2,7 +2,7 @@
   "format": "goobs-recipe",
   "version": 1,
   "id": "turkey-thigh-mole",
-  "title": "Braised Turkey Thigh Mole",
+  "title": "30-Minute Lazy Turkey Thigh Mole",
   "category": "Main dish",
   "servings": 4,
   "ingredients": [
@@ -10,12 +10,12 @@
       "id": "turkey_thighs",
       "qty": 1.5,
       "unit": "lb",
-      "name": "boneless, skinless turkey thighs, cut into 2-inch chunks",
+      "name": "boneless, skinless turkey thighs, cut into 1.5-inch chunks",
       "group": "Turkey"
     },
     {
-      "id": "kosher_salt_turkey",
-      "qty": 0.75,
+      "id": "kosher_salt",
+      "qty": 0.5,
       "unit": "tsp",
       "name": "kosher salt",
       "group": "Turkey"
@@ -29,165 +29,130 @@
     },
     {
       "id": "avocado_oil",
-      "qty": 2,
+      "qty": 1,
       "unit": "tbsp",
       "name": "avocado oil",
       "group": "Turkey"
     },
     {
-      "id": "ancho_chiles",
-      "qty": 3,
-      "name": "dried ancho chiles, stemmed and seeded",
-      "group": "Mole Sauce"
-    },
-    {
-      "id": "guajillo_chiles",
-      "qty": 2,
-      "name": "dried guajillo chiles, stemmed and seeded",
-      "group": "Mole Sauce"
-    },
-    {
-      "id": "pasilla_chile",
-      "qty": 1,
-      "name": "dried pasilla chile, stemmed and seeded",
-      "group": "Mole Sauce"
-    },
-    {
       "id": "chicken_broth",
-      "qty": 2.5,
+      "qty": 1.5,
       "unit": "cup",
       "name": "low-sodium chicken broth",
-      "group": "Mole Sauce"
+      "group": "Lazy Mole Sauce"
     },
     {
-      "id": "yellow_onion",
-      "qty": 0.5,
-      "name": "medium yellow onion, sliced",
-      "group": "Mole Sauce"
-    },
-    {
-      "id": "jarred_garlic",
-      "qty": 1.5,
-      "unit": "tbsp",
-      "name": "jarred minced garlic",
-      "group": "Mole Sauce"
-    },
-    {
-      "id": "roma_tomatoes",
-      "qty": 2,
-      "name": "medium Roma tomatoes, halved",
-      "group": "Mole Sauce"
-    },
-    {
-      "id": "sesame_seeds",
-      "qty": 2,
-      "unit": "tbsp",
-      "name": "raw sesame seeds",
-      "note": "plus extra for garnish if desired",
-      "group": "Mole Sauce"
-    },
-    {
-      "id": "slivered_almonds",
-      "qty": 0.25,
-      "unit": "cup",
-      "name": "slivered almonds",
-      "group": "Mole Sauce"
-    },
-    {
-      "id": "corn_tortilla",
-      "qty": 1,
-      "name": "corn tortilla, torn into pieces",
-      "group": "Mole Sauce"
-    },
-    {
-      "id": "raisins",
-      "qty": 2,
-      "unit": "tbsp",
-      "name": "seedless raisins",
-      "group": "Mole Sauce"
+      "id": "tomato_sauce",
+      "qty": 8,
+      "unit": "oz",
+      "name": "no-salt-added tomato sauce",
+      "group": "Lazy Mole Sauce"
     },
     {
       "id": "peanut_butter",
-      "qty": 1,
+      "qty": 3,
       "unit": "tbsp",
       "name": "creamy peanut butter",
-      "group": "Mole Sauce"
+      "group": "Lazy Mole Sauce"
+    },
+    {
+      "id": "cocoa_powder",
+      "qty": 2,
+      "unit": "tbsp",
+      "name": "unsweetened baking cocoa",
+      "group": "Lazy Mole Sauce"
+    },
+    {
+      "id": "hot_honey",
+      "qty": 1.5,
+      "unit": "tbsp",
+      "name": "hot honey",
+      "note": "or regular honey plus a pinch of cayenne for mild heat",
+      "group": "Lazy Mole Sauce"
+    },
+    {
+      "id": "coconut_aminos",
+      "qty": 1,
+      "unit": "tbsp",
+      "name": "coconut aminos",
+      "note": "or reduced-sodium soy sauce",
+      "group": "Lazy Mole Sauce"
+    },
+    {
+      "id": "black_garlic_puree",
+      "qty": 1,
+      "unit": "tbsp",
+      "name": "black garlic puree",
+      "note": "or 1 tsp jarred minced garlic",
+      "group": "Lazy Mole Sauce"
+    },
+    {
+      "id": "chili_powder",
+      "qty": 1,
+      "unit": "tbsp",
+      "name": "mild chili powder",
+      "group": "Lazy Mole Sauce"
+    },
+    {
+      "id": "smoked_paprika",
+      "qty": 1,
+      "unit": "tsp",
+      "name": "smoked paprika",
+      "group": "Lazy Mole Sauce"
     },
     {
       "id": "ground_cumin",
-      "qty": 0.75,
+      "qty": 1,
       "unit": "tsp",
       "name": "ground cumin",
-      "group": "Mole Sauce"
+      "group": "Lazy Mole Sauce"
+    },
+    {
+      "id": "granulated_onion",
+      "qty": 0.5,
+      "unit": "tsp",
+      "name": "granulated onion",
+      "group": "Lazy Mole Sauce"
     },
     {
       "id": "ground_cinnamon",
-      "qty": 0.5,
+      "qty": 0.25,
       "unit": "tsp",
       "name": "ground cinnamon",
-      "group": "Mole Sauce"
+      "group": "Lazy Mole Sauce"
     },
     {
       "id": "mexican_oregano",
-      "qty": 0.5,
+      "qty": 0.25,
       "unit": "tsp",
       "name": "dried Mexican oregano",
-      "group": "Mole Sauce"
+      "group": "Lazy Mole Sauce"
     },
     {
-      "id": "ground_cloves",
-      "qty": 0.125,
-      "unit": "tsp",
-      "name": "ground cloves",
-      "group": "Mole Sauce"
-    },
-    {
-      "id": "mexican_chocolate",
-      "qty": 1.5,
-      "unit": "oz",
-      "name": "Mexican chocolate (such as Abuelita or Ibarra), chopped",
-      "group": "Mole Sauce"
-    },
-    {
-      "id": "kosher_salt_sauce",
-      "qty": 0.5,
-      "unit": "tsp",
-      "name": "kosher salt",
-      "group": "Mole Sauce"
+      "id": "sesame_seeds",
+      "qty": 1,
+      "unit": "tbsp",
+      "name": "toasted sesame seeds",
+      "note": "optional garnish",
+      "group": "Lazy Mole Sauce"
     }
   ],
   "steps": [
     {
-      "title": "Toast the dried chiles",
-      "text": "Heat a dry 12-inch HexClad skillet over medium heat. Press {ancho_chiles}, {guajillo_chiles}, and {pasilla_chile} flat against the pan in batches for 10 to 15 seconds per side until fragrant and pliable, taking care not to burn them or the sauce will turn bitter."
+      "title": "Whisk the lazy mole sauce",
+      "text": "In a medium bowl or large measuring cup, whisk together {chicken_broth}, {tomato_sauce}, {peanut_butter}, {cocoa_powder}, {hot_honey}, {coconut_aminos}, {black_garlic_puree}, {chili_powder}, {smoked_paprika}, {ground_cumin}, {granulated_onion}, {ground_cinnamon}, and {mexican_oregano} until mostly smooth."
     },
     {
-      "title": "Rehydrate the chiles",
-      "text": "Transfer the toasted chiles to a heatproof bowl and pour {chicken_broth} (warmed to a simmer) over them. Submerge with a small plate and soak for 20 minutes until completely softened."
+      "title": "Season and sear the turkey thighs",
+      "text": "Pat {turkey_thighs} dry and season evenly with {kosher_salt} and {black_pepper}. Heat {avocado_oil} in a large 12-inch HexClad skillet over medium-high heat and sear the turkey pieces for 3 to 4 minutes total, turning once or twice just to get light color on the outside."
     },
     {
-      "title": "Toast the nuts, seeds, and tortilla",
-      "text": "In the same dry HexClad skillet over medium-low heat, toast {sesame_seeds}, {slivered_almonds}, and {corn_tortilla} for 3 to 4 minutes, stirring constantly until golden and nutty. Transfer to your Vitamix blender."
+      "title": "Simmer the turkey in the sauce",
+      "text": "Pour the whisked mole sauce directly over the turkey in the HexClad skillet, stirring to scrape up any browned bits. Bring to a gentle simmer, lower the heat to medium-low, cover with a lid, and simmer for 12 to 15 minutes until the turkey is tender and registers at least 175 degrees F internally."
     },
     {
-      "title": "Char the aromatics and tomatoes",
-      "text": "Add 1 tbsp of {avocado_oil} to the HexClad skillet over medium-high heat. Sear {yellow_onion} and {roma_tomatoes} cut-side down for 6 to 8 minutes until deeply charred and softened. Stir in {jarred_garlic} for the final 60 seconds until fragrant, then transfer everything to the Vitamix."
-    },
-    {
-      "title": "Blend the mole base",
-      "text": "Add the soaked chiles, their soaking broth, {raisins}, {peanut_butter}, {ground_cumin}, {ground_cinnamon}, {mexican_oregano}, {ground_cloves}, and {kosher_salt_sauce} to the Vitamix. Blend on high for 2 minutes until completely velvety and smooth."
-    },
-    {
-      "title": "Sear the turkey thighs",
-      "text": "Pat {turkey_thighs} dry and season evenly with {kosher_salt_turkey} and {black_pepper}. Heat the remaining 1 tbsp of {avocado_oil} in your Dutch oven or deep HexClad pan over medium-high heat and sear the turkey pieces for 2 to 3 minutes per side until lightly browned."
-    },
-    {
-      "title": "Simmer the mole and braise the turkey",
-      "text": "Pour the blended mole sauce over the seared turkey in the pan. Bring to a gentle simmer over medium-low heat, cover with a tight-fitting lid, and braise for 25 to 30 minutes until the turkey is tender and registers at least 175 degrees F internally."
-    },
-    {
-      "title": "Melt the chocolate and finish",
-      "text": "Uncover the pan, stir in {mexican_chocolate}, and simmer gently for 5 minutes until melted and glossy. Check the consistency and splash in extra broth or water if needed so the sauce stays thick, velvety, and coats every piece generously."
+      "title": "Thicken and finish",
+      "text": "Uncover the skillet and simmer for 2 to 3 minutes, stirring frequently so the peanut butter and cocoa solids do not stick, until the sauce turns glossy and thick enough to cling heavily to every piece. Garnish with {sesame_seeds} if using and serve immediately."
     }
   ]
 }
