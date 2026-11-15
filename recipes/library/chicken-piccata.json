@@ -1,8 +1,8 @@
 {
   "format": "goobs-recipe",
   "version": 1,
-  "id": "chicken-piccata",
-  "title": "Chicken Piccata",
+  "id": "chicken-piccata-original",
+  "title": "Chicken Piccata-original",
   "description": "Lightly floured chicken cutlets pan seared and simmered in a generous lemon, caper and garlic butter sauce.",
   "category": "Main dish",
   "tags": ["weeknight", "extra-sauce"],
