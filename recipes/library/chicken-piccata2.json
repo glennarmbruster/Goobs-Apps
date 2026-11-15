@@ -1,0 +1,214 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "chicken-piccata",
+  "title": "Chicken Piccata with Lemon Caper Cream Sauce",
+  "description": "Lightly floured chicken cutlets pan-seared and finished in a thick, glossy lemon caper cream sauce scaled for generous spooning.",
+  "category": "Main dish",
+  "tags": [
+    "weeknight",
+    "extra-sauce"
+  ],
+  "servings": 3,
+  "servingsLabel": "servings",
+  "prepMin": 15,
+  "cookMin": 25,
+  "equipment": [
+    "12-inch HexClad skillet",
+    "KitchenAid tenderizer attachment"
+  ],
+  "ingredients": [
+    {
+      "id": "chicken",
+      "qty": 22,
+      "unit": "oz",
+      "name": "boneless skinless chicken breast",
+      "note": "sliced or tenderized into thin cutlets",
+      "group": "Chicken"
+    },
+    {
+      "id": "salt",
+      "qty": 1,
+      "unit": "tsp",
+      "name": "kosher salt",
+      "group": "Chicken"
+    },
+    {
+      "id": "pepper",
+      "qty": 0.5,
+      "unit": "tsp",
+      "name": "black pepper",
+      "group": "Chicken"
+    },
+    {
+      "id": "flour_dredge",
+      "qty": 0.5,
+      "unit": "cup",
+      "name": "all-purpose flour",
+      "note": "for dredging",
+      "group": "Chicken"
+    },
+    {
+      "id": "oil",
+      "qty": 2,
+      "unit": "tbsp",
+      "name": "olive oil",
+      "group": "Chicken"
+    },
+    {
+      "id": "searbutter",
+      "qty": 1,
+      "unit": "tbsp",
+      "name": "unsalted butter",
+      "note": "for searing",
+      "group": "Chicken"
+    },
+    {
+      "id": "saucebutter",
+      "qty": 3,
+      "unit": "tbsp",
+      "name": "unsalted butter",
+      "note": "for the sauce base",
+      "group": "Lemon Caper Cream Sauce"
+    },
+    {
+      "id": "garlic",
+      "qty": 1,
+      "unit": "tbsp",
+      "name": "jarred minced garlic",
+      "group": "Lemon Caper Cream Sauce"
+    },
+    {
+      "id": "flour_roux",
+      "qty": 1.5,
+      "unit": "tbsp",
+      "name": "all-purpose flour",
+      "note": "for the roux",
+      "group": "Lemon Caper Cream Sauce"
+    },
+    {
+      "id": "broth",
+      "qty": 1.25,
+      "unit": "cup",
+      "name": "low-sodium chicken broth",
+      "group": "Lemon Caper Cream Sauce"
+    },
+    {
+      "id": "cream",
+      "qty": 0.75,
+      "unit": "cup",
+      "name": "heavy cream",
+      "group": "Lemon Caper Cream Sauce"
+    },
+    {
+      "id": "zest",
+      "qty": 1.5,
+      "unit": "tsp",
+      "name": "lemon zest",
+      "note": "from 1 to 2 lemons",
+      "group": "Lemon Caper Cream Sauce"
+    },
+    {
+      "id": "umami",
+      "qty": 0.5,
+      "unit": "tsp",
+      "name": "Trader Joe's Umami seasoning",
+      "group": "Lemon Caper Cream Sauce"
+    },
+    {
+      "id": "brine",
+      "qty": 1.5,
+      "unit": "tbsp",
+      "name": "caper brine",
+      "group": "Lemon Caper Cream Sauce"
+    },
+    {
+      "id": "lemon",
+      "qty": 4.5,
+      "unit": "tbsp",
+      "name": "fresh lemon juice",
+      "note": "from the zested lemons",
+      "group": "Lemon Caper Cream Sauce"
+    },
+    {
+      "id": "capers",
+      "qty": 4.5,
+      "unit": "tbsp",
+      "name": "capers",
+      "note": "drained",
+      "group": "Lemon Caper Cream Sauce"
+    },
+    {
+      "id": "butterfin",
+      "qty": 1.5,
+      "unit": "tbsp",
+      "name": "unsalted butter",
+      "note": "cold, to finish",
+      "group": "Lemon Caper Cream Sauce"
+    },
+    {
+      "id": "saucesalt",
+      "name": "kosher salt",
+      "note": "to taste, go light because capers and brine are salty",
+      "group": "Lemon Caper Cream Sauce"
+    },
+    {
+      "id": "saucepepper",
+      "name": "black pepper",
+      "note": "freshly ground, to taste",
+      "group": "Lemon Caper Cream Sauce"
+    },
+    {
+      "id": "parsley",
+      "qty": 2,
+      "unit": "tbsp",
+      "name": "fresh flat-leaf parsley",
+      "note": "chopped, for finishing",
+      "group": "Lemon Caper Cream Sauce"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Prep the citrus and capers",
+      "text": "Zest the lemons for {zest}, then juice them for {lemon}. Drain the capers and measure {capers} and {brine}. Have {broth} and {cream} measured and ready."
+    },
+    {
+      "title": "Cut and season cutlets",
+      "text": "Slice {chicken} into thinner cutlets with the KitchenAid tenderizer or by butterflying. Season both sides evenly with {salt} and {pepper}."
+    },
+    {
+      "title": "Dredge",
+      "text": "Lightly dredge the cutlets in {flour_dredge} and shake off the excess."
+    },
+    {
+      "title": "Sear the chicken",
+      "text": "Heat a 12-inch HexClad skillet over medium-high heat with {oil} and {searbutter}. Cook the cutlets for 3 to 4 minutes per side until golden and cooked to 160 to 162 degrees F. Transfer to a plate and tent loosely."
+    },
+    {
+      "title": "Start the sauce base",
+      "text": "Reduce heat to medium and wipe out any dark flour bits if needed, leaving the pan warm. Melt {saucebutter}, add {garlic}, and stir for 30 seconds until fragrant without browning."
+    },
+    {
+      "title": "Make the roux",
+      "text": "Whisk in {flour_roux} and cook for 1 minute, stirring constantly, until smooth and slightly nutty."
+    },
+    {
+      "title": "Simmer broth and cream",
+      "text": "Slowly whisk in {broth} so there are no lumps, then whisk in {cream}. Bring to a gentle simmer and cook for 4 to 5 minutes, stirring often, until the sauce thickens enough to coat the back of a spoon."
+    },
+    {
+      "title": "Season the sauce",
+      "text": "Stir in {zest}, {umami}, and {brine}. Simmer 1 minute more to blend."
+    },
+    {
+      "title": "Finish off the heat",
+      "text": "Remove the skillet from the heat. Stir in {lemon} and {capers}, then add {butterfin} and swirl until melted and glossy. Taste and adjust with {saucesalt} and {saucepepper}."
+    },
+    {
+      "title": "Serve",
+      "text": "Return the chicken cutlets to the skillet just to warm and coat in the sauce, or spoon the sauce generously over the plated cutlets. Garnish with {parsley}."
+    }
+  ],
+  "notes": "Target plating time 5:30 PM: prep citrus/cutlets at 5:00, sear at 5:05, start sauce at 5:15, finish and plate at 5:25-5:30. Lemon Caper Cream Sauce scaled 1.5x from the 2-serving mahi-mahi recipe to give generous sauce for 3 servings of cutlets and Cream Cheese Yukon Potatoes. Option A/B dairy swap: replace the 0.75 cup heavy cream with 0.75 cup half-and-half and whisk in 1 tsp cornstarch mixed with 1 tbsp cold water at the simmer if extra body is needed.",
+  "source": "Glenn"
+}
