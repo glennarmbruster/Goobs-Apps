@@ -1,0 +1,24 @@
+{
+  "name": "Cook-Sync \u2014 Goobs Apps",
+  "short_name": "Cook-Sync",
+  "description": "Multi-Appliance Kitchen Timeline & Batch Scaler",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#1c1917",
+  "theme_color": "#b45309",
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

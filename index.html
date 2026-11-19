@@ -1,174 +1,395 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0f172a" id="metaThemeColor">
 <title>Goobs Apps</title>
-<meta name="robots" content="noindex">
-<link rel="icon" type="image/png" href="favicon.png">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="./favicon.png">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<script>
+(function() {
+  try {
+    var saved = localStorage.getItem('goobs-launcher-theme') || 'Phone';
+    document.documentElement.setAttribute('data-theme', saved);
+    var isDark = saved === 'Dark' ||
+      (saved === 'Phone' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    document.documentElement.classList.toggle('is-dark', isDark);
+  } catch (e) {}
+})();
+</script>
 <style>
-:root{--bg:#f5f4ef;--card:#fff;--ink:#1b2420;--muted:#66736d;--line:#e2e0d6;color-scheme:light dark}
-@media (prefers-color-scheme:dark){:root{--bg:#0e1311;--card:#171f1c;--ink:#e7eeeb;--muted:#97a69f;--line:#27332e}}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:max(16px,env(safe-area-inset-top)) 16px 40px}
-main{max-width:640px;margin:0 auto}
-#apps{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-h1{font-size:26px;margin:24px 0 4px}
-p{color:var(--muted);margin:0 0 20px}
-a.app{display:flex;flex-direction:column;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;text-decoration:none;color:inherit;min-width:0}
-a.app img{width:56px;height:56px;border-radius:13px;flex:none}
-a.app b{display:block;font-size:17px}
-a.app span{color:var(--muted);font-size:13px;line-height:1.35;display:block}
-.bar{margin-top:18px;font-size:14px;display:flex;gap:16px;flex-wrap:wrap}
-.bar button{font:inherit;background:none;border:0;padding:0;color:var(--muted);text-decoration:underline;cursor:pointer}
-.bar a{color:var(--ink);font-weight:600}
-[hidden]{display:none!important}
-.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;margin:0}
-#pick{display:none;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-top:12px}
-#pick label{display:flex;gap:10px;align-items:center;padding:6px 0;font-size:16px}
-#pick input{width:20px;height:20px}
-.tip{font-size:14px;margin-top:22px}
-/* rearrange mode */
-#apps.editing a.app{touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;cursor:grab;position:relative;animation:wig .28s ease-in-out infinite alternate}
-#apps.editing a.app:nth-child(2n){animation-delay:-.14s}
-#apps.editing a.app,#apps.editing img{-webkit-user-drag:none}
-#apps.editing a.app::after{content:"⠿";position:absolute;top:10px;right:12px;font-size:20px;color:var(--muted)}
-#apps.editing a.app.dragging{animation:none;z-index:5;cursor:grabbing;box-shadow:0 10px 30px rgba(0,0,0,.25);opacity:.95;pointer-events:none}
-@keyframes wig{from{transform:rotate(-.6deg)}to{transform:rotate(.6deg)}}
-@media (prefers-reduced-motion:reduce){#apps.editing a.app{animation:none}}
-#editbar{display:none;position:sticky;top:0;z-index:6;background:var(--bg);padding:10px 0;margin:-10px 0 6px;align-items:center;gap:12px}
-#editbar.on{display:flex}
-#editbar span{flex:1;color:var(--muted);font-size:14px}
-#editbar button{font:inherit;font-weight:700;border:0;border-radius:999px;padding:8px 18px;background:var(--ink);color:var(--bg);cursor:pointer}
-/* desktop (window 1000px and wider): more apps per row, icon beside the name */
-@media (min-width:1000px){
-  body{padding:28px 32px 48px}
-  main{max-width:1320px}
-  #apps{grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px}
-  a.app{flex-direction:row;align-items:center;gap:14px;padding:16px}
-  a.app:hover{box-shadow:0 4px 16px rgba(0,0,0,.10);transform:translateY(-1px)}
-  #apps.editing a.app:hover{transform:none}
-  #pick{max-width:640px}
+:root {
+  --bg: #f1f5f9;
+  --surface: #ffffff;
+  --surface-2: #f8fafc;
+  --text: #0f172a;
+  --muted: #475569;
+  --border: #cbd5e1;
+  --accent: #0e7490;
+  --header-bg: #0f172a;
+  --header-text: #ffffff;
+  --shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
-@media (prefers-reduced-motion:no-preference){a.app{transition:box-shadow .12s,transform .12s}}
+html.is-dark {
+  --bg: #0b1220;
+  --surface: #131d31;
+  --surface-2: #19253d;
+  --text: #f1f5f9;
+  --muted: #94a3b8;
+  --border: #263552;
+  --accent: #38bdf8;
+  --header-bg: #090e1a;
+  --header-text: #f8fafc;
+  --shadow: 0 2px 10px rgba(0, 0, 0, 0.32);
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100dvh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+  font-size: 15px;
+  overflow-x: hidden;
+}
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: var(--header-bg);
+  color: var(--header-text);
+  padding: calc(12px + var(--safe-top)) 16px 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+}
+.header-inner {
+  max-width: 1560px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.title {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+.theme-sel {
+  background: rgba(255,255,255,0.14);
+  color: var(--header-text);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 10px;
+  padding: 6px 10px;
+  font-size: 13px;
+  font-weight: 600;
+  min-height: 36px;
+}
+.theme-sel option { color: #0f172a; background: #ffffff; }
+
+.wrap {
+  max-width: 1560px;
+  margin: 0 auto;
+  padding: 14px 16px calc(28px + var(--safe-bottom));
+}
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 16px;
+  align-items: center;
+}
+.search-input {
+  flex: 1 1 240px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 15px;
+  min-height: 44px;
+}
+.cat-row {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  max-width: 100%;
+  padding-bottom: 2px;
+}
+.chip {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  padding: 7px 13px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  min-height: 36px;
+  white-space: nowrap;
+}
+.chip.active {
+  background: var(--accent);
+  color: #ffffff;
+  border-color: var(--accent);
+}
+html.is-dark .chip.active { color: #082f49; }
+
+.section-title {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  margin: 18px 0 10px;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.app-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 13px 12px;
+  text-decoration: none;
+  color: var(--text);
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  min-height: 92px;
+  transition: transform 0.12s ease, border-color 0.12s ease;
+}
+.app-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+.app-top {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+}
+.app-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.app-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.app-name {
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+.app-desc {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.35;
+}
+
+@media (min-width: 700px) {
+  .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+}
+@media (min-width: 1000px) {
+  .wrap { padding: 20px 24px 40px; }
+  .grid { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 14px; }
+  .app-card { padding: 15px 14px; min-height: 102px; }
+}
+@media (min-width: 1440px) {
+  .grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+}
 </style>
 </head>
 <body>
-<main>
-  <h1 class="sr">Goobs Apps</h1>
-  <div id="editbar"><span>Drag apps to put them in the order you want.</span><button type="button" id="done">Done</button></div>
-  <div id="apps">
-  <a class="app" data-k="bills" href="bills/"><img src="bills/icon-192.png" alt=""><div><b>Bills</b><span>What's due, mark it paid, it rolls to the next date</span></div></a>
-  <a class="app" data-k="money" href="money/"><img src="money/icon-192.png" alt=""><div><b>Money</b><span>Retirement Monte Carlo planner and monthly budget</span></div></a>
-  <a class="app" data-k="travel" href="travel/"><img src="travel/icon-192.png" alt=""><div><b>Planner</b><span>Trips, appointments and important dates</span></div></a>
-  <a class="app" data-k="grocery" href="grocery/"><img src="grocery/icon-192.png" alt=""><div><b>Grocery</b><span>Shared list for two phones, grouped by aisle</span></div></a>
-  <a class="app" data-k="todo" href="todo/"><img src="todo/icon-192.png" alt=""><div><b>To-do</b><span>Shared lists with due dates and notes</span></div></a>
-  <a class="app" data-k="recipes" href="recipes/"><img src="recipes/icon-192.png" alt=""><div><b>Recipes</b><span>Your recipe collection with scaling, timers and cook mode</span></div></a>
-  <a class="app" data-k="health" href="health/"><img src="health/icon-192.png" alt=""><div><b>Health</b><span>Labs, vitals and meds with charts and a doctor summary</span></div></a>
-  <a class="app" data-k="va" href="va/"><img src="va/icon-192.png" alt=""><div><b>VA Claim</b><span>Deadlines, evidence, statements and contact log</span></div></a>
-  <a class="app" data-k="house" href="house/"><img src="house/icon-192.png" alt=""><div><b>House</b><span>Maintenance, pool and gear logs, warranties, vehicles</span></div></a>
-  <a class="app" data-k="pool" href="pool/"><img src="pool/icon-192.png" alt=""><div><b>Pool</b><span>Water tests, dosing plans and routine</span></div></a>
-  <a class="app" data-k="inventory" href="inventory/"><img src="inventory/icon-192.png" alt=""><div><b>Inventory</b><span>Home inventory for insurance and a storm checklist</span></div></a>
-  <a class="app" data-k="household" href="household/"><img src="household/icon-192.png" alt=""><div><b>Household</b><span>How the house runs: contacts, accounts, vendors, what to do when</span></div></a>
-  <a class="app" data-k="occasions" href="occasions/"><img src="occasions/icon-192.png" alt=""><div><b>Occasions</b><span>Birthdays and events with countdowns, plus gift ideas</span></div></a>
-  <a class="app" data-k="worklog" href="worklog/"><img src="worklog/icon-192.png" alt=""><div><b>Work Log</b><span>What you did on each job, with tickets and a weekly summary</span></div></a>
-  <a class="app" data-k="sousvide" href="sousvide/"><img src="sousvide/icon-192.png" alt=""><div><b>Cooking Temps</b><span>Safe and recommended temps, plus sous vide plans</span></div></a>
-  <a class="app" data-k="storage" href="storage/"><img src="storage/icon-192.png" alt=""><div><b>Food Storage</b><span>Fridge, freezer and pantry times; thawing and refreezing</span></div></a>
-  <a class="app" data-k="calories" href="calories/"><img src="calories/icon-192.png" alt=""><div><b>Calorie Lookup</b><span>Calories and full nutrition for any food, drink or fast-food item</span></div></a>
-  <a class="app" data-k="watchlog" href="watchlog/"><img src="watchlog/icon-192.png" alt=""><div><b>Watch Log</b><span>TV and movie log with who-was-in-what</span></div></a>
-  <a class="app" data-k="movies" href="movies/"><img src="movies/icon-192.png" alt=""><div><b>Movies</b><span>New digital and disc releases, search, and your Watching list</span></div></a>
-  <a class="app" data-k="sports" href="sports/"><img src="sports/icon-192.png" alt=""><div><b>Sports</b><span>Schedules, standings and rivalry records</span></div></a>
-  <a class="app" data-k="houston" href="houston/"><img src="houston/icon-192.png" alt=""><div><b>Houston Events</b><span>Things to do around Houston, with shared picks</span></div></a>
+
+<header class="header">
+  <div class="header-inner">
+    <div class="title">🚀 Goobs Apps</div>
+    <select class="theme-sel" id="themeSelect" aria-label="Theme">
+      <option value="Phone">Theme: Phone</option>
+      <option value="Light">Theme: Light</option>
+      <option value="Dark">Theme: Dark</option>
+    </select>
   </div>
-  <div class="bar"><a href="backup/">💾 Back up all apps</a><button id="arr" type="button">Rearrange apps</button><button id="cust" type="button">Choose which apps to show</button><button id="reord" type="button" hidden>Reset order</button><button id="all" type="button" hidden>Show all apps</button></div>
-  <div id="pick"></div>
+</header>
+
+<main class="wrap">
+  <div class="toolbar">
+    <input class="search-input" id="searchInput" type="search" placeholder="Search apps… ( / )">
+    <div class="cat-row" id="catRow">
+      <button class="chip active" data-cat="all">All</button>
+      <button class="chip" data-cat="new">New Suite</button>
+      <button class="chip" data-cat="travel">Travel &amp; Local</button>
+      <button class="chip" data-cat="kitchen">Kitchen &amp; Health</button>
+      <button class="chip" data-cat="home">Home &amp; Money</button>
+      <button class="chip" data-cat="media">Media &amp; Work</button>
+    </div>
+  </div>
+
+  <div id="gridContainer"></div>
 </main>
+
 <script>
-(function(){
-  var pick=document.getElementById('pick');
-  var KEY='goobs-launcher-apps', PRESETS={cindy:['travel','grocery','todo','recipes','household','sousvide','storage','watchlog','calories']}, OLD_PRESETS=[['travel','grocery','todo','recipes','household'],['travel','grocery','todo','recipes','household','sousvide'],['travel','grocery','todo','recipes','household','sousvide','storage','watchlog']], ALIAS={trips:'travel','to-do':'todo',work:'worklog'};
-  var grid=document.getElementById('apps'), cards={}, order=[];
-  [].forEach.call(grid.children,function(a){cards[a.dataset.k]=a;order.push(a.dataset.k);});
-  function clean(list){var out=[];(list||[]).forEach(function(k){k=String(k).trim().toLowerCase();k=ALIAS[k]||k;if(cards[k]&&out.indexOf(k)<0)out.push(k);});return out;}
-  function load(){try{var v=JSON.parse(localStorage.getItem(KEY)||'null');return Array.isArray(v)?clean(v):null;}catch(e){return null;}}
-  function save(v){try{if(v)localStorage.setItem(KEY,JSON.stringify(v));else localStorage.removeItem(KEY);}catch(e){}}
-  var q=new URLSearchParams(location.search), shown=null;
-  if(q.get('for')&&PRESETS[q.get('for').toLowerCase()])shown=PRESETS[q.get('for').toLowerCase()].slice();
-  else if(q.get('apps'))shown=clean(q.get('apps').split(','));
-  if(shown&&shown.length)save(shown);else{shown=load();
-    /* a phone still on an older preset (not customised) moves to the current one */
-    if(shown&&OLD_PRESETS.some(function(o){return o.join()===shown.join();})){shown=PRESETS.cindy.slice();save(shown);}}
-  /* custom order (set by dragging) is kept apart from which apps show, so a preset link never undoes it */
-  var OKEY='goobs-launcher-order';
-  function loadOrder(){try{var v=JSON.parse(localStorage.getItem(OKEY)||'null');return Array.isArray(v)?clean(v):null;}catch(e){return null;}}
-  function saveOrder(v){try{if(v)localStorage.setItem(OKEY,JSON.stringify(v));else localStorage.removeItem(OKEY);}catch(e){}}
-  var mine=loadOrder();
-  function arrange(list){if(!mine||!mine.length)return list;var pos=function(k){var i=mine.indexOf(k);return i<0?1e4+list.indexOf(k):i;};return list.slice().sort(function(a,b){return pos(a)-pos(b);});}
-  function render(){
-    var list=arrange(shown&&shown.length?shown:order);
-    order.forEach(function(k){cards[k].hidden=true;});
-    list.forEach(function(k){cards[k].hidden=false;grid.appendChild(cards[k]);});
-    document.getElementById('all').hidden=!(shown&&shown.length);
-    document.getElementById('cust').textContent=shown&&shown.length?'Change which apps show':'Choose which apps to show';
-    document.getElementById('reord').hidden=!(mine&&mine.length);
-  }
-  /* ---- rearrange: pointer-based drag so it works with a finger on iPhone as well as a mouse ---- */
-  var editing=false, drag=null, bar=document.getElementById('editbar');
-  function setEditing(on){editing=on;[].forEach.call(grid.querySelectorAll('a.app,img'),function(x){x.draggable=!on;});grid.classList.toggle('editing',on);bar.classList.toggle('on',on);document.getElementById('arr').hidden=on;if(on)pick.style.display='none';}
-  function visibleCards(){return [].filter.call(grid.children,function(a){return !a.hidden;});}
-  function commitOrder(){
-    var vis=visibleCards().map(function(a){return a.dataset.k;}), prev=mine&&mine.length?mine:order;
-    /* the apps you see, in the order you dragged them, then everything else */
-    mine=vis.concat(prev.concat(order).filter(function(k,i,all){return vis.indexOf(k)<0&&all.indexOf(k)===i;})); saveOrder(mine); document.getElementById('reord').hidden=false;
-  }
-  function place(e){
-    drag.el.style.transform='';
-    var r=drag.el.getBoundingClientRect();
-    drag.el.style.transform='translate('+(e.clientX-drag.ox-r.left)+'px,'+(e.clientY-drag.oy-r.top)+'px)';
-  }
-  grid.addEventListener('pointerdown',function(e){
-    if(!editing||drag||(e.pointerType==='mouse'&&e.button!==0))return;
-    var a=e.target.closest('a.app'); if(!a)return;
-    e.preventDefault();
-    var r=a.getBoundingClientRect();
-    drag={el:a,id:e.pointerId,ox:e.clientX-r.left,oy:e.clientY-r.top};
-    a.classList.add('dragging'); place(e);
-  });
-  window.addEventListener('pointermove',function(e){
-    if(!drag||e.pointerId!==drag.id)return;
-    e.preventDefault();
-    var under=document.elementFromPoint(e.clientX,e.clientY), t=under&&under.closest&&under.closest('a.app');
-    if(t!==drag.last)drag.last=null;
-    /* swap once per card entered, so a card that just slid under the finger doesn't flip back */
-    if(t&&t!==drag.el&&t!==drag.last&&!t.hidden&&t.parentNode===grid){
-      drag.last=t;
-      var cs=visibleCards(), from=cs.indexOf(drag.el), to=cs.indexOf(t);
-      grid.insertBefore(drag.el,from<to?t.nextSibling:t);
-    }
-    if(e.clientY<70)window.scrollBy(0,-12);else if(e.clientY>innerHeight-70)window.scrollBy(0,12);
-    place(e);
-  },{passive:false});
-  function endDrag(e){if(!drag||(e&&e.pointerId!==drag.id))return;drag.el.classList.remove('dragging');drag.el.style.transform='';drag=null;commitOrder();}
-  window.addEventListener('pointerup',endDrag); window.addEventListener('pointercancel',endDrag);
-  grid.addEventListener('click',function(e){if(editing){e.preventDefault();}},true);
-  grid.addEventListener('contextmenu',function(e){if(editing)e.preventDefault();});
-  document.getElementById('arr').onclick=function(){setEditing(true);};
-  document.getElementById('done').onclick=function(){setEditing(false);};
-  document.getElementById('reord').onclick=function(){mine=null;saveOrder(null);render();};
-  document.getElementById('cust').onclick=function(){
-    setEditing(false);
-    if(pick.style.display==='block'){pick.style.display='none';return;}
-    var cur=shown&&shown.length?shown:order;
-    pick.innerHTML='<b>Show these apps on this phone</b>'+order.map(function(k){return '<label><input type="checkbox" value="'+k+'"'+(cur.indexOf(k)>-1?' checked':'')+'>'+cards[k].querySelector('b').textContent+'</label>';}).join('')+'<button type="button" id="ok" style="margin-top:8px;font:inherit;padding:8px 16px">Done</button>';
-    pick.style.display='block';
-    document.getElementById('ok').onclick=function(){
-      var on=[].map.call(pick.querySelectorAll('input:checked'),function(i){return i.value;});
-      var ordered=(shown&&shown.length?shown.filter(function(k){return on.indexOf(k)>-1;}):[]).concat(order.filter(function(k){return on.indexOf(k)>-1&&!(shown&&shown.indexOf(k)>-1);}));
-      shown=ordered.length&&ordered.length<order.length?ordered:null; save(shown); pick.style.display='none'; render();
-    };
+(function() {
+  'use strict';
+
+  const APPS = [
+    // New Suite
+    { slug: 'scout', name: 'Excursion Scout', desc: '2-Hr trips, cruise ports, smart tip & pack', emoji: '🧭', icon: './scout/icon-192.png', group: 'new', tags: ['new', 'travel'] },
+    { slug: 'cooksync', name: 'Cook-Sync', desc: 'Multi-appliance timeline & batch scaler', emoji: '⏱️', icon: './cooksync/icon-192.png', group: 'new', tags: ['new', 'kitchen'] },
+    { slug: 'makersbench', name: "Maker's Bench", desc: 'Glowforge, sublimation, Cricut & 3D stock', emoji: '🎨', icon: './makersbench/icon-192.png', group: 'new', tags: ['new', 'home'] },
+    { slug: 'exops', name: 'Exchange Ops Deck', desc: 'M365 & Hybrid PowerShell + change checklist', emoji: '⚡', icon: './exops/icon-192.png', group: 'new', tags: ['new', 'media'] },
+
+    // Travel & Local
+    { slug: 'travel', name: 'Planner', desc: 'Trips, itineraries & cruise countdowns', emoji: '✈️', group: 'travel', tags: ['travel'] },
+    { slug: 'houston', name: 'Houston Events', desc: 'Concerts, comedy, festivals & day trips', emoji: '🤠', group: 'travel', tags: ['travel'] },
+    { slug: 'occasions', name: 'Occasions', desc: 'Birthdays, anniversaries & gift ideas', emoji: '🎁', group: 'travel', tags: ['travel', 'home'] },
+
+    // Kitchen & Health
+    { slug: 'recipes', name: 'Goobs Recipes', desc: 'Personal cookbook & JSON recipe cards', emoji: '📖', group: 'kitchen', tags: ['kitchen'] },
+    { slug: 'sousvide', name: 'Cooking Temps', desc: 'APO, sous vide & smoker temp guide', emoji: '🌡️', group: 'kitchen', tags: ['kitchen'] },
+    { slug: 'grocery', name: 'Grocery List', desc: 'Shared shopping list & pantry staples', emoji: '🛒', group: 'kitchen', tags: ['kitchen', 'home'] },
+    { slug: 'calories', name: 'Calorie Lookup', desc: 'Cruise menu & meal calorie tracker', emoji: '🥗', group: 'kitchen', tags: ['kitchen', 'travel'] },
+    { slug: 'health', name: 'Health Log', desc: 'Vitals, weight & wellness readings', emoji: '❤️', group: 'kitchen', tags: ['kitchen'] },
+
+    // Home & Money
+    { slug: 'todo', name: 'To-Do', desc: 'Shared household tasks & reminders', emoji: '✅', group: 'home', tags: ['home'] },
+    { slug: 'pool', name: 'Pool Log', desc: 'Friendswood pool water chemistry tracker', emoji: '🏊', group: 'home', tags: ['home'] },
+    { slug: 'house', name: 'House', desc: 'Home maintenance, filters & warranties', emoji: '🏠', group: 'home', tags: ['home'] },
+    { slug: 'household', name: 'Household', desc: 'Family info, contacts & home docs', emoji: '🏡', group: 'home', tags: ['home'] },
+    { slug: 'inventory', name: 'Inventory', desc: 'Home gear, serial numbers & storage', emoji: '📦', group: 'home', tags: ['home'] },
+    { slug: 'storage', name: 'Storage', desc: 'Bins, attic & garage location finder', emoji: '🗄️', group: 'home', tags: ['home'] },
+    { slug: 'bills', name: 'Bill Reminders', desc: 'Monthly due dates & autopay tracker', emoji: '🧾', group: 'home', tags: ['home'] },
+    { slug: 'money', name: 'Money & Budget', desc: 'Spending plan & retirement milestones', emoji: '💵', group: 'home', tags: ['home'] },
+
+    // Media, Work & Tools
+    { slug: 'watchlog', name: 'Watch Log', desc: 'TV shows, seasons & episode progress', emoji: '📺', group: 'media', tags: ['media'] },
+    { slug: 'movies', name: 'Movies', desc: 'Movie watchlist & ratings', emoji: '🎬', group: 'media', tags: ['media'] },
+    { slug: 'sports', name: 'Sports', desc: 'Schedules, teams & game trackers', emoji: '🏈', group: 'media', tags: ['media'] },
+    { slug: 'collector', name: 'Collector', desc: 'Books, collectibles & catalog tracker', emoji: '📚', group: 'media', tags: ['media'] },
+    { slug: 'worklog', name: 'Work Log', desc: 'Shift notes, tasks & change log', emoji: '💼', group: 'media', tags: ['media'] },
+    { slug: 'va', name: 'VA Benefits', desc: 'VA reference & pay calculator', emoji: '🎖️', group: 'media', tags: ['media', 'home'] },
+    { slug: 'tools', name: 'Tools', desc: 'Quick calculators & utility helpers', emoji: '🛠️', group: 'media', tags: ['media'] },
+    { slug: 'backup', name: 'Back Up All Apps', desc: 'Export & verify all Goobs Apps data', emoji: '💾', group: 'media', tags: ['media', 'home'] }
+  ];
+
+  const GROUP_LABELS = {
+    new: 'New Apps',
+    travel: 'Travel & Local',
+    kitchen: 'Kitchen & Health',
+    home: 'Home & Money',
+    media: 'Media, Work & Utilities'
   };
-  document.getElementById('all').onclick=function(){shown=null;save(null);render();};
+
+  let activeCat = 'all';
+  let query = '';
+
+  function esc(s) {
+    return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function render() {
+    const container = document.getElementById('gridContainer');
+    const filtered = APPS.filter((a) => {
+      if (activeCat !== 'all' && !a.tags.includes(activeCat)) return false;
+      if (query) {
+        const hay = (a.name + ' ' + a.desc + ' ' + a.slug).toLowerCase();
+        if (!hay.includes(query)) return false;
+      }
+      return true;
+    });
+
+    if (!filtered.length) {
+      container.innerHTML = '<p style="color:var(--muted); text-align:center; padding:24px 0;">No matching apps found.</p>';
+      return;
+    }
+
+    const order = ['new', 'travel', 'kitchen', 'home', 'media'];
+    container.innerHTML = order.map((grp) => {
+      const items = filtered.filter((a) => a.group === grp);
+      if (!items.length) return '';
+      return `
+        <div class="section-title">${esc(GROUP_LABELS[grp])}</div>
+        <div class="grid">
+          ${items.map((a) => `
+            <a class="app-card" href="./${esc(a.slug)}/">
+              <div class="app-top">
+                <div class="app-icon">
+                  ${a.icon ? `<img src="${esc(a.icon)}" alt="" onerror="this.replaceWith(document.createTextNode('${a.emoji}'))">` : a.emoji}
+                </div>
+                <span class="app-name">${esc(a.name)}</span>
+              </div>
+              <span class="app-desc">${esc(a.desc)}</span>
+            </a>
+          `).join('')}
+        </div>
+      `;
+    }).join('');
+  }
+
+  document.getElementById('catRow').addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-cat]');
+    if (!btn) return;
+    activeCat = btn.dataset.cat;
+    document.querySelectorAll('#catRow .chip').forEach((c) => c.classList.toggle('active', c === btn));
+    render();
+  });
+
+  const searchInput = document.getElementById('searchInput');
+  searchInput.addEventListener('input', (e) => {
+    query = e.target.value.trim().toLowerCase();
+    render();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === '/' && document.activeElement !== searchInput) {
+      e.preventDefault();
+      searchInput.focus();
+    } else if (e.key === 'Escape' && document.activeElement === searchInput) {
+      searchInput.value = '';
+      query = '';
+      searchInput.blur();
+      render();
+    }
+  });
+
+  const themeSelect = document.getElementById('themeSelect');
+  themeSelect.value = localStorage.getItem('goobs-launcher-theme') || 'Phone';
+  function applyTheme(t) {
+    document.documentElement.setAttribute('data-theme', t);
+    const isDark = t === 'Dark' || (t === 'Phone' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    document.documentElement.classList.toggle('is-dark', isDark);
+  }
+  themeSelect.addEventListener('change', () => {
+    localStorage.setItem('goobs-launcher-theme', themeSelect.value);
+    applyTheme(themeSelect.value);
+  });
+  if (window.matchMedia) {
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+      if ((localStorage.getItem('goobs-launcher-theme') || 'Phone') === 'Phone') applyTheme('Phone');
+    });
+  }
+
   render();
 })();
 </script>

@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#1d4ed8" id="metaThemeColor">
+<title>Exchange Ops Deck · Goobs Apps</title>
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<script>
+(function() {
+  try {
+    var saved = localStorage.getItem('goobs-exops-theme') || 'Phone';
+    document.documentElement.setAttribute('data-theme', saved);
+    var isDark = saved === 'Dark' || saved === 'Halloween' ||
+      (saved === 'Phone' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    document.documentElement.classList.toggle('is-dark', isDark);
+  } catch (e) {}
+})();
+</script>
+<style>
+:root {
+  --bg: #f1f5f9;
+  --surface: #ffffff;
+  --surface-2: #f8fafc;
+  --text: #0f172a;
+  --muted: #475569;
+  --border: #cbd5e1;
+  --accent: #1d4ed8;
+  --accent-text: #ffffff;
+  --accent-soft: #e0f2fe;
+  --header-bg: #1d4ed8;
+  --header-text: #ffffff;
+  --badge-bg: rgba(255,255,255,0.18);
+  --good: #15803d;
+  --good-bg: #dcfce7;
+  --warn: #b45309;
+  --warn-bg: #fef3c7;
+  --danger: #b91c1c;
+  --danger-bg: #fee2e2;
+  --shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+  --radius: 14px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+html.is-dark {
+  --bg: #0b1220;
+  --surface: #131d31;
+  --surface-2: #19253d;
+  --text: #f1f5f9;
+  --muted: #94a3b8;
+  --border: #263552;
+  --accent: #38bdf8;
+  --accent-text: #082f49;
+  --accent-soft: #172a46;
+  --header-bg: #0f172a;
+  --header-text: #f8fafc;
+  --badge-bg: rgba(56,189,248,0.16);
+  --good: #4ade80;
+  --good-bg: #143624;
+  --warn: #fbbf24;
+  --warn-bg: #3b260b;
+  --danger: #f87171;
+  --danger-bg: #3f1519;
+  --shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+html[data-theme="Sand"] {
+  --bg: #f5f0e6; --surface: #fffdf9; --surface-2: #f8f4ec; --text: #292524; --muted: #57534e;
+  --border: #d6ccc2; --accent: #9a5b25; --accent-text: #ffffff; --accent-soft: #f3e5d8; --header-bg: #7c471b; --header-text: #fffbeb;
+}
+html[data-theme="Rose"] {
+  --bg: #fdf2f5; --surface: #ffffff; --surface-2: #fff7f9; --text: #2e101c; --muted: #6b4353;
+  --border: #fbcfe8; --accent: #be185d; --accent-text: #ffffff; --accent-soft: #fce7f3; --header-bg: #9d174d; --header-text: #ffffff;
+}
+html[data-theme="Fall"] {
+  --bg: #fbf3eb; --surface: #ffffff; --surface-2: #fff8f1; --text: #27150a; --muted: #6c4328;
+  --border: #fed7aa; --accent: #c2410c; --accent-text: #ffffff; --accent-soft: #ffedd5; --header-bg: #9a3412; --header-text: #fff7ed;
+}
+html[data-theme="Christmas"] {
+  --bg: #f0f7f2; --surface: #ffffff; --surface-2: #f6fbf7; --text: #0f291a; --muted: #3f624d;
+  --border: #bbf7d0; --accent: #15803d; --accent-text: #ffffff; --accent-soft: #dcfce7; --header-bg: #14532d; --header-text: #f0fdf4;
+}
+html[data-theme="Halloween"] {
+  --bg: #120d1d; --surface: #1c152b; --surface-2: #251c38; --text: #f5f3ff; --muted: #a78bfa;
+  --border: #3b2d5c; --accent: #f97316; --accent-text: #120d1d; --accent-soft: #2e1d36; --header-bg: #1f1235; --header-text: #ffedd5;
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body {
+  margin: 0; padding: 0; min-height: 100dvh; background: var(--bg); color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+  font-size: 15px; line-height: 1.45; overflow-x: hidden;
+}
+.app-header {
+  position: sticky; top: 0; z-index: 40; background: var(--header-bg); color: var(--header-text);
+  padding: calc(10px + var(--safe-top)) 16px 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.14);
+}
+.header-inner { max-width: 1560px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.brand-home {
+  color: var(--header-text); text-decoration: none; font-size: 13px; font-weight: 600;
+  background: var(--badge-bg); padding: 6px 10px; border-radius: 9px; min-height: 36px;
+  display: inline-flex; align-items: center; white-space: nowrap;
+}
+.brand-title { font-size: 18px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.header-nav { display: none; gap: 6px; align-items: center; }
+.header-actions { display: flex; align-items: center; gap: 8px; }
+.sync-badge {
+  font-size: 12px; font-weight: 600; padding: 6px 11px; border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.28); background: var(--badge-bg); color: var(--header-text);
+  cursor: pointer; min-height: 36px; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;
+}
+.sync-dot { width: 8px; height: 8px; border-radius: 50%; background: #94a3b8; }
+.sync-dot.ok { background: #4ade80; }
+.sync-dot.err { background: #f87171; }
+.sync-dot.warn { background: #fbbf24; }
+.desktop-add-btn {
+  display: none; background: #ffffff; color: #0f172a; border: none; border-radius: 10px;
+  padding: 7px 14px; font-size: 14px; font-weight: 700; cursor: pointer; min-height: 36px;
+}
+.main-wrap { max-width: 1560px; margin: 0 auto; padding: 14px 16px calc(88px + var(--safe-bottom)); }
+.view { display: none; }
+.view.active { display: block; }
+.toolbar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; align-items: center; }
+.search-box { flex: 1 1 220px; }
+.search-input, .input, select, textarea {
+  width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border);
+  background: var(--surface); color: var(--text); font-size: 15px; min-height: 42px; font-family: inherit;
+}
+textarea { min-height: 82px; resize: vertical; }
+.seg-row { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; max-width: 100%; }
+.chip {
+  border: 1px solid var(--border); background: var(--surface); color: var(--text);
+  padding: 7px 13px; border-radius: 999px; font-size: 13px; font-weight: 600;
+  cursor: pointer; min-height: 36px; white-space: nowrap;
+}
+.chip.active { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+.cards-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+.two-col-panels { display: grid; grid-template-columns: 1fr; gap: 14px; }
+.card, .panel {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 15px 16px; box-shadow: var(--shadow);
+}
+.panel h2 { margin: 0 0 12px; font-size: 17px; }
+.card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 6px; }
+.card-title { font-size: 16px; font-weight: 700; margin: 0; }
+.tag-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 8px; }
+.pill { font-size: 12px; font-weight: 600; padding: 3px 9px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); }
+.pill.good { background: var(--good-bg); color: var(--good); }
+.pill.warn { background: var(--warn-bg); color: var(--warn); }
+.pill.neutral { background: var(--surface-2); color: var(--muted); border: 1px solid var(--border); }
+.card-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--border); }
+.btn {
+  border: 1px solid var(--border); background: var(--surface-2); color: var(--text);
+  padding: 7px 12px; border-radius: 9px; font-size: 13px; font-weight: 600; cursor: pointer;
+  min-height: 36px; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 5px;
+}
+.btn-primary { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+.btn-danger { color: var(--danger); border-color: var(--border); }
+.field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px; }
+.field label { font-size: 13px; font-weight: 600; color: var(--muted); }
+.callout { padding: 10px 12px; border-radius: 10px; font-size: 13px; font-weight: 600; margin-bottom: 10px; }
+.callout.good { background: var(--good-bg); color: var(--good); }
+.callout.warn { background: var(--warn-bg); color: var(--warn); }
+.stat-box { background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; }
+.stat-line { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; font-size: 14px; }
+.stat-line.big { font-size: 18px; font-weight: 800; border-top: 1px solid var(--border); margin-top: 6px; padding-top: 10px; color: var(--accent); }
+pre.cmd-box {
+  background: #0f172a; color: #e2e8f0; padding: 12px 14px; border-radius: 10px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 13px;
+  overflow-x: auto; white-space: pre-wrap; word-break: break-all; margin: 8px 0;
+}
+.bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 40; background: var(--surface);
+  border-top: 1px solid var(--border); display: flex; justify-content: space-around;
+  padding: 6px 6px calc(6px + var(--safe-bottom));
+}
+.tab-btn {
+  flex: 1; background: none; border: none; color: var(--muted); font-size: 12px; font-weight: 600;
+  padding: 6px 4px; border-radius: 10px; cursor: pointer; min-height: 44px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+}
+.tab-btn.active { color: var(--accent); background: var(--accent-soft); }
+.tab-icon { font-size: 17px; line-height: 1; }
+.fab {
+  position: fixed; right: 18px; bottom: calc(68px + var(--safe-bottom)); z-index: 45;
+  width: 54px; height: 54px; border-radius: 50%; background: var(--accent); color: var(--accent-text);
+  border: none; font-size: 28px; font-weight: 600; box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
+.fab.hidden { display: none; }
+dialog {
+  border: 1px solid var(--border); border-radius: 16px; background: var(--surface); color: var(--text);
+  padding: 0; width: min(560px, calc(100vw - 24px)); max-height: 88dvh; box-shadow: 0 18px 40px rgba(0,0,0,0.35);
+}
+dialog::backdrop { background: rgba(15, 23, 42, 0.55); }
+.dlg-head { padding: 14px 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.dlg-head h3 { margin: 0; font-size: 17px; }
+.dlg-body { padding: 16px; overflow-y: auto; max-height: calc(88dvh - 118px); }
+.dlg-foot { padding: 12px 16px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; }
+.toast {
+  position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(74px + var(--safe-bottom));
+  z-index: 60; background: #0f172a; color: #f8fafc; padding: 10px 16px; border-radius: 12px;
+  font-size: 14px; font-weight: 600; display: none; align-items: center; gap: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+}
+.toast.show { display: flex; }
+.toast button { background: #38bdf8; color: #082f49; border: none; border-radius: 7px; padding: 5px 10px; font-weight: 700; cursor: pointer; }
+@media (min-width: 1000px) {
+  .bottom-nav, .fab { display: none !important; }
+  .header-nav { display: flex; }
+  .desktop-add-btn { display: inline-flex; align-items: center; gap: 6px; }
+  .nav-tab {
+    background: transparent; border: none; color: rgba(255,255,255,0.82); font-size: 14px;
+    font-weight: 700; padding: 8px 14px; border-radius: 10px; cursor: pointer; min-height: 36px;
+  }
+  .nav-tab.active { background: rgba(255,255,255,0.22); color: #ffffff; }
+  .main-wrap { padding: 20px 24px 36px; }
+  .cards-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+  .two-col-panels { grid-template-columns: 1.1fr 0.9fr; gap: 20px; }
+  .toast { bottom: 24px; }
+}
+</style>
+</head>
+<body>
+<header class="app-header">
+  <div class="header-inner">
+    <div class="brand">
+      <a class="brand-home" href="../">← Apps</a>
+      <span class="brand-title">⚡ Exchange Ops Deck</span>
+    </div>
+    <nav class="header-nav">
+      <button class="nav-tab active" data-tab="scripts">1 · Runbooks &amp; Snippets</button>
+      <button class="nav-tab" data-tab="change">2 · Change Checklist</button>
+      <button class="nav-tab" data-tab="feeds">3 · M365 Status</button>
+      <button class="nav-tab" data-tab="settings">4 · Settings</button>
+    </nav>
+    <div class="header-actions">
+      <button class="desktop-add-btn" id="desktopAddBtn">+ Add Snippet</button>
+      <button class="sync-badge" id="syncBadge"><span class="sync-dot" id="syncDot"></span><span id="syncText">Sign in</span></button>
+    </div>
+  </div>
+</header>
+
+<main class="main-wrap">
+  <section class="view active" id="view-scripts">
+    <div class="panel" style="margin-bottom:14px;">
+      <div class="field-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
+        <div class="field" style="margin:0;"><label>Target UPN / Mailbox</label><input class="input" id="paramUpn" placeholder="user@contoso.com"></div>
+        <div class="field" style="margin:0;"><label>Transport Rule / Group</label><input class="input" id="paramRule" placeholder="Rule-Name"></div>
+        <div class="field" style="margin:0;"><label>Days / Window</label><input class="input" id="paramDays" type="number" value="7"></div>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <div class="search-box"><input class="search-input" id="cmdSearch" type="search" placeholder="Search Exchange Online, Hybrid, Message Trace, Mailflow…"></div>
+      <div class="seg-row" id="cmdTagFilter">
+        <button class="chip active" data-tag="all">All</button>
+        <button class="chip" data-tag="Exchange Online">Exchange Online</button>
+        <button class="chip" data-tag="Hybrid">Hybrid</button>
+        <button class="chip" data-tag="Message Trace">Message Trace</button>
+        <button class="chip" data-tag="Permissions">Permissions</button>
+      </div>
+    </div>
+    <div class="cards-grid" id="cmdGrid"></div>
+  </section>
+
+  <section class="view" id="view-change">
+    <div class="toolbar">
+      <div class="seg-row" id="cwStageFilter">
+        <button class="chip active" data-stage="all">Full Maintenance Runbook</button>
+        <button class="chip" data-stage="Pre-Flight">Pre-Flight</button>
+        <button class="chip" data-stage="Execution">Execution</button>
+        <button class="chip" data-stage="Post-Flight">Post-Flight</button>
+      </div>
+      <div style="margin-left:auto; display:flex; gap:8px;">
+        <button class="btn" id="resetCwBtn">Reset Window</button>
+        <button class="btn btn-primary" id="copyCwSummaryBtn">Copy Sign-Off Summary</button>
+      </div>
+    </div>
+    <div class="panel" id="cwList"></div>
+  </section>
+
+  <section class="view" id="view-feeds">
+    <div class="cards-grid">
+      <article class="card">
+        <h3 class="card-title">Microsoft 365 Admin Center</h3>
+        <p style="font-size:13px; color:var(--muted); margin:0;">Direct portal launch for Service Health, Message Center, and Exchange Admin Center.</p>
+        <div class="card-actions">
+          <a class="btn btn-primary" href="https://admin.microsoft.com" target="_blank" rel="noopener">M365 Admin</a>
+          <a class="btn" href="https://admin.exchange.microsoft.com" target="_blank" rel="noopener">Exchange Admin</a>
+        </div>
+      </article>
+      <article class="card">
+        <h3 class="card-title">Public Cloud Status &amp; Azure</h3>
+        <p style="font-size:13px; color:var(--muted); margin:0;">Check external Microsoft 365 and Azure status pages when tenant health looks delayed.</p>
+        <div class="card-actions">
+          <a class="btn btn-primary" href="https://status.cloud.microsoft" target="_blank" rel="noopener">Cloud Status</a>
+          <a class="btn" href="https://azure.status.microsoft" target="_blank" rel="noopener">Azure Status</a>
+        </div>
+      </article>
+      <article class="card">
+        <h3 class="card-title">Security &amp; Mailflow Diagnostics</h3>
+        <p style="font-size:13px; color:var(--muted); margin:0;">Microsoft Remote Connectivity Analyzer and Defender portal shortcuts.</p>
+        <div class="card-actions">
+          <a class="btn btn-primary" href="https://testconnectivity.microsoft.com" target="_blank" rel="noopener">ExRCA Test</a>
+          <a class="btn" href="https://security.microsoft.com" target="_blank" rel="noopener">Defender Portal</a>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="view" id="view-settings">
+    <div class="two-col-panels">
+      <div class="panel">
+        <h2>Appearance &amp; Backup</h2>
+        <div class="field"><label>Device Theme</label>
+          <select class="input" id="themeSelect">
+            <option value="Phone">Phone (Auto)</option><option value="Light">Light</option><option value="Dark">Dark</option>
+            <option value="Sand">Sand</option><option value="Rose">Rose</option><option value="Fall">Fall</option>
+            <option value="Christmas">Christmas</option><option value="Halloween">Halloween</option>
+          </select>
+        </div>
+        <div style="display:flex; gap:8px; margin-top:12px;">
+          <button class="btn btn-primary" id="backupBtn">Back up JSON</button>
+          <label class="btn" style="cursor:pointer;">Restore JSON<input type="file" id="restoreInput" accept=".json" style="display:none;"></label>
+        </div>
+      </div>
+      <div class="panel">
+        <h2>Cloud Sync (Firebase · goobs-apps-aa819)</h2>
+        <p style="font-size:13px; color:var(--muted); margin:0 0 10px;">Keep snippets generic with <code>{UPN}</code> / <code>{RULE}</code> tokens rather than internal hostnames.</p>
+        <div id="authSignedOut">
+          <div class="field"><label>Firebase Config JSON</label><textarea class="input" id="fbConfigInput" placeholder='{"apiKey":"..."}'></textarea></div>
+          <div class="field-grid">
+            <div class="field"><label>Email</label><input class="input" id="authEmail" type="email"></div>
+            <div class="field"><label>Password</label><input class="input" id="authPass" type="password"></div>
+          </div>
+          <button class="btn btn-primary" id="signInBtn">Sign in &amp; Sync</button>
+        </div>
+        <div id="authSignedIn" style="display:none;">
+          <div class="callout good" id="signedInEmail">Signed in</div>
+          <div style="display:flex; gap:8px;"><button class="btn btn-primary" id="syncNowBtn">Sync Now</button><button class="btn btn-danger" id="signOutBtn">Sign Out</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<nav class="bottom-nav">
+  <button class="tab-btn active" data-tab="scripts"><span class="tab-icon">⚡</span><span>Snippets</span></button>
+  <button class="tab-btn" data-tab="change"><span class="tab-icon">✅</span><span>Change</span></button>
+  <button class="tab-btn" data-tab="feeds"><span class="tab-icon">🌐</span><span>Status</span></button>
+  <button class="tab-btn" data-tab="settings"><span class="tab-icon">⚙️</span><span>Settings</span></button>
+</nav>
+<button class="fab" id="mobileFab">+</button>
+
+<dialog id="cmdDialog">
+  <form method="dialog" id="cmdForm">
+    <div class="dlg-head"><h3>Add / Edit PowerShell Snippet</h3><button type="button" class="btn" id="closeCmdDlg">✕</button></div>
+    <div class="dlg-body">
+      <input type="hidden" id="cmdId">
+      <div class="field"><label>Title</label><input class="input" id="cmdTitle" required placeholder="e.g., Get Extended Message Trace"></div>
+      <div class="field"><label>Category</label>
+        <select class="input" id="cmdTag"><option>Exchange Online</option><option>Hybrid</option><option>Message Trace</option><option>Permissions</option></select>
+      </div>
+      <div class="field"><label>PowerShell Command (supports {UPN}, {RULE}, {DAYS})</label>
+        <textarea class="input" id="cmdCode" required placeholder="Get-MessageTrace -RecipientAddress '{UPN}' -StartDate (Get-Date).AddDays(-{DAYS}) -EndDate (Get-Date)"></textarea>
+      </div>
+      <div class="field"><label>Notes</label><input class="input" id="cmdNotes" placeholder="Requires ExchangeOnlineManagement module"></div>
+    </div>
+    <div class="dlg-foot"><button type="button" class="btn" id="cancelCmdBtn">Cancel</button><button type="submit" class="btn btn-primary">Save</button></div>
+  </form>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite">
+  <span id="toastMsg">Saved</span>
+  <button type="button" id="toastUndoBtn" style="display:none;">Undo</button>
+</div>
+
+<script>
+(function() {
+  'use strict';
+  const APP_ID = 'goobs-exops';
+  const DB_NAME = 'goobs-exops-db';
+  const DB_VER = 1;
+  const THEME_KEY = 'goobs-exops-theme';
+  const FB_CFG_KEY = 'goobs-exops-fbcfg';
+  const COL_A = 'exopsSnippets';
+  const COL_B = 'exopsChecks';
+
+  window.esc = function(str) {
+    return String(str == null ? '' : str)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  };
+  window.uid = function(prefix) {
+    return prefix + '_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 7);
+  };
+
+  window.openDB = function() {
+    return new Promise((resolve, reject) => {
+      const req = indexedDB.open(DB_NAME, DB_VER);
+      req.onupgradeneeded = (e) => {
+        const db = e.target.result;
+        if (!db.objectStoreNames.contains('storeA')) db.createObjectStore('storeA', { keyPath: 'id' });
+        if (!db.objectStoreNames.contains('storeB')) db.createObjectStore('storeB', { keyPath: 'id' });
+      };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+  };
+  window.dbGetAll = async function(s) {
+    const db = await openDB();
+    return new Promise((res, rej) => {
+      const r = db.transaction(s, 'readonly').objectStore(s).getAll();
+      r.onsuccess = () => res(r.result || []);
+      r.onerror = () => rej(r.error);
+    });
+  };
+  window.dbPut = async function(s, item) {
+    const db = await openDB();
+    return new Promise((res, rej) => {
+      const tx = db.transaction(s, 'readwrite');
+      tx.objectStore(s).put(item);
+      tx.oncomplete = () => res();
+      tx.onerror = () => rej(tx.error);
+    });
+  };
+  window.dbDelete = async function(s, id) {
+    const db = await openDB();
+    return new Promise((res, rej) => {
+      const tx = db.transaction(s, 'readwrite');
+      tx.objectStore(s).delete(id);
+      tx.oncomplete = () => res();
+      tx.onerror = () => rej(tx.error);
+    });
+  };
+  window.dbReplaceAll = async function(s, items) {
+    const db = await openDB();
+    return new Promise((res, rej) => {
+      const tx = db.transaction(s, 'readwrite');
+      const st = tx.objectStore(s);
+      st.clear();
+      items.forEach((it) => st.put(it));
+      tx.oncomplete = () => res();
+      tx.onerror = () => rej(tx.error);
+    });
+  };
+
+  let undoAction = null, toastTimer = null;
+  window.showToast = function(msg, undoFn) {
+    const toast = document.getElementById('toast');
+    document.getElementById('toastMsg').textContent = msg;
+    const uBtn = document.getElementById('toastUndoBtn');
+    undoAction = undoFn || null;
+    uBtn.style.display = undoFn ? 'inline-block' : 'none';
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { toast.classList.remove('show'); undoAction = null; }, 5500);
+  };
+  document.getElementById('toastUndoBtn').addEventListener('click', async () => {
+    if (undoAction) { await undoAction(); undoAction = null; }
+    document.getElementById('toast').classList.remove('show');
+  });
+
+  function applyTheme(t) {
+    document.documentElement.setAttribute('data-theme', t);
+    const isDark = t === 'Dark' || t === 'Halloween' ||
+      (t === 'Phone' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    document.documentElement.classList.toggle('is-dark', isDark);
+  }
+  const themeSel = document.getElementById('themeSelect');
+  if (themeSel) {
+    themeSel.value = localStorage.getItem(THEME_KEY) || 'Phone';
+    themeSel.addEventListener('change', () => {
+      localStorage.setItem(THEME_KEY, themeSel.value);
+      applyTheme(themeSel.value);
+    });
+  }
+  if (window.matchMedia) {
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+      if ((localStorage.getItem(THEME_KEY) || 'Phone') === 'Phone') applyTheme('Phone');
+    });
+  }
+
+  window.switchTab = function(tabName) {
+    window.currentTab = tabName;
+    document.querySelectorAll('.view').forEach((v) => v.classList.remove('active'));
+    const el = document.getElementById('view-' + tabName);
+    if (el) el.classList.add('active');
+    document.querySelectorAll('.nav-tab, .tab-btn').forEach((b) => b.classList.toggle('active', b.dataset.tab === tabName));
+    if (window.onTabChange) window.onTabChange(tabName);
+  };
+  document.querySelectorAll('[data-tab]').forEach((b) => b.addEventListener('click', () => switchTab(b.dataset.tab)));
+
+  // Firebase Sync
+  let fbAuth = null, fbDb = null;
+  function setSyncUI(status, text) {
+    document.getElementById('syncDot').className = 'sync-dot ' + (status || '');
+    document.getElementById('syncText').textContent = text;
+  }
+  document.getElementById('syncBadge').addEventListener('click', () => switchTab('settings'));
+
+  function loadFbSdk() {
+    if (window.firebase) return Promise.resolve();
+    const base = 'https://www.gstatic.com/firebasejs/10.14.1/';
+    return ['firebase-app-compat.js', 'firebase-auth-compat.js', 'firebase-firestore-compat.js'].reduce(
+      (p, f) => p.then(() => new Promise((res, rej) => {
+        const s = document.createElement('script'); s.src = base + f; s.onload = res; s.onerror = rej; document.head.appendChild(s);
+      })), Promise.resolve()
+    );
+  }
+
+  window.pushCloud = async function(col, docData) {
+    if (!fbDb || !fbAuth || !fbAuth.currentUser) return;
+    try { await fbDb.collection(col).doc(docData.id).set(docData, { merge: true }); }
+    catch (e) { setSyncUI('err', 'Sync error'); }
+  };
+  window.delCloud = async function(col, id) {
+    if (!fbDb || !fbAuth || !fbAuth.currentUser) return;
+    try { await fbDb.collection(col).doc(id).delete(); } catch (e) {}
+  };
+
+  async function syncCol(col, localArr, storeName) {
+    const snap = await fbDb.collection(col).get();
+    const remMap = {};
+    snap.forEach((d) => { remMap[d.id] = d.data(); });
+    const merged = { ...remMap };
+    for (const loc of localArr) {
+      const rem = remMap[loc.id];
+      if (!rem) {
+        const copy = { ...loc, updatedAt: loc.updatedAt || 0 };
+        await fbDb.collection(col).doc(loc.id).set(copy);
+        merged[loc.id] = copy;
+      } else if ((loc.updatedAt || 0) > (rem.updatedAt || 0)) {
+        await fbDb.collection(col).doc(loc.id).set(loc);
+        merged[loc.id] = loc;
+      }
+    }
+    const out = Object.values(merged);
+    await dbReplaceAll(storeName, out);
+    return out;
+  }
+
+  window.syncAllCloud = async function() {
+    if (!fbDb || !fbAuth || !fbAuth.currentUser) return;
+    try {
+      setSyncUI('warn', 'Syncing…');
+      window.appDataA = await syncCol(COL_A, window.appDataA || [], 'storeA');
+      window.appDataB = await syncCol(COL_B, window.appDataB || [], 'storeB');
+      if (window.renderAll) window.renderAll();
+      setSyncUI('ok', 'Shared');
+    } catch (e) {
+      setSyncUI('err', 'Sync error');
+    }
+  };
+
+  async function initFb(cfg) {
+    await loadFbSdk();
+    if (!firebase.apps.length) firebase.initializeApp(cfg);
+    fbAuth = firebase.auth();
+    fbDb = firebase.firestore();
+    fbAuth.onAuthStateChanged(async (u) => {
+      if (u) {
+        document.getElementById('authSignedOut').style.display = 'none';
+        document.getElementById('authSignedIn').style.display = 'block';
+        document.getElementById('signedInEmail').textContent = 'Signed in as ' + u.email;
+        setSyncUI('ok', 'Shared');
+        await syncAllCloud();
+      } else {
+        document.getElementById('authSignedOut').style.display = 'block';
+        document.getElementById('authSignedIn').style.display = 'none';
+        setSyncUI('', 'Sign in');
+      }
+    });
+  }
+
+  document.getElementById('signInBtn').addEventListener('click', async () => {
+    const raw = document.getElementById('fbConfigInput').value.trim();
+    const em = document.getElementById('authEmail').value.trim();
+    const pw = document.getElementById('authPass').value;
+    if (!raw || !em || !pw) return alert('Enter Firebase config JSON, email, and password.');
+    try {
+      const cfg = JSON.parse(raw);
+      localStorage.setItem(FB_CFG_KEY, JSON.stringify(cfg));
+      await initFb(cfg);
+      await fbAuth.signInWithEmailAndPassword(em, pw);
+    } catch (err) { alert('Sign-in error: ' + (err.message || err)); }
+  });
+  document.getElementById('syncNowBtn').addEventListener('click', syncAllCloud);
+  document.getElementById('signOutBtn').addEventListener('click', () => fbAuth && fbAuth.signOut());
+
+  document.getElementById('backupBtn').addEventListener('click', () => {
+    const blob = new Blob([JSON.stringify({ appId: APP_ID, exportedAt: new Date().toISOString(), a: window.appDataA, b: window.appDataB }, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = APP_ID + '-backup-' + new Date().toISOString().slice(0,10) + '.json'; a.click();
+    URL.revokeObjectURL(url);
+    showToast('Backup downloaded');
+  });
+  document.getElementById('restoreInput').addEventListener('change', async (e) => {
+    const f = e.target.files && e.target.files[0]; if (!f) return;
+    try {
+      const d = JSON.parse(await f.text());
+      if (d.appId !== APP_ID || !Array.isArray(d.a) || !Array.isArray(d.b)) return alert('Invalid backup file for ' + APP_ID);
+      if (!confirm('Restore backup? This replaces local data.')) return;
+      window.appDataA = d.a; window.appDataB = d.b;
+      await dbReplaceAll('storeA', d.a); await dbReplaceAll('storeB', d.b);
+      if (window.renderAll) window.renderAll();
+      showToast('Backup restored');
+    } catch (err) { alert('Invalid JSON file.'); }
+    finally { e.target.value = ''; }
+  });
+
+  window.bootShared = async function(seedA, seedB) {
+    let a = await dbGetAll('storeA');
+    if (!a.length) { a = seedA; await dbReplaceAll('storeA', a); }
+    let b = await dbGetAll('storeB');
+    if (!b.length) { b = seedB; await dbReplaceAll('storeB', b); }
+    window.appDataA = a;
+    window.appDataB = b;
+    if (window.renderAll) window.renderAll();
+    const savedCfg = localStorage.getItem(FB_CFG_KEY);
+    if (savedCfg) {
+      document.getElementById('fbConfigInput').value = savedCfg;
+      try { await initFb(JSON.parse(savedCfg)); } catch (e) {}
+    }
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(() => {});
+  };
+
+  const SEED_CMDS = [
+    { id: 'c_trace', title: 'Message Trace (Last N Days)', tag: 'Message Trace', code: "Get-MessageTrace -RecipientAddress '{UPN}' -StartDate (Get-Date).AddDays(-{DAYS}) -EndDate (Get-Date) | Select-Object Received,SenderAddress,Subject,Status", notes: 'Quick EXO message trace for recipient.', updatedAt: 1 },
+    { id: 'c_perm', title: 'Mailbox FullAccess & SendAs Audit', tag: 'Permissions', code: "Get-MailboxPermission -Identity '{UPN}' | Where-Object {$_.IsInherited -eq $false -and $_.User -notlike 'NT AUTHORITY\\SELF'}; Get-RecipientPermission -Identity '{UPN}'", notes: 'Lists explicit delegates on mailbox.', updatedAt: 1 },
+    { id: 'c_rule', title: 'Inspect Transport Rule Details', tag: 'Exchange Online', code: "Get-TransportRule -Identity '{RULE}' | Format-List Name,State,Priority,Conditions,Actions,ExceptIf*", notes: 'Verify rule conditions before change window.', updatedAt: 1 },
+    { id: 'c_hybrid', title: 'Hybrid Remote Mailbox & Routing Check', tag: 'Hybrid', code: "Get-RemoteMailbox -Identity '{UPN}' | Format-List DisplayName,PrimarySmtpAddress,RemoteRoutingAddress,RecipientTypeDetails", notes: 'Run on Exchange Management Shell to validate targetAddress.', updatedAt: 1 }
+  ];
+  const SEED_CHECKS = [
+    { id: 'cw_1', stage: 'Pre-Flight', text: 'Verify M365 Service Health & Exchange advisories', done: false, updatedAt: 1 },
+    { id: 'cw_2', stage: 'Pre-Flight', text: 'Export current rule / connector config backup', done: false, updatedAt: 1 },
+    { id: 'cw_3', stage: 'Execution', text: 'Apply change in scope and verify replication', done: false, updatedAt: 1 },
+    { id: 'cw_4', stage: 'Post-Flight', text: 'Run test mailflow & message trace validation', done: false, updatedAt: 1 },
+    { id: 'cw_5', stage: 'Post-Flight', text: 'Confirm zero queue buildup and update change ticket', done: false, updatedAt: 1 }
+  ];
+
+  let cmdTag = 'all', cmdQuery = '', cwStage = 'all';
+
+  function hydrateCode(raw) {
+    const upn = document.getElementById('paramUpn').value.trim() || 'user@contoso.com';
+    const rule = document.getElementById('paramRule').value.trim() || 'Rule-Name';
+    const days = document.getElementById('paramDays').value.trim() || '7';
+    return String(raw || '').replace(/\{UPN\}/g, upn).replace(/\{RULE\}/g, rule).replace(/\{DAYS\}/g, days);
+  }
+
+  window.renderAll = function() {
+    const cmds = (window.appDataA || []).filter((c) => {
+      if (cmdTag !== 'all' && c.tag !== cmdTag) return false;
+      if (cmdQuery && ![c.title, c.tag, c.code, c.notes].join(' ').toLowerCase().includes(cmdQuery)) return false;
+      return true;
+    });
+    document.getElementById('cmdGrid').innerHTML = cmds.map((c) => {
+      const rendered = hydrateCode(c.code);
+      return `
+        <article class="card">
+          <div class="card-top">
+            <h3 class="card-title">${esc(c.title)}</h3>
+            <span class="pill">${esc(c.tag)}</span>
+          </div>
+          <pre class="cmd-box">${esc(rendered)}</pre>
+          ${c.notes ? `<div style="font-size:13px; color:var(--muted);">${esc(c.notes)}</div>` : ''}
+          <div class="card-actions">
+            <button class="btn btn-primary" data-copy-cmd="${esc(c.id)}">Copy Command</button>
+            <button class="btn" data-edit-cmd="${esc(c.id)}">Edit</button>
+            <button class="btn btn-danger" data-del-cmd="${esc(c.id)}">Delete</button>
+          </div>
+        </article>
+      `;
+    }).join('');
+
+    const checks = (window.appDataB || []).filter((w) => cwStage === 'all' || w.stage === cwStage);
+    document.getElementById('cwList').innerHTML = checks.map((w) => `
+      <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 4px; border-bottom:1px solid var(--border);">
+        <label style="display:flex; align-items:center; gap:10px; cursor:pointer; flex:1;">
+          <input type="checkbox" data-tog-cw="${esc(w.id)}" ${w.done ? 'checked' : ''} style="width:19px; height:19px;">
+          <span style="${w.done ? 'text-decoration:line-through; color:var(--muted);' : ''}">${esc(w.text)}</span>
+        </label>
+        <span class="pill neutral">${esc(w.stage)}</span>
+      </div>
+    `).join('');
+  };
+
+  ['paramUpn', 'paramRule', 'paramDays'].forEach((id) => document.getElementById(id).addEventListener('input', () => window.renderAll()));
+  document.getElementById('cmdSearch').addEventListener('input', (e) => { cmdQuery = e.target.value.trim().toLowerCase(); window.renderAll(); });
+  document.getElementById('cmdTagFilter').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-tag]'); if (!b) return;
+    cmdTag = b.dataset.tag;
+    document.querySelectorAll('#cmdTagFilter .chip').forEach((c) => c.classList.toggle('active', c === b));
+    window.renderAll();
+  });
+  document.getElementById('cwStageFilter').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-stage]'); if (!b) return;
+    cwStage = b.dataset.stage;
+    document.querySelectorAll('#cwStageFilter .chip').forEach((c) => c.classList.toggle('active', c === b));
+    window.renderAll();
+  });
+
+  document.getElementById('cmdGrid').addEventListener('click', async (e) => {
+    const cp = e.target.closest('[data-copy-cmd]');
+    if (cp) {
+      const c = (window.appDataA || []).find((x) => x.id === cp.dataset.copyCmd); if (!c) return;
+      await navigator.clipboard.writeText(hydrateCode(c.code));
+      showToast('Copied PowerShell command');
+      return;
+    }
+    const ed = e.target.closest('[data-edit-cmd]');
+    if (ed) {
+      const c = (window.appDataA || []).find((x) => x.id === ed.dataset.editCmd); if (!c) return;
+      document.getElementById('cmdId').value = c.id;
+      document.getElementById('cmdTitle').value = c.title;
+      document.getElementById('cmdTag').value = c.tag;
+      document.getElementById('cmdCode').value = c.code;
+      document.getElementById('cmdNotes').value = c.notes || '';
+      document.getElementById('cmdDialog').showModal();
+      return;
+    }
+    const dl = e.target.closest('[data-del-cmd]');
+    if (dl) {
+      const rem = (window.appDataA || []).find((x) => x.id === dl.dataset.delCmd); if (!rem) return;
+      window.appDataA = window.appDataA.filter((x) => x.id !== rem.id);
+      await dbDelete('storeA', rem.id); delCloud('exopsSnippets', rem.id); window.renderAll();
+      showToast('Deleted snippet', async () => { window.appDataA.unshift(rem); await dbPut('storeA', rem); pushCloud('exopsSnippets', rem); window.renderAll(); });
+    }
+  });
+
+  const cmdDlg = document.getElementById('cmdDialog');
+  function openNewCmd() {
+    document.getElementById('cmdId').value = '';
+    document.getElementById('cmdTitle').value = '';
+    document.getElementById('cmdCode').value = '';
+    document.getElementById('cmdNotes').value = '';
+    cmdDlg.showModal();
+  }
+  document.getElementById('desktopAddBtn').addEventListener('click', openNewCmd);
+  document.getElementById('mobileFab').addEventListener('click', openNewCmd);
+  document.getElementById('closeCmdDlg').addEventListener('click', () => cmdDlg.close());
+  document.getElementById('cancelCmdBtn').addEventListener('click', () => cmdDlg.close());
+
+  document.getElementById('cmdForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const id = document.getElementById('cmdId').value || uid('c');
+    const item = {
+      id, title: document.getElementById('cmdTitle').value.trim(), tag: document.getElementById('cmdTag').value,
+      code: document.getElementById('cmdCode').value.trim(), notes: document.getElementById('cmdNotes').value.trim(), updatedAt: Date.now()
+    };
+    await dbPut('storeA', item); pushCloud('exopsSnippets', item);
+    const ex = (window.appDataA || []).some((x) => x.id === id);
+    window.appDataA = ex ? window.appDataA.map((x) => (x.id === id ? item : x)) : [item, ...(window.appDataA || [])];
+    cmdDlg.close(); window.renderAll(); showToast('Saved snippet');
+  });
+
+  document.getElementById('cwList').addEventListener('change', async (e) => {
+    const cb = e.target.closest('[data-tog-cw]'); if (!cb) return;
+    const it = (window.appDataB || []).find((x) => x.id === cb.dataset.togCw); if (!it) return;
+    it.done = cb.checked; it.updatedAt = Date.now();
+    await dbPut('storeB', it); pushCloud('exopsChecks', it); window.renderAll();
+  });
+
+  document.getElementById('resetCwBtn').addEventListener('click', async () => {
+    for (const w of (window.appDataB || [])) { w.done = false; w.updatedAt = Date.now(); await dbPut('storeB', w); pushCloud('exopsChecks', w); }
+    window.renderAll(); showToast('Change window reset');
+  });
+
+  document.getElementById('copyCwSummaryBtn').addEventListener('click', async () => {
+    const lines = (window.appDataB || []).map((w) => `[${w.done ? 'x' : ' '}] (${w.stage}) ${w.text}`).join('\n');
+    await navigator.clipboard.writeText('Change Window Verification:\n' + lines);
+    showToast('Copied sign-off summary');
+  });
+
+  bootShared(SEED_CMDS, SEED_CHECKS);
+})();
+</script>
+</body>
+</html>

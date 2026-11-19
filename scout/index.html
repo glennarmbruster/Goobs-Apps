@@ -1,0 +1,1893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0e7490" id="metaThemeColor">
+<title>Excursion Scout · Goobs Apps</title>
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<script>
+// Apply saved theme immediately before first paint to prevent FOUC
+(function() {
+  try {
+    var saved = localStorage.getItem('goobs-scout-theme') || 'Phone';
+    document.documentElement.setAttribute('data-theme', saved);
+    var isDark = saved === 'Dark' || saved === 'Halloween' ||
+      (saved === 'Phone' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    document.documentElement.classList.toggle('is-dark', isDark);
+  } catch (e) {}
+})();
+</script>
+<style>
+:root {
+  --bg: #f1f5f9;
+  --surface: #ffffff;
+  --surface-2: #f8fafc;
+  --text: #0f172a;
+  --muted: #475569;
+  --border: #cbd5e1;
+  --accent: #0e7490;
+  --accent-text: #ffffff;
+  --accent-soft: #e0f2fe;
+  --header-bg: #0e7490;
+  --header-text: #ffffff;
+  --badge-bg: rgba(255,255,255,0.18);
+  --good: #15803d;
+  --good-bg: #dcfce7;
+  --warn: #b45309;
+  --warn-bg: #fef3c7;
+  --danger: #b91c1c;
+  --danger-bg: #fee2e2;
+  --shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+  --radius: 14px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+html.is-dark {
+  --bg: #0b1220;
+  --surface: #131d31;
+  --surface-2: #19253d;
+  --text: #f1f5f9;
+  --muted: #94a3b8;
+  --border: #263552;
+  --accent: #38bdf8;
+  --accent-text: #082f49;
+  --accent-soft: #172a46;
+  --header-bg: #0f172a;
+  --header-text: #f8fafc;
+  --badge-bg: rgba(56,189,248,0.16);
+  --good: #4ade80;
+  --good-bg: #143624;
+  --warn: #fbbf24;
+  --warn-bg: #3b260b;
+  --danger: #f87171;
+  --danger-bg: #3f1519;
+  --shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+html[data-theme="Sand"] {
+  --bg: #f5f0e6;
+  --surface: #fffdf9;
+  --surface-2: #f8f4ec;
+  --text: #292524;
+  --muted: #57534e;
+  --border: #d6ccc2;
+  --accent: #9a5b25;
+  --accent-text: #ffffff;
+  --accent-soft: #f3e5d8;
+  --header-bg: #7c471b;
+  --header-text: #fffbeb;
+}
+
+html[data-theme="Rose"] {
+  --bg: #fdf2f5;
+  --surface: #ffffff;
+  --surface-2: #fff7f9;
+  --text: #2e101c;
+  --muted: #6b4353;
+  --border: #fbcfe8;
+  --accent: #be185d;
+  --accent-text: #ffffff;
+  --accent-soft: #fce7f3;
+  --header-bg: #9d174d;
+  --header-text: #ffffff;
+}
+
+html[data-theme="Fall"] {
+  --bg: #fbf3eb;
+  --surface: #ffffff;
+  --surface-2: #fff8f1;
+  --text: #27150a;
+  --muted: #6c4328;
+  --border: #fed7aa;
+  --accent: #c2410c;
+  --accent-text: #ffffff;
+  --accent-soft: #ffedd5;
+  --header-bg: #9a3412;
+  --header-text: #fff7ed;
+}
+
+html[data-theme="Christmas"] {
+  --bg: #f0f7f2;
+  --surface: #ffffff;
+  --surface-2: #f6fbf7;
+  --text: #0f291a;
+  --muted: #3f624d;
+  --border: #bbf7d0;
+  --accent: #15803d;
+  --accent-text: #ffffff;
+  --accent-soft: #dcfce7;
+  --header-bg: #14532d;
+  --header-text: #f0fdf4;
+}
+
+html[data-theme="Halloween"] {
+  --bg: #120d1d;
+  --surface: #1c152b;
+  --surface-2: #251c38;
+  --text: #f5f3ff;
+  --muted: #a78bfa;
+  --border: #3b2d5c;
+  --accent: #f97316;
+  --accent-text: #120d1d;
+  --accent-soft: #2e1d36;
+  --header-bg: #1f1235;
+  --header-text: #ffedd5;
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100dvh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+  font-size: 15px;
+  line-height: 1.45;
+  overflow-x: hidden;
+}
+
+/* Header */
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: var(--header-bg);
+  color: var(--header-text);
+  padding: calc(10px + var(--safe-top)) 16px 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.14);
+}
+.header-inner {
+  max-width: 1560px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.brand-home {
+  color: var(--header-text);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+  background: var(--badge-bg);
+  padding: 6px 10px;
+  border-radius: 9px;
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+}
+.brand-title {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.header-nav {
+  display: none;
+  gap: 6px;
+  align-items: center;
+}
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sync-badge {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 11px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.28);
+  background: var(--badge-bg);
+  color: var(--header-text);
+  cursor: pointer;
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+.sync-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #94a3b8;
+}
+.sync-dot.ok { background: #4ade80; }
+.sync-dot.err { background: #f87171; }
+.sync-dot.warn { background: #fbbf24; }
+
+.desktop-add-btn {
+  display: none;
+  background: #ffffff;
+  color: #0f172a;
+  border: none;
+  border-radius: 10px;
+  padding: 7px 14px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  min-height: 36px;
+}
+
+/* Main container */
+.main-wrap {
+  max-width: 1560px;
+  margin: 0 auto;
+  padding: 14px 16px calc(88px + var(--safe-bottom));
+}
+
+.view { display: none; }
+.view.active { display: block; }
+
+/* Controls & Filter Strip */
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+  align-items: center;
+}
+.search-box {
+  flex: 1 1 220px;
+  position: relative;
+}
+.search-input {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 11px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 15px;
+  min-height: 42px;
+}
+.seg-row {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  max-width: 100%;
+}
+.chip {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  padding: 7px 13px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  min-height: 36px;
+  white-space: nowrap;
+}
+.chip.active {
+  background: var(--accent);
+  color: var(--accent-text);
+  border-color: var(--accent);
+}
+
+/* Cards & Grids */
+.cards-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+.card-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0;
+}
+.tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+.pill {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.pill.good { background: var(--good-bg); color: var(--good); }
+.pill.warn { background: var(--warn-bg); color: var(--warn); }
+.pill.neutral { background: var(--surface-2); color: var(--muted); border: 1px solid var(--border); }
+
+.card-notes {
+  font-size: 14px;
+  color: var(--muted);
+  margin: 0;
+}
+.card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+.btn {
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text);
+  padding: 7px 12px;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  min-height: 36px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+.btn-primary {
+  background: var(--accent);
+  color: var(--accent-text);
+  border-color: var(--accent);
+}
+.btn-danger {
+  color: var(--danger);
+  border-color: var(--border);
+}
+
+/* Tip & Split Layout */
+.two-col-panels {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow);
+}
+.panel h2 {
+  margin: 0 0 12px;
+  font-size: 17px;
+}
+.field-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+.field label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+}
+.input, select, textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 15px;
+  min-height: 42px;
+  font-family: inherit;
+}
+textarea { min-height: 76px; resize: vertical; }
+
+.preset-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.stat-box {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-top: 10px;
+}
+.stat-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 0;
+  font-size: 14px;
+}
+.stat-line.big {
+  font-size: 18px;
+  font-weight: 800;
+  border-top: 1px solid var(--border);
+  margin-top: 6px;
+  padding-top: 10px;
+  color: var(--accent);
+}
+.callout {
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  margin-top: 10px;
+}
+.callout.good { background: var(--good-bg); color: var(--good); }
+.callout.warn { background: var(--warn-bg); color: var(--warn); }
+
+/* Pack & Gear Checklist */
+.gear-columns {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+.gear-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 4px;
+  border-bottom: 1px solid var(--border);
+  min-height: 44px;
+}
+.gear-item:last-child { border-bottom: none; }
+.gear-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  flex: 1;
+}
+.gear-left input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+.gear-item.checked .gear-name {
+  text-decoration: line-through;
+  color: var(--muted);
+}
+
+/* Bottom Tab Bar (Phone / Narrow < 1000px) */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-around;
+  padding: 6px 6px calc(6px + var(--safe-bottom));
+}
+.tab-btn {
+  flex: 1;
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 4px;
+  border-radius: 10px;
+  cursor: pointer;
+  min-height: 44px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+.tab-btn.active {
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+.tab-icon { font-size: 17px; line-height: 1; }
+
+/* Floating + Button (Phone / Narrow < 1000px) */
+.fab {
+  position: fixed;
+  right: 18px;
+  bottom: calc(68px + var(--safe-bottom));
+  z-index: 45;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--accent-text);
+  border: none;
+  font-size: 28px;
+  font-weight: 600;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.fab.hidden { display: none; }
+
+/* Dialogs */
+dialog {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+  color: var(--text);
+  padding: 0;
+  width: min(540px, calc(100vw - 24px));
+  max-height: 88dvh;
+  box-shadow: 0 18px 40px rgba(0,0,0,0.35);
+}
+dialog::backdrop {
+  background: rgba(15, 23, 42, 0.55);
+}
+.dlg-head {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.dlg-head h3 { margin: 0; font-size: 17px; }
+.dlg-body {
+  padding: 16px;
+  overflow-y: auto;
+  max-height: calc(88dvh - 118px);
+}
+.dlg-foot {
+  padding: 12px 16px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(74px + var(--safe-bottom));
+  z-index: 60;
+  background: #0f172a;
+  color: #f8fafc;
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  display: none;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+}
+.toast.show { display: flex; }
+.toast button {
+  background: #38bdf8;
+  color: #082f49;
+  border: none;
+  border-radius: 7px;
+  padding: 5px 10px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Desktop & iPad Landscape Layout (>= 1000px) */
+@media (min-width: 1000px) {
+  .bottom-nav, .fab { display: none !important; }
+  .header-nav { display: flex; }
+  .desktop-add-btn { display: inline-flex; align-items: center; gap: 6px; }
+  .nav-tab {
+    background: transparent;
+    border: none;
+    color: rgba(255,255,255,0.82);
+    font-size: 14px;
+    font-weight: 700;
+    padding: 8px 14px;
+    border-radius: 10px;
+    cursor: pointer;
+    min-height: 36px;
+  }
+  .nav-tab.active {
+    background: rgba(255,255,255,0.22);
+    color: #ffffff;
+  }
+  .main-wrap {
+    padding: 20px 24px 36px;
+  }
+  .cards-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+  }
+  .two-col-panels {
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 20px;
+  }
+  .gear-columns {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+  }
+  .toast { bottom: 24px; }
+}
+@media (min-width: 1420px) {
+  .cards-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="header-inner">
+    <div class="brand">
+      <a class="brand-home" href="../" title="Back to Goobs Apps">← Apps</a>
+      <span class="brand-title">🧭 Excursion Scout</span>
+    </div>
+    <nav class="header-nav" aria-label="Primary">
+      <button class="nav-tab active" data-tab="scout">1 · Scout</button>
+      <button class="nav-tab" data-tab="tip">2 · Tip &amp; Split</button>
+      <button class="nav-tab" data-tab="pack">3 · Pack &amp; Gear</button>
+      <button class="nav-tab" data-tab="settings">4 · Settings</button>
+    </nav>
+    <div class="header-actions">
+      <button class="desktop-add-btn" id="desktopAddBtn">+ Add Spot</button>
+      <button class="sync-badge" id="syncBadge" title="Cloud Sync Status">
+        <span class="sync-dot" id="syncDot"></span>
+        <span id="syncText">Sign in</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="main-wrap">
+
+  <!-- TAB 1: SCOUT (SPOTS & PORTS) -->
+  <section class="view active" id="view-scout">
+    <div class="toolbar">
+      <div class="search-box">
+        <input class="search-input" id="searchInput" type="search" placeholder="Search places, ports, music, food, drive time… ( / )">
+      </div>
+      <div class="seg-row" id="modeFilter">
+        <button class="chip active" data-mode="all">All</button>
+        <button class="chip" data-mode="2hr">2-Hr Radius</button>
+        <button class="chip" data-mode="cruise">Cruise Ports</button>
+        <button class="chip" data-mode="wishlist">Wishlist</button>
+        <button class="chip" data-mode="visited">Visited</button>
+      </div>
+    </div>
+    <div class="seg-row" id="catFilter" style="margin-bottom:14px;">
+      <button class="chip active" data-cat="all">All Categories</button>
+      <button class="chip" data-cat="Scenic Drive">Scenic Drive</button>
+      <button class="chip" data-cat="Live Music / Comedy">Live Music / Comedy</button>
+      <button class="chip" data-cat="Festival / Fair">Festival / Fair</button>
+      <button class="chip" data-cat="Food Stop">Food Stop</button>
+      <button class="chip" data-cat="Port Excursion">Port Excursion</button>
+    </div>
+
+    <div id="upcomingTripsBanner" style="margin-bottom:14px;"></div>
+    <div class="cards-grid" id="spotsGrid"></div>
+  </section>
+
+  <!-- TAB 2: SMART TIPPING & SPLIT CALCULATOR -->
+  <section class="view" id="view-tip">
+    <div class="two-col-panels">
+      <div class="panel">
+        <h2>Smart Tipping &amp; Service Charge Calculator</h2>
+        <p style="margin:0 0 12px; color:var(--muted); font-size:13px;">
+          Automatically adjusts or zeroes out extra tip when a restaurant, beach club, or excursion already includes an auto-gratuity or service charge.
+        </p>
+
+        <div class="field-grid">
+          <div class="field">
+            <label for="billSubtotal">Pre-Tax / Food &amp; Drink ($)</label>
+            <input class="input" id="billSubtotal" type="number" inputmode="decimal" step="0.01" min="0" placeholder="85.00">
+          </div>
+          <div class="field">
+            <label for="billTax">Tax ($ optional)</label>
+            <input class="input" id="billTax" type="number" inputmode="decimal" step="0.01" min="0" placeholder="7.01">
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Already Included Auto-Gratuity / Service Charge (%)</label>
+          <div class="preset-row" id="autoGratPresets">
+            <button type="button" class="chip active" data-autograt="0">None (0%)</button>
+            <button type="button" class="chip" data-autograt="15">15% Included</button>
+            <button type="button" class="chip" data-autograt="18">18% Included</button>
+            <button type="button" class="chip" data-autograt="20">20% Included</button>
+          </div>
+          <input class="input" id="autoGratCustom" type="number" inputmode="decimal" step="0.5" min="0" max="50" value="0" placeholder="Custom included %">
+        </div>
+
+        <div class="field">
+          <label>Target Total Tip % (Before Deductions)</label>
+          <div class="preset-row" id="targetTipPresets">
+            <button type="button" class="chip" data-target="15">15%</button>
+            <button type="button" class="chip" data-target="18">18%</button>
+            <button type="button" class="chip active" data-target="20">20%</button>
+            <button type="button" class="chip" data-target="22">22%</button>
+          </div>
+        </div>
+
+        <div class="field-grid">
+          <div class="field">
+            <label for="splitWays">Split Between (People)</label>
+            <input class="input" id="splitWays" type="number" inputmode="numeric" min="1" max="30" value="1">
+          </div>
+          <div class="field">
+            <label for="roundMode">Rounding</label>
+            <select class="input" id="roundMode">
+              <option value="exact">Exact Cents</option>
+              <option value="up">Round Total Up ($1)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Check Breakdown</h2>
+        <div id="tipCallout" class="callout good">No auto-gratuity detected — standard 20% tip applies.</div>
+        <div class="stat-box">
+          <div class="stat-line"><span>Subtotal</span><strong id="outSub">$0.00</strong></div>
+          <div class="stat-line"><span>Tax</span><strong id="outTax">$0.00</strong></div>
+          <div class="stat-line"><span>Already Included Auto-Grat (<span id="outAutoPct">0%</span>)</span><strong id="outAutoAmt">$0.00</strong></div>
+          <div class="stat-line"><span>Recommended Extra Tip (<span id="outNetPct">20%</span>)</span><strong id="outExtraTip">$0.00</strong></div>
+          <div class="stat-line big"><span>Final Total</span><span id="outGrand">$0.00</span></div>
+          <div class="stat-line" id="outSplitRow" style="display:none;"><span>Per Person (<span id="outWays">2</span>)</span><strong id="outPerPerson">$0.00</strong></div>
+        </div>
+        <div style="margin-top:12px; display:flex; gap:8px;">
+          <button type="button" class="btn" id="resetTipBtn">Clear Check</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TAB 3: PACK & GEAR CHECKLIST -->
+  <section class="view" id="view-pack">
+    <div class="toolbar">
+      <div class="seg-row" id="packTripSelector">
+        <button class="chip active" data-pack="2hr">2-Hr+ Road Trip (Includes Starlink)</button>
+        <button class="chip" data-pack="cruise">Cruise Port Day (No Starlink)</button>
+      </div>
+      <div style="margin-left:auto; display:flex; gap:8px;">
+        <button class="btn" id="resetPackBtn">Reset Checkboxes</button>
+        <button class="btn btn-primary" id="addGearBtn">+ Add Item</button>
+      </div>
+    </div>
+
+    <div class="callout good" id="packRuleBanner" style="margin-bottom:14px;">
+      2-Hour+ Road Trip active: Starlink Mini / Dish + DC power kit automatically included.
+    </div>
+
+    <div class="gear-columns" id="gearContainer"></div>
+  </section>
+
+  <!-- TAB 4: SETTINGS, SYNC & BACKUP -->
+  <section class="view" id="view-settings">
+    <div class="two-col-panels">
+      <div class="panel">
+        <h2>Appearance &amp; Themes</h2>
+        <div class="field">
+          <label for="themeSelect">Device Theme (saved per device)</label>
+          <select class="input" id="themeSelect">
+            <option value="Phone">Phone (Auto Light / Dark)</option>
+            <option value="Light">Light</option>
+            <option value="Dark">Dark</option>
+            <option value="Sand">Sand</option>
+            <option value="Rose">Rose</option>
+            <option value="Fall">Fall</option>
+            <option value="Christmas">Christmas</option>
+            <option value="Halloween">Halloween</option>
+          </select>
+        </div>
+
+        <h2 style="margin-top:20px;">Backup &amp; Restore</h2>
+        <p style="font-size:13px; color:var(--muted); margin:0 0 10px;">
+          Exports a verified JSON backup for Excursion Scout (<code>goobs-scout</code>) only.
+        </p>
+        <div style="display:flex; flex-wrap:wrap; gap:8px;">
+          <button class="btn btn-primary" id="backupBtn">Back up JSON</button>
+          <label class="btn" style="cursor:pointer;">
+            Restore JSON
+            <input type="file" id="restoreInput" accept=".json,application/json" style="display:none;">
+          </label>
+        </div>
+
+        <h2 style="margin-top:20px;">Desktop Keyboard Shortcuts</h2>
+        <ul style="margin:6px 0 0; padding-left:18px; color:var(--muted); font-size:13px;">
+          <li><strong>1 – 4</strong>: Switch tabs (Scout, Tip &amp; Split, Pack &amp; Gear, Settings)</li>
+          <li><strong>N</strong>: Add new spot or gear item</li>
+          <li><strong>/</strong>: Focus search box</li>
+          <li><strong>Esc</strong>: Close active dialog</li>
+        </ul>
+      </div>
+
+      <div class="panel">
+        <h2>Cloud Sync (Firebase · goobs-apps-aa819)</h2>
+        <p style="font-size:13px; color:var(--muted); margin:0 0 12px;">
+          Sign in with your Goobs Apps account to sync spots and gear checklists with Cindy, and read your Planner <code>trips</code> (read-only).
+        </p>
+        <div id="authSignedOut">
+          <div class="field">
+            <label for="fbConfigInput">Firebase Web Config (paste once from any Goobs app)</label>
+            <textarea class="input" id="fbConfigInput" placeholder='{"apiKey":"...","authDomain":"goobs-apps-aa819.firebaseapp.com","projectId":"goobs-apps-aa819",...}'></textarea>
+          </div>
+          <div class="field-grid">
+            <div class="field">
+              <label for="authEmail">Email</label>
+              <input class="input" id="authEmail" type="email" autocomplete="username" placeholder="glenn@...">
+            </div>
+            <div class="field">
+              <label for="authPass">Password</label>
+              <input class="input" id="authPass" type="password" autocomplete="current-password" placeholder="••••••••">
+            </div>
+          </div>
+          <button class="btn btn-primary" id="signInBtn">Sign in &amp; Sync</button>
+        </div>
+
+        <div id="authSignedIn" style="display:none;">
+          <div class="callout good" id="signedInEmail">Signed in</div>
+          <div style="margin-top:12px; display:flex; gap:8px;">
+            <button class="btn btn-primary" id="syncNowBtn">Sync Now</button>
+            <button class="btn btn-danger" id="signOutBtn">Sign Out</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- Phone Bottom Nav -->
+<nav class="bottom-nav" aria-label="Bottom Navigation">
+  <button class="tab-btn active" data-tab="scout"><span class="tab-icon">🧭</span><span>Scout</span></button>
+  <button class="tab-btn" data-tab="tip"><span class="tab-icon">🧾</span><span>Tip &amp; Split</span></button>
+  <button class="tab-btn" data-tab="pack"><span class="tab-icon">🎒</span><span>Pack</span></button>
+  <button class="tab-btn" data-tab="settings"><span class="tab-icon">⚙️</span><span>Settings</span></button>
+</nav>
+
+<button class="fab" id="mobileFab" aria-label="Add">+</button>
+
+<!-- Add / Edit Spot Dialog -->
+<dialog id="spotDialog">
+  <form method="dialog" id="spotForm">
+    <div class="dlg-head">
+      <h3 id="spotDlgTitle">Add Spot or Port</h3>
+      <button type="button" class="btn" id="closeSpotDlg">✕</button>
+    </div>
+    <div class="dlg-body">
+      <input type="hidden" id="spotId">
+      <div class="field">
+        <label for="spotName">Place or Port Name</label>
+        <input class="input" id="spotName" required maxlength="120" placeholder="e.g., Kemah Boardwalk or Cozumel — Chankanaab">
+      </div>
+      <div class="field-grid">
+        <div class="field">
+          <label for="spotMode">Trip Type</label>
+          <select class="input" id="spotMode">
+            <option value="2hr">2-Hr Radius (from Friendswood)</option>
+            <option value="cruise">Cruise Port</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="spotCat">Category</label>
+          <select class="input" id="spotCat">
+            <option value="Scenic Drive">Scenic Drive</option>
+            <option value="Live Music / Comedy">Live Music / Comedy</option>
+            <option value="Festival / Fair">Festival / Fair</option>
+            <option value="Food Stop">Food Stop</option>
+            <option value="Port Excursion">Port Excursion</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-grid">
+        <div class="field">
+          <label for="spotDrive">Drive Time / Port Window</label>
+          <input class="input" id="spotDrive" maxlength="60" placeholder="e.g., 1 hr 35 min or 8 AM – 5 PM">
+        </div>
+        <div class="field">
+          <label for="spotStatus">Status</label>
+          <select class="input" id="spotStatus">
+            <option value="wishlist">Wishlist</option>
+            <option value="visited">Visited</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label for="spotLocation">Address, City, or Port Coordinates</label>
+        <input class="input" id="spotLocation" maxlength="160" placeholder="e.g., Brenham, TX or Cozumel, Mexico">
+      </div>
+      <div class="field">
+        <label for="spotNotes">Field Notes (parking, best dishes, auto-grat warning, Starlink note)</label>
+        <textarea class="input" id="spotNotes" maxlength="600" placeholder="Best arrival time, must-order items, beach club pricing..."></textarea>
+      </div>
+    </div>
+    <div class="dlg-foot">
+      <button type="button" class="btn" id="cancelSpotBtn">Cancel</button>
+      <button type="submit" class="btn btn-primary">Save</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- Add Gear Item Dialog -->
+<dialog id="gearDialog">
+  <form method="dialog" id="gearForm">
+    <div class="dlg-head">
+      <h3>Add Pack / Gear Item</h3>
+      <button type="button" class="btn" id="closeGearDlg">✕</button>
+    </div>
+    <div class="dlg-body">
+      <div class="field">
+        <label for="gearName">Item Name</label>
+        <input class="input" id="gearName" required maxlength="100" placeholder="e.g., Polarized Sunglasses or Waterproof Phone Pouch">
+      </div>
+      <div class="field-grid">
+        <div class="field">
+          <label for="gearGroup">Category</label>
+          <select class="input" id="gearGroup">
+            <option value="Power & Connectivity">Power &amp; Connectivity</option>
+            <option value="Docs & Money">Docs &amp; Money</option>
+            <option value="Daypack & Comfort">Daypack &amp; Comfort</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="gearScope">When to Include</label>
+          <select class="input" id="gearScope">
+            <option value="both">Both (2-Hr Trips &amp; Cruises)</option>
+            <option value="2hr">2-Hr+ Road Trips Only</option>
+            <option value="cruise">Cruises Only</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="dlg-foot">
+      <button type="button" class="btn" id="cancelGearBtn">Cancel</button>
+      <button type="submit" class="btn btn-primary">Add Item</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- Undo Toast -->
+<div class="toast" id="toast" role="status" aria-live="polite">
+  <span id="toastMsg">Saved</span>
+  <button type="button" id="toastUndoBtn" style="display:none;">Undo</button>
+</div>
+
+<!-- Pinned Firebase 10.14.1 Compat SDK (loaded lazily only when config is present) -->
+<script>
+(function() {
+  'use strict';
+
+  const APP_ID = 'goobs-scout';
+  const DB_NAME = 'goobs-scout-db';
+  const DB_VER = 1;
+  const THEME_KEY = 'goobs-scout-theme';
+  const FB_CFG_KEY = 'goobs-scout-fbcfg';
+
+  // Escape user-entered text strictly
+  function esc(str) {
+    return String(str == null ? '' : str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function uid(prefix) {
+    return prefix + '_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 7);
+  }
+
+  // Starter Seed Data
+  const DEFAULT_SPOTS = [
+    {
+      id: 'spot_brenham',
+      name: 'Brenham & Washington-on-the-Brazos',
+      mode: '2hr',
+      cat: 'Scenic Drive',
+      drive: '1 hr 45 min',
+      status: 'wishlist',
+      location: 'Brenham, TX',
+      notes: 'Bluebonnet loop via FM 390, Truth BBQ stop on the way, and Blue Bell Creameries visitor center.',
+      updatedAt: 1
+    },
+    {
+      id: 'spot_galveston_strand',
+      name: 'Galveston Strand & East End Historic Loop',
+      mode: '2hr',
+      cat: 'Food Stop',
+      drive: '45 min',
+      status: 'visited',
+      location: '2300 Strand, Galveston, TX',
+      notes: 'Easy Sunday brunch run down I-45 S. Check seawall breeze and live music at Pier 21.',
+      updatedAt: 1
+    },
+    {
+      id: 'spot_gruene',
+      name: 'Gruene Hall & Guadalupe River',
+      mode: '2hr',
+      cat: 'Live Music / Comedy',
+      drive: '2 hr 40 min',
+      status: 'wishlist',
+      location: '1281 Gruene Rd, New Braunfels, TX',
+      notes: 'Just past the 2-hr mark — pack the Starlink dish for reliable signal along the river.',
+      updatedAt: 1
+    },
+    {
+      id: 'spot_cozumel_club',
+      name: 'Cozumel — Nachi Cocom / Chankanaab',
+      mode: 'cruise',
+      cat: 'Port Excursion',
+      drive: '8:00 AM – 4:30 PM',
+      status: 'visited',
+      location: 'Cozumel, Quintana Roo, Mexico',
+      notes: 'Bring small USD bills for cab and tips. Watch for 15–18% automatic service charge on beach club tabs.',
+      updatedAt: 1
+    },
+    {
+      id: 'spot_roatan',
+      name: 'Roatán — West Bay Reef & Beach',
+      mode: 'cruise',
+      cat: 'Port Excursion',
+      drive: '8:00 AM – 4:00 PM',
+      status: 'wishlist',
+      location: 'West Bay Beach, Roatán, Honduras',
+      notes: 'Shore snorkeling right off the beach. Keep Starlink at home (cruise trip).',
+      updatedAt: 1
+    }
+  ];
+
+  // Note: Starlink dish is scoped strictly to '2hr' (2-hour+ trips) and NEVER included for 'cruise'
+  const DEFAULT_GEAR = [
+    { id: 'gear_starlink', name: 'Starlink Dish / Mini + Router & DC Power Cable', group: 'Power & Connectivity', scope: '2hr', checked: false, updatedAt: 1 },
+    { id: 'gear_anker', name: 'Anker Prime 25,000mAh Power Bank (165W)', group: 'Power & Connectivity', scope: 'both', checked: false, updatedAt: 1 },
+    { id: 'gear_cables', name: 'USB-C Braided Cables + MagSafe Battery Pack', group: 'Power & Connectivity', scope: 'both', checked: false, updatedAt: 1 },
+    { id: 'gear_ids', name: 'Driver License, Insurance & Medical Cards', group: 'Docs & Money', scope: 'both', checked: false, updatedAt: 1 },
+    { id: 'gear_cruise_docs', name: 'Cruise Keycard / SeaPass + Passport Copy + Small Tip Bills', group: 'Docs & Money', scope: 'cruise', checked: false, updatedAt: 1 },
+    { id: 'gear_sun', name: 'Reef-Safe Sunscreen, Polarized Sunglasses & Hats', group: 'Daypack & Comfort', scope: 'both', checked: false, updatedAt: 1 },
+    { id: 'gear_cooler', name: 'Insulated Day Cooler & Yeti Tumblers', group: 'Daypack & Comfort', scope: '2hr', checked: false, updatedAt: 1 },
+    { id: 'gear_drybag', name: 'Waterproof Phone Pouch & Microfiber Towels', group: 'Daypack & Comfort', scope: 'cruise', checked: false, updatedAt: 1 }
+  ];
+
+  // App State
+  let state = {
+    tab: 'scout',
+    modeFilter: 'all',
+    catFilter: 'all',
+    search: '',
+    packTrip: '2hr', // '2hr' | 'cruise'
+    spots: [],
+    gear: [],
+    plannerTrips: [] // read-only from Planner 'trips' collection
+  };
+
+  let undoAction = null;
+  let toastTimer = null;
+
+  // IndexedDB Wrapper
+  function openDB() {
+    return new Promise((resolve, reject) => {
+      const req = indexedDB.open(DB_NAME, DB_VER);
+      req.onupgradeneeded = (e) => {
+        const db = e.target.result;
+        if (!db.objectStoreNames.contains('spots')) db.createObjectStore('spots', { keyPath: 'id' });
+        if (!db.objectStoreNames.contains('gear')) db.createObjectStore('gear', { keyPath: 'id' });
+      };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  async function dbGetAll(storeName) {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(storeName, 'readonly');
+      const req = tx.objectStore(storeName).getAll();
+      req.onsuccess = () => resolve(req.result || []);
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  async function dbPut(storeName, item) {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(storeName, 'readwrite');
+      tx.objectStore(storeName).put(item);
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+  }
+
+  async function dbDelete(storeName, id) {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(storeName, 'readwrite');
+      tx.objectStore(storeName).delete(id);
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+  }
+
+  async function dbClearAndSeed(storeName, items) {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(storeName, 'readwrite');
+      const store = tx.objectStore(storeName);
+      store.clear();
+      items.forEach((it) => store.put(it));
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+  }
+
+  // Toast with Undo
+  function showToast(msg, undoFn) {
+    const toast = document.getElementById('toast');
+    const msgEl = document.getElementById('toastMsg');
+    const undoBtn = document.getElementById('toastUndoBtn');
+    msgEl.textContent = msg;
+    undoAction = undoFn || null;
+    undoBtn.style.display = undoFn ? 'inline-block' : 'none';
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+      toast.classList.remove('show');
+      undoAction = null;
+    }, 5500);
+  }
+
+  document.getElementById('toastUndoBtn').addEventListener('click', async () => {
+    if (undoAction) {
+      await undoAction();
+      undoAction = null;
+    }
+    document.getElementById('toast').classList.remove('show');
+  });
+
+  // Theme Handling
+  function applyTheme(themeName) {
+    document.documentElement.setAttribute('data-theme', themeName);
+    const isDark = themeName === 'Dark' || themeName === 'Halloween' ||
+      (themeName === 'Phone' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    document.documentElement.classList.toggle('is-dark', isDark);
+    const meta = document.getElementById('metaThemeColor');
+    const headerColors = {
+      Phone: isDark ? '#0f172a' : '#0e7490',
+      Light: '#0e7490',
+      Dark: '#0f172a',
+      Sand: '#7c471b',
+      Rose: '#9d174d',
+      Fall: '#9a3412',
+      Christmas: '#14532d',
+      Halloween: '#1f1235'
+    };
+    if (meta) meta.setAttribute('content', headerColors[themeName] || '#0e7490');
+  }
+
+  const themeSelect = document.getElementById('themeSelect');
+  themeSelect.value = localStorage.getItem(THEME_KEY) || 'Phone';
+  themeSelect.addEventListener('change', () => {
+    localStorage.setItem(THEME_KEY, themeSelect.value);
+    applyTheme(themeSelect.value);
+  });
+  if (window.matchMedia) {
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+      if ((localStorage.getItem(THEME_KEY) || 'Phone') === 'Phone') applyTheme('Phone');
+    });
+  }
+
+  // Tab Navigation
+  function switchTab(tabName) {
+    state.tab = tabName;
+    document.querySelectorAll('.view').forEach((v) => v.classList.remove('active'));
+    const target = document.getElementById('view-' + tabName);
+    if (target) target.classList.add('active');
+
+    document.querySelectorAll('.nav-tab, .tab-btn').forEach((b) => {
+      b.classList.toggle('active', b.dataset.tab === tabName);
+    });
+
+    const fab = document.getElementById('mobileFab');
+    const dBtn = document.getElementById('desktopAddBtn');
+    if (tabName === 'scout') {
+      fab.classList.remove('hidden');
+      dBtn.style.display = '';
+      dBtn.textContent = '+ Add Spot';
+    } else if (tabName === 'pack') {
+      fab.classList.remove('hidden');
+      dBtn.style.display = '';
+      dBtn.textContent = '+ Add Item';
+    } else {
+      fab.classList.add('hidden');
+      dBtn.style.display = 'none';
+    }
+  }
+
+  document.querySelectorAll('[data-tab]').forEach((btn) => {
+    btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+  });
+
+  // Render Spots
+  function renderSpots() {
+    const grid = document.getElementById('spotsGrid');
+    const q = state.search.trim().toLowerCase();
+
+    const filtered = state.spots.filter((s) => {
+      if (state.modeFilter === '2hr' && s.mode !== '2hr') return false;
+      if (state.modeFilter === 'cruise' && s.mode !== 'cruise') return false;
+      if (state.modeFilter === 'wishlist' && s.status !== 'wishlist') return false;
+      if (state.modeFilter === 'visited' && s.status !== 'visited') return false;
+      if (state.catFilter !== 'all' && s.cat !== state.catFilter) return false;
+      if (q) {
+        const hay = [s.name, s.cat, s.drive, s.location, s.notes].join(' ').toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+      return true;
+    });
+
+    if (!filtered.length) {
+      grid.innerHTML = '<div class="panel" style="grid-column:1/-1; text-align:center; color:var(--muted);">No matching spots or ports. Tap <strong>+ Add Spot</strong> to save one.</div>';
+      return;
+    }
+
+    grid.innerHTML = filtered.map((s) => {
+      const mapQuery = encodeURIComponent(s.location || s.name);
+      const appleMapsUrl = 'https://maps.apple.com/?q=' + mapQuery;
+      const googleMapsUrl = 'https://www.google.com/maps/search/?api=1&query=' + mapQuery;
+      const modeBadge = s.mode === 'cruise'
+        ? '<span class="pill warn">🚢 Cruise Port</span>'
+        : '<span class="pill">🚗 2-Hr Radius</span>';
+      const statusBadge = s.status === 'visited'
+        ? '<span class="pill good">✓ Visited</span>'
+        : '<span class="pill neutral">★ Wishlist</span>';
+
+      return `
+        <article class="card">
+          <div class="card-top">
+            <h3 class="card-title">${esc(s.name)}</h3>
+            ${statusBadge}
+          </div>
+          <div class="tag-row">
+            ${modeBadge}
+            <span class="pill neutral">${esc(s.cat)}</span>
+            ${s.drive ? `<span class="pill neutral">⏱ ${esc(s.drive)}</span>` : ''}
+          </div>
+          ${s.location ? `<div style="font-size:13px; color:var(--muted);">📍 ${esc(s.location)}</div>` : ''}
+          ${s.notes ? `<p class="card-notes">${esc(s.notes)}</p>` : ''}
+          <div class="card-actions">
+            <a class="btn" href="${appleMapsUrl}" target="_blank" rel="noopener">Apple Maps</a>
+            <a class="btn" href="${googleMapsUrl}" target="_blank" rel="noopener">Google Maps</a>
+            <button type="button" class="btn" data-toggle-status="${esc(s.id)}">${s.status === 'visited' ? 'Mark Wishlist' : 'Mark Visited'}</button>
+            <button type="button" class="btn" data-edit-spot="${esc(s.id)}">Edit</button>
+            <button type="button" class="btn btn-danger" data-del-spot="${esc(s.id)}">Delete</button>
+          </div>
+        </article>
+      `;
+    }).join('');
+  }
+
+  // Spot Filters
+  document.getElementById('modeFilter').addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-mode]');
+    if (!btn) return;
+    state.modeFilter = btn.dataset.mode;
+    document.querySelectorAll('#modeFilter .chip').forEach((c) => c.classList.toggle('active', c === btn));
+    renderSpots();
+  });
+
+  document.getElementById('catFilter').addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-cat]');
+    if (!btn) return;
+    state.catFilter = btn.dataset.cat;
+    document.querySelectorAll('#catFilter .chip').forEach((c) => c.classList.toggle('active', c === btn));
+    renderSpots();
+  });
+
+  document.getElementById('searchInput').addEventListener('input', (e) => {
+    state.search = e.target.value;
+    renderSpots();
+  });
+
+  // Spot Add/Edit Dialog
+  const spotDialog = document.getElementById('spotDialog');
+  function openSpotDialog(spot) {
+    document.getElementById('spotDlgTitle').textContent = spot ? 'Edit Spot or Port' : 'Add Spot or Port';
+    document.getElementById('spotId').value = spot ? spot.id : '';
+    document.getElementById('spotName').value = spot ? spot.name : '';
+    document.getElementById('spotMode').value = spot ? spot.mode : '2hr';
+    document.getElementById('spotCat').value = spot ? spot.cat : 'Scenic Drive';
+    document.getElementById('spotDrive').value = spot ? (spot.drive || '') : '';
+    document.getElementById('spotStatus').value = spot ? spot.status : 'wishlist';
+    document.getElementById('spotLocation').value = spot ? (spot.location || '') : '';
+    document.getElementById('spotNotes').value = spot ? (spot.notes || '') : '';
+    spotDialog.showModal();
+  }
+
+  document.getElementById('closeSpotDlg').addEventListener('click', () => spotDialog.close());
+  document.getElementById('cancelSpotBtn').addEventListener('click', () => spotDialog.close());
+
+  document.getElementById('spotForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const existingId = document.getElementById('spotId').value;
+    const prev = existingId ? state.spots.find((s) => s.id === existingId) : null;
+    const item = {
+      id: existingId || uid('spot'),
+      name: document.getElementById('spotName').value.trim().slice(0, 120),
+      mode: document.getElementById('spotMode').value === 'cruise' ? 'cruise' : '2hr',
+      cat: document.getElementById('spotCat').value,
+      drive: document.getElementById('spotDrive').value.trim().slice(0, 60),
+      status: document.getElementById('spotStatus').value === 'visited' ? 'visited' : 'wishlist',
+      location: document.getElementById('spotLocation').value.trim().slice(0, 160),
+      notes: document.getElementById('spotNotes').value.trim().slice(0, 600),
+      updatedAt: Date.now()
+    };
+    if (!item.name) return;
+
+    await dbPut('spots', item);
+    pushDocToCloud('scoutSpots', item);
+    if (prev) {
+      state.spots = state.spots.map((s) => (s.id === item.id ? item : s));
+      showToast('Updated ' + item.name, async () => {
+        await dbPut('spots', prev);
+        pushDocToCloud('scoutSpots', prev);
+        state.spots = state.spots.map((s) => (s.id === prev.id ? prev : s));
+        renderSpots();
+      });
+    } else {
+      state.spots.unshift(item);
+      showToast('Added ' + item.name);
+    }
+    spotDialog.close();
+    renderSpots();
+  });
+
+  document.getElementById('spotsGrid').addEventListener('click', async (e) => {
+    const editBtn = e.target.closest('[data-edit-spot]');
+    if (editBtn) {
+      const s = state.spots.find((x) => x.id === editBtn.dataset.editSpot);
+      if (s) openSpotDialog(s);
+      return;
+    }
+    const togBtn = e.target.closest('[data-toggle-status]');
+    if (togBtn) {
+      const idx = state.spots.findIndex((x) => x.id === togBtn.dataset.toggleStatus);
+      if (idx === -1) return;
+      const oldItem = { ...state.spots[idx] };
+      const updated = { ...oldItem, status: oldItem.status === 'visited' ? 'wishlist' : 'visited', updatedAt: Date.now() };
+      state.spots[idx] = updated;
+      await dbPut('spots', updated);
+      pushDocToCloud('scoutSpots', updated);
+      renderSpots();
+      showToast('Marked ' + updated.status, async () => {
+        state.spots[idx] = oldItem;
+        await dbPut('spots', oldItem);
+        pushDocToCloud('scoutSpots', oldItem);
+        renderSpots();
+      });
+      return;
+    }
+    const delBtn = e.target.closest('[data-del-spot]');
+    if (delBtn) {
+      const id = delBtn.dataset.delSpot;
+      const removed = state.spots.find((x) => x.id === id);
+      if (!removed) return;
+      state.spots = state.spots.filter((x) => x.id !== id);
+      await dbDelete('spots', id);
+      deleteDocFromCloud('scoutSpots', id);
+      renderSpots();
+      showToast('Deleted ' + removed.name, async () => {
+        state.spots.unshift(removed);
+        await dbPut('spots', removed);
+        pushDocToCloud('scoutSpots', removed);
+        renderSpots();
+      });
+    }
+  });
+
+  // Tip & Split Calculator
+  let targetTipPct = 20;
+  function recalcTip() {
+    const sub = Math.max(0, parseFloat(document.getElementById('billSubtotal').value) || 0);
+    const tax = Math.max(0, parseFloat(document.getElementById('billTax').value) || 0);
+    const autoPct = Math.max(0, parseFloat(document.getElementById('autoGratCustom').value) || 0);
+    const ways = Math.max(1, parseInt(document.getElementById('splitWays').value, 10) || 1);
+    const roundMode = document.getElementById('roundMode').value;
+
+    const autoAmt = sub * (autoPct / 100);
+    const netExtraPct = Math.max(0, targetTipPct - autoPct);
+    const extraTip = sub * (netExtraPct / 100);
+    let grand = sub + tax + autoAmt + extraTip;
+    if (roundMode === 'up' && grand > 0) grand = Math.ceil(grand);
+
+    document.getElementById('outSub').textContent = '$' + sub.toFixed(2);
+    document.getElementById('outTax').textContent = '$' + tax.toFixed(2);
+    document.getElementById('outAutoPct').textContent = autoPct + '%';
+    document.getElementById('outAutoAmt').textContent = '$' + autoAmt.toFixed(2);
+    document.getElementById('outNetPct').textContent = netExtraPct.toFixed(1).replace(/\.0$/, '') + '%';
+    document.getElementById('outExtraTip').textContent = '$' + extraTip.toFixed(2);
+    document.getElementById('outGrand').textContent = '$' + grand.toFixed(2);
+
+    const splitRow = document.getElementById('outSplitRow');
+    if (ways > 1) {
+      splitRow.style.display = 'flex';
+      document.getElementById('outWays').textContent = ways;
+      document.getElementById('outPerPerson').textContent = '$' + (grand / ways).toFixed(2);
+    } else {
+      splitRow.style.display = 'none';
+    }
+
+    const callout = document.getElementById('tipCallout');
+    if (autoPct >= targetTipPct && autoPct > 0) {
+      callout.className = 'callout warn';
+      callout.textContent = `Auto-gratuity (${autoPct}%) already covers your ${targetTipPct}% target — $0.00 extra tip needed.`;
+    } else if (autoPct > 0) {
+      callout.className = 'callout warn';
+      callout.textContent = `${autoPct}% service charge detected — reduced extra tip to ${netExtraPct.toFixed(1).replace(/\.0$/, '')}% to hit ${targetTipPct}% total.`;
+    } else {
+      callout.className = 'callout good';
+      callout.textContent = `No auto-gratuity detected — standard ${targetTipPct}% tip applies.`;
+    }
+  }
+
+  document.getElementById('autoGratPresets').addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-autograt]');
+    if (!btn) return;
+    document.querySelectorAll('#autoGratPresets .chip').forEach((c) => c.classList.toggle('active', c === btn));
+    document.getElementById('autoGratCustom').value = btn.dataset.autograt;
+    recalcTip();
+  });
+
+  document.getElementById('targetTipPresets').addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-target]');
+    if (!btn) return;
+    targetTipPct = parseFloat(btn.dataset.target) || 20;
+    document.querySelectorAll('#targetTipPresets .chip').forEach((c) => c.classList.toggle('active', c === btn));
+    recalcTip();
+  });
+
+  ['billSubtotal', 'billTax', 'autoGratCustom', 'splitWays', 'roundMode'].forEach((id) => {
+    document.getElementById(id).addEventListener('input', recalcTip);
+    document.getElementById(id).addEventListener('change', recalcTip);
+  });
+
+  document.getElementById('resetTipBtn').addEventListener('click', () => {
+    document.getElementById('billSubtotal').value = '';
+    document.getElementById('billTax').value = '';
+    document.getElementById('autoGratCustom').value = '0';
+    document.getElementById('splitWays').value = '1';
+    document.querySelectorAll('#autoGratPresets .chip').forEach((c) => c.classList.toggle('active', c.dataset.autograt === '0'));
+    recalcTip();
+  });
+
+  // Pack & Gear Checklist
+  function renderGear() {
+    const container = document.getElementById('gearContainer');
+    const banner = document.getElementById('packRuleBanner');
+    const is2Hr = state.packTrip === '2hr';
+
+    banner.className = is2Hr ? 'callout good' : 'callout warn';
+    banner.textContent = is2Hr
+      ? '2-Hour+ Road Trip active: Starlink Dish / Mini & DC power kit included.'
+      : 'Cruise Port Day active: Starlink Dish automatically excluded; cruise docs & dry bag included.';
+
+    // Filter gear strictly honoring rule: Starlink only on 2hr+, never on cruises
+    const visible = state.gear.filter((g) => {
+      if (is2Hr) return g.scope === 'both' || g.scope === '2hr';
+      return g.scope === 'both' || g.scope === 'cruise';
+    });
+
+    const groups = {};
+    visible.forEach((g) => {
+      const grp = g.group || 'Daypack & Comfort';
+      if (!groups[grp]) groups[grp] = [];
+      groups[grp].push(g);
+    });
+
+    container.innerHTML = Object.keys(groups).map((grp) => `
+      <div class="panel">
+        <h2>${esc(grp)}</h2>
+        <div>
+          ${groups[grp].map((item) => `
+            <div class="gear-item ${item.checked ? 'checked' : ''}">
+              <label class="gear-left">
+                <input type="checkbox" data-check-gear="${esc(item.id)}" ${item.checked ? 'checked' : ''}>
+                <span class="gear-name">${esc(item.name)}</span>
+              </label>
+              <button type="button" class="btn btn-danger" style="padding:4px 8px; min-height:30px;" data-del-gear="${esc(item.id)}" title="Remove">✕</button>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `).join('');
+  }
+
+  document.getElementById('packTripSelector').addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-pack]');
+    if (!btn) return;
+    state.packTrip = btn.dataset.pack;
+    document.querySelectorAll('#packTripSelector .chip').forEach((c) => c.classList.toggle('active', c === btn));
+    renderGear();
+  });
+
+  document.getElementById('gearContainer').addEventListener('change', async (e) => {
+    const cb = e.target.closest('[data-check-gear]');
+    if (!cb) return;
+    const item = state.gear.find((g) => g.id === cb.dataset.checkGear);
+    if (!item) return;
+    item.checked = cb.checked;
+    item.updatedAt = Date.now();
+    await dbPut('gear', item);
+    pushDocToCloud('scoutGear', item);
+    renderGear();
+  });
+
+  document.getElementById('gearContainer').addEventListener('click', async (e) => {
+    const del = e.target.closest('[data-del-gear]');
+    if (!del) return;
+    const removed = state.gear.find((g) => g.id === del.dataset.delGear);
+    if (!removed) return;
+    state.gear = state.gear.filter((g) => g.id !== removed.id);
+    await dbDelete('gear', removed.id);
+    deleteDocFromCloud('scoutGear', removed.id);
+    renderGear();
+    showToast('Removed ' + removed.name, async () => {
+      state.gear.push(removed);
+      await dbPut('gear', removed);
+      pushDocToCloud('scoutGear', removed);
+      renderGear();
+    });
+  });
+
+  document.getElementById('resetPackBtn').addEventListener('click', async () => {
+    const prev = state.gear.map((g) => ({ ...g }));
+    for (const g of state.gear) {
+      g.checked = false;
+      g.updatedAt = Date.now();
+      await dbPut('gear', g);
+      pushDocToCloud('scoutGear', g);
+    }
+    renderGear();
+    showToast('Checklist reset for next trip', async () => {
+      state.gear = prev;
+      for (const g of state.gear) {
+        await dbPut('gear', g);
+        pushDocToCloud('scoutGear', g);
+      }
+      renderGear();
+    });
+  });
+
+  const gearDialog = document.getElementById('gearDialog');
+  document.getElementById('addGearBtn').addEventListener('click', () => gearDialog.showModal());
+  document.getElementById('closeGearDlg').addEventListener('click', () => gearDialog.close());
+  document.getElementById('cancelGearBtn').addEventListener('click', () => gearDialog.close());
+
+  document.getElementById('gearForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name = document.getElementById('gearName').value.trim().slice(0, 100);
+    if (!name) return;
+    const item = {
+      id: uid('gear'),
+      name,
+      group: document.getElementById('gearGroup').value,
+      scope: document.getElementById('gearScope').value,
+      checked: false,
+      updatedAt: Date.now()
+    };
+    state.gear.push(item);
+    await dbPut('gear', item);
+    pushDocToCloud('scoutGear', item);
+    document.getElementById('gearName').value = '';
+    gearDialog.close();
+    renderGear();
+    showToast('Added ' + item.name);
+  });
+
+  // Header & FAB + handlers
+  function handlePrimaryAdd() {
+    if (state.tab === 'pack') gearDialog.showModal();
+    else openSpotDialog(null);
+  }
+  document.getElementById('desktopAddBtn').addEventListener('click', handlePrimaryAdd);
+  document.getElementById('mobileFab').addEventListener('click', handlePrimaryAdd);
+
+  // Desktop Keyboard Shortcuts (1-4 tabs, N add, / search, Esc close dialog)
+  document.addEventListener('keydown', (e) => {
+    const tag = (e.target && e.target.tagName) || '';
+    const typing = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
+    if (e.key === 'Escape') {
+      if (spotDialog.open) spotDialog.close();
+      if (gearDialog.open) gearDialog.close();
+      return;
+    }
+    if (typing) return;
+    if (e.key === '1') switchTab('scout');
+    else if (e.key === '2') switchTab('tip');
+    else if (e.key === '3') switchTab('pack');
+    else if (e.key === '4') switchTab('settings');
+    else if (e.key === 'n' || e.key === 'N') {
+      e.preventDefault();
+      handlePrimaryAdd();
+    } else if (e.key === '/') {
+      e.preventDefault();
+      switchTab('scout');
+      document.getElementById('searchInput').focus();
+    }
+  });
+
+  // Backup & Restore with App ID Verification
+  document.getElementById('backupBtn').addEventListener('click', () => {
+    const payload = {
+      appId: APP_ID,
+      exportedAt: new Date().toISOString(),
+      spots: state.spots,
+      gear: state.gear
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `goobs-scout-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('Backup downloaded');
+  });
+
+  document.getElementById('restoreInput').addEventListener('change', async (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    try {
+      const text = await file.text();
+      const data = JSON.parse(text);
+      if (data.appId !== APP_ID || !Array.isArray(data.spots) || !Array.isArray(data.gear)) {
+        alert('Invalid backup file: app ID does not match Excursion Scout.');
+        return;
+      }
+      if (!confirm(`Restore ${data.spots.length} spots and ${data.gear.length} gear items? This replaces current local data.`)) return;
+      state.spots = data.spots;
+      state.gear = data.gear;
+      await dbClearAndSeed('spots', state.spots);
+      await dbClearAndSeed('gear', state.gear);
+      renderSpots();
+      renderGear();
+      showToast('Backup restored');
+    } catch (err) {
+      alert('Could not read backup JSON file.');
+    } finally {
+      e.target.value = '';
+    }
+  });
+
+  // Optional Firebase Sync (goobs-apps-aa819)
+  let fbApp = null, fbAuth = null, fbDb = null;
+  const syncBadge = document.getElementById('syncBadge');
+  const syncDot = document.getElementById('syncDot');
+  const syncText = document.getElementById('syncText');
+
+  function setSyncUI(status, text) {
+    syncDot.className = 'sync-dot ' + (status || '');
+    syncText.textContent = text;
+  }
+
+  syncBadge.addEventListener('click', () => switchTab('settings'));
+
+  function loadFirebaseScripts() {
+    if (window.firebase) return Promise.resolve();
+    const base = 'https://www.gstatic.com/firebasejs/10.14.1/';
+    return ['firebase-app-compat.js', 'firebase-auth-compat.js', 'firebase-firestore-compat.js'].reduce(
+      (p, file) => p.then(() => new Promise((res, rej) => {
+        const s = document.createElement('script');
+        s.src = base + file;
+        s.onload = res;
+        s.onerror = rej;
+        document.head.appendChild(s);
+      })),
+      Promise.resolve()
+    );
+  }
+
+  async function initFirebase(cfgObj) {
+    await loadFirebaseScripts();
+    if (!firebase.apps.length) fbApp = firebase.initializeApp(cfgObj);
+    else fbApp = firebase.app();
+    fbAuth = firebase.auth();
+    fbDb = firebase.firestore();
+
+    fbAuth.onAuthStateChanged(async (user) => {
+      if (user) {
+        document.getElementById('authSignedOut').style.display = 'none';
+        document.getElementById('authSignedIn').style.display = 'block';
+        document.getElementById('signedInEmail').textContent = 'Signed in as ' + user.email;
+        setSyncUI('ok', 'Shared');
+        await syncAllWithCloud();
+      } else {
+        document.getElementById('authSignedOut').style.display = 'block';
+        document.getElementById('authSignedIn').style.display = 'none';
+        setSyncUI('', 'Sign in');
+      }
+    });
+  }
+
+  async function pushDocToCloud(colName, docData) {
+    if (!fbDb || !fbAuth || !fbAuth.currentUser) return;
+    try {
+      await fbDb.collection(colName).doc(docData.id).set(docData, { merge: true });
+    } catch (e) {
+      setSyncUI('err', 'Sync error');
+    }
+  }
+
+  async function deleteDocFromCloud(colName, id) {
+    if (!fbDb || !fbAuth || !fbAuth.currentUser) return;
+    try {
+      await fbDb.collection(colName).doc(id).delete();
+    } catch (e) {}
+  }
+
+  async function syncCollection(colName, localArr, storeName) {
+    const snap = await fbDb.collection(colName).get();
+    const remoteMap = {};
+    snap.forEach((doc) => { remoteMap[doc.id] = doc.data(); });
+
+    const mergedMap = { ...remoteMap };
+    for (const localItem of localArr) {
+      const rem = remoteMap[localItem.id];
+      if (!rem) {
+        // First device sign-in uploads with timestamp 0 if seed, or current updatedAt
+        const uploadCopy = { ...localItem, updatedAt: localItem.updatedAt || 0 };
+        await fbDb.collection(colName).doc(localItem.id).set(uploadCopy);
+        mergedMap[localItem.id] = uploadCopy;
+      } else if ((localItem.updatedAt || 0) > (rem.updatedAt || 0)) {
+        await fbDb.collection(colName).doc(localItem.id).set(localItem);
+        mergedMap[localItem.id] = localItem;
+      }
+    }
+    const finalList = Object.values(mergedMap);
+    await dbClearAndSeed(storeName, finalList);
+    return finalList;
+  }
+
+  async function syncAllWithCloud() {
+    if (!fbDb || !fbAuth || !fbAuth.currentUser) return;
+    try {
+      setSyncUI('warn', 'Syncing…');
+      state.spots = await syncCollection('scoutSpots', state.spots, 'spots');
+      state.gear = await syncCollection('scoutGear', state.gear, 'gear');
+
+      // Read-only pull from Planner's 'trips' collection (never write back)
+      try {
+        const tripsSnap = await fbDb.collection('trips').get();
+        const trips = [];
+        tripsSnap.forEach((d) => trips.push({ id: d.id, ...d.data() }));
+        state.plannerTrips = trips;
+        renderPlannerBanner();
+      } catch (e) {}
+
+      renderSpots();
+      renderGear();
+      setSyncUI('ok', 'Shared');
+    } catch (err) {
+      setSyncUI('err', 'Access denied');
+    }
+  }
+
+  function renderPlannerBanner() {
+    const banner = document.getElementById('upcomingTripsBanner');
+    if (!state.plannerTrips.length) {
+      banner.innerHTML = '';
+      return;
+    }
+    const names = state.plannerTrips.slice(0, 3).map((t) => esc(t.name || t.title || 'Trip')).join(' · ');
+    banner.innerHTML = `<div class="callout good">📅 Synced Planner Trips (read-only): ${names}</div>`;
+  }
+
+  document.getElementById('signInBtn').addEventListener('click', async () => {
+    const rawCfg = document.getElementById('fbConfigInput').value.trim();
+    const email = document.getElementById('authEmail').value.trim();
+    const pass = document.getElementById('authPass').value;
+    if (!rawCfg || !email || !pass) {
+      alert('Paste your Firebase config JSON and enter email + password.');
+      return;
+    }
+    try {
+      const cfgObj = JSON.parse(rawCfg);
+      localStorage.setItem(FB_CFG_KEY, JSON.stringify(cfgObj));
+      await initFirebase(cfgObj);
+      await fbAuth.signInWithEmailAndPassword(email, pass);
+    } catch (err) {
+      alert('Sign-in failed: ' + (err.message || err));
+    }
+  });
+
+  document.getElementById('syncNowBtn').addEventListener('click', syncAllWithCloud);
+  document.getElementById('signOutBtn').addEventListener('click', () => fbAuth && fbAuth.signOut());
+
+  // Bootstrap
+  async function boot() {
+    recalcTip();
+    let spots = await dbGetAll('spots');
+    if (!spots.length) {
+      spots = DEFAULT_SPOTS;
+      await dbClearAndSeed('spots', spots);
+    }
+    let gear = await dbGetAll('gear');
+    if (!gear.length) {
+      gear = DEFAULT_GEAR;
+      await dbClearAndSeed('gear', gear);
+    }
+    state.spots = spots;
+    state.gear = gear;
+    renderSpots();
+    renderGear();
+
+    const savedCfg = localStorage.getItem(FB_CFG_KEY);
+    if (savedCfg) {
+      document.getElementById('fbConfigInput').value = savedCfg;
+      try { await initFirebase(JSON.parse(savedCfg)); } catch (e) {}
+    }
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js').catch(() => {});
+    }
+  }
+
+  boot();
+})();
+</script>
+</body>
+</html>
