@@ -191,11 +191,6 @@ html.is-dark .chip.active { color: #082f49; }
   flex-shrink: 0;
   overflow: hidden;
 }
-.app-icon img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
 .app-name {
   font-size: 15px;
   font-weight: 700;
@@ -238,7 +233,6 @@ html.is-dark .chip.active { color: #082f49; }
     <input class="search-input" id="searchInput" type="search" placeholder="Search apps… ( / )">
     <div class="cat-row" id="catRow">
       <button class="chip active" data-cat="all">All</button>
-      <button class="chip" data-cat="new">New Suite</button>
       <button class="chip" data-cat="travel">Travel &amp; Local</button>
       <button class="chip" data-cat="kitchen">Kitchen &amp; Health</button>
       <button class="chip" data-cat="home">Home &amp; Money</button>
@@ -254,12 +248,6 @@ html.is-dark .chip.active { color: #082f49; }
   'use strict';
 
   const APPS = [
-    // New Suite
-    { slug: 'scout', name: 'Excursion Scout', desc: '2-Hr trips, cruise ports, smart tip & pack', emoji: '🧭', icon: './scout/icon-192.png', group: 'new', tags: ['new', 'travel'] },
-    { slug: 'cooksync', name: 'Cook-Sync', desc: 'Multi-appliance timeline & batch scaler', emoji: '⏱️', icon: './cooksync/icon-192.png', group: 'new', tags: ['new', 'kitchen'] },
-    { slug: 'makersbench', name: "Maker's Bench", desc: 'Glowforge, sublimation, Cricut & 3D stock', emoji: '🎨', icon: './makersbench/icon-192.png', group: 'new', tags: ['new', 'home'] },
-    { slug: 'exops', name: 'Exchange Ops Deck', desc: 'M365 & Hybrid PowerShell + change checklist', emoji: '⚡', icon: './exops/icon-192.png', group: 'new', tags: ['new', 'media'] },
-
     // Travel & Local
     { slug: 'travel', name: 'Planner', desc: 'Trips, itineraries & cruise countdowns', emoji: '✈️', group: 'travel', tags: ['travel'] },
     { slug: 'houston', name: 'Houston Events', desc: 'Concerts, comedy, festivals & day trips', emoji: '🤠', group: 'travel', tags: ['travel'] },
@@ -294,7 +282,6 @@ html.is-dark .chip.active { color: #082f49; }
   ];
 
   const GROUP_LABELS = {
-    new: 'New Apps',
     travel: 'Travel & Local',
     kitchen: 'Kitchen & Health',
     home: 'Home & Money',
@@ -324,7 +311,7 @@ html.is-dark .chip.active { color: #082f49; }
       return;
     }
 
-    const order = ['new', 'travel', 'kitchen', 'home', 'media'];
+    const order = ['travel', 'kitchen', 'home', 'media'];
     container.innerHTML = order.map((grp) => {
       const items = filtered.filter((a) => a.group === grp);
       if (!items.length) return '';
@@ -334,9 +321,7 @@ html.is-dark .chip.active { color: #082f49; }
           ${items.map((a) => `
             <a class="app-card" href="./${esc(a.slug)}/">
               <div class="app-top">
-                <div class="app-icon">
-                  ${a.icon ? `<img src="${esc(a.icon)}" alt="" onerror="this.replaceWith(document.createTextNode('${a.emoji}'))">` : a.emoji}
-                </div>
+                <div class="app-icon">${a.emoji}</div>
                 <span class="app-name">${esc(a.name)}</span>
               </div>
               <span class="app-desc">${esc(a.desc)}</span>
