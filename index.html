@@ -251,12 +251,12 @@ html.is-dark .chip.active { color: #082f49; }
     // Travel & Local
     { slug: 'travel', name: 'Planner', desc: 'Trips, itineraries & cruise countdowns', emoji: '✈️', group: 'travel', tags: ['travel'] },
     { slug: 'houston', name: 'Houston Events', desc: 'Concerts, comedy, festivals & day trips', emoji: '🤠', group: 'travel', tags: ['travel'] },
-    { slug: 'occasions', name: 'Occasions', desc: 'Birthdays, anniversaries & gift ideas', emoji: '🎁', group: 'travel', tags: ['travel', 'home'] },
+    { slug: 'occasions', name: 'Occasions', desc: 'Birthdays, anniversaries & gift ideas', emoji: '🎁', group: 'travel', tags: ['travel'] },
 
     // Kitchen & Health
     { slug: 'recipes', name: 'Goobs Recipes', desc: 'Personal cookbook & JSON recipe cards', emoji: '📖', group: 'kitchen', tags: ['kitchen'] },
     { slug: 'sousvide', name: 'Cooking Temps', desc: 'APO, sous vide & smoker temp guide', emoji: '🌡️', group: 'kitchen', tags: ['kitchen'] },
-    { slug: 'grocery', name: 'Grocery List', desc: 'Shared shopping list & pantry staples', emoji: '🛒', group: 'kitchen', tags: ['kitchen', 'home'] },
+    { slug: 'grocery', name: 'Grocery List', desc: 'Shared shopping list & pantry staples', emoji: '🛒', group: 'kitchen', tags: ['kitchen'] },
     { slug: 'calories', name: 'Calorie Lookup', desc: 'Cruise menu & meal calorie tracker', emoji: '🥗', group: 'kitchen', tags: ['kitchen'] },
     { slug: 'health', name: 'Health Log', desc: 'Vitals, weight & wellness readings', emoji: '❤️', group: 'kitchen', tags: ['kitchen'] },
 
@@ -270,20 +270,19 @@ html.is-dark .chip.active { color: #082f49; }
     { slug: 'bills', name: 'Bill Reminders', desc: 'Monthly due dates & autopay tracker', emoji: '🧾', group: 'home', tags: ['home'] },
     { slug: 'money', name: 'Money & Budget', desc: 'Spending plan & retirement milestones', emoji: '💵', group: 'home', tags: ['home'] },
 
-    // Media, Work & Utilities
+    // Media & Work
     { slug: 'watchlog', name: 'Watch Log', desc: 'TV shows, seasons & episode progress', emoji: '📺', group: 'media', tags: ['media'] },
     { slug: 'movies', name: 'Movies', desc: 'Movie watchlist & ratings', emoji: '🎬', group: 'media', tags: ['media'] },
     { slug: 'sports', name: 'Sports', desc: 'Schedules, teams & game trackers', emoji: '🏈', group: 'media', tags: ['media'] },
     { slug: 'worklog', name: 'Work Log', desc: 'Shift notes, tasks & change log', emoji: '💼', group: 'media', tags: ['media'] },
-    { slug: 'va', name: 'VA Benefits', desc: 'VA reference & pay calculator', emoji: '🎖️', group: 'media', tags: ['media', 'home'] },
-    { slug: 'backup', name: 'Back Up All Apps', desc: 'Export & verify all Goobs Apps data', emoji: '💾', group: 'media', tags: ['media', 'home'] }
+    { slug: 'va', name: 'VA Benefits', desc: 'VA reference & pay calculator', emoji: '🎖️', group: 'media', tags: ['media'] }
   ];
 
   const GROUP_LABELS = {
     travel: 'Travel & Local',
     kitchen: 'Kitchen & Health',
     home: 'Home & Money',
-    media: 'Media, Work & Utilities'
+    media: 'Media & Work'
   };
 
   let activeCat = 'all';
