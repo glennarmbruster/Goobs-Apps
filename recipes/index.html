@@ -1364,15 +1364,302 @@ const factorOf = r => { const s = mark(r.id).servings; return s ? s / r.servings
 const servingsOf = r => mark(r.id).servings || r.servings;
 const metaLine = r => [r.category, r.totalMin != null ? fmtMin(r.totalMin) : '', `${fmtNum(r.servings)} ${r.servingsLabel || 'servings'}`].filter(Boolean).join(' · ');
 const calLine = r => { const k = perServing(r, 'kcal'); return k ? ` · ${Math.round(k).toLocaleString()} cal each` : ''; };
-function matches(x, q, cat) {
-  const r = x.r;
-  if (cat === '★') { if (!mark(r.id).fav) return false; } else if (cat !== 'All' && r.category !== cat) return false;
-  if (!q) return true;
-  const hay = [r.title, r.category, r.description, r.tags.join(' '), r.ingredients.map(g => g.name).join(' ')].join(' ').toLowerCase();
-  return q.toLowerCase().split(/\s+/).filter(Boolean).every(w => hay.includes(w));
+/* The same cookbook tags are available on older saved copies with matching IDs. */
+const cookbookSearchTags = {
+  "alder-poached-salmon-with-grapefruit-dill-sauce": ["salmon","pellet-smoker","citrus-dill","fish","seafood","oily-fish","extra-sauce","poached","apo","bagless-sous-vide","for-two","smoke-poached"],
+  "apo-cod-over-rice-with-ginger-shiitake-gravy": ["cod","apo","rice-bowl","fish","seafood","white-fish","combi-steam","rice","extra-sauce","mushroom-gravy","asian-inspired","anova"],
+  "apo-cod-with-cider-leek-gravy": ["cod","apo","apple-cider","fish","seafood","white-fish","extra-sauce","bagless-sous-vide","cider","leek-gravy","anova","sous-vide"],
+  "apo-duck-cutlets-with-sour-cherry-thyme-gravy": ["duck-breast","apo","sour-cherry","duck","poultry","dark-meat","extra-sauce","bagless-sous-vide","extra-gravy","fruit-gravy","cutlets","anova"],
+  "apo-fennel-and-yukon-gold-gratin": ["apo","scalloped-potatoes","combi-steam","potatoes","au-gratin","cheese-sauce","side-dish","anova"],
+  "apo-filet-with-smooth-sage-pistachio-gravy": ["filet-mignon","apo","beef","red-meat","extra-sauce","bagless-sous-vide","sage","steak","tenderloin","anova","sous-vide","freezer-friendly"],
+  "apo-ginger-pear-braised-beef-with-sesame-gravy": ["apo","pot-roast","beef","red-meat","extra-sauce","combi-steam","covered-braise","leftovers","chuck-roast","asian-inspired","anova","freezer-friendly"],
+  "apo-halibut-with-brown-butter-cauliflower-veloute": ["halibut","apo","white-sauce","fish","seafood","white-fish","bagless-sous-vide","roux","extra-sauce","brown-butter","cauliflower","anova"],
+  "apo-lamb-medallions-with-mint-almond-gravy": ["apo","lamb-loin","lamb","red-meat","extra-sauce","bagless-sous-vide","mint","medallions","mint-gravy","anova","sous-vide","freezer-friendly"],
+  "apo-mandarin-miso-salmon-with-sesame-sauce": ["salmon","apo","asian-inspired","fish","seafood","oily-fish","extra-sauce","bagless-sous-vide","mandarin","miso-glaze","citrus","anova"],
+  "apo-mushroom-lentil-cottage-pie-with-thyme-gravy": ["apo","meatless","extra-sauce","combi-steam","vegetarian","lentils","casserole","mashed-potatoes","anova","freezer-friendly"],
+  "apo-pomegranate-paprika-thighs-with-pepper-gravy": ["chicken-thighs","apo","sweet-pepper","chicken","poultry","dark-meat","extra-sauce","combi-steam","mild","fruit-gravy","braised","anova"],
+  "apo-pork-chops-with-grape-and-sage-gravy": ["pork-chops","apo","pork","red-meat","extra-sauce","bagless-sous-vide","sage","cutlets","fruit-gravy","anova","sous-vide","freezer-friendly"],
+  "apo-pork-tenderloin-with-pear-fennel-gravy": ["pork-tenderloin","apo","pork","red-meat","extra-sauce","bagless-sous-vide","pear","medallions","bavarian-mustard","anova","sous-vide","freezer-friendly"],
+  "apo-rosemary-sirloin-roast-with-mustard-gravy": ["apo","roast-beef","beef","red-meat","extra-sauce","bagless-sous-vide","whole-beef-roast","two-donenesses","leftovers","sirloin","sunday-roast","anova"],
+  "apo-salmon-with-beet-and-caraway-cream": ["salmon","apo","beet-cream","fish","seafood","oily-fish","bagless-sous-vide","extra-sauce","caraway","creamy","anova","sous-vide"],
+  "apo-strip-steak-with-caramelized-shallot-gravy": ["new-york-strip","apo","beef","red-meat","extra-sauce","bagless-sous-vide","caramelized-shallot","steak","sherry-gravy","anova","sous-vide","freezer-friendly"],
+  "apo-sweet-corn-and-thyme-custards": ["apo","corn-pudding","combi-steam","corn","savory-custard","ramekins","side-dish","anova"],
+  "apo-tarragon-chicken-cutlets-with-lemon-cream-gravy": ["chicken-breast","apo","cutlets","chicken","poultry","white-meat","extra-sauce","bagless-sous-vide","extra-gravy","creamy","lemon-herb","anova"],
+  "apo-turkey-roulades-with-spinach-parmesan-gravy": ["turkey-breast","apo","stuffed-turkey","turkey","poultry","white-meat","extra-sauce","combi-steam","extra-gravy","roll-ups","spinach","anova"],
+  "apo-white-turkey-meatballs-with-ginger-lime-gravy": ["turkey-breast","apo","ground-turkey","turkey","poultry","white-meat","extra-sauce","combi-steam","white-meat-turkey","leftovers","meatballs","asian-inspired"],
+  "apple-braised-sweet-potato-coins": ["hexclad","root-vegetable","braised","sweet-potatoes","cider-glaze","fruit-glaze","side-dish","freezer-friendly"],
+  "apple-fennel-pulled-pork-with-cider-gravy": ["pellet-smoker","pork-shoulder","pork","red-meat","extra-sauce","pulled-pork","leftovers","pork-butt","shredded-pork","traeger","smoker","freezer-friendly"],
+  "apple-ginger-coconut-aminos-teriyaki": ["asian-inspired","teriyaki","coconut-aminos","for-chicken","for-fish","stir-fry-sauce","condiment","sauce","freezer-friendly","quick"],
+  "apple-mustard-wet-rub-for-pork": ["bbq-rub","seasoning-paste","wet-rub","pork","for-pork","for-ribs","condiment","sauce","freezer-friendly","quick"],
+  "applewood-baby-back-ribs-with-orange-mustard-gravy": ["pellet-smoker","pork-ribs","pork","red-meat","extra-sauce","baby-back-ribs","covered-braise","back-ribs","barbecue","traeger","smoker","freezer-friendly"],
+  "applewood-salmon-with-maple-bavarian-mustard-gravy": ["salmon","traeger","mustard-gravy","fish","seafood","oily-fish","applewood","extra-sauce","smoked-salmon","maple","pellet-smoker","smoker"],
+  "applewood-turkey-cutlets-with-maple-sage-gravy": ["turkey-breast","pellet-smoker","maple-glaze","turkey","poultry","white-meat","extra-sauce","cutlets","extra-gravy","sage-gravy","traeger","smoker"],
+  "artichoke-cannellini-and-lemon-dip": ["dip","white-bean-dip","dipping-sauce","spread","lemon-herb","condiment","sauce","freezer-friendly","quick"],
+  "avgolemono-chicken-cutlets-and-rice": ["chicken-breast","hexclad","greek-inspired","chicken","poultry","white-meat","chicken-cutlets","rice","extra-sauce","lemon-egg-sauce","chicken-and-rice","weeknight"],
+  "basil-pistachio-aioli": ["aioli","garlic-mayo","chilled","for-fish","for-chicken","pesto-style","condiment","sauce","quick"],
+  "bay-braised-chicken-with-brown-butter-parsnip-gravy": ["chicken-thighs","apo","braised-chicken","chicken","poultry","dark-meat","combi-steam","extra-sauce","root-vegetable","brown-butter","anova","freezer-friendly"],
+  "black-garlic-and-chive-compound-butter": ["compound-butter","garlic-butter","make-ahead","for-steak","for-potatoes","herb-butter","condiment","sauce","freezer-friendly","quick"],
+  "black-garlic-porcini-chicken-thighs": ["chicken-thighs","apo","mushroom-gravy","chicken","poultry","dark-meat","bagless-sous-vide","extra-sauce","mushroom-chicken","umami","anova","sous-vide"],
+  "blackstone-buttermilk-ranch-chicken-cutlets": ["chicken-breast","blackstone","ranch-chicken","chicken","poultry","white-meat","chicken-cutlets","buttermilk","extra-sauce","herb-gravy","griddle","weeknight"],
+  "blackstone-sesame-pineapple-chicken": ["chicken-thighs","blackstone","pineapple-glaze","chicken","poultry","dark-meat","sesame","extra-sauce","tropical","griddle","freezer-friendly","weeknight"],
+  "blueberry-balsamic-barbecue-glaze": ["barbecue-glaze","bbq-sauce","extra-sauce","for-pork","for-chicken","berry-glaze","condiment","sauce","freezer-friendly","quick"],
+  "bourbon-shallot-and-pepper-pan-gravy": ["pan-sauce","peppercorn-style","hexclad","beef","for-beef","for-steak","bourbon-gravy","condiment","sauce","freezer-friendly"],
+  "broccoli-stem-and-gruyere-cream": ["cream-sauce","cheese-sauce","extra-sauce","for-vegetables","for-potatoes","gruyere","condiment","sauce"],
+  "buttermilk-sage-and-mustard-marinade": ["marinade","herb-marinade","make-ahead","for-chicken","creamy","condiment","sauce","quick"],
+  "caramelized-fennel-and-thyme-gravy": ["gravy","herb-gravy","extra-sauce","for-chicken","for-pork","condiment","sauce","freezer-friendly"],
+  "caramelized-onion-and-cottage-cheese-dip": ["dip","onion-dip","dipping-sauce","spread","chilled","condiment","sauce"],
+  "caramelized-shallot-and-thyme-finishing-butter": ["compound-butter","herb-butter","shallot","steak","for-beef","for-steak","condiment","sauce","freezer-friendly","quick"],
+  "cherry-glazed-st-louis-style-pork-strips": ["pellet-smoker","pork-sirloin","pork","red-meat","extra-sauce","rib-style","cherry","pork-strips","barbecue-glaze","traeger","smoker","freezer-friendly"],
+  "cherry-oak-lamb-with-orange-mint-gravy": ["pellet-smoker","leg-of-lamb","lamb","red-meat","extra-sauce","mint","poached","citrus-mint","traeger","smoker","freezer-friendly","high-protein"],
+  "cherrywood-chicken-with-tamarind-gravy": ["chicken-thighs","pellet-smoker","smoked-chicken","chicken","poultry","dark-meat","extra-sauce","tamarind","covered-braise","sweet-tart","fruit-gravy","traeger"],
+  "cherrywood-cranberry-maple-chicken": ["chicken-thighs","traeger","cranberry-gravy","chicken","poultry","dark-meat","cherrywood","extra-sauce","smoked-chicken","fruit-gravy","pellet-smoker","smoker"],
+  "chicken-and-flat-dumplings-in-parsley-gravy": ["chicken-thighs","possiblecooker","chicken-and-dumplings","chicken","poultry","dark-meat","dumplings","leftovers","extra-sauce","comfort-food","one-pot","multicooker"],
+  "chicken-and-wild-rice-bake-with-squash-sage-gravy": ["chicken-thighs","samsung-oven","chicken-and-rice","chicken","poultry","dark-meat","covered-casserole","leftovers","extra-sauce","casserole","comfort-food","freezer-friendly"],
+  "chicken-cutlets-with-asparagus-dill-cream": ["chicken-breast","ninja-crispi","herb-cream","chicken","poultry","white-meat","chicken-cutlets","asparagus","extra-sauce","creamy","poached","air-fryer"],
+  "chicken-enchilada-suiza-spoon-bake": ["chicken-thighs","samsung-oven","enchilada-casserole","chicken","poultry","dark-meat","hexclad","covered-casserole","extra-sauce","salsa-verde","tomatillo","freezer-friendly"],
+  "chicken-stroganoff-with-soft-egg-noodles": ["chicken-breast","hexclad","mushroom-chicken","chicken","poultry","white-meat","chicken-cutlets","one-pan","egg-noodles","extra-sauce","creamy","pasta"],
+  "chicken-thighs-in-poblano-pumpkin-seed-sauce": ["chicken-thighs","ninja-crispi","pepitas","chicken","poultry","dark-meat","mild","extra-sauce","green-sauce","mexican-inspired","air-fryer","freezer-friendly"],
+  "cocoa-espresso-brisket-rub": ["bbq-rub","dry-rub","salt-free","beef","for-brisket","for-beef","coffee","condiment","sauce","quick"],
+  "cod-and-potato-skillet-with-cheddar-chive-gravy": ["cod","hexclad","chowder-style","fish","seafood","white-fish","potatoes","extra-sauce","cheese-sauce","skillet","high-protein"],
+  "cremini-marsala-and-thyme-pan-gravy": ["pan-sauce","mushroom-gravy","hexclad","mushroom","for-steak","for-chicken","wine-sauce","condiment","sauce","freezer-friendly"],
+  "crispi-buttermilk-chicken-in-paprika-cracker-gravy": ["chicken-breast","ninja-crispi","country-gravy","chicken","poultry","white-meat","weeknight","cutlets","extra-gravy","buttermilk-gravy","paprika","air-fryer"],
+  "crispi-butternut-half-moons-with-orange-pepita-glaze": ["ninja-crispi","winter-squash","butternut-squash","pumpkin-seed","pepita-glaze","vegetable-side","side-dish","air-fryer","freezer-friendly"],
+  "crispi-coconut-shrimp-in-apricot-lime-sauce": ["shrimp","ninja-crispi","prawns","shellfish","seafood","weeknight","coconut","extra-sauce","tropical","poached","air-fryer"],
+  "crispi-corn-tortilla-bowls-with-lime-poached-cod": ["cod","ninja-crispi","fish-tacos","fish","seafood","white-fish","weeknight","soft-tacos","extra-sauce","taco-bowl","corn-tortillas","air-fryer"],
+  "crispi-gnocchi-in-sweet-pepper-basil-sauce": ["ninja-crispi","potato-dumplings","meatless","weeknight","gnocchi","one-dish-pasta","vegetarian","extra-sauce","white-bean-sauce","creamy","air-fryer"],
+  "crispi-smashed-potatoes-with-malt-vinegar-dill-gravy": ["ninja-crispi","baby-potatoes","potatoes","dill","potato-side","malt-vinegar","side-dish","air-fryer"],
+  "crispi-soft-cheddar-grits-squares-with-chive-butter-sauce": ["ninja-crispi","cheese-grits","grits","cheddar","southern","cornmeal","side-dish","air-fryer","freezer-friendly"],
+  "crispi-zucchini-in-basil-bean-cream": ["ninja-crispi","summer-squash","zucchini","white-beans","vegetable-side","cannellini","side-dish","air-fryer","quick"],
+  "crispi-zucchini-with-parmesan-oregano-sauce": ["ninja-crispi","summer-squash","weeknight","zucchini","vegetarian","sauced-side","italian-inspired","cheese-sauce","side-dish","air-fryer","quick"],
+  "fig-and-sherry-pan-sauce": ["pan-sauce","wine-sauce","extra-sauce","for-pork","for-steak","fruit-reduction","condiment","sauce","freezer-friendly","quick"],
+  "fontina-chicken-and-broccoli-impastable-rotini": ["chicken-thighs","hexclad","impastable","chicken","poultry","dark-meat","one-pan","pasta","extra-sauce","rotini","cheese-sauce","high-protein"],
+  "garlic-shrimp-with-chickpea-spinach-gravy": ["shrimp","stovetop","prawns","shellfish","seafood","weeknight","hexclad","extra-sauce","garbanzo-beans","poached","quick"],
+  "ginger-and-egg-ribbon-sauce": ["asian-inspired","egg-drop","coconut-aminos","for-fish","for-chicken","cantonese-inspired","condiment","sauce","quick"],
+  "goat-cheese-polenta-with-golden-beet-swirl": ["stovetop","cornmeal","polenta","golden-beet","creamy-polenta","grain-side","side-dish","freezer-friendly"],
+  "golden-beet-tarragon-and-white-wine-pan-sauce": ["pan-sauce","wine-sauce","extra-sauce","for-fish","herb-sauce","condiment","sauce","freezer-friendly","quick"],
+  "hickory-braised-pinto-beans-with-molasses-gravy": ["pellet-smoker","barbecue-beans","beans","molasses","leftovers","bbq-side","legumes","side-dish","traeger","smoker","freezer-friendly"],
+  "hickory-chicken-red-eye-gravy-and-soft-grits": ["chicken-thighs","traeger","southern","chicken","poultry","dark-meat","hickory","grits","extra-sauce","coffee-gravy","chicken-and-grits","pellet-smoker"],
+  "honey-lime-and-mild-ancho-butter": ["compound-butter","chile-butter","mild","lime","for-fish","for-chicken","finishing-butter","condiment","sauce","freezer-friendly","quick"],
+  "lemon-oregano-salmoriglio-style-marinade": ["marinade","sicilian-inspired","make-ahead","for-fish","herb-marinade","condiment","sauce","freezer-friendly","quick"],
+  "lemon-pepper-pork-cutlets-with-skillet-gravy": ["pork-chops","stovetop","pork","red-meat","weeknight","hexclad","roux","extra-sauce","cutlets","pan-gravy","freezer-friendly","quick"],
+  "lemon-sage-and-smoked-paprika-poultry-rub": ["bbq-rub","poultry-seasoning","salt-free","poultry","for-chicken","for-turkey","dry-rub","condiment","sauce","quick"],
+  "lemongrass-coconut-chicken-with-basil": ["chicken-thighs","possiblecooker","coconut-milk","chicken","poultry","dark-meat","lemongrass","dairy-free","extra-sauce","asian-inspired","braised-chicken","multicooker"],
+  "mahi-mahi-with-mango-lime-gravy-and-coconut-rice": ["mahi-mahi","hexclad","tropical","fish","seafood","white-fish","coconut-rice","extra-sauce","fruit-gravy","freezer-friendly","weeknight","high-protein"],
+  "maple-walnut-brown-butter": ["compound-butter","finishing-butter","make-ahead","for-squash","for-sweet-potatoes","maple-butter","condiment","sauce","freezer-friendly","quick"],
+  "mild-chicken-paprikash-with-sweet-pepper-gravy": ["chicken-thighs","hexclad","hungarian-inspired","chicken","poultry","dark-meat","paprikash","extra-sauce","sour-cream","sweet-paprika","freezer-friendly","high-protein"],
+  "oak-braised-chicken-with-garlic-cannellini-gravy": ["chicken-thighs","traeger","white-bean-gravy","chicken","poultry","dark-meat","oak","dairy-free","extra-sauce","smoked-chicken","garlic-chicken","pellet-smoker"],
+  "oak-braised-sweet-potato-mash-with-honey-tahini": ["pellet-smoker","mashed-sweet-potatoes","sweet-potato","sesame","root-vegetable","bbq-side","side-dish","traeger","smoker","freezer-friendly"],
+  "oak-mini-meatloaves-with-malt-glaze": ["ground-beef","pellet-smoker","beef","red-meat","extra-sauce","meatloaf","leftovers","mini-meatloaf","comfort-food","traeger","smoker","freezer-friendly"],
+  "oak-poached-mahi-mahi-with-ancho-cocoa-gravy": ["mahi-mahi","traeger","ancho-chile","fish","seafood","white-fish","oak","extra-sauce","cocoa-gravy","mexican-inspired","pellet-smoker","smoker"],
+  "oak-tri-tip-with-espresso-lime-gravy": ["pellet-smoker","tri-tip-roast","beef","red-meat","extra-sauce","tri-tip","poached","steak","coffee-gravy","traeger","smoker","freezer-friendly"],
+  "one-pan-red-pepper-ricotta-rotini": ["hexclad","impastable","one-pan","pasta","roasted-pepper","cheese-pasta","side-dish","quick"],
+  "one-pan-tortellini-in-mushroom-spinach-sauce": ["stovetop","stuffed-pasta","meatless","weeknight","pasta","one-pan","vegetarian","extra-sauce","cheese-pasta","creamy","high-protein"],
+  "oval-pan-snapper-with-mild-cajun-pecan-gravy": ["snapper","oval-cast-iron","cajun","fish","seafood","white-fish","mild","extra-sauce","louisiana-style","pecan-gravy","freezer-friendly","weeknight"],
+  "oval-pan-tilapia-florentine": ["tilapia","oval-cast-iron","florentine","fish","seafood","white-fish","spinach","roux","extra-sauce","parmesan-cream","creamy","weeknight"],
+  "paprika-thighs-in-sweet-corn-gravy": ["chicken-thighs","stovetop","braised-chicken","chicken","poultry","dark-meat","weeknight","cast-iron","extra-sauce","corn-gravy","skillet","freezer-friendly"],
+  "parsley-and-poached-garlic-sauce": ["herb-sauce","garlic-sauce","extra-sauce","for-fish","for-chicken","green-sauce","condiment","sauce","freezer-friendly","quick"],
+  "patty-melt-bowls-with-caramelized-onion-gravy": ["ground-beef","stovetop","beef","red-meat","weeknight","cast-iron","extra-sauce","hamburger-steak","burger-bowl","freezer-friendly","high-protein"],
+  "peach-and-black-tea-barbecue-glaze": ["barbecue-sauce","bbq-sauce","peach","mild","for-pork","for-chicken","fruit-glaze","condiment","sauce","freezer-friendly","quick"],
+  "peanut-lime-sauce-for-soft-noodles": ["asian-inspired","thai-inspired","coconut-aminos","for-noodles","peanut-sauce","for-chicken","condiment","sauce","freezer-friendly","quick"],
+  "pecan-chicken-thighs-with-lemon-oregano-gravy": ["chicken-thighs","pellet-smoker","lemon-herb","chicken","poultry","dark-meat","extra-sauce","oregano","covered-braise","smoked-chicken","traeger","smoker"],
+  "pecan-pork-medallions-with-apricot-mustard-sauce": ["pellet-smoker","pork-loin","pork","red-meat","extra-sauce","medallions","poached","bavarian-mustard","fruit-sauce","traeger","smoker","freezer-friendly"],
+  "pecan-smoked-poblano-corn-spoonbread": ["pellet-smoker","corn-pudding","corn","soft-side","water-bath","bbq-side","poblano","side-dish","traeger","smoker","freezer-friendly"],
+  "pecan-thigh-bites-with-mild-honey-glaze": ["chicken-thighs","pellet-smoker","boneless-bites","chicken","poultry","dark-meat","extra-sauce","wing-inspired","mild","honey-glazed","smoked-chicken","traeger"],
+  "plum-and-star-anise-chicken-thighs": ["chicken-thighs","hexclad","plum-glaze","chicken","poultry","dark-meat","covered-braise","extra-sauce","asian-inspired","wok","freezer-friendly","weeknight"],
+  "poached-apple-cider-and-mustard-pan-sauce": ["pan-sauce","cider-sauce","hexclad","pork","for-pork","for-chicken","condiment","sauce","freezer-friendly","quick"],
+  "pomegranate-and-coriander-marinade": ["marinade","fruit-marinade","make-ahead","for-pork","for-chicken","condiment","sauce","freezer-friendly","quick"],
+  "porter-braised-chuck-with-caramelized-onion-gravy": ["pellet-smoker","pot-roast","beef","red-meat","extra-sauce","caramelized-onions","leftovers","chuck-roast","beer-gravy","traeger","smoker","freezer-friendly"],
+  "portobello-and-black-pepper-pan-sauce": ["pan-sauce","mushroom-gravy","extra-sauce","for-steak","for-beef","pepper-sauce","condiment","sauce","freezer-friendly"],
+  "possiblecooker-beef-potato-picadillo-with-tomato-gravy": ["ground-beef","possiblecooker","beef","red-meat","weeknight","potatoes","extra-sauce","leftovers","picadillo","one-pot","multicooker","freezer-friendly"],
+  "possiblecooker-fennel-pork-and-red-lentil-stew": ["possiblecooker","ground-pork","pork","red-meat","weeknight","lentils","extra-sauce","leftovers","lentil-stew","one-pot","multicooker","freezer-friendly"],
+  "possiblecooker-lemon-chicken-orzo-with-artichoke-sauce": ["chicken-thighs","possiblecooker","rice-shaped-pasta","chicken","poultry","dark-meat","weeknight","one-pot","pasta","extra-sauce","orzo","lemon-artichoke"],
+  "possiblecooker-mushroom-barley-with-hazelnut-butter": ["possiblecooker","grain-side","weeknight","barley","mushrooms","vegetarian","mushroom-pilaf","brown-butter","side-dish","multicooker","freezer-friendly"],
+  "possiblecooker-white-chicken-chili-with-green-chile-gravy": ["chicken-thighs","possiblecooker","white-bean-chili","chicken","poultry","dark-meat","weeknight","white-chili","extra-sauce","leftovers","green-chile","one-pot"],
+  "post-oak-brisket-flat-with-coriander-gravy": ["brisket-flat","pellet-smoker","beef","red-meat","extra-sauce","covered-braise","leftovers","smoked-brisket","texas-bbq","traeger","smoker","freezer-friendly"],
+  "red-lentil-and-smoked-paprika-gravy": ["gravy","lentil-gravy","extra-sauce","for-pork","for-chicken","smoky","condiment","sauce","freezer-friendly","quick"],
+  "root-beer-and-roasted-pepper-barbecue-glaze": ["barbecue-glaze","bbq-sauce","extra-sauce","for-ribs","for-pork","root-beer","condiment","sauce","freezer-friendly","quick"],
+  "saffron-almond-chicken-cutlets": ["chicken-breast","apo","poached","chicken","poultry","white-meat","bagless-sous-vide","chicken-cutlets","extra-sauce","almond-cream","saffron-sauce","anova"],
+  "saffron-orange-aioli": ["aioli","garlic-mayo","chilled","for-fish","for-shrimp","citrus","condiment","sauce","quick"],
+  "silky-eggplant-and-sunflower-dip": ["dip","aubergine","dipping-sauce","spread","seed-butter","condiment","sauce","freezer-friendly"],
+  "smoky-chicken-rice-bowls-with-cheddar-pepper-sauce": ["ground-chicken","pellet-smoker","chicken","poultry","extra-sauce","rice","mild","rice-bowl","cheese-sauce","traeger","smoker","freezer-friendly"],
+  "smoky-date-and-bavarian-mustard-glaze": ["barbecue-glaze","bbq-sauce","extra-sauce","for-pork","for-chicken","mustard-glaze","condiment","sauce","freezer-friendly","quick"],
+  "smoky-red-pepper-aioli": ["aioli","garlic-mayo","chilled","for-shrimp","for-potatoes","roasted-pepper","condiment","sauce","quick"],
+  "snapper-in-smooth-tomato-fennel-and-orange-sauce": ["snapper","hexclad","mediterranean-inspired","fish","seafood","white-fish","tomato","extra-sauce","tomato-sauce","poached","freezer-friendly","quick"],
+  "spinach-basil-green-rice": ["stovetop","green-rice","rice","herbs","rice-side","herb-butter","side-dish","freezer-friendly"],
+  "steamed-asparagus-with-lemon-tarragon-almond-cream": ["hexclad","crisp-tender","steam","asparagus","vegetable-side","herb-sauce","side-dish","quick"],
+  "sweet-corn-and-goat-cheese-cream": ["cream-sauce","cheese-sauce","extra-sauce","for-fish","for-chicken","for-polenta","condiment","sauce","freezer-friendly","quick"],
+  "tamarind-mandarin-wok-glaze": ["asian-inspired","stir-fry-sauce","coconut-aminos","for-chicken","for-shrimp","sweet-and-sour","condiment","sauce","freezer-friendly","quick"],
+  "toasted-oat-and-sage-country-gravy": ["gravy","country-gravy","extra-sauce","for-turkey","for-chicken","milk-gravy","condiment","sauce","freezer-friendly","quick"],
+  "toasted-sesame-and-white-miso-dressing": ["asian-inspired","sesame-dressing","coconut-aminos","for-fish","for-vegetables","japanese-inspired","condiment","sauce","freezer-friendly","quick"],
+  "tomato-basil-chicken-cutlets-with-whipped-ricotta": ["chicken-breast","hexclad","italian-inspired","chicken","poultry","white-meat","chicken-cutlets","tomato-basil","extra-sauce","tomato-cream","poached","freezer-friendly"],
+  "traeger-black-garlic-braised-portobellos": ["traeger","bbq-side","braised","mushrooms","mushroom-side","umami","side-dish","pellet-smoker","smoker","freezer-friendly"],
+  "warm-malty-cheddar-dip": ["dip","beer-cheese","dipping-sauce","for-potatoes","for-chicken","cheese-dip","condiment","sauce","quick"],
+  "wok-steamed-broccoli-with-ginger-sesame-sauce": ["hexclad-wok","sesame-broccoli","steam","fresh-broccoli","vegetable-side","crisp-tender","side-dish","quick"],
+  "zucchini-basil-and-ricotta-sauce": ["cream-sauce","basil-cream","extra-sauce","for-fish","for-chicken","for-pasta","condiment","sauce","quick"]
+};
+const recipeSearchCache = new WeakMap();
+const proteinTerms = new Set('fish seafood shellfish poultry chicken turkey duck beef pork lamb salmon cod snapper halibut tilapia mahi tuna trout haddock sole flounder grouper bass pollock swordfish catfish drum walleye barramundi mackerel sardine anchovy herring shrimp crab lobster scallop clam mussel oyster squid octopus prawn'.split(' '));
+const finfishNames = 'salmon cod snapper halibut tilapia mahi tuna trout haddock sole flounder grouper bass pollock swordfish catfish drum walleye barramundi mackerel sardine anchovy herring'.split(' ');
+const whiteFishNames = 'cod snapper halibut tilapia mahi haddock sole flounder grouper bass pollock catfish drum walleye barramundi'.split(' ');
+const shellfishNames = 'shrimp crab lobster scallop clam mussel oyster squid octopus'.split(' ');
+function searchText(value) {
+  return String(value || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+    .replace(/['’]/g, '').replace(/[^a-z0-9]+/g, ' ').trim()
+    .replace(/\b(?:barbe?que|barbeque|bbq)\b/g, 'barbecue')
+    .replace(/\b(?:air ?fryers?|air ?frying|air ?fried)\b/g, 'air fryer')
+    .replace(/\b(?:impossible|possible)\s*cooker\b/g, 'possiblecooker')
+    .replace(/\b(?:multi|slow)\s+(cooker)\b/g, (m) => m.replace(' ', ''))
+    .replace(/\b(?:sousvide|sous vide)\b/g, 'sous vide')
+    .replace(/\bwhitefish\b/g, 'white fish').replace(/\bmahi\s*mahi\b/g, 'mahi')
+    .replace(/\b(?:finfish|fin fish)\b/g, 'fish').replace(/\bsea food\b/g, 'seafood')
+    .replace(/\b(?:nuoc mam|nam pla)\b/g, 'fish sauce')
+    .replace(/\bshell fish\b/g, 'shellfish').replace(/\bloewensenf\b/g, 'lowensenf')
+    .replace(/\b(?:prawns?|shrimps)\b/g, 'shrimp').replace(/\bgravies\b/g, 'gravy')
+    .replace(/\bpotatoes\b/g, 'potato').replace(/\btomatoes\b/g, 'tomato')
+    .replace(/\bveggies?\b/g, 'vegetable').replace(/\bmeal prep\b/g, 'mealprep')
+    .replace(/\bfreez(?:er friendly|es well|able)\b/g, 'freezerfriendly')
+    .replace(/\bhigh(?:er)? protein\b/g, 'highprotein').replace(/\bweeknights\b/g, 'weeknight')
+    .replace(/\b(breast|thigh|cutlet|medallion|chop|rib|stew|sauce|side|dip|marinade|glaze|rub|noodle|mushroom|minute|fillet|filet|scallop|clam|sardine|oyster|mussel|bean|pepper|dish|steak|meatball|carb|herb|vegetable|dinner|grain|main|shell|egg)s\b/g, '$1')
+    .replace(/\bdishes\b/g, 'dish').replace(/\bcremini\b/g, 'crimini')
+    .replace(/\bgarbanzo(?: bean)?s?\b/g, 'chickpea').replace(/\bcourgettes?\b/g, 'zucchini')
+    .replace(/\baubergines?\b/g, 'eggplant').replace(/\bchile\b/g, 'chili').replace(/\bny strip\b/g, 'new york strip')
+    .replace(/\bfillet mignon\b/g, 'filet mignon').replace(/\bgarbanzo beans?\b/g, 'chickpea');
 }
+function proteinWords(names) {
+  const tokens = new Set(names.join(' ').split(' '));
+  const proteins = new Set();
+  for (const kind of finfishNames) {
+    if (!tokens.has(kind)) continue;
+    proteins.add(kind); proteins.add('fish'); proteins.add('seafood');
+    if (whiteFishNames.includes(kind)) proteins.add('white');
+    if (['salmon','mackerel','herring','sardine'].includes(kind)) proteins.add('oily');
+  }
+  for (const kind of shellfishNames) {
+    if (tokens.has(kind)) { proteins.add(kind); proteins.add('shellfish'); proteins.add('seafood'); }
+  }
+  for (const term of ['fish','shellfish','seafood','poultry','chicken','turkey','duck','pork','beef','lamb']) {
+    if (tokens.has(term)) proteins.add(term);
+  }
+  if (['turkey','chicken','duck'].some(x => proteins.has(x))) proteins.add('poultry');
+  if (proteins.has('fish') || proteins.has('shellfish')) proteins.add('seafood');
+  if (/\b(?:brisket|tri tip|ribeye|rib eye|filet mignon|new york strip|ground chuck)\b/.test(names.join(' ')) ||
+      (tokens.has('sirloin') && !proteins.has('pork') && !proteins.has('lamb'))) proteins.add('beef');
+  if (/\b(?:bacon|pancetta|prosciutto|ham|pork shoulder)\b/.test(names.join(' '))) proteins.add('pork');
+  return proteins;
+}
+function recipeSearchIndex(r) {
+  if (recipeSearchCache.has(r)) return recipeSearchCache.get(r);
+  const tags = [...new Set([...(r.tags || []), ...(cookbookSearchTags[r.id] || [])])];
+  const category = searchText(r.category);
+  const condiment = category === 'sauce condiment';
+  const ing = r.ingredients.map(g => searchText(g.name));
+  const substantive = ing.filter(s => !/\b(?:broth|stock|bouillon|base|seasoning|drippings|flavoring|flavored|gelatin|fat|rub|sauce|spice blend)\b/.test(s) &&
+    !/\b(?:mock|meatless|vegan|vegetarian|imitation|plant based|chicken style)\b/.test(s));
+  const proteins = proteinWords(substantive);
+  const equipment = searchText((r.equipment || []).join(' '));
+  const words = [r.title, r.description, r.category, ...ing, equipment,
+    ...tags.filter(t => !t.startsWith('for-') && !['high-protein','freezer-friendly','for-two'].includes(t))];
+  if (category === 'main dish' || category === 'soup stew') words.push('dinner entree supper');
+  if (category === 'side') words.push('side dish accompaniment');
+  if (condiment) words.push('condiment sauce');
+  if (/precision oven|\banova\b/.test(equipment)) words.push('apo anova combi oven');
+  if (/\btraeger\b|pellet smoker/.test(equipment)) words.push('traeger pellet grill smoker smoked barbecue outdoor');
+  if (/\bcrispi\b|air fryer/.test(equipment)) words.push('air fryer');
+  if (/\bpossiblecooker\b/.test(equipment)) words.push('ninja foodi possiblecooker multicooker');
+  if (/\bblackstone\b|\bgriddle\b/.test(equipment)) words.push('griddle flat top');
+  if (/\bskillet\b/.test(equipment)) words.push('stovetop frying pan');
+  if (tags.some(t => ['bagless-sous-vide','sous-vide'].includes(t))) words.push('sous vide');
+  if (proteins.has('white')) words.push('white fish');
+  if (proteins.has('oily')) words.push('oily fish fatty fish');
+  if (/\b(?:chicken|turkey) breast\b/.test(substantive.join(' '))) words.push('white meat');
+  if (/\b(?:chicken thigh|duck breast)\b/.test(substantive.join(' '))) words.push('dark meat');
+  const staples = new Set();
+  for (const [key,pattern] of [['pasta',/\bpasta|rotini|orzo|tortellini|gnocchi|noodle|linguine|spaghetti|macaroni|penne|rigatoni|fettuccine|lasagn|ravioli|ziti|fusilli/],
+      ['rice',/\brice\b/], ['mushroom',/\bmushroom|\b(?:crimini|shiitake|porcini|portobello|portabella|baby bella)\b/]]) {
+    if (ing.some(s => pattern.test(s) && !/\b(?:broth|stock|vinegar|wine|starch|flour|seasoning|oil)\b/.test(s))) staples.add(key);
+  }
+  if (staples.has('pasta')) words.push('pasta');
+  if (staples.has('mushroom')) words.push('mushroom');
+  const minutes = r.totalMin ?? (r.prepMin == null || r.cookMin == null ? null : r.prepMin + r.cookMin);
+  const freezable = /freezer[- ]friendly verdict:\s*yes\b/i.test(r.notes || '') ||
+    (!/freezer[- ]friendly verdict:\s*no\b/i.test(r.notes || '') && (r.tags || []).includes('freezer-friendly'));
+  if (freezable) words.push('freezerfriendly freezer');
+  if (Number.isFinite(minutes) && minutes <= 30) words.push('quick');
+  if (Number.isFinite(minutes) && minutes <= 45) words.push('weeknight');
+  if (freezable && !condiment || tags.includes('leftovers')) words.push('mealprep');
+  if (r.servings === 2) words.push('for two');
+  if (tags.includes('vegetarian')) words.push('meatless');
+  const pro = (r.notes || '').match(/estimated nutrition per serving[^:]*:\s*[\d.,]+\s*kcal,\s*([\d.]+)\s*g protein/i);
+  if ((pro && Number(pro[1]) >= 25) || (!pro && (r.tags || []).includes('high-protein'))) words.push('highprotein');
+  const vocabulary = new Set(searchText(words.join(' ')).split(' '));
+  const pairings = new Set(tags.filter(t => t.startsWith('for-')).map(t => searchText(t.slice(4))));
+  const info = {vocabulary, proteins, staples, minutes, ing, substantive, pairings, condiment, onePan: tags.includes('one-pan') || /\b(?:one|single) pan\b/.test(searchText(r.description))};
+  recipeSearchCache.set(r, info);
+  return info;
+}
+function compileRecipeQuery(raw) {
+  let query = searchText(raw);
+  let minutes = null, exclusive = false;
+  const time = query.match(/\b(?:(under|within|up to|less than|at most|in)\s+)?(\d+)\s*(?:minutes?|mins?)\b/);
+  if (time) {
+    minutes = Number(time[2]); exclusive = time[1] === 'under' || time[1] === 'less than';
+    query = query.replace(time[0], ' ');
+  }
+  const pairing = query.match(/\bfor (sweet potato|white fish|(?:chicken|turkey|duck) (?:breast|thigh|cutlet)|salmon|cod|tilapia|halibut|snapper|mahi|trout|chicken|turkey|duck|poultry|shrimp|shellfish|seafood|fish|steak|beef|brisket|pork|rib|lamb|vegetable|pasta|noodle|polenta|rice|squash|potato)\b/);
+  if (pairing) query = query.replace(pairing[0], ' ');
+  const cut = query.match(/\b(?:ground (?:beef|pork|turkey|chicken|lamb)|(?:chicken|turkey|duck) (?:breast|thigh)|pork (?:tenderloin|chop)|beef tenderloin)\b/);
+  if (cut) query = query.replace(cut[0], ' ');
+  const onePan = /\b(?:one|single) pan\b/.test(query);
+  if (onePan) query = query.replace(/\b(?:one|single) pan\b/g, ' ');
+  const forTwo = /\b(?:for two|for 2|serves two|serves 2)\b/.test(query);
+  if (forTwo) query = query.replace(/\b(?:for two|for 2|serves two|serves 2)\b/g, ' ');
+  const whiteFish = /\bwhite fish\b/.test(query) && !query.includes('for white fish');
+  const oilyFish = /\b(?:oily|fatty) fish\b/.test(query) && !query.includes('for ');
+  if (whiteFish) query = query.replace(/\bwhite fish\b/g, 'fish');
+  if (oilyFish) query = query.replace(/\b(?:oily|fatty) fish\b/g, 'fish');
+  const fishSauce = /\bfish sauce\b/.test(query);
+  if (fishSauce) query = query.replace(/\bfish sauce\b/g, ' ');
+  const ingredientPhrases = [];
+  query = query.replace(/\b(chicken|beef|fish|mushroom|turkey|pork|seafood|rice)\s+(broth|stock|bouillon|vinegar|wine|flour|starch|oil)\b/g, (_, food, form) => {
+    ingredientPhrases.push([food, form]); return ' ';
+  });
+  const tokens = query.trim().split(/\s+/).filter(t => t && !['with','and','the','a','of','in'].includes(t));
+  return {tokens, fishSauce, cut:cut && cut[0], onePan, forTwo, whiteFish, oilyFish, minutes, exclusive, ingredientPhrases, pairing: pairing && pairing[1]};
+}
+function testRecipeQuery(r, q) {
+  const info = recipeSearchIndex(r);
+  if (q.fishSauce && !info.ing.some(name => /\bfish sauce\b/.test(name))) return false;
+  if (q.cut && !info.substantive.some(name => q.cut.split(' ').every(term => name.split(' ').includes(term)))) return false;
+  if (q.onePan && !info.onePan) return false;
+  if (q.forTwo && r.servings !== 2 || q.whiteFish && !info.proteins.has('white') || q.oilyFish && !info.proteins.has('oily')) return false;
+  if (q.minutes != null && (info.minutes == null || (q.exclusive ? info.minutes >= q.minutes : info.minutes > q.minutes))) return false;
+  if (!q.ingredientPhrases.every(([a,b]) => info.ing.some(i => i.split(' ').includes(a) && i.split(' ').includes(b)))) return false;
+  if (q.pairing) {
+    const pair = q.pairing;
+    const family = finfishNames.includes(pair) || pair === 'white fish' ? 'fish'
+      : ['brisket','steak'].includes(pair) ? 'beef' : pair === 'rib' ? 'pork' : pair === 'noodle' ? 'pasta' : pair;
+    const related = {seafood:['fish','shrimp','shellfish'], poultry:['chicken','duck','turkey'], shellfish:['shrimp'], pasta:['noodle']};
+    const possible = [pair, family, ...(related[pair] || [])];
+    if (/^(chicken|duck|turkey) /.test(pair)) possible.push(pair.split(' ')[0]);
+    if (!info.condiment || !possible.some(t => info.pairings.has(t))) return false;
+  }
+  return q.tokens.every(term => {
+    if (term === 'steak' && !['beef','lamb','pork','fish','turkey'].some(kind => info.proteins.has(kind))) return false;
+    if (proteinTerms.has(term)) return info.proteins.has(term);
+    if (['pasta','rice','mushroom'].includes(term)) return info.staples.has(term);
+    if (info.vocabulary.has(term)) return true;
+    return term.length >= 2 && [...info.vocabulary].some(word => word.startsWith(term));
+  });
+}
+function matches(x, q, cat) {
+  if (cat === '★') { if (!mark(x.r.id).fav) return false; }
+  else if (cat !== 'All' && x.r.category !== cat) return false;
+  return !q || testRecipeQuery(x.r, q);
+}
+
 function cardsHTML() {
-  const list = allRecipes().filter(x => matches(x, ui.q.trim(), ui.cat)).sort((a, b) => a.r.title.localeCompare(b.r.title, undefined, { sensitivity: 'base' }));
+  const query = ui.q.trim() ? compileRecipeQuery(ui.q) : null;
+  const list = allRecipes().filter(x => matches(x, query, ui.cat)).sort((a, b) => a.r.title.localeCompare(b.r.title, undefined, { sensitivity: 'base' }));
   if (!list.length) {
     if (!allRecipes().length) return '';
     if (!ui.q.trim() && FIXED_TABS.includes(ui.cat)) return `<div class="empty"><div class="big">🍽️</div><h2>Nothing in ${esc(ui.cat)} yet</h2><p>Add a recipe and set its category to ${esc(ui.cat)}.</p></div>`;
@@ -1390,7 +1677,7 @@ function homeScreen() {
   const empty = !all.length && !LIB.loading ? `<div class="empty"><div class="big">🍳</div><h2>No recipes yet</h2><p>Tap <b>+ Add</b>. Copy a recipe from Claude, then tap <b>Paste a recipe</b>. It saves in one tap.</p><button type="button" class="btn primary" data-action="add">+ Add a recipe</button></div>` : '';
   return headerHTML({ title: '🍳 Recipes', sub: LIB.loading && !all.length ? 'Loading…' : plural(all.length, 'recipe'), right: '<button type="button" class="btn small primary" data-action="add">+ Add</button><a class="btn small" href="#/backup">Backup</a>' })
     + `<main class="wrap">${storageBannerHTML()}${LIB.error && !LIB.loading ? `<div class="banner">${esc(LIB.error)}</div>` : ''}
-    ${all.length ? `<input class="search" type="search" id="q" placeholder="Search recipes or ingredients" value="${esc(ui.q)}" aria-label="Search recipes" autocomplete="off" autocapitalize="none" enterkeyhint="search">` : ''}${chips}
+    ${all.length ? `<input class="search" type="search" id="q" placeholder="Search fish, chicken thighs, air fryer…" value="${esc(ui.q)}" aria-label="Search recipes" autocomplete="off" autocapitalize="none" enterkeyhint="search">` : ''}${chips}
     <div id="rlist">${cardsHTML()}</div>${empty}</main>`;
 }
 const TABS = [['ingredients', 'Ingredients', '🧂'], ['steps', 'Steps', '👩‍🍳'], ['nutrition', 'Nutrition', '🥗'], ['notes', 'Notes', '📝']];
