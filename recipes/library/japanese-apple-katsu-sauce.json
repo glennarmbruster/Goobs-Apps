@@ -1,0 +1,112 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "japanese-apple-katsu-sauce",
+  "title": "Japanese Apple Katsu Sauce",
+  "description": "Grated apple, dates, tomato and a trace of clove make a smooth, fruity brown sauce for spooning over tender cutlets.",
+  "category": "Sauce & condiment",
+  "tags": [
+    "japanese",
+    "tonkatsu",
+    "katsu",
+    "brown-sauce",
+    "dipping-sauce",
+    "for-pork",
+    "for-chicken",
+    "low-sodium-option"
+  ],
+  "servings": 4,
+  "servingsLabel": "1/4-cup portions",
+  "prepMin": 8,
+  "cookMin": 20,
+  "equipment": [
+    "10-inch HexClad skillet",
+    "Small whisk",
+    "Heatproof measuring cup",
+    "Vitamix or immersion blender with tall heatproof jug"
+  ],
+  "ingredients": [
+    {
+      "id": "app",
+      "qty": 95.0,
+      "unit": "g",
+      "name": "small sweet apple",
+      "note": "Peeled and cored weight, finely grated."
+    },
+    {
+      "id": "da",
+      "qty": 18.0,
+      "unit": "g",
+      "name": "pitted Medjool dates",
+      "note": "Weight without pits, finely chopped."
+    },
+    {
+      "id": "tp",
+      "qty": 0.3333333333333333,
+      "unit": "cup",
+      "name": "smooth no-salt-added tomato puree"
+    },
+    {
+      "id": "w",
+      "qty": 0.3333333333333333,
+      "unit": "cup",
+      "name": "sodium-free water",
+      "note": "Use water labeled zero sodium."
+    },
+    {
+      "id": "a",
+      "qty": 4.0,
+      "unit": "tsp",
+      "name": "coconut aminos",
+      "note": "Use Coconut Secret Original at 90 mg sodium per teaspoon. Low-sodium batch: use 1 tsp total."
+    },
+    {
+      "id": "cv",
+      "qty": 3.0,
+      "unit": "tsp",
+      "name": "apple cider vinegar"
+    },
+    {
+      "id": "ms",
+      "qty": 0.25,
+      "unit": "tsp",
+      "name": "ground yellow mustard seed"
+    },
+    {
+      "id": "cl",
+      "qty": 0.03125,
+      "unit": "tsp",
+      "name": "ground cloves"
+    },
+    {
+      "id": "al",
+      "qty": 0.0625,
+      "unit": "tsp",
+      "name": "ground allspice"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Stew the fruit",
+      "text": "Cook {app}, {da} and {w} covered over medium-low heat for 7–9 minutes until the apple mashes easily."
+    },
+    {
+      "title": "Layer the spices",
+      "text": "Add {tp}, {a}, {cv}, {ms}, {cl} and {al}. Simmer for 6 minutes, stirring often."
+    },
+    {
+      "title": "Blend the katsu sauce",
+      "text": "Take off the heat and blend until silky. Run a spoon through the sauce and check that the fruit leaves no hard flecks."
+    },
+    {
+      "title": "Check the yield",
+      "text": "Measure the sauce in a heatproof cup. Aim for 1 cup. If short, loosen with a little hot sodium-free water. If over, return it to the pan and simmer briefly to the mark."
+    },
+    {
+      "title": "Serve the sauce",
+      "text": "Serve warm or at room temperature with tender pork or chicken cutlets. This sauce also works over cooked cabbage."
+    }
+  ],
+  "notes": "Yield: 1 cup, or four 1/4-cup portions. Low-sodium option for the full batch: Use 1 tsp coconut aminos in place of 4 tsp. Use the same final 1-cup yield and 1/4-cup serving. Make ahead: Make the sauce the day before and portion it before chilling. Refrigerate in shallow covered portions within 2 hours and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze flat in 1/4-cup portions for up to 2 months. Whisk again after thawing to restore the texture. Fridge reheat: Reheat a portion in a small pan, stirring to a brief boil and at least 165°F. Loosen with a splash of water if it tightens. Freezer reheat: Thaw overnight in the refrigerator, then use the fridge reheat method. Option A uses the listed seasonings. For a gentler Option B, use 1 teaspoon vinegar and replace half the tomato with additional grated apple. Estimated nutrition per serving (1/4 of recipe): 38 kcal, 0.5 g protein, 9.7 g total carbohydrate, 0.1 g fat, 1.0 g fiber, 96 mg sodium. Low-sodium version per 1/4 cup: 35 kcal, 0.5 g protein, 8.7 g total carbohydrate, 0.1 g fat, 1.0 g fiber, 29 mg sodium. Figures cover the sauce alone. Sodium varies with brands.",
+  "source": "Glenn"
+}

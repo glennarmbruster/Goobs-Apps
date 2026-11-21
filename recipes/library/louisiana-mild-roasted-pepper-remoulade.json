@@ -1,0 +1,115 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "louisiana-mild-roasted-pepper-remoulade",
+  "title": "Louisiana-Style Mild Rémoulade",
+  "description": "Smoked paprika, mustard and sweet roasted pepper turn a smooth chilled emulsion into a mild Louisiana-style seafood sauce.",
+  "category": "Sauce & condiment",
+  "tags": [
+    "louisiana",
+    "cajun",
+    "remoulade",
+    "chilled",
+    "dipping-sauce",
+    "for-shrimp",
+    "for-fish",
+    "for-potatoes",
+    "low-sodium-option"
+  ],
+  "servings": 4,
+  "servingsLabel": "1/4-cup portions",
+  "prepMin": 8,
+  "cookMin": 0,
+  "equipment": [
+    "Mixing bowl",
+    "Flexible spatula",
+    "Measuring cup",
+    "Vitamix or immersion blender with tall heatproof jug"
+  ],
+  "ingredients": [
+    {
+      "id": "may",
+      "qty": 5.0,
+      "unit": "tbsp",
+      "name": "plain full-fat mayonnaise",
+      "note": "Use pasteurized mayonnaise at about 90 mg sodium per tablespoon. Low-sodium batch: use 2 tbsp total."
+    },
+    {
+      "id": "sc",
+      "qty": 3.0,
+      "unit": "tbsp",
+      "name": "reduced-fat cultured sour cream",
+      "note": "Low-sodium batch: use 6 tbsp total."
+    },
+    {
+      "id": "cot",
+      "qty": 4.0,
+      "unit": "tbsp",
+      "name": "no-salt-added low-fat cottage cheese",
+      "note": "Use a no-salt-added product at about 45 mg sodium per 1/2 cup."
+    },
+    {
+      "id": "bell",
+      "qty": 28.0,
+      "unit": "g",
+      "name": "peeled roasted red bell pepper",
+      "note": "Plain home-roasted pepper with skin and seeds removed."
+    },
+    {
+      "id": "ms",
+      "qty": 0.5,
+      "unit": "tsp",
+      "name": "ground yellow mustard seed"
+    },
+    {
+      "id": "pa",
+      "qty": 0.5,
+      "unit": "tsp",
+      "name": "smoked paprika",
+      "note": "Use mild sweet smoked paprika."
+    },
+    {
+      "id": "le",
+      "qty": 2.0,
+      "unit": "tsp",
+      "name": "strained lemon juice"
+    },
+    {
+      "id": "par",
+      "qty": 1.0,
+      "unit": "tbsp",
+      "name": "fresh flat-leaf parsley leaves",
+      "note": "Finely chopped."
+    },
+    {
+      "id": "dryga",
+      "qty": 0.125,
+      "unit": "tsp",
+      "name": "granulated garlic"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Blend the creamy base",
+      "text": "Blend {cot}, {sc} and {may} until completely smooth, about 30 seconds."
+    },
+    {
+      "title": "Season the remoulade",
+      "text": "Add {bell}, {ms}, {pa}, {le}, {par} and {dryga}. Blend again until the pepper and parsley are fully incorporated."
+    },
+    {
+      "title": "Rest the seasonings",
+      "text": "Cover and chill for 30 minutes so the ground mustard softens and the flavors settle."
+    },
+    {
+      "title": "Set the yield",
+      "text": "Transfer to a measuring cup. Adjust to 1 cup, adding sodium-free water a teaspoon at a time if short. The finished sauce should cling to a spoon."
+    },
+    {
+      "title": "Serve the sauce",
+      "text": "Serve chilled with tender shrimp, fish or warm potatoes. Pass extra smoked paprika separately."
+    }
+  ],
+  "notes": "Yield: 1 cup, or four 1/4-cup portions. Low-sodium option for the full batch: Use 2 tbsp plain full-fat mayonnaise in place of 5 tbsp. Use 6 tbsp reduced-fat cultured sour cream in place of 3 tbsp. Use the same final 1-cup yield and 1/4-cup serving. Make ahead: Make the sauce the day before and portion it before chilling. Refrigerate in shallow covered portions within 2 hours and use within 3 days. Freezer-Friendly Verdict: No. The chilled emulsion can separate after freezing. Fridge reheat: Serve chilled. Stir well straight from the refrigerator. Freezer reheat: If frozen, thaw overnight in the refrigerator and whisk or blend until smooth. Serve cold. Option A uses the listed seasonings. For a gentler Option B, omit the lemon and halve the mustard and paprika. For dairy-free sauce, use unsalted white bean puree for cottage cheese and plain unsweetened dairy-free sour cream. Recheck product sodium. Estimated nutrition per serving (1/4 of recipe): 149 kcal, 2.7 g protein, 2.1 g total carbohydrate, 14.6 g fat, 0.3 g fiber, 126 mg sodium. Low-sodium version per 1/4 cup: 94 kcal, 2.9 g protein, 2.5 g total carbohydrate, 8.2 g fat, 0.3 g fiber, 70 mg sodium. Figures cover the sauce alone. Sodium varies with brands.",
+  "source": "Glenn"
+}

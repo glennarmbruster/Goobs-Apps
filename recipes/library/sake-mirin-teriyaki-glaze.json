@@ -1,0 +1,107 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "sake-mirin-teriyaki-glaze",
+  "title": "Sake-Mirin Teriyaki Glaze",
+  "description": "Mirin and drinking sake give this Japanese-style teriyaki a rounded sweetness and a clean, glossy finish.",
+  "category": "Sauce & condiment",
+  "tags": [
+    "japanese",
+    "teriyaki",
+    "teriyaki-sauce",
+    "teryaki",
+    "glaze",
+    "for-chicken",
+    "for-fish",
+    "for-beef",
+    "low-sodium-option"
+  ],
+  "servings": 4,
+  "servingsLabel": "1/4-cup portions",
+  "prepMin": 3,
+  "cookMin": 12,
+  "equipment": [
+    "10-inch HexClad skillet",
+    "Small whisk",
+    "Heatproof measuring cup"
+  ],
+  "ingredients": [
+    {
+      "id": "mi",
+      "qty": 3.0,
+      "unit": "tbsp",
+      "name": "Sushi Chef mirin sweetened sake",
+      "note": "Estimate uses the label with 0 mg sodium and 50 calories per tablespoon."
+    },
+    {
+      "id": "sa",
+      "qty": 3.0,
+      "unit": "tbsp",
+      "name": "unsalted drinking sake",
+      "note": "Use plain Japanese rice wine."
+    },
+    {
+      "id": "a",
+      "qty": 6.0,
+      "unit": "tsp",
+      "name": "coconut aminos",
+      "note": "Use Coconut Secret Original at 90 mg sodium per teaspoon. Low-sodium batch: use 2 tsp total."
+    },
+    {
+      "id": "w",
+      "qty": 0.625,
+      "unit": "cup",
+      "name": "sodium-free water",
+      "note": "Use water labeled zero sodium."
+    },
+    {
+      "id": "bs",
+      "qty": 0.5,
+      "unit": "tbsp",
+      "name": "dark brown sugar",
+      "note": "Lightly packed."
+    },
+    {
+      "id": "sl",
+      "qty": 1.5,
+      "unit": "tsp",
+      "name": "cornstarch",
+      "group": "Slurry"
+    },
+    {
+      "id": "cw",
+      "qty": 3.0,
+      "unit": "tsp",
+      "name": "cold sodium-free water",
+      "group": "Slurry"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Reduce the rice wines",
+      "text": "Bring {mi} and {sa} to a gentle boil in the HexClad for 3 minutes to concentrate the rice-wine flavors."
+    },
+    {
+      "title": "Dissolve the sugar",
+      "text": "Whisk in {a}, {w} and {bs} and simmer for another 3–4 minutes. Keep the heat low enough that the sweet edges stay pale."
+    },
+    {
+      "title": "Mix the slurry",
+      "text": "Stir {sl} into {cw} in a small cup until smooth."
+    },
+    {
+      "title": "Thicken the sauce",
+      "text": "Whisk the slurry into the gently simmering base. Cook for 60–90 seconds, stirring, until the sauce coats the back of a spoon."
+    },
+    {
+      "title": "Check the yield",
+      "text": "Measure the sauce in a heatproof cup. Aim for 1 cup. If short, loosen with a little hot sodium-free water. If over, return it to the pan and simmer briefly to the mark."
+    },
+    {
+      "title": "Serve the sauce",
+      "text": "Spoon over warm salmon or chicken and use the rest at the table. A second thin coat clings better than a single heavy brushing."
+    }
+  ],
+  "notes": "Yield: 1 cup, or four 1/4-cup portions. Low-sodium option for the full batch: Use 2 tsp coconut aminos in place of 6 tsp. Use the same final 1-cup yield and 1/4-cup serving. Make ahead: Make the sauce the day before and portion it before chilling. Refrigerate in shallow covered portions within 2 hours and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze flat in 1/4-cup portions for up to 2 months. Whisk again after thawing to restore the texture. Fridge reheat: Reheat a portion in a small pan, stirring to a brief boil and at least 165°F. Loosen with a splash of water if it tightens. Freezer reheat: Thaw overnight in the refrigerator, then use the fridge reheat method. Option A uses the listed seasonings. For a gentler Option B, replace the drinking sake with water and use half the mirin. Nutrition counts the full measured sake and mirin before evaporation. Estimated nutrition per serving (1/4 of recipe): 70 kcal, 0.1 g protein, 13.4 g total carbohydrate, 0.0 g fat, 0.0 g fiber, 136 mg sodium. Low-sodium version per 1/4 cup: 65 kcal, 0.1 g protein, 12.1 g total carbohydrate, 0.0 g fat, 0.0 g fiber, 46 mg sodium. Figures cover the sauce alone. Sodium varies with brands.",
+  "source": "Glenn"
+}

@@ -1,0 +1,129 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "toasted-honey-sesame-takeout-glaze",
+  "title": "Toasted Honey Sesame Glaze",
+  "description": "Freshly ground toasted sesame gives this honey glaze a deeper nutty flavor than sesame oil alone.",
+  "category": "Sauce & condiment",
+  "tags": [
+    "chinese-american",
+    "takeout",
+    "sesame-chicken",
+    "honey-sesame",
+    "glaze",
+    "for-chicken",
+    "for-tofu",
+    "low-sodium-option"
+  ],
+  "servings": 4,
+  "servingsLabel": "1/4-cup portions",
+  "prepMin": 5,
+  "cookMin": 9,
+  "equipment": [
+    "10-inch HexClad skillet",
+    "Small whisk",
+    "Heatproof measuring cup",
+    "Mortar and pestle or spice grinder"
+  ],
+  "ingredients": [
+    {
+      "id": "se",
+      "qty": 2.0,
+      "unit": "tsp",
+      "name": "sesame seeds",
+      "note": "Plain and unsalted."
+    },
+    {
+      "id": "tah",
+      "qty": 1.0,
+      "unit": "tbsp",
+      "name": "smooth unsalted tahini",
+      "note": "Stir thoroughly before measuring."
+    },
+    {
+      "id": "ho",
+      "qty": 2.0,
+      "unit": "tbsp",
+      "name": "honey"
+    },
+    {
+      "id": "a",
+      "qty": 4.0,
+      "unit": "tsp",
+      "name": "coconut aminos",
+      "note": "Use Coconut Secret Original at 90 mg sodium per teaspoon. Low-sodium batch: use 1 tsp total."
+    },
+    {
+      "id": "ch",
+      "qty": 0.75,
+      "unit": "cup",
+      "name": "low-sodium chicken broth",
+      "note": "Use plain homemade or unsalted carton broth at about 35 mg sodium per cup, with household-approved ingredients."
+    },
+    {
+      "id": "rv",
+      "qty": 2.0,
+      "unit": "tsp",
+      "name": "unseasoned rice vinegar"
+    },
+    {
+      "id": "gi",
+      "qty": 0.5,
+      "unit": "tsp",
+      "name": "fresh ginger juice",
+      "note": "Finely grate peeled ginger and squeeze out the juice."
+    },
+    {
+      "id": "so",
+      "qty": 0.5,
+      "unit": "tsp",
+      "name": "toasted sesame oil"
+    },
+    {
+      "id": "sl",
+      "qty": 1.5,
+      "unit": "tsp",
+      "name": "cornstarch",
+      "group": "Slurry"
+    },
+    {
+      "id": "cw",
+      "qty": 3.0,
+      "unit": "tsp",
+      "name": "cold sodium-free water",
+      "group": "Slurry"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Toast the sesame",
+      "text": "Warm {se} in a dry HexClad on low for 1–2 minutes, shaking until pale gold. Grind to a fine powder in a mortar or spice grinder."
+    },
+    {
+      "title": "Emulsify the tahini",
+      "text": "Whisk {tah}, {ho}, {a}, {ch} and {rv} into the ground sesame until smooth."
+    },
+    {
+      "title": "Warm the glaze",
+      "text": "Return the mixture to the skillet with {gi} and {so}. Simmer gently for 3 minutes, whisking to prevent sticking."
+    },
+    {
+      "title": "Mix the slurry",
+      "text": "Stir {sl} into {cw} in a small cup until smooth."
+    },
+    {
+      "title": "Thicken the sauce",
+      "text": "Whisk the slurry into the gently simmering base. Cook for 60–90 seconds, stirring, until the sauce coats the back of a spoon."
+    },
+    {
+      "title": "Check the yield",
+      "text": "Measure the sauce in a heatproof cup. Aim for 1 cup. If short, loosen with a little hot sodium-free water. If over, return it to the pan and simmer briefly to the mark."
+    },
+    {
+      "title": "Serve the sauce",
+      "text": "Spoon over moist chicken or soft tofu. The ground sesame stays in the glaze and gives every bite a little roasted flavor."
+    }
+  ],
+  "notes": "Yield: 1 cup, or four 1/4-cup portions. Low-sodium option for the full batch: Use 1 tsp coconut aminos in place of 4 tsp. Use the same final 1-cup yield and 1/4-cup serving. Make ahead: Make the sauce the day before and portion it before chilling. Refrigerate in shallow covered portions within 2 hours and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze flat in 1/4-cup portions for up to 2 months. Whisk again after thawing to restore the texture. Fridge reheat: Reheat a portion in a small pan, stirring to a brief boil and at least 165°F. Loosen with a splash of water if it tightens. Freezer reheat: Thaw overnight in the refrigerator, then use the fridge reheat method. Option A uses the listed seasonings. For a gentler Option B, omit the vinegar and ginger. Estimated nutrition per serving (1/4 of recipe): 78 kcal, 1.3 g protein, 11.8 g total carbohydrate, 3.3 g fat, 0.6 g fiber, 102 mg sodium. Low-sodium version per 1/4 cup: 74 kcal, 1.3 g protein, 10.8 g total carbohydrate, 3.3 g fat, 0.6 g fiber, 34 mg sodium. Figures cover the sauce alone. Sodium varies with brands.",
+  "source": "Glenn"
+}

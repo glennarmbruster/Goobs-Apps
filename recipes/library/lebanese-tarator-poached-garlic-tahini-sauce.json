@@ -1,0 +1,99 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "lebanese-tarator-poached-garlic-tahini-sauce",
+  "title": "Lebanese-Style Tarator with Poached Garlic",
+  "description": "Poaching the garlic first gives this lemon-tahini sauce a mellow flavor and a pourable, creamy texture without dairy.",
+  "category": "Sauce & condiment",
+  "tags": [
+    "lebanese",
+    "middle-eastern",
+    "tarator",
+    "tahini",
+    "sesame-sauce",
+    "for-fish",
+    "for-chicken",
+    "for-vegetables",
+    "low-sodium-option"
+  ],
+  "servings": 4,
+  "servingsLabel": "1/4-cup portions",
+  "prepMin": 6,
+  "cookMin": 9,
+  "equipment": [
+    "10-inch HexClad skillet",
+    "Small whisk",
+    "Heatproof measuring cup",
+    "Small mixing bowl"
+  ],
+  "ingredients": [
+    {
+      "id": "ga",
+      "qty": 2.0,
+      "unit": "clove",
+      "name": "fresh garlic cloves",
+      "note": "Peel and finely grate unless the step specifies otherwise."
+    },
+    {
+      "id": "w",
+      "qty": 0.6666666666666666,
+      "unit": "cup",
+      "name": "sodium-free water",
+      "note": "Use water labeled zero sodium."
+    },
+    {
+      "id": "tah",
+      "qty": 5.0,
+      "unit": "tbsp",
+      "name": "smooth unsalted tahini",
+      "note": "Stir thoroughly before measuring."
+    },
+    {
+      "id": "le",
+      "qty": 4.0,
+      "unit": "tsp",
+      "name": "strained lemon juice"
+    },
+    {
+      "id": "cu",
+      "qty": 0.125,
+      "unit": "tsp",
+      "name": "ground cumin"
+    },
+    {
+      "id": "salt",
+      "qty": 0.25,
+      "unit": "tsp",
+      "name": "table salt",
+      "note": "Fine table salt, about 590 mg sodium per 1/4 teaspoon. Low-sodium batch: use 1/16 tsp total."
+    }
+  ],
+  "steps": [
+    {
+      "title": "Poach the garlic",
+      "text": "Keep {ga} whole and simmer gently in {w}, covered, for 6–8 minutes until easily crushed. Reserve the poaching liquid."
+    },
+    {
+      "title": "Mash the seasoning",
+      "text": "Mash the cloves with {cu} and {salt} until smooth."
+    },
+    {
+      "title": "Tighten the tahini",
+      "text": "Whisk {tah} and {le} into the garlic paste. It will briefly become thick and pale."
+    },
+    {
+      "title": "Whisk until pourable",
+      "text": "Add the warm poaching liquid a little at a time, whisking until the sauce turns glossy and leaves a ribbon off the whisk."
+    },
+    {
+      "title": "Set the yield",
+      "text": "Transfer to a measuring cup. Adjust to 1 cup, adding sodium-free water a teaspoon at a time if short. The finished sauce should cling to a spoon."
+    },
+    {
+      "title": "Serve the sauce",
+      "text": "Serve at room temperature over fish, chicken or soft roasted vegetables. Stir before spooning."
+    }
+  ],
+  "notes": "Yield: 1 cup, or four 1/4-cup portions. Low-sodium option for the full batch: Use 1/16 tsp table salt in place of 1/4 tsp. Use the same final 1-cup yield and 1/4-cup serving. Make ahead: Make the sauce the day before and portion it before chilling. Refrigerate in shallow covered portions within 2 hours and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze for up to 1 month. The tahini may split slightly but blends smooth after thawing. Fridge reheat: Serve chilled. Stir well straight from the refrigerator. Freezer reheat: If frozen, thaw overnight in the refrigerator and whisk or blend until smooth. Serve cold. Option A uses the listed seasonings. For a gentler Option B, use only 1 teaspoon lemon juice and a single poached garlic clove. Estimated nutrition per serving (1/4 of recipe): 115 kcal, 3.3 g protein, 4.8 g total carbohydrate, 10.1 g fat, 1.8 g fiber, 169 mg sodium. Low-sodium version per 1/4 cup: 115 kcal, 3.3 g protein, 4.8 g total carbohydrate, 10.1 g fat, 1.8 g fiber, 59 mg sodium. Figures cover the sauce alone. Sodium varies with brands.",
+  "source": "Glenn"
+}

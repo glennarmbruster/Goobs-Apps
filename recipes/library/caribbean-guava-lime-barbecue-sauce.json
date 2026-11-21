@@ -1,0 +1,106 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "caribbean-guava-lime-barbecue-sauce",
+  "title": "Caribbean Guava-Lime Barbecue Sauce",
+  "description": "Pink guava makes a velvety barbecue sauce with lime, sweet smoked paprika and a dark ribbon of molasses.",
+  "category": "Sauce & condiment",
+  "tags": [
+    "caribbean",
+    "guava",
+    "guava-bbq",
+    "barbecue",
+    "tropical",
+    "fruit-glaze",
+    "for-pork",
+    "for-shrimp",
+    "low-sodium-option"
+  ],
+  "servings": 4,
+  "servingsLabel": "1/4-cup portions",
+  "prepMin": 5,
+  "cookMin": 13,
+  "equipment": [
+    "10-inch HexClad skillet",
+    "Small whisk",
+    "Heatproof measuring cup"
+  ],
+  "ingredients": [
+    {
+      "id": "gv",
+      "qty": 0.5,
+      "unit": "cup",
+      "name": "unsweetened seedless guava puree",
+      "note": "Use thawed GOYA guava pulp without added sugar or salt, measured by volume."
+    },
+    {
+      "id": "w",
+      "qty": 0.5,
+      "unit": "cup",
+      "name": "sodium-free water",
+      "note": "Use water labeled zero sodium."
+    },
+    {
+      "id": "to",
+      "qty": 1.0,
+      "unit": "tbsp",
+      "name": "smooth no-salt-added tomato paste"
+    },
+    {
+      "id": "mo",
+      "qty": 2.0,
+      "unit": "tsp",
+      "name": "blackstrap molasses"
+    },
+    {
+      "id": "lj",
+      "qty": 3.0,
+      "unit": "tsp",
+      "name": "strained lime juice"
+    },
+    {
+      "id": "pa",
+      "qty": 0.5,
+      "unit": "tsp",
+      "name": "smoked paprika",
+      "note": "Use mild sweet smoked paprika."
+    },
+    {
+      "id": "cv",
+      "qty": 1.0,
+      "unit": "tsp",
+      "name": "apple cider vinegar"
+    },
+    {
+      "id": "salt",
+      "qty": 0.25,
+      "unit": "tsp",
+      "name": "table salt",
+      "note": "Fine table salt, about 590 mg sodium per 1/4 teaspoon. Low-sodium batch: use 1/16 tsp total."
+    }
+  ],
+  "steps": [
+    {
+      "title": "Loosen the guava",
+      "text": "Whisk {gv}, {w} and {to} in the HexClad over medium-low heat until the fruit is completely smooth."
+    },
+    {
+      "title": "Concentrate the fruit",
+      "text": "Stir in {mo}, {pa}, {cv} and {salt}. Simmer uncovered for 7–10 minutes, stirring frequently, until the sauce coats the back of a spoon."
+    },
+    {
+      "title": "Finish with lime",
+      "text": "Fold in {lj} off the heat to keep the lime bright."
+    },
+    {
+      "title": "Check the yield",
+      "text": "Measure the sauce in a heatproof cup. Aim for 1 cup. If short, loosen with a little hot sodium-free water. If over, return it to the pan and simmer briefly to the mark."
+    },
+    {
+      "title": "Serve the sauce",
+      "text": "Brush over warm pork slices or spoon alongside shrimp. A small spoonful also works on soft sweet potatoes."
+    }
+  ],
+  "notes": "Yield: 1 cup, or four 1/4-cup portions. Low-sodium option for the full batch: Use 1/16 tsp table salt in place of 1/4 tsp. Use the same final 1-cup yield and 1/4-cup serving. Make ahead: Make the sauce the day before and portion it before chilling. Refrigerate in shallow covered portions within 2 hours and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze flat in 1/4-cup portions for up to 2 months. Whisk again after thawing to restore the texture. Fridge reheat: Reheat a portion in a small pan, stirring to a brief boil and at least 165°F. Loosen with a splash of water if it tightens. Freezer reheat: Thaw overnight in the refrigerator, then use the fridge reheat method. Option A uses the listed seasonings. For a gentler Option B, skip the cider vinegar and cut the lime juice to 1 teaspoon. Estimated nutrition per serving (1/4 of recipe): 26 kcal, 0.5 g protein, 6.2 g total carbohydrate, 0.1 g fat, 2.0 g fiber, 151 mg sodium. Low-sodium version per 1/4 cup: 26 kcal, 0.5 g protein, 6.2 g total carbohydrate, 0.1 g fat, 2.0 g fiber, 41 mg sodium. Figures cover the sauce alone. Sodium varies with brands.",
+  "source": "Glenn"
+}

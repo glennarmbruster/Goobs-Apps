@@ -1,0 +1,150 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "mild-kung-pao-peanut-wok-sauce",
+  "title": "Mild Kung Pao Wok Sauce",
+  "description": "Two vinegars, toasted peanut and a trace of chile give this mild kung pao sauce its sweet, sour and nutty finish.",
+  "category": "Sauce & condiment",
+  "tags": [
+    "chinese",
+    "sichuan-inspired",
+    "takeout",
+    "kung-pao",
+    "gong-bao",
+    "stir-fry",
+    "for-chicken",
+    "for-shrimp",
+    "low-sodium-option"
+  ],
+  "servings": 4,
+  "servingsLabel": "1/4-cup portions",
+  "prepMin": 6,
+  "cookMin": 9,
+  "equipment": [
+    "10-inch HexClad skillet",
+    "Small whisk",
+    "Heatproof measuring cup"
+  ],
+  "ingredients": [
+    {
+      "id": "mu",
+      "qty": 0.75,
+      "unit": "cup",
+      "name": "low-sodium mushroom broth",
+      "note": "For a plain infusion, steep sliced mushrooms in hot water, strain and add no salt. Estimate assumes 15 mg sodium per cup."
+    },
+    {
+      "id": "a",
+      "qty": 5.0,
+      "unit": "tsp",
+      "name": "coconut aminos",
+      "note": "Use Coconut Secret Original at 90 mg sodium per teaspoon. Low-sodium batch: use 1 tsp total."
+    },
+    {
+      "id": "rv",
+      "qty": 3.0,
+      "unit": "tsp",
+      "name": "unseasoned rice vinegar"
+    },
+    {
+      "id": "bv",
+      "qty": 2.0,
+      "unit": "tsp",
+      "name": "balsamic vinegar"
+    },
+    {
+      "id": "bs",
+      "qty": 1.0,
+      "unit": "tbsp",
+      "name": "dark brown sugar",
+      "note": "Lightly packed."
+    },
+    {
+      "id": "ga",
+      "qty": 2.0,
+      "unit": "clove",
+      "name": "fresh garlic cloves",
+      "note": "Peel and finely grate unless the step specifies otherwise."
+    },
+    {
+      "id": "gi",
+      "qty": 1.0,
+      "unit": "tsp",
+      "name": "fresh ginger juice",
+      "note": "Finely grate peeled ginger and squeeze out the juice."
+    },
+    {
+      "id": "an",
+      "qty": 0.25,
+      "unit": "tsp",
+      "name": "ground ancho chile",
+      "note": "Use pure mild ancho, without added salt."
+    },
+    {
+      "id": "sz",
+      "qty": 0.125,
+      "unit": "tsp",
+      "name": "finely ground Sichuan peppercorn husks",
+      "note": "Use a fine seedless grind for a gentle citrus aroma."
+    },
+    {
+      "id": "peanut",
+      "qty": 1.0,
+      "unit": "tbsp",
+      "name": "smooth unsalted peanut butter",
+      "note": "Stir the jar before measuring."
+    },
+    {
+      "id": "so",
+      "qty": 1.0,
+      "unit": "tsp",
+      "name": "toasted sesame oil"
+    },
+    {
+      "id": "sl",
+      "qty": 1.5,
+      "unit": "tsp",
+      "name": "cornstarch",
+      "group": "Slurry"
+    },
+    {
+      "id": "cw",
+      "qty": 3.0,
+      "unit": "tsp",
+      "name": "cold sodium-free water",
+      "group": "Slurry"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Whisk the nut base",
+      "text": "Whisk {peanut}, {mu}, {a}, {rv}, {bv} and {bs} in a jug until smooth."
+    },
+    {
+      "title": "Bloom the aromatics",
+      "text": "Warm {so} over medium-low heat in the HexClad and stir {ga}, {gi}, {an} and {sz} for 30 seconds."
+    },
+    {
+      "title": "Simmer the sauce",
+      "text": "Whisk in the nut mixture and simmer gently for 3–4 minutes. The two vinegars give a rounded tang even without Chinese black vinegar."
+    },
+    {
+      "title": "Mix the slurry",
+      "text": "Stir {sl} into {cw} in a small cup until smooth."
+    },
+    {
+      "title": "Thicken the sauce",
+      "text": "Whisk the slurry into the gently simmering base. Cook for 60–90 seconds, stirring, until the sauce coats the back of a spoon."
+    },
+    {
+      "title": "Check the yield",
+      "text": "Measure the sauce in a heatproof cup. Aim for 1 cup. If short, loosen with a little hot sodium-free water. If over, return it to the pan and simmer briefly to the mark."
+    },
+    {
+      "title": "Serve the sauce",
+      "text": "Toss with moist chicken or spoon over shrimp. Serve extra chile separately so both plates stay mild."
+    }
+  ],
+  "notes": "Yield: 1 cup, or four 1/4-cup portions. Low-sodium option for the full batch: Use 1 tsp coconut aminos in place of 5 tsp. Use the same final 1-cup yield and 1/4-cup serving. Make ahead: Make the sauce the day before and portion it before chilling. Refrigerate in shallow covered portions within 2 hours and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze flat in 1/4-cup portions for up to 2 months. Whisk again after thawing to restore the texture. Fridge reheat: Reheat a portion in a small pan, stirring to a brief boil and at least 165°F. Loosen with a splash of water if it tightens. Freezer reheat: Thaw overnight in the refrigerator, then use the fridge reheat method. Option A uses the listed seasonings. For a gentler Option B, omit both peppers and use half of each vinegar. Estimated nutrition per serving (1/4 of recipe): 66 kcal, 1.2 g protein, 8.3 g total carbohydrate, 3.2 g fat, 0.3 g fiber, 118 mg sodium. Low-sodium version per 1/4 cup: 61 kcal, 1.2 g protein, 6.9 g total carbohydrate, 3.2 g fat, 0.3 g fiber, 28 mg sodium. Figures cover the sauce alone. Sodium varies with brands.",
+  "source": "Glenn"
+}

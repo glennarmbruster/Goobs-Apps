@@ -1,0 +1,110 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "swedish-meatball-allspice-cream-gravy",
+  "title": "Swedish Meatball Cream Gravy",
+  "description": "A toasted butter roux and warm pinches of allspice and nutmeg give this Swedish-style brown gravy its familiar meatball-shop flavor.",
+  "category": "Sauce & condiment",
+  "tags": [
+    "swedish",
+    "scandinavian",
+    "meatball-gravy",
+    "cream-gravy",
+    "brown-gravy",
+    "comfort-food",
+    "for-beef",
+    "for-turkey",
+    "low-sodium-option"
+  ],
+  "servings": 4,
+  "servingsLabel": "1/4-cup portions",
+  "prepMin": 4,
+  "cookMin": 14,
+  "equipment": [
+    "10-inch HexClad skillet",
+    "Small whisk",
+    "Heatproof measuring cup"
+  ],
+  "ingredients": [
+    {
+      "id": "bf",
+      "qty": 3.0,
+      "unit": "tsp",
+      "name": "unsalted butter"
+    },
+    {
+      "id": "fl",
+      "qty": 3.0,
+      "unit": "tsp",
+      "name": "all-purpose flour"
+    },
+    {
+      "id": "be",
+      "qty": 0.6666666666666666,
+      "unit": "cup",
+      "name": "low-sodium beef broth",
+      "note": "Use plain unsalted beef broth at about 60 mg sodium per cup, with household-approved ingredients."
+    },
+    {
+      "id": "milk",
+      "qty": 0.3333333333333333,
+      "unit": "cup",
+      "name": "skim milk"
+    },
+    {
+      "id": "cc",
+      "qty": 1.0,
+      "unit": "tbsp",
+      "name": "whipped cream cheese"
+    },
+    {
+      "id": "al",
+      "qty": 0.125,
+      "unit": "tsp",
+      "name": "ground allspice"
+    },
+    {
+      "id": "nut",
+      "qty": 0.0625,
+      "unit": "tsp",
+      "name": "ground nutmeg"
+    },
+    {
+      "id": "wp",
+      "qty": 0.0625,
+      "unit": "tsp",
+      "name": "ground white pepper"
+    },
+    {
+      "id": "salt",
+      "qty": 0.25,
+      "unit": "tsp",
+      "name": "table salt",
+      "note": "Fine table salt, about 590 mg sodium per 1/4 teaspoon. Low-sodium batch: use 1/16 tsp total."
+    }
+  ],
+  "steps": [
+    {
+      "title": "Brown the roux",
+      "text": "Melt {bf} in the skillet over medium-low heat. Whisk in {fl} for 3–4 minutes until the roux turns the color of toasted bread."
+    },
+    {
+      "title": "Whisk in the broth",
+      "text": "Slowly whisk in {be}, then add {al}, {nut}, {wp} and {salt}. Simmer for 3 minutes."
+    },
+    {
+      "title": "Finish the cream gravy",
+      "text": "Whisk in {milk} and {cc}. Warm gently for 2–3 minutes, until smooth enough to coat a spoon."
+    },
+    {
+      "title": "Check the yield",
+      "text": "Measure the sauce in a heatproof cup. Aim for 1 cup. If short, loosen with a little hot sodium-free water. If over, return it to the pan and simmer briefly to the mark."
+    },
+    {
+      "title": "Serve the sauce",
+      "text": "Ladle over meatballs, mashed potatoes or soft noodles cooked in the gravy with enough added water to soften them."
+    }
+  ],
+  "notes": "Yield: 1 cup, or four 1/4-cup portions. Low-sodium option for the full batch: Use 1/16 tsp table salt in place of 1/4 tsp. Use the same final 1-cup yield and 1/4-cup serving. Make ahead: Make the sauce the day before and portion it before chilling. Refrigerate in shallow covered portions within 2 hours and use within 3 days. Freezer-Friendly Verdict: No. The milk sauce can separate or become grainy when frozen. Fridge reheat: Reheat a portion in a small pan, stirring to a brief boil and at least 165°F. Loosen with a splash of water if it tightens. Freezer reheat: Thaw overnight in the refrigerator, then use the fridge reheat method. Option A uses the listed seasonings. For a gentler Option B, omit the white pepper and halve the allspice. For dairy-free gravy, use avocado oil, unsweetened oat milk and plain whipped dairy-free cream cheese. Estimated nutrition per serving (1/4 of recipe): 52 kcal, 1.7 g protein, 2.9 g total carbohydrate, 3.7 g fat, 0.1 g fiber, 175 mg sodium. Low-sodium version per 1/4 cup: 52 kcal, 1.7 g protein, 2.9 g total carbohydrate, 3.7 g fat, 0.1 g fiber, 65 mg sodium. Figures cover the sauce alone. Sodium varies with brands.",
+  "source": "Glenn"
+}

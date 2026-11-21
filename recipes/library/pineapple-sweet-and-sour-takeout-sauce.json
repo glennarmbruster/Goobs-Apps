@@ -1,0 +1,110 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "pineapple-sweet-and-sour-takeout-sauce",
+  "title": "Pineapple Sweet & Sour Sauce",
+  "description": "Pineapple juice and apricot preserves bring sweetness and shine to a red takeout sauce sharpened with rice vinegar.",
+  "category": "Sauce & condiment",
+  "tags": [
+    "chinese-american",
+    "takeout",
+    "sweet-and-sour",
+    "pineapple",
+    "dipping-sauce",
+    "for-pork",
+    "for-chicken",
+    "for-shrimp",
+    "low-sodium-option"
+  ],
+  "servings": 4,
+  "servingsLabel": "1/4-cup portions",
+  "prepMin": 4,
+  "cookMin": 10,
+  "equipment": [
+    "10-inch HexClad skillet",
+    "Small whisk",
+    "Heatproof measuring cup"
+  ],
+  "ingredients": [
+    {
+      "id": "pi",
+      "qty": 0.75,
+      "unit": "cup",
+      "name": "unsweetened pineapple juice"
+    },
+    {
+      "id": "w",
+      "qty": 0.25,
+      "unit": "cup",
+      "name": "sodium-free water",
+      "note": "Use water labeled zero sodium."
+    },
+    {
+      "id": "ap",
+      "qty": 2.0,
+      "unit": "tbsp",
+      "name": "smooth apricot preserves"
+    },
+    {
+      "id": "rv",
+      "qty": 5.0,
+      "unit": "tsp",
+      "name": "unseasoned rice vinegar"
+    },
+    {
+      "id": "to",
+      "qty": 1.0,
+      "unit": "tbsp",
+      "name": "smooth no-salt-added tomato paste"
+    },
+    {
+      "id": "a",
+      "qty": 3.0,
+      "unit": "tsp",
+      "name": "coconut aminos",
+      "note": "Use Coconut Secret Original at 90 mg sodium per teaspoon. Low-sodium batch: use 1/2 tsp total."
+    },
+    {
+      "id": "sl",
+      "qty": 2.0,
+      "unit": "tsp",
+      "name": "cornstarch",
+      "group": "Slurry"
+    },
+    {
+      "id": "cw",
+      "qty": 4.0,
+      "unit": "tsp",
+      "name": "cold sodium-free water",
+      "group": "Slurry"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Dissolve the preserves",
+      "text": "Warm {pi}, {w} and {ap} over medium heat for 3 minutes, whisking until smooth."
+    },
+    {
+      "title": "Balance the fruit",
+      "text": "Whisk in {rv}, {to} and {a}. Let the sauce bubble gently for 3 minutes until the tomato is fully blended into the juice."
+    },
+    {
+      "title": "Mix the slurry",
+      "text": "Stir {sl} into {cw} in a small cup until smooth."
+    },
+    {
+      "title": "Thicken the sauce",
+      "text": "Whisk the slurry into the gently simmering base. Cook for 60–90 seconds, stirring, until the sauce coats the back of a spoon."
+    },
+    {
+      "title": "Check the yield",
+      "text": "Measure the sauce in a heatproof cup. Aim for 1 cup. If short, loosen with a little hot sodium-free water. If over, return it to the pan and simmer briefly to the mark."
+    },
+    {
+      "title": "Serve the sauce",
+      "text": "Spoon over sauced pork medallions, or pour into a warm bowl for dipping soft chicken pieces."
+    }
+  ],
+  "notes": "Yield: 1 cup, or four 1/4-cup portions. Low-sodium option for the full batch: Use 1/2 tsp coconut aminos in place of 3 tsp. Use the same final 1-cup yield and 1/4-cup serving. Make ahead: Make the sauce the day before and portion it before chilling. Refrigerate in shallow covered portions within 2 hours and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze flat in 1/4-cup portions for up to 2 months. Whisk again after thawing to restore the texture. Fridge reheat: Reheat a portion in a small pan, stirring to a brief boil and at least 165°F. Loosen with a splash of water if it tightens. Freezer reheat: Thaw overnight in the refrigerator, then use the fridge reheat method. Option A uses the listed seasonings. For a gentler Option B, replace half the pineapple juice with water and reduce the vinegar to 1 teaspoon. Estimated nutrition per serving (1/4 of recipe): 62 kcal, 0.4 g protein, 15.5 g total carbohydrate, 0.1 g fat, 0.3 g fiber, 75 mg sodium. Low-sodium version per 1/4 cup: 59 kcal, 0.4 g protein, 14.6 g total carbohydrate, 0.1 g fat, 0.3 g fiber, 19 mg sodium. Figures cover the sauce alone. Sodium varies with brands.",
+  "source": "Glenn"
+}

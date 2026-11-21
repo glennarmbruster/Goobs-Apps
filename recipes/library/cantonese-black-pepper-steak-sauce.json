@@ -1,0 +1,131 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "cantonese-black-pepper-steak-sauce",
+  "title": "Cantonese Black Pepper Steak Sauce",
+  "description": "A brief toast wakes up black pepper, which perfumes a smooth mushroom and beef pan sauce without overwhelming it.",
+  "category": "Sauce & condiment",
+  "tags": [
+    "chinese",
+    "cantonese",
+    "takeout",
+    "pepper-steak",
+    "black-pepper",
+    "wok-sauce",
+    "for-beef",
+    "for-steak",
+    "low-sodium-option"
+  ],
+  "servings": 4,
+  "servingsLabel": "1/4-cup portions",
+  "prepMin": 6,
+  "cookMin": 13,
+  "equipment": [
+    "10-inch HexClad skillet",
+    "Small whisk",
+    "Heatproof measuring cup",
+    "Vitamix or immersion blender with tall heatproof jug"
+  ],
+  "ingredients": [
+    {
+      "id": "pep",
+      "qty": 0.375,
+      "unit": "tsp",
+      "name": "finely ground black pepper"
+    },
+    {
+      "id": "oil",
+      "qty": 1.0,
+      "unit": "tsp",
+      "name": "avocado oil"
+    },
+    {
+      "id": "bb",
+      "qty": 1.5,
+      "unit": "oz",
+      "name": "baby bella mushrooms",
+      "note": "Wipe clean and mince finely."
+    },
+    {
+      "id": "be",
+      "qty": 0.875,
+      "unit": "cup",
+      "name": "low-sodium beef broth",
+      "note": "Use plain unsalted beef broth at about 60 mg sodium per cup, with household-approved ingredients."
+    },
+    {
+      "id": "a",
+      "qty": 4.0,
+      "unit": "tsp",
+      "name": "coconut aminos",
+      "note": "Use Coconut Secret Original at 90 mg sodium per teaspoon. Low-sodium batch: use 1 tsp total."
+    },
+    {
+      "id": "sh",
+      "qty": 1.0,
+      "unit": "tbsp",
+      "name": "unsalted dry drinking sherry",
+      "note": "Use drinking sherry, without added salt."
+    },
+    {
+      "id": "bs",
+      "qty": 0.5,
+      "unit": "tbsp",
+      "name": "dark brown sugar",
+      "note": "Lightly packed."
+    },
+    {
+      "id": "ga",
+      "qty": 1.0,
+      "unit": "clove",
+      "name": "fresh garlic cloves",
+      "note": "Peel and finely grate unless the step specifies otherwise."
+    },
+    {
+      "id": "sl",
+      "qty": 1.5,
+      "unit": "tsp",
+      "name": "cornstarch",
+      "group": "Slurry"
+    },
+    {
+      "id": "cw",
+      "qty": 3.0,
+      "unit": "tsp",
+      "name": "cold sodium-free water",
+      "group": "Slurry"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Sweat the mushrooms",
+      "text": "Soften {bb} in {oil} over medium-low heat for 4 minutes until a little mushroom juice gathers in the skillet."
+    },
+    {
+      "title": "Wake the pepper",
+      "text": "Stir in {pep} and {ga} for 20 seconds, then loosen the pan with {sh}."
+    },
+    {
+      "title": "Make the pepper gravy",
+      "text": "Add {be}, {a} and {bs}. Simmer for 4 minutes, then take off heat, blend smooth and return to a simmer."
+    },
+    {
+      "title": "Mix the slurry",
+      "text": "Stir {sl} into {cw} in a small cup until smooth."
+    },
+    {
+      "title": "Thicken the sauce",
+      "text": "Whisk the slurry into the gently simmering base. Cook for 60–90 seconds, stirring, until the sauce coats the back of a spoon."
+    },
+    {
+      "title": "Check the yield",
+      "text": "Measure the sauce in a heatproof cup. Aim for 1 cup. If short, loosen with a little hot sodium-free water. If over, return it to the pan and simmer briefly to the mark."
+    },
+    {
+      "title": "Serve the sauce",
+      "text": "Spoon over thin steak slices. Pass the pepper mill separately for anyone who wants a sharper bite."
+    }
+  ],
+  "notes": "Yield: 1 cup, or four 1/4-cup portions. Low-sodium option for the full batch: Use 1 tsp coconut aminos in place of 4 tsp. Use the same final 1-cup yield and 1/4-cup serving. Make ahead: Make the sauce the day before and portion it before chilling. Refrigerate in shallow covered portions within 2 hours and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze flat in 1/4-cup portions for up to 2 months. Whisk again after thawing to restore the texture. Fridge reheat: Reheat a portion in a small pan, stirring to a brief boil and at least 165°F. Loosen with a splash of water if it tightens. Freezer reheat: Thaw overnight in the refrigerator, then use the fridge reheat method. Option A uses the listed seasonings. For a gentler Option B, use only 1/8 teaspoon black pepper and replace the sherry with water. Nutrition counts the full sherry before simmering. Estimated nutrition per serving (1/4 of recipe): 41 kcal, 1.2 g protein, 5.4 g total carbohydrate, 1.2 g fat, 0.1 g fiber, 105 mg sodium. Low-sodium version per 1/4 cup: 37 kcal, 1.2 g protein, 4.4 g total carbohydrate, 1.2 g fat, 0.1 g fiber, 37 mg sodium. Figures cover the sauce alone. Sodium varies with brands.",
+  "source": "Glenn"
+}

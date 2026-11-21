@@ -1,0 +1,119 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "spanish-roasted-pepper-almond-romesco",
+  "title": "Spanish Roasted Pepper and Almond Romesco",
+  "description": "Sweet roasted pepper, blanched almond paste and mild smoked paprika make a smooth romesco that stays thick without breadcrumbs.",
+  "category": "Sauce & condiment",
+  "tags": [
+    "spanish",
+    "catalan",
+    "romesco",
+    "roasted-pepper",
+    "almond-sauce",
+    "for-fish",
+    "for-chicken",
+    "for-vegetables",
+    "low-sodium-option"
+  ],
+  "servings": 4,
+  "servingsLabel": "1/4-cup portions",
+  "prepMin": 7,
+  "cookMin": 8,
+  "equipment": [
+    "10-inch HexClad skillet",
+    "Small whisk",
+    "Heatproof measuring cup",
+    "Vitamix or immersion blender with tall heatproof jug"
+  ],
+  "ingredients": [
+    {
+      "id": "bell",
+      "qty": 135.0,
+      "unit": "g",
+      "name": "peeled roasted red bell pepper",
+      "note": "Plain home-roasted pepper with skin and seeds removed."
+    },
+    {
+      "id": "alm",
+      "qty": 2.0,
+      "unit": "tbsp",
+      "name": "smooth unsalted blanched almond paste",
+      "note": "Pure ground blanched almonds."
+    },
+    {
+      "id": "to",
+      "qty": 1.0,
+      "unit": "tbsp",
+      "name": "smooth no-salt-added tomato paste"
+    },
+    {
+      "id": "ga",
+      "qty": 1.0,
+      "unit": "clove",
+      "name": "fresh garlic cloves",
+      "note": "Peel and finely grate unless the step specifies otherwise."
+    },
+    {
+      "id": "oil",
+      "qty": 2.0,
+      "unit": "tsp",
+      "name": "avocado oil"
+    },
+    {
+      "id": "rv",
+      "qty": 2.0,
+      "unit": "tsp",
+      "name": "unseasoned rice vinegar"
+    },
+    {
+      "id": "pa",
+      "qty": 0.5,
+      "unit": "tsp",
+      "name": "smoked paprika",
+      "note": "Use mild sweet smoked paprika."
+    },
+    {
+      "id": "salt",
+      "qty": 0.25,
+      "unit": "tsp",
+      "name": "table salt",
+      "note": "Fine table salt, about 590 mg sodium per 1/4 teaspoon. Low-sodium batch: use 1/16 tsp total."
+    },
+    {
+      "id": "w",
+      "qty": 0.25,
+      "unit": "cup",
+      "name": "sodium-free water",
+      "note": "Use water labeled zero sodium."
+    }
+  ],
+  "steps": [
+    {
+      "title": "Soften the garlic",
+      "text": "Warm {ga} gently in {oil} in the HexClad for 1 minute until fragrant."
+    },
+    {
+      "title": "Bloom the tomato",
+      "text": "Stir in {to} and {pa} and cook for 30 seconds until brick red."
+    },
+    {
+      "title": "Puree the romesco",
+      "text": "Take off the heat. Blend the tomato mixture with {bell}, {alm}, {rv}, {salt} and {w} until smooth and spoonable."
+    },
+    {
+      "title": "Warm the finished sauce",
+      "text": "Return to low heat for 2–3 minutes, stirring, until the almond and pepper thicken together."
+    },
+    {
+      "title": "Check the yield",
+      "text": "Measure the sauce in a heatproof cup. Aim for 1 cup. If short, loosen with a little hot sodium-free water. If over, return it to the pan and simmer briefly to the mark."
+    },
+    {
+      "title": "Serve the sauce",
+      "text": "Serve warm under flaky fish or alongside asparagus. The almond body makes it easy to spread a generous layer on the plate."
+    }
+  ],
+  "notes": "Yield: 1 cup, or four 1/4-cup portions. Low-sodium option for the full batch: Use 1/16 tsp table salt in place of 1/4 tsp. Use the same final 1-cup yield and 1/4-cup serving. Make ahead: Make the sauce the day before and portion it before chilling. Refrigerate in shallow covered portions within 2 hours and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze flat in 1/4-cup portions for up to 2 months. Whisk again after thawing to restore the texture. Fridge reheat: Reheat a portion in a small pan, stirring to a brief boil and at least 165°F. Loosen with a splash of water if it tightens. Freezer reheat: Thaw overnight in the refrigerator, then use the fridge reheat method. Option A uses the listed seasonings. For a gentler Option B, halve the tomato paste and paprika and omit the vinegar. Estimated nutrition per serving (1/4 of recipe): 83 kcal, 2.3 g protein, 4.9 g total carbohydrate, 6.7 g fat, 1.5 g fiber, 152 mg sodium. Low-sodium version per 1/4 cup: 83 kcal, 2.3 g protein, 4.9 g total carbohydrate, 6.7 g fat, 1.5 g fiber, 42 mg sodium. Figures cover the sauce alone. Sodium varies with brands.",
+  "source": "Glenn"
+}

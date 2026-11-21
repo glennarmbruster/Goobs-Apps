@@ -1,0 +1,142 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "hawaiian-huli-huli-pineapple-glaze",
+  "title": "Hawaiian-Style Huli-Huli Pineapple Glaze",
+  "description": "Pineapple caramelizes at the edges of the skillet before ginger, tomato and coconut aminos turn it into a smooth island-style glaze.",
+  "category": "Sauce & condiment",
+  "tags": [
+    "hawaiian",
+    "huli-huli",
+    "pineapple",
+    "barbecue",
+    "glaze",
+    "for-chicken",
+    "for-pork",
+    "low-sodium-option"
+  ],
+  "servings": 4,
+  "servingsLabel": "1/4-cup portions",
+  "prepMin": 6,
+  "cookMin": 15,
+  "equipment": [
+    "10-inch HexClad skillet",
+    "Small whisk",
+    "Heatproof measuring cup",
+    "Vitamix or immersion blender with tall heatproof jug"
+  ],
+  "ingredients": [
+    {
+      "id": "pn",
+      "qty": 100.0,
+      "unit": "g",
+      "name": "crushed pineapple in pineapple juice",
+      "note": "Use fruit with its own juice, without added sugar."
+    },
+    {
+      "id": "oil",
+      "qty": 1.0,
+      "unit": "tsp",
+      "name": "avocado oil"
+    },
+    {
+      "id": "pi",
+      "qty": 0.3333333333333333,
+      "unit": "cup",
+      "name": "unsweetened pineapple juice"
+    },
+    {
+      "id": "ch",
+      "qty": 0.3333333333333333,
+      "unit": "cup",
+      "name": "low-sodium chicken broth",
+      "note": "Use plain homemade or unsalted carton broth at about 35 mg sodium per cup, with household-approved ingredients."
+    },
+    {
+      "id": "gi",
+      "qty": 2.0,
+      "unit": "tsp",
+      "name": "fresh ginger juice",
+      "note": "Finely grate peeled ginger and squeeze out the juice."
+    },
+    {
+      "id": "ga",
+      "qty": 1.0,
+      "unit": "clove",
+      "name": "fresh garlic cloves",
+      "note": "Peel and finely grate unless the step specifies otherwise."
+    },
+    {
+      "id": "to",
+      "qty": 1.0,
+      "unit": "tbsp",
+      "name": "smooth no-salt-added tomato paste"
+    },
+    {
+      "id": "bs",
+      "qty": 1.0,
+      "unit": "tbsp",
+      "name": "dark brown sugar",
+      "note": "Lightly packed."
+    },
+    {
+      "id": "cv",
+      "qty": 2.0,
+      "unit": "tsp",
+      "name": "apple cider vinegar"
+    },
+    {
+      "id": "a",
+      "qty": 5.0,
+      "unit": "tsp",
+      "name": "coconut aminos",
+      "note": "Use Coconut Secret Original at 90 mg sodium per teaspoon. Low-sodium batch: use 1 tsp total."
+    },
+    {
+      "id": "sl",
+      "qty": 1.0,
+      "unit": "tsp",
+      "name": "cornstarch",
+      "group": "Slurry"
+    },
+    {
+      "id": "cw",
+      "qty": 2.0,
+      "unit": "tsp",
+      "name": "cold sodium-free water",
+      "group": "Slurry"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Concentrate the pineapple",
+      "text": "Warm {pn} and {oil} over medium heat for 5–6 minutes, stirring often, until the juices become syrupy and the edges begin to color."
+    },
+    {
+      "title": "Simmer the glaze base",
+      "text": "Add {pi}, {ch}, {gi}, {ga}, {to}, {bs}, {cv} and {a}. Simmer for 4 minutes, scraping up the caramelized pineapple."
+    },
+    {
+      "title": "Smooth the glaze",
+      "text": "Take off the heat and blend the fruit into the liquid. Return to the pan and bring to a gentle simmer."
+    },
+    {
+      "title": "Mix the slurry",
+      "text": "Stir {sl} into {cw} in a small cup until smooth."
+    },
+    {
+      "title": "Thicken the sauce",
+      "text": "Whisk the slurry into the gently simmering base. Cook for 60–90 seconds, stirring, until the sauce coats the back of a spoon."
+    },
+    {
+      "title": "Check the yield",
+      "text": "Measure the sauce in a heatproof cup. Aim for 1 cup. If short, loosen with a little hot sodium-free water. If over, return it to the pan and simmer briefly to the mark."
+    },
+    {
+      "title": "Serve the sauce",
+      "text": "Spoon over hot chicken thighs or lean pork. Keep a clean portion warm to add at the table."
+    }
+  ],
+  "notes": "Yield: 1 cup, or four 1/4-cup portions. Low-sodium option for the full batch: Use 1 tsp coconut aminos in place of 5 tsp. Use the same final 1-cup yield and 1/4-cup serving. Make ahead: Make the sauce the day before and portion it before chilling. Refrigerate in shallow covered portions within 2 hours and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze flat in 1/4-cup portions for up to 2 months. Whisk again after thawing to restore the texture. Fridge reheat: Reheat a portion in a small pan, stirring to a brief boil and at least 165°F. Loosen with a splash of water if it tightens. Freezer reheat: Thaw overnight in the refrigerator, then use the fridge reheat method. Option A uses the listed seasonings. For a gentler Option B, replace pineapple juice with water, omit the vinegar and halve the ginger. Estimated nutrition per serving (1/4 of recipe): 66 kcal, 0.6 g protein, 13.7 g total carbohydrate, 1.3 g fat, 0.5 g fiber, 120 mg sodium. Low-sodium version per 1/4 cup: 61 kcal, 0.6 g protein, 12.4 g total carbohydrate, 1.3 g fat, 0.5 g fiber, 30 mg sodium. Figures cover the sauce alone. Sodium varies with brands.",
+  "source": "Glenn"
+}

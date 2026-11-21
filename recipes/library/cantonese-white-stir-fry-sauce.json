@@ -1,0 +1,120 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "cantonese-white-stir-fry-sauce",
+  "title": "Cantonese-Style White Stir-Fry Sauce",
+  "description": "Pale chicken broth, poached garlic and white pepper give this translucent sauce a clean, delicate finish.",
+  "category": "Sauce & condiment",
+  "tags": [
+    "chinese",
+    "cantonese",
+    "takeout",
+    "white-sauce",
+    "ginger-garlic",
+    "for-chicken",
+    "for-shrimp",
+    "for-vegetables",
+    "low-sodium-option"
+  ],
+  "servings": 4,
+  "servingsLabel": "1/4-cup portions",
+  "prepMin": 5,
+  "cookMin": 12,
+  "equipment": [
+    "10-inch HexClad skillet",
+    "Small whisk",
+    "Heatproof measuring cup",
+    "Fine-mesh sieve"
+  ],
+  "ingredients": [
+    {
+      "id": "ch",
+      "qty": 1.0,
+      "unit": "cup",
+      "name": "low-sodium chicken broth",
+      "note": "Use plain homemade or unsalted carton broth at about 35 mg sodium per cup, with household-approved ingredients."
+    },
+    {
+      "id": "ga",
+      "qty": 2.0,
+      "unit": "clove",
+      "name": "fresh garlic cloves",
+      "note": "Peel and finely grate unless the step specifies otherwise."
+    },
+    {
+      "id": "gi",
+      "qty": 1.0,
+      "unit": "tsp",
+      "name": "fresh ginger juice",
+      "note": "Finely grate peeled ginger and squeeze out the juice."
+    },
+    {
+      "id": "sh",
+      "qty": 1.0,
+      "unit": "tbsp",
+      "name": "unsalted dry drinking sherry",
+      "note": "Use drinking sherry, without added salt."
+    },
+    {
+      "id": "wp",
+      "qty": 0.0625,
+      "unit": "tsp",
+      "name": "ground white pepper"
+    },
+    {
+      "id": "salt",
+      "qty": 0.25,
+      "unit": "tsp",
+      "name": "table salt",
+      "note": "Fine table salt, about 590 mg sodium per 1/4 teaspoon. Low-sodium batch: use 1/16 tsp total."
+    },
+    {
+      "id": "so",
+      "qty": 0.25,
+      "unit": "tsp",
+      "name": "toasted sesame oil"
+    },
+    {
+      "id": "sl",
+      "qty": 2.0,
+      "unit": "tsp",
+      "name": "cornstarch",
+      "group": "Slurry"
+    },
+    {
+      "id": "cw",
+      "qty": 4.0,
+      "unit": "tsp",
+      "name": "cold sodium-free water",
+      "group": "Slurry"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Infuse the broth",
+      "text": "Simmer {ch}, {ga}, {gi}, {sh} and {wp} covered for 5 minutes over low heat."
+    },
+    {
+      "title": "Clarify the base",
+      "text": "Pass the liquid through a fine sieve into the skillet, pressing gently on the garlic. Add {salt} and {so} and return to a gentle simmer."
+    },
+    {
+      "title": "Mix the slurry",
+      "text": "Stir {sl} into {cw} in a small cup until smooth."
+    },
+    {
+      "title": "Thicken the sauce",
+      "text": "Whisk the slurry into the gently simmering base. Cook for 60–90 seconds, stirring, until the sauce coats the back of a spoon."
+    },
+    {
+      "title": "Check the yield",
+      "text": "Measure the sauce in a heatproof cup. Aim for 1 cup. If short, loosen with a little hot sodium-free water. If over, return it to the pan and simmer briefly to the mark."
+    },
+    {
+      "title": "Serve the sauce",
+      "text": "Spoon over chicken and steamed vegetables, shrimp, or mild white fish when you want the main ingredient to stand out."
+    }
+  ],
+  "notes": "Yield: 1 cup, or four 1/4-cup portions. Low-sodium option for the full batch: Use 1/16 tsp table salt in place of 1/4 tsp. Use the same final 1-cup yield and 1/4-cup serving. Make ahead: Make the sauce the day before and portion it before chilling. Refrigerate in shallow covered portions within 2 hours and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze flat in 1/4-cup portions for up to 2 months. Whisk again after thawing to restore the texture. Fridge reheat: Reheat a portion in a small pan, stirring to a brief boil and at least 165°F. Loosen with a splash of water if it tightens. Freezer reheat: Thaw overnight in the refrigerator, then use the fridge reheat method. Option A uses the listed seasonings. For a gentler Option B, replace sherry with water and leave out the white pepper. Nutrition includes the garlic before straining and the sherry before simmering. Estimated nutrition per serving (1/4 of recipe): 19 kcal, 0.6 g protein, 2.5 g total carbohydrate, 0.3 g fat, 0.1 g fiber, 157 mg sodium. Low-sodium version per 1/4 cup: 19 kcal, 0.6 g protein, 2.5 g total carbohydrate, 0.3 g fat, 0.1 g fiber, 46 mg sodium. Figures cover the sauce alone. Sodium varies with brands.",
+  "source": "Glenn"
+}

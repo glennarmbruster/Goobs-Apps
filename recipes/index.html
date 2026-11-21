@@ -918,7 +918,7 @@ function recipeJSON(r) {
 /* ---------- nutrition (estimates) ----------
    recipes/nutrition.json maps ingredient names to USDA foods (Calorie Lookup's data) or a product's own label.
    Raw ingredient weights are added up and divided by the recipe's servings. */
-const NFILEV = 'd8a0ff419d64';
+const NFILEV = '6c174afa6b17';
 let NUTR = null, nutrState = 'idle';
 const NDV = { fat: 78, sat: 20, chol: 300, na: 2300, carb: 275, fib: 28, pro: 50, k: 4700, ca: 1300, fe: 18 };
 const SALT_TSP = { morton: 4.95, diamond: 2.89 };   /* labels: Morton 480 mg per 1/4 tsp, Diamond Crystal 280 mg per 1/4 tsp */
@@ -1510,7 +1510,7 @@ function searchText(value) {
     .replace(/\b(?:impossible|possible)\s*cooker\b/g, 'possiblecooker')
     .replace(/\b(?:multi|slow)\s+(cooker)\b/g, (m) => m.replace(' ', ''))
     .replace(/\b(?:sousvide|sous vide)\b/g, 'sous vide')
-    .replace(/\bwhitefish\b/g, 'white fish').replace(/\bmahi\s*mahi\b/g, 'mahi')
+    .replace(/\b(?:terriyaki|teryaki|terryaki)\b/g, 'teriyaki').replace(/\bwhitefish\b/g, 'white fish').replace(/\bmahi\s*mahi\b/g, 'mahi')
     .replace(/\b(?:finfish|fin fish)\b/g, 'fish').replace(/\bsea food\b/g, 'seafood')
     .replace(/\b(?:nuoc mam|nam pla)\b/g, 'fish sauce')
     .replace(/\bshell fish\b/g, 'shellfish').replace(/\bloewensenf\b/g, 'lowensenf')
@@ -1605,7 +1605,7 @@ function compileRecipeQuery(raw) {
     minutes = Number(time[2]); exclusive = time[1] === 'under' || time[1] === 'less than';
     query = query.replace(time[0], ' ');
   }
-  const pairing = query.match(/\bfor (sweet potato|white fish|(?:chicken|turkey|duck) (?:breast|thigh|cutlet)|salmon|cod|tilapia|halibut|snapper|mahi|trout|chicken|turkey|duck|poultry|shrimp|shellfish|seafood|fish|steak|beef|brisket|pork|rib|lamb|vegetable|pasta|noodle|polenta|rice|squash|potato)\b/);
+  const pairing = query.match(/\bfor (sweet potato|white fish|(?:chicken|turkey|duck) (?:breast|thigh|cutlet)|salmon|cod|tilapia|halibut|snapper|mahi|trout|chicken|turkey|duck|poultry|shrimp|shellfish|seafood|fish|steak|beef|brisket|pork|rib|lamb|vegetable|pasta|noodle|polenta|rice|squash|potato|tofu|egg|eggplant|broccoli|cauliflower|asparagus|cabbage|meatball)\b/);
   if (pairing) query = query.replace(pairing[0], ' ');
   const cut = query.match(/\b(?:ground (?:beef|pork|turkey|chicken|lamb)|(?:chicken|turkey|duck) (?:breast|thigh)|pork (?:tenderloin|chop)|beef tenderloin)\b/);
   if (cut) query = query.replace(cut[0], ' ');
@@ -1645,7 +1645,12 @@ function testRecipeQuery(r, q) {
   }
   return q.tokens.every(term => {
     if (term === 'steak' && !['beef','lamb','pork','fish','turkey'].some(kind => info.proteins.has(kind))) return false;
-    if (proteinTerms.has(term)) return info.proteins.has(term);
+    if (proteinTerms.has(term)) {
+      if (info.proteins.has(term)) return true;
+      if (!info.condiment || q.tokens.length < 2) return false;
+      const title = new Set(searchText(r.title).split(' '));
+      return title.has(term) && q.tokens.every(t => title.has(t));
+    }
     if (['pasta','rice','mushroom'].includes(term)) return info.staples.has(term);
     if (info.vocabulary.has(term)) return true;
     return term.length >= 2 && [...info.vocabulary].some(word => word.startsWith(term));

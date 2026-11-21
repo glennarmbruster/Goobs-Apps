@@ -1,0 +1,145 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "yu-xiang-sichuan-style-garlic-sauce",
+  "title": "Yu Xiang–Style Sweet Garlic Sauce",
+  "description": "A generous measure of garlic, smooth red pepper and rice vinegar gives this mild Sichuan-inspired sauce a sweet, tangy edge.",
+  "category": "Sauce & condiment",
+  "tags": [
+    "chinese",
+    "sichuan-inspired",
+    "yu-xiang",
+    "yuxiang",
+    "garlic-sauce",
+    "for-eggplant",
+    "for-pork",
+    "for-chicken",
+    "low-sodium-option"
+  ],
+  "servings": 4,
+  "servingsLabel": "1/4-cup portions",
+  "prepMin": 9,
+  "cookMin": 11,
+  "equipment": [
+    "10-inch HexClad skillet",
+    "Small whisk",
+    "Heatproof measuring cup",
+    "Vitamix or immersion blender with tall heatproof jug"
+  ],
+  "ingredients": [
+    {
+      "id": "ga",
+      "qty": 4.0,
+      "unit": "clove",
+      "name": "fresh garlic cloves",
+      "note": "Peel and finely grate unless the step specifies otherwise."
+    },
+    {
+      "id": "oil",
+      "qty": 1.0,
+      "unit": "tsp",
+      "name": "avocado oil"
+    },
+    {
+      "id": "gi",
+      "qty": 1.0,
+      "unit": "tsp",
+      "name": "fresh ginger juice",
+      "note": "Finely grate peeled ginger and squeeze out the juice."
+    },
+    {
+      "id": "bell",
+      "qty": 45.0,
+      "unit": "g",
+      "name": "peeled roasted red bell pepper",
+      "note": "Plain home-roasted pepper with skin and seeds removed."
+    },
+    {
+      "id": "mis",
+      "qty": 0.5,
+      "unit": "tsp",
+      "name": "mild white miso",
+      "note": "Use plain white miso, ideally no more than 215 mg sodium per teaspoon. Low-sodium batch: use 1/4 tsp total."
+    },
+    {
+      "id": "rv",
+      "qty": 4.0,
+      "unit": "tsp",
+      "name": "unseasoned rice vinegar"
+    },
+    {
+      "id": "bs",
+      "qty": 1.0,
+      "unit": "tbsp",
+      "name": "dark brown sugar",
+      "note": "Lightly packed."
+    },
+    {
+      "id": "a",
+      "qty": 4.0,
+      "unit": "tsp",
+      "name": "coconut aminos",
+      "note": "Use Coconut Secret Original at 90 mg sodium per teaspoon. Low-sodium batch: use 1 tsp total."
+    },
+    {
+      "id": "mu",
+      "qty": 0.6666666666666666,
+      "unit": "cup",
+      "name": "low-sodium mushroom broth",
+      "note": "For a plain infusion, steep sliced mushrooms in hot water, strain and add no salt. Estimate assumes 15 mg sodium per cup."
+    },
+    {
+      "id": "go",
+      "qty": 0.125,
+      "unit": "tsp",
+      "name": "mild ground gochugaru",
+      "note": "Choose unsalted mild Korean red pepper, finely ground."
+    },
+    {
+      "id": "sl",
+      "qty": 1.5,
+      "unit": "tsp",
+      "name": "cornstarch",
+      "group": "Slurry"
+    },
+    {
+      "id": "cw",
+      "qty": 3.0,
+      "unit": "tsp",
+      "name": "cold sodium-free water",
+      "group": "Slurry"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Puree the pepper",
+      "text": "Blend {bell}, {mis}, {mu}, {rv}, {bs} and {a} until smooth."
+    },
+    {
+      "title": "Soften the garlic",
+      "text": "Warm {oil} and cook {ga}, {gi} and {go} at low heat for 1–2 minutes, keeping the garlic pale."
+    },
+    {
+      "title": "Join the two bases",
+      "text": "Stir the red pepper puree into the garlic and simmer for 4 minutes. The softened pepper and mild miso give the sauce body and gentle warmth."
+    },
+    {
+      "title": "Mix the slurry",
+      "text": "Stir {sl} into {cw} in a small cup until smooth."
+    },
+    {
+      "title": "Thicken the sauce",
+      "text": "Whisk the slurry into the gently simmering base. Cook for 60–90 seconds, stirring, until the sauce coats the back of a spoon."
+    },
+    {
+      "title": "Check the yield",
+      "text": "Measure the sauce in a heatproof cup. Aim for 1 cup. If short, loosen with a little hot sodium-free water. If over, return it to the pan and simmer briefly to the mark."
+    },
+    {
+      "title": "Serve the sauce",
+      "text": "Spoon over soft braised eggplant or sliced pork. Stir a little extra chile into individual portions."
+    }
+  ],
+  "notes": "Yield: 1 cup, or four 1/4-cup portions. Low-sodium option for the full batch: Use 1 tsp coconut aminos in place of 4 tsp. Use 1/4 tsp mild white miso in place of 1/2 tsp. Use the same final 1-cup yield and 1/4-cup serving. Make ahead: Make the sauce the day before and portion it before chilling. Refrigerate in shallow covered portions within 2 hours and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze flat in 1/4-cup portions for up to 2 months. Whisk again after thawing to restore the texture. Fridge reheat: Reheat a portion in a small pan, stirring to a brief boil and at least 165°F. Loosen with a splash of water if it tightens. Freezer reheat: Thaw overnight in the refrigerator, then use the fridge reheat method. Option A uses the listed seasonings. For a gentler Option B, skip the gochugaru, halve the garlic and use 1 teaspoon rice vinegar. Estimated nutrition per serving (1/4 of recipe): 45 kcal, 0.6 g protein, 7.8 g total carbohydrate, 1.3 g fat, 0.3 g fiber, 121 mg sodium. Low-sodium version per 1/4 cup: 40 kcal, 0.5 g protein, 6.7 g total carbohydrate, 1.2 g fat, 0.3 g fiber, 40 mg sodium. Figures cover the sauce alone. Sodium varies with brands.",
+  "source": "Glenn"
+}

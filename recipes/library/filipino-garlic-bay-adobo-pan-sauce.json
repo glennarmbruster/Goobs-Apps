@@ -1,0 +1,123 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "filipino-garlic-bay-adobo-pan-sauce",
+  "title": "Filipino Garlic-Bay Adobo Pan Sauce",
+  "description": "Whole softened garlic, bay and cider vinegar give this Filipino-style adobo sauce a savory, gently puckering finish.",
+  "category": "Sauce & condiment",
+  "tags": [
+    "filipino",
+    "adobo",
+    "garlic-vinegar",
+    "pan-sauce",
+    "bay-leaf",
+    "for-chicken",
+    "for-pork",
+    "low-sodium-option"
+  ],
+  "servings": 4,
+  "servingsLabel": "1/4-cup portions",
+  "prepMin": 5,
+  "cookMin": 17,
+  "equipment": [
+    "10-inch HexClad skillet",
+    "Small whisk",
+    "Heatproof measuring cup",
+    "Vitamix or immersion blender with tall heatproof jug"
+  ],
+  "ingredients": [
+    {
+      "id": "ga",
+      "qty": 4.0,
+      "unit": "clove",
+      "name": "fresh garlic cloves",
+      "note": "Peel and finely grate unless the step specifies otherwise."
+    },
+    {
+      "id": "ch",
+      "qty": 0.875,
+      "unit": "cup",
+      "name": "low-sodium chicken broth",
+      "note": "Use plain homemade or unsalted carton broth at about 35 mg sodium per cup, with household-approved ingredients."
+    },
+    {
+      "id": "bay",
+      "qty": 0.0625,
+      "unit": "tsp",
+      "name": "ground bay leaf",
+      "note": "Finely powdered culinary bay."
+    },
+    {
+      "id": "cv",
+      "qty": 5.0,
+      "unit": "tsp",
+      "name": "apple cider vinegar"
+    },
+    {
+      "id": "a",
+      "qty": 5.0,
+      "unit": "tsp",
+      "name": "coconut aminos",
+      "note": "Use Coconut Secret Original at 90 mg sodium per teaspoon. Low-sodium batch: use 1 tsp total."
+    },
+    {
+      "id": "pep",
+      "qty": 0.125,
+      "unit": "tsp",
+      "name": "finely ground black pepper"
+    },
+    {
+      "id": "bs",
+      "qty": 0.5,
+      "unit": "tbsp",
+      "name": "dark brown sugar",
+      "note": "Lightly packed."
+    },
+    {
+      "id": "sl",
+      "qty": 1.5,
+      "unit": "tsp",
+      "name": "cornstarch",
+      "group": "Slurry"
+    },
+    {
+      "id": "cw",
+      "qty": 3.0,
+      "unit": "tsp",
+      "name": "cold sodium-free water",
+      "group": "Slurry"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Soften the cloves",
+      "text": "Keep {ga} whole and simmer with {ch} and {bay} under a lid for 7–9 minutes until the cloves mash easily."
+    },
+    {
+      "title": "Mellow the vinegar",
+      "text": "Add {cv}, {a}, {pep} and {bs}. Simmer uncovered for 3 minutes to soften the sharp edge."
+    },
+    {
+      "title": "Smooth the garlic",
+      "text": "Take off the heat and blend the soft garlic into the liquid. Return the smooth base to a gentle simmer."
+    },
+    {
+      "title": "Mix the slurry",
+      "text": "Stir {sl} into {cw} in a small cup until smooth."
+    },
+    {
+      "title": "Thicken the sauce",
+      "text": "Whisk the slurry into the gently simmering base. Cook for 60–90 seconds, stirring, until the sauce coats the back of a spoon."
+    },
+    {
+      "title": "Check the yield",
+      "text": "Measure the sauce in a heatproof cup. Aim for 1 cup. If short, loosen with a little hot sodium-free water. If over, return it to the pan and simmer briefly to the mark."
+    },
+    {
+      "title": "Serve the sauce",
+      "text": "Spoon over braised chicken thighs or pork and steamed rice. A little extra black pepper can go on individual plates."
+    }
+  ],
+  "notes": "Yield: 1 cup, or four 1/4-cup portions. Low-sodium option for the full batch: Use 1 tsp coconut aminos in place of 5 tsp. Use the same final 1-cup yield and 1/4-cup serving. Make ahead: Make the sauce the day before and portion it before chilling. Refrigerate in shallow covered portions within 2 hours and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze flat in 1/4-cup portions for up to 2 months. Whisk again after thawing to restore the texture. Fridge reheat: Reheat a portion in a small pan, stirring to a brief boil and at least 165°F. Loosen with a splash of water if it tightens. Freezer reheat: Thaw overnight in the refrigerator, then use the fridge reheat method. Option A uses the listed seasonings. For a gentler Option B, use 2 teaspoons cider vinegar, omit the pepper and use half the garlic. Estimated nutrition per serving (1/4 of recipe): 25 kcal, 0.6 g protein, 5.3 g total carbohydrate, 0.0 g fat, 0.1 g fiber, 122 mg sodium. Low-sodium version per 1/4 cup: 20 kcal, 0.6 g protein, 4.0 g total carbohydrate, 0.0 g fat, 0.1 g fiber, 32 mg sodium. Figures cover the sauce alone. Sodium varies with brands.",
+  "source": "Glenn"
+}
