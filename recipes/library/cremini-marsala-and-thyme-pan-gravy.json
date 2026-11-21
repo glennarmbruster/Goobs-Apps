@@ -65,7 +65,8 @@
       "qty": 1,
       "name": "fresh thyme",
       "group": "Gravy",
-      "unit": "sprig"
+      "unit": "sprig",
+      "note": "Remove before serving."
     },
     {
       "id": "cheese",
@@ -115,6 +116,6 @@
       "text": "Off heat, whisk {cheese} with a spoonful of warm gravy, then blend it back into the pan. Divide the gravy between the plates or ladle it over mashed potatoes."
     }
   ],
-  "notes": "Make ahead: Blend the mushroom base up to a day ahead and refrigerate. Keep finished gravy chilled for up to 3 days. Freezer-Friendly Verdict: Yes. Freeze the base for up to 2 months and add cream cheese after reheating for a smooth finish. Fridge reheat: Warm in the HexClad over medium-low, stirring with a splash of water or broth if needed. Bring the whole sauce briefly to a rolling boil, then serve. Freezer reheat: Thaw overnight in the refrigerator. Whisk smooth and follow the fridge reheating directions. Option A includes Marsala. For a gentler, alcohol-free Option B, replace it with additional plain broth. For dairy-free gravy omit the cream cheese and rely on the mushroom puree and slurry.",
+  "notes": "Make ahead: Blend the mushroom base up to a day ahead and refrigerate. Keep finished gravy chilled for up to 3 days. Freezer-Friendly Verdict: Yes. Freeze the base for up to 2 months and add cream cheese after reheating for a smooth finish. Fridge reheat: Warm in the HexClad over medium-low, stirring with a splash of water or broth if needed. Bring the whole sauce briefly to a rolling boil, then serve. Freezer reheat: Thaw overnight in the refrigerator. Whisk smooth and follow the fridge reheating directions. Option A includes Marsala. For a gentler, alcohol-free Option B, replace it with additional plain broth. For dairy-free gravy omit the cream cheese and rely on the mushroom puree and slurry. Estimated nutrition per serving of the prepared condiment (1/2 of recipe): 89 kcal, 2.4 g protein, 7.7 g total carbohydrate, 4.0 g fat, 0.5 g fiber, 38 mg sodium. Includes the measured broth and sauce. Sodium varies with your broth. Calories include all the measured alcohol before simmering.",
   "source": "Glenn"
 }

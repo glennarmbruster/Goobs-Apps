@@ -45,7 +45,8 @@
       "qty": 1,
       "name": "fresh rosemary",
       "group": "Gravy",
-      "unit": "sprig"
+      "unit": "sprig",
+      "note": "Remove before serving."
     },
     {
       "id": "mustard",
@@ -119,6 +120,6 @@
       "text": "Keep the remaining slices submerged in the gravy over low heat, just below a simmer. Check from 1 minute and lift each serving when its center reaches 145°F. Rest these slices covered for 3 minutes, then serve with extra gravy."
     }
   ],
-  "notes": "Make ahead: Infuse the broth the day before. Keep the roast whole until the humid hold is complete. Use the low-temperature method only with the specified intact roast, a reliable probe and uninterrupted full steam. If you cannot verify the hold or humidity, finish the whole roast covered at 325°F, sous vide mode off, 80% steam, rear on, top and bottom off, probe target 145°F; then rest at least 3 minutes before carving. The timed hold is based on the FDA Food Code whole-roast table in section 3-401.11(B). For a gentler gravy, leave out the mustard. Refrigerate promptly in shallow portions and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze thin slices submerged in gravy for up to 6 weeks; reheating to 165°F changes their doneness. Fridge reheat: Place one portion and its sauce in a shallow covered dish. Install the APO bottom drip pan and preheat to 325°F, sous vide mode off, 60% steam, rear element on, top and bottom off. Insert the probe in the coldest center and set it to 165°F. Start checking after 12 minutes and heat to 165°F throughout. Freezer reheat: Thaw a single portion in the refrigerator overnight, then use the fridge reheating method. Stir the sauce until smooth.",
+  "notes": "Make ahead: Infuse the broth the day before. Keep the roast whole until the humid hold is complete. Use the low-temperature method only with the specified intact roast, a reliable probe and uninterrupted full steam. If you cannot verify the hold or humidity, finish the whole roast covered at 325°F, sous vide mode off, 80% steam, rear on, top and bottom off, probe target 145°F; then rest at least 3 minutes before carving. The timed hold is based on the FDA Food Code whole-roast table in section 3-401.11(B). For a gentler gravy, leave out the mustard. Refrigerate promptly in shallow portions and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze thin slices submerged in gravy for up to 6 weeks; reheating to 165°F changes their doneness. Fridge reheat: Place one portion and its sauce in a shallow covered dish. Install the APO bottom drip pan and preheat to 325°F, sous vide mode off, 60% steam, rear element on, top and bottom off. Insert the probe in the coldest center and set it to 165°F. Start checking after 12 minutes and heat to 165°F throughout. Freezer reheat: Thaw a single portion in the refrigerator overnight, then use the fridge reheating method. Stir the sauce until smooth. Estimated nutrition per serving (1/4 of recipe): 213 kcal, 33.3 g protein, 3.8 g total carbohydrate, 6.0 g fat, 0.1 g fiber, 106 mg sodium. Includes the measured broth and sauce. Sodium varies with your broth.",
   "source": "Glenn"
 }
