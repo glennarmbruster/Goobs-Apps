@@ -1,0 +1,155 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "alder-poached-salmon-with-grapefruit-dill-sauce",
+  "title": "Alder-Poached Salmon with Grapefruit-Dill Sauce",
+  "description": "Thin salmon portions start in alder-smoked broth and finish gently in steam with a smooth grapefruit-dill sauce.",
+  "category": "Main dish",
+  "tags": [
+    "pellet-smoker",
+    "extra-sauce",
+    "salmon",
+    "poached",
+    "apo",
+    "bagless-sous-vide"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 12,
+  "cookMin": 85,
+  "equipment": [
+    "Traeger Silverton 610 pellet smoker",
+    "Small enamel Dutch oven with tight lid, sized to hold the food snugly",
+    "10-inch HexClad skillet",
+    "Thin-tip instant-read thermometer",
+    "Anova Precision Oven Gen 1 with food probe and bottom drip pan",
+    "Shallow metal APO pan",
+    "Heatproof serving plates"
+  ],
+  "ingredients": [
+    {
+      "id": "salmon",
+      "name": "skinless boneless salmon fillet",
+      "group": "Fish",
+      "qty": 9,
+      "unit": "oz",
+      "note": "Fully thawed, pin bones removed; divide into two portions about 3/4 inch thick."
+    },
+    {
+      "id": "broth",
+      "name": "low-sodium chicken broth",
+      "group": "Braising liquid",
+      "qty": 1,
+      "unit": "cup",
+      "note": "Use plain broth made from meat, bones and water, with no added vegetable blend or seasonings."
+    },
+    {
+      "id": "dill",
+      "name": "fresh dill fronds",
+      "group": "Sauce",
+      "qty": 1,
+      "unit": "tbsp",
+      "note": "Finely minced, coarse stems removed."
+    },
+    {
+      "id": "juice",
+      "name": "strained grapefruit juice",
+      "group": "Sauce",
+      "qty": 2,
+      "unit": "tsp"
+    },
+    {
+      "id": "maple",
+      "name": "pure maple syrup",
+      "group": "Sauce",
+      "qty": 1,
+      "unit": "tsp"
+    },
+    {
+      "id": "mustard",
+      "name": "smooth Löwensenf Bavarian mustard",
+      "group": "Sauce",
+      "qty": 0.25,
+      "unit": "tsp",
+      "note": "Pass through a fine sieve if visibly grainy."
+    },
+    {
+      "id": "starch",
+      "name": "cornstarch",
+      "group": "Sauce",
+      "qty": 2,
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "name": "cold water",
+      "group": "Sauce",
+      "qty": 2,
+      "unit": "tsp"
+    },
+    {
+      "id": "topup",
+      "qty": 0.5,
+      "unit": "cup",
+      "name": "hot drinking water",
+      "note": "Keep ready; use only as needed to maintain liquid depth or make up the sauce measure.",
+      "group": "Braising liquid"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Heat the Traeger",
+      "text": "Preheat the Traeger Silverton 610 to 250°F with alder pellets, about 15 minutes with the lid closed."
+    },
+    {
+      "title": "Warm the braising liquid",
+      "text": "Bring {broth} just to a simmer in the open Dutch oven on the stove, about 3–6 minutes."
+    },
+    {
+      "title": "Smoke the braising liquid",
+      "text": "Move the uncovered pot to the Traeger grate. Close the smoker lid and smoke the liquid for 20 minutes."
+    },
+    {
+      "title": "Set the finishing oven",
+      "text": "While the liquid smokes, install the bottom drip pan in the Anova Gen 1 and preheat to 140°F, sous vide mode on, 100% steam, rear element on, top and bottom off. Set the food probe target to 139°F."
+    },
+    {
+      "title": "Start the poach",
+      "text": "Slip {salmon} into the smoked broth, adding {topup} to just cover if necessary. Cover the pot immediately. No stall-wrap temperature applies."
+    },
+    {
+      "title": "Transfer before the center is done",
+      "text": "Poach covered on the Traeger at 250°F, checking sideways after 3 minutes and then every 1–2 minutes. Move each piece to a clean, room-temperature shallow metal pan as soon as it reaches 125°F in the center; leave the hot poaching liquid behind."
+    },
+    {
+      "title": "Finish in bagless steam",
+      "text": "Insert the APO probe sideways into the thicker center. Cook unbagged in the preheated APO, usually 12–35 minutes, until the probe reads 139°F."
+    },
+    {
+      "title": "Make the sauce base",
+      "text": "While the fish finishes, measure 3/4 cup of the poaching liquid into the HexClad, adding {topup} if needed. Whisk in {juice}, {maple} and {mustard} and bring to a full boil."
+    },
+    {
+      "title": "Mix the slurry",
+      "text": "Stir {starch} into {water} until completely smooth."
+    },
+    {
+      "title": "Thicken the sauce",
+      "text": "Bring the skillet liquid to a boil. Whisk in the stirred slurry and simmer for 1 minute, stirring, until the sauce coats the back of a spoon."
+    },
+    {
+      "title": "Check the centers",
+      "text": "Check each thickest center with a fork: the flesh must be opaque throughout and flake apart easily. If either center is translucent or resists flaking, keep it in the 140°F full-steam oven and recheck in 3-minute intervals until both cues are met."
+    },
+    {
+      "title": "Rest the fish",
+      "text": "Rest the fish for 2 minutes on the warm serving plates under a loose cover."
+    },
+    {
+      "title": "Finish with dill",
+      "text": "Fold {dill} into the sauce off heat. Spoon it around the fish and over each flake as you portion it."
+    }
+  ],
+  "notes": "Make ahead: Smoke the broth a day ahead and chill it promptly. Bring it back to a simmer before poaching. Option A uses grapefruit and mustard. For gentler Option B, omit both and finish with extra dill. The first-cook target is 139–140°F plus fully opaque, easily flaking flesh; the separate 165°F target below is for reheating leftovers. Refrigerate promptly in shallow portions and use within 3 days. Freezer-Friendly Verdict: No. The soft flakes tend to break and firm up through freezing and reheating; cook two portions fresh. Fridge reheat: Warm one portion covered in its sauce in the HexClad over medium-low heat. Turn gently, adding a splash of water if needed. Check after 6 minutes and continue until the food reaches 165°F throughout. Freezer reheat: If already frozen, thaw overnight in the refrigerator and follow the fridge reheating directions.",
+  "source": "Glenn"
+}

@@ -1,0 +1,116 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "crispi-coconut-shrimp-in-apricot-lime-sauce",
+  "title": "Crispi Coconut Shrimp in Apricot-Lime Sauce",
+  "description": "Shrimp poach in coconut milk in the Crispi, then get coated in a smooth apricot-lime sauce.",
+  "category": "Main dish",
+  "tags": [
+    "ninja-crispi",
+    "weeknight",
+    "shrimp",
+    "coconut",
+    "extra-sauce"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 10,
+  "cookMin": 26,
+  "equipment": [
+    "Ninja Crispi PowerPod with US Bake preset",
+    "Ninja Crispi 6-cup glass container",
+    "10-inch HexClad skillet with lid",
+    "Silicone spoon"
+  ],
+  "ingredients": [
+    {
+      "id": "shrimp",
+      "qty": 9,
+      "name": "raw jumbo shrimp",
+      "group": "Shrimp",
+      "unit": "oz",
+      "note": "Fully thawed, peeled, deveined and tails removed."
+    },
+    {
+      "id": "coconut",
+      "qty": 0.5,
+      "name": "plain light coconut milk",
+      "group": "Sauce",
+      "unit": "cup",
+      "note": "Unsweetened and smooth; shake well."
+    },
+    {
+      "id": "broth",
+      "qty": 0.75,
+      "name": "low-sodium chicken broth",
+      "group": "Sauce",
+      "unit": "cup",
+      "note": "Choose plain meat-and-bone broth without a vegetable blend."
+    },
+    {
+      "id": "apricot",
+      "qty": 1.5,
+      "name": "smooth apricot preserves",
+      "group": "Sauce",
+      "unit": "tbsp",
+      "note": "Strain out any fruit pieces."
+    },
+    {
+      "id": "lime",
+      "qty": 0.5,
+      "name": "strained lime juice",
+      "group": "Sauce",
+      "unit": "tsp"
+    },
+    {
+      "id": "starch",
+      "qty": 2.75,
+      "name": "cornstarch",
+      "group": "Sauce",
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "qty": 2.75,
+      "name": "cold water",
+      "group": "Sauce",
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Set up the Crispi",
+      "text": "Use the room-temperature 6-cup Crispi glass container without an adapter. Leave out the crisper plate so the food sits in liquid. Load the container before starting the PowerPod and keep the storage lid off during cooking."
+    },
+    {
+      "title": "Submerge the shrimp",
+      "text": "Whisk {coconut} and {broth} in the unheated glass container. Arrange {shrimp} in one layer under the liquid, laying them flat so the tops stay wet."
+    },
+    {
+      "title": "Poach on Bake",
+      "text": "Seat the PowerPod and select Bake. Check after 9 minutes; stir once with a silicone spoon and continue in 2-minute intervals until the largest shrimp are pearly and opaque through the center, usually 12–22 minutes total."
+    },
+    {
+      "title": "Move the shrimp",
+      "text": "Lift the PowerPod away and place the hot glass on a dry heatproof surface. Transfer the shrimp with a little of the coconut liquid into a covered serving bowl."
+    },
+    {
+      "title": "Make the apricot base",
+      "text": "Carefully ladle the remaining coconut liquid into the HexClad. Whisk in {apricot} and bring to a full boil."
+    },
+    {
+      "title": "Mix the slurry",
+      "text": "Stir {starch} into {water} in a small cup until smooth."
+    },
+    {
+      "title": "Thicken the sauce",
+      "text": "Whisk the freshly stirred slurry into the simmering sauce and stir for 1 minute, until it coats the back of a spoon."
+    },
+    {
+      "title": "Finish with lime",
+      "text": "Stir {lime} into the sauce off heat, then fold the shrimp through it. Divide the glossy sauce between the two portions."
+    }
+  ],
+  "notes": "Make ahead: Drain the shrimp well and mix the coconut base in a separate container up to a day ahead. Load the Crispi just before cooking. Option A uses lime. For gentler Option B, omit the lime and replace the apricot preserves with smooth pear puree if desired. Refrigerate promptly in shallow portions and use within 3 days. Freezer-Friendly Verdict: No. The shrimp tend to firm up when frozen and reheated. The apricot-coconut sauce can be frozen separately for up to 6 weeks. Fridge reheat: Warm a single portion with its sauce in a covered HexClad skillet over medium-low, adding a splash of water if thick. Stir or turn gently and begin checking after 5 minutes. Heat the shrimp to 165°F throughout. Freezer reheat: If already frozen, thaw overnight in the refrigerator and follow the fridge reheating directions.",
+  "source": "Glenn"
+}

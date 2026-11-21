@@ -1,0 +1,146 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "crispi-soft-cheddar-grits-squares-with-chive-butter-sauce",
+  "title": "Crispi Soft Cheddar Grits Squares with Chive-Butter Sauce",
+  "description": "Chilled cheddar grits warm through in milk and finish as soft squares in a smooth paprika and chive-butter sauce.",
+  "category": "Sides",
+  "tags": [
+    "ninja-crispi",
+    "grits",
+    "cheddar"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 72,
+  "cookMin": 32,
+  "equipment": [
+    "Ninja Crispi PowerPod with US Bake preset and 6-cup glass container",
+    "Saucepan",
+    "Small shallow 4-by-6-inch dish",
+    "10-inch HexClad skillet",
+    "Silicone spatula",
+    "Thin-tip instant-read thermometer",
+    "Small mixing bowl"
+  ],
+  "ingredients": [
+    {
+      "id": "grits",
+      "qty": 0.375,
+      "name": "plain quick-cooking grits",
+      "group": "Grits",
+      "unit": "cup",
+      "note": "Use quick grits labeled for about 5–8 minutes, without seasoning."
+    },
+    {
+      "id": "water_grits",
+      "qty": 0.875,
+      "name": "water",
+      "group": "Grits",
+      "unit": "cup"
+    },
+    {
+      "id": "milk_grits",
+      "qty": 0.5,
+      "name": "whole milk",
+      "group": "Grits",
+      "unit": "cup"
+    },
+    {
+      "id": "cheddar",
+      "qty": 1,
+      "name": "mild cheddar cheese",
+      "group": "Grits",
+      "unit": "oz",
+      "note": "Finely grated."
+    },
+    {
+      "id": "butter",
+      "qty": 1,
+      "name": "unsalted butter",
+      "group": "Grits and sauce",
+      "unit": "tbsp",
+      "note": "Divide between the dish, grits and sauce."
+    },
+    {
+      "id": "milk_sauce",
+      "qty": 0.75,
+      "name": "whole milk",
+      "group": "Sauce",
+      "unit": "cup"
+    },
+    {
+      "id": "chives",
+      "qty": 1,
+      "name": "fresh chives",
+      "group": "Sauce",
+      "unit": "tsp",
+      "note": "Snip very finely."
+    },
+    {
+      "id": "paprika",
+      "qty": 0.125,
+      "name": "sweet paprika",
+      "group": "Sauce",
+      "unit": "tsp"
+    },
+    {
+      "id": "starch",
+      "qty": 1.75,
+      "name": "cornstarch",
+      "group": "Slurry",
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "qty": 1.75,
+      "name": "cold water",
+      "group": "Slurry",
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Cook the grits",
+      "text": "Bring {water_grits} and {milk_grits} to a simmer in a saucepan. Gradually whisk in {grits}, reduce the heat to low and stir for 5–8 minutes, until the grains are tender and the mixture holds a mound."
+    },
+    {
+      "title": "Set the cheese base",
+      "text": "Use a little {butter} to grease a small shallow dish. Fold {cheddar} and half the remaining butter into the hot grits until smooth and spread the grits in the dish."
+    },
+    {
+      "title": "Chill until sliceable",
+      "text": "Let steam escape for 5 minutes, then refrigerate the shallow slab for at least 55 minutes, until it is firm enough to slice cleanly."
+    },
+    {
+      "title": "Set up the Crispi",
+      "text": "Use the room-temperature 6-cup Ninja glass container without its crisper plate or an adapter. Leave off the storage lid. Load the container before starting the PowerPod."
+    },
+    {
+      "title": "Braise the squares in milk",
+      "text": "Cut the cold grits into two squares per serving and lay them in the unheated Crispi glass with {milk_sauce}. Spoon milk over the tops. Seat the PowerPod and select Bake."
+    },
+    {
+      "title": "Check the center",
+      "text": "After 8 minutes, baste the squares with warm milk using a silicone spoon. Continue for another 5–12 minutes, until the coldest center reaches 165°F. Lift gently into warm shallow bowls."
+    },
+    {
+      "title": "Infuse the sauce",
+      "text": "Ladle the hot cooking milk into the HexClad with {chives} and {paprika} and bring to a gentle simmer for 1 minute."
+    },
+    {
+      "title": "Mix the slurry",
+      "text": "Stir {starch} into {water} until completely smooth."
+    },
+    {
+      "title": "Thicken the sauce",
+      "text": "Bring the base to a simmer. Whisk in the freshly stirred slurry and let it bubble for 1 minute, stirring until it coats the back of a spoon."
+    },
+    {
+      "title": "Finish with butter",
+      "text": "Swirl in the remaining reserved butter off heat. Pour the sauce over and around the soft squares."
+    }
+  ],
+  "notes": "Make ahead: Set the slab in the refrigerator the night before. The 72-minute preparation estimate includes 60 minutes for cooling and chilling. Keep finished portions refrigerated for up to 3 days. Freezer-Friendly Verdict: Yes. Freeze individual portions with sauce for up to 1 month. The grits may soften into spoonfuls on reheating. Fridge reheat: Warm a single portion, covered, in the HexClad with a splash of broth or water. Stir or turn gently and heat to 165°F throughout. Freezer reheat: Thaw overnight in the refrigerator. Use the same covered reheating method and heat the center to 165°F. For dairy-free grits, use plain unsweetened oat milk in both stages, a mild dairy-free cheddar that melts and unsalted plant-based butter. Finely minced parsley may replace chives.",
+  "source": "Glenn"
+}

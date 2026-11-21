@@ -1,0 +1,96 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "oak-braised-sweet-potato-mash-with-honey-tahini",
+  "title": "Oak-Braised Sweet Potato Mash with Honey Tahini",
+  "description": "Sweet potatoes braise in oak-smoked broth and are mashed with a creamy honey-tahini drizzle.",
+  "category": "Sides",
+  "tags": [
+    "pellet-smoker",
+    "sweet-potato",
+    "sesame"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 9,
+  "cookMin": 70,
+  "equipment": [
+    "Traeger Silverton 610 pellet smoker",
+    "Small enamel Dutch oven with lid",
+    "Potato masher",
+    "Small mixing bowl",
+    "Heatproof measuring cup"
+  ],
+  "ingredients": [
+    {
+      "id": "potatoes",
+      "qty": 12,
+      "name": "sweet potatoes",
+      "group": "Mash",
+      "unit": "oz",
+      "note": "Peel, remove fibrous ends and cut into 3/4-inch cubes."
+    },
+    {
+      "id": "broth",
+      "qty": 0.875,
+      "name": "low-sodium mushroom broth",
+      "group": "Liquid",
+      "unit": "cup",
+      "note": "Choose plain broth made with mushrooms and water."
+    },
+    {
+      "id": "tahini",
+      "qty": 1.5,
+      "name": "smooth unsalted tahini",
+      "group": "Drizzle",
+      "unit": "tbsp",
+      "note": "Stir the jar until the paste is homogeneous."
+    },
+    {
+      "id": "honey",
+      "qty": 2,
+      "name": "mild honey",
+      "group": "Drizzle",
+      "unit": "tsp"
+    },
+    {
+      "id": "lemon",
+      "qty": 0.5,
+      "name": "strained lemon juice",
+      "group": "Drizzle",
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Preheat the Traeger",
+      "text": "Preheat the Traeger Silverton 610 to 300°F with oak pellets and the lid closed, about 15 minutes."
+    },
+    {
+      "title": "Infuse the broth",
+      "text": "Bring {broth} to a simmer in the Dutch oven on the stove. Set the uncovered pot on the Traeger and smoke the liquid for 15 minutes with the smoker lid shut."
+    },
+    {
+      "title": "Cover the potatoes",
+      "text": "Nestle {potatoes} into the smoked broth in a snug pot and turn to wet every piece. Fit the pot lid at the start of the braise; no stall-wrap temperature applies."
+    },
+    {
+      "title": "Braise until soft",
+      "text": "Cook covered at 300°F for 25–40 minutes, stirring halfway. Stop when a fork passes cleanly through the thickest cubes and a cube crushes without a firm center."
+    },
+    {
+      "title": "Rest in the liquid",
+      "text": "Rest the pot covered off heat for 5 minutes. Pour the braising liquid into a heatproof cup and reserve it."
+    },
+    {
+      "title": "Make the drizzle",
+      "text": "Whisk {tahini}, {honey} and {lemon} in a small bowl. Beat in the warm cooking liquid a little at a time until the drizzle falls from the spoon in a thick ribbon."
+    },
+    {
+      "title": "Mash and serve",
+      "text": "Mash the potatoes with enough of the remaining cooking liquid to make them moist and smooth. Spoon into bowls and swirl the honey tahini over both portions."
+    }
+  ],
+  "notes": "Make ahead: Peel and cube the potatoes the day before, cover with water and refrigerate; drain before cooking. Refrigerate the finished mash for up to 3 days. Freezer-Friendly Verdict: Yes. Freeze the mash and tahini drizzle separately for up to 2 months. Stir both smooth after thawing. Fridge reheat: Warm a single portion, covered, in the HexClad with a splash of broth or water. Stir or turn gently and heat to 165°F throughout. Freezer reheat: Thaw both components overnight in the refrigerator. Reheat the mash covered to 165°F and stir the drizzle back together before serving. Option A uses a touch of lemon. For gentler Option B, leave it out and loosen the tahini with a little extra warm braising liquid.",
+  "source": "Glenn"
+}

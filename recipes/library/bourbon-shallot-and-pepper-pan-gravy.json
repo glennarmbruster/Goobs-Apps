@@ -1,0 +1,117 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "bourbon-shallot-and-pepper-pan-gravy",
+  "title": "Bourbon, Shallot and Pepper Pan Gravy",
+  "description": "A small splash of bourbon lifts a smooth beef gravy flavored with sweet caramelized shallot and a little black pepper.",
+  "category": "Sauce & condiment",
+  "tags": [
+    "pan-sauce",
+    "hexclad",
+    "beef"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 7,
+  "cookMin": 26,
+  "equipment": [
+    "10-inch HexClad skillet",
+    "Fine-mesh sieve",
+    "Small mixing bowl",
+    "Heatproof bowl"
+  ],
+  "ingredients": [
+    {
+      "id": "shallot",
+      "qty": 2,
+      "name": "finely minced shallot",
+      "group": "Gravy",
+      "unit": "tbsp",
+      "note": "Caramelize completely before blending into the gravy."
+    },
+    {
+      "id": "butter",
+      "qty": 1.5,
+      "name": "unsalted butter",
+      "group": "Gravy",
+      "unit": "tsp"
+    },
+    {
+      "id": "broth",
+      "qty": 1,
+      "name": "low-sodium beef broth",
+      "group": "Liquid",
+      "unit": "cup",
+      "note": "Use plain meat-and-bone broth without a vegetable seasoning blend."
+    },
+    {
+      "id": "bourbon",
+      "qty": 2,
+      "name": "bourbon",
+      "group": "Gravy",
+      "unit": "tsp",
+      "note": "Measure into a cup before approaching the stove."
+    },
+    {
+      "id": "pepper",
+      "qty": 0.125,
+      "name": "finely ground black pepper",
+      "group": "Gravy",
+      "unit": "tsp"
+    },
+    {
+      "id": "mustard",
+      "qty": 0.5,
+      "name": "smooth Löwensenf Bavarian mustard",
+      "group": "Gravy",
+      "unit": "tsp",
+      "note": "Sieve if grainy."
+    },
+    {
+      "id": "starch",
+      "qty": 2.5,
+      "name": "cornstarch",
+      "group": "Slurry",
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "qty": 2.5,
+      "name": "cold water",
+      "group": "Slurry",
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Caramelize the shallot",
+      "text": "Warm {shallot} in {butter} in the HexClad over medium-low heat for 12–18 minutes, stirring often. Add a little {broth} whenever the pan catches, until the shallot is uniformly soft and deep gold."
+    },
+    {
+      "title": "Deglaze off the burner",
+      "text": "Move the skillet off the burner, away from the flame. Add the premeasured {bourbon} and the remaining {broth}, scraping the bottom with a silicone spoon."
+    },
+    {
+      "title": "Infuse the pepper",
+      "text": "Return the pan to medium heat. Add {pepper} and simmer 4 minutes. Press the liquid and soft shallot through the sieve into a heatproof bowl, then return the smooth base to the pan."
+    },
+    {
+      "title": "Add the mustard",
+      "text": "Whisk {mustard} into the strained base."
+    },
+    {
+      "title": "Mix the slurry",
+      "text": "Stir {starch} into {water} until completely smooth."
+    },
+    {
+      "title": "Thicken the sauce",
+      "text": "Bring the base to a simmer. Whisk in the freshly stirred slurry and let it bubble for 1 minute, stirring until it coats the back of a spoon."
+    },
+    {
+      "title": "Serve the gravy",
+      "text": "Divide the gravy between two portions of thinly sliced cooked beef, spooning it between the slices as well as over them."
+    }
+  ],
+  "notes": "Make ahead: The caramelized shallot and broth base can be made a day ahead. Chill prepared gravy in a shallow covered container for up to 3 days. Freezer-Friendly Verdict: Yes. Freeze in individual portions for up to 2 months and whisk as it reheats. Fridge reheat: Warm in the HexClad over medium-low, stirring with a splash of water or broth if needed. Bring the whole sauce briefly to a rolling boil, then serve. Freezer reheat: Thaw overnight in the refrigerator. Whisk smooth and follow the fridge reheating directions. Option A uses bourbon and pepper. For gentler or alcohol-free Option B, replace the bourbon with extra broth and leave the pepper for the table. Use avocado oil in place of butter for dairy-free gravy.",
+  "source": "Glenn"
+}

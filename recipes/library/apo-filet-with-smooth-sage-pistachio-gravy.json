@@ -1,0 +1,123 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "apo-filet-with-smooth-sage-pistachio-gravy",
+  "title": "APO Filet with Smooth Sage-Pistachio Gravy",
+  "description": "Steam-cooked tenderloin medallions meet a velvety sage gravy enriched with smooth pistachio paste.",
+  "category": "Main dish",
+  "tags": [
+    "apo",
+    "extra-sauce",
+    "bagless-sous-vide",
+    "beef",
+    "sage"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 10,
+  "cookMin": 50,
+  "equipment": [
+    "Anova Precision Oven Gen 1 with food probe, bottom drip pan and middle wire rack",
+    "Shallow stainless steel baking pan",
+    "10-inch HexClad skillet",
+    "Thin-tip instant-read thermometer"
+  ],
+  "ingredients": [
+    {
+      "id": "filet",
+      "qty": 10,
+      "name": "center-cut beef tenderloin medallions",
+      "group": "Beef",
+      "unit": "oz",
+      "note": "Trim silver skin and visible fat; cut about 3/4 inch thick."
+    },
+    {
+      "id": "broth",
+      "qty": 0.875,
+      "name": "low-sodium beef broth",
+      "group": "Sauce",
+      "unit": "cup",
+      "note": "Use plain broth made from meat, bones and water without a vegetable seasoning blend."
+    },
+    {
+      "id": "sage",
+      "qty": 3,
+      "name": "fresh sage leaves",
+      "group": "Gravy",
+      "note": "Keep whole to strain out later."
+    },
+    {
+      "id": "paste",
+      "qty": 1,
+      "name": "smooth unsalted pistachio paste",
+      "group": "Gravy",
+      "unit": "tbsp",
+      "note": "Pure pistachios, unsweetened and free of nut pieces."
+    },
+    {
+      "id": "butter",
+      "qty": 1,
+      "name": "unsalted butter",
+      "group": "Gravy",
+      "unit": "tsp"
+    },
+    {
+      "id": "starch",
+      "qty": 1.75,
+      "name": "cornstarch",
+      "group": "Slurry",
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "qty": 1.75,
+      "name": "cold water",
+      "group": "Slurry",
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Preheat the APO",
+      "text": "Fill the water tank and install the bottom drip pan. Preheat to 155°F with sous vide mode on, 100% steam, rear element on, top and bottom elements off. Set the food probe target to 145°F."
+    },
+    {
+      "title": "Arrange the medallions",
+      "text": "Place {filet} unbagged in the shallow pan on the middle rack. Insert the probe from the side into the thickest center. Begin cooking immediately and set a separate 20-minute reminder for the first temperature check; respond sooner if the probe signals."
+    },
+    {
+      "title": "Infuse the sage",
+      "text": "Meanwhile bring {sage} and {broth} to a gentle simmer in the HexClad over medium-low. Cover for 5 minutes, then lift out the leaves."
+    },
+    {
+      "title": "Blend the pistachio base",
+      "text": "Loosen {paste} with a spoonful of the warm sage broth until smooth, then whisk it back into the skillet."
+    },
+    {
+      "title": "Make the slurry",
+      "text": "Stir {starch} into {water} in a small cup until smooth."
+    },
+    {
+      "title": "Thicken the sauce",
+      "text": "Bring the sauce base to a simmer. Whisk in the freshly stirred slurry and keep it bubbling gently for 1 minute, until it coats the back of a spoon."
+    },
+    {
+      "title": "Finish with butter",
+      "text": "Swirl {butter} into the gravy off heat."
+    },
+    {
+      "title": "Cook the filet",
+      "text": "Steam for about 25–50 minutes, checking at 20 minutes. Verify each center reaches 145°F."
+    },
+    {
+      "title": "Rest in the juices",
+      "text": "Remove the pan and rest the medallions loosely covered in their juices for 3 minutes."
+    },
+    {
+      "title": "Serve in ribbons",
+      "text": "Thinly slice the rested filet and fan it in shallow bowls. Ladle the pistachio gravy over the meat and between the slices."
+    }
+  ],
+  "notes": "Make ahead: The sage broth can be infused and chilled a day ahead. Stir the pistachio paste well before measuring. For dairy-free gravy, leave out the finishing butter. Keep the nut garnish entirely smooth. Refrigerate promptly in shallow portions and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze the filet submerged in gravy for up to 6 weeks; whisk the sauce smooth after thawing. Fridge reheat: Place one portion and its sauce in a shallow covered dish. Install the APO bottom drip pan and preheat to 325°F, sous vide mode off, 60% steam, rear element on, top and bottom off. Insert the probe in the coldest center and set it to 165°F. Start checking after 12 minutes and heat to 165°F throughout. Freezer reheat: Thaw a single portion in the refrigerator overnight, then use the fridge reheating method. Stir the sauce until smooth.",
+  "source": "Glenn"
+}

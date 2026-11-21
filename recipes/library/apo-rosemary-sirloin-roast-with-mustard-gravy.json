@@ -1,0 +1,124 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "apo-rosemary-sirloin-roast-with-mustard-gravy",
+  "title": "APO Rosemary Sirloin Roast for Two Donenesses",
+  "description": "A lean sirloin roast supplies rosy center slices and a second, more-done portion warmed gently in rosemary-mustard gravy.",
+  "category": "Main dish",
+  "tags": [
+    "apo",
+    "extra-sauce",
+    "bagless-sous-vide",
+    "whole-beef-roast",
+    "two-donenesses",
+    "leftovers"
+  ],
+  "servings": 4,
+  "servingsLabel": "servings",
+  "prepMin": 15,
+  "cookMin": 250,
+  "equipment": [
+    "Anova Precision Oven Gen 1 with food probe, bottom drip pan and middle wire rack",
+    "Shallow stainless steel baking pan",
+    "10-inch HexClad skillet",
+    "Thin-tip instant-read thermometer"
+  ],
+  "ingredients": [
+    {
+      "id": "beef",
+      "qty": 20,
+      "name": "lean intact boneless top sirloin roast",
+      "group": "Roast",
+      "unit": "oz",
+      "note": "Fully thawed whole muscle, no more than 2 inches thick; no injections, stuffing, rolling or mechanical tenderizing. Trim exterior fat and silver skin."
+    },
+    {
+      "id": "broth",
+      "qty": 1.75,
+      "name": "low-sodium beef broth",
+      "group": "Sauce",
+      "unit": "cup",
+      "note": "Use plain broth made from meat, bones and water without a vegetable seasoning blend."
+    },
+    {
+      "id": "rosemary",
+      "qty": 1,
+      "name": "fresh rosemary",
+      "group": "Gravy",
+      "unit": "sprig"
+    },
+    {
+      "id": "mustard",
+      "qty": 1.5,
+      "name": "smooth Löwensenf Bavarian mustard",
+      "group": "Gravy",
+      "unit": "tsp",
+      "note": "Strain away any coarse seeds."
+    },
+    {
+      "id": "garlic",
+      "qty": 0.375,
+      "name": "granulated garlic",
+      "group": "Gravy",
+      "unit": "tsp"
+    },
+    {
+      "id": "starch",
+      "qty": 4,
+      "name": "cornstarch",
+      "group": "Slurry",
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "qty": 4,
+      "name": "cold water",
+      "group": "Slurry",
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Preheat the APO",
+      "text": "Fill the water tank and install the bottom drip pan. Preheat to 133°F with sous vide mode on, 100% steam, rear element on, top and bottom elements off. Set the food probe target to 132°F."
+    },
+    {
+      "title": "Probe the intact roast",
+      "text": "Place {beef} unbagged on the middle wire rack with the solid pan one level below. Insert an accurate food probe into the geometric center of the thickest section."
+    },
+    {
+      "title": "Heat the center",
+      "text": "Cook at 133°F with 100% steam until the center reaches 132°F. Allow roughly 1 1/2–3 hours depending on shape. Confirm the coldest central spot reads at least 132°F with the instant-read thermometer and leave the probe there."
+    },
+    {
+      "title": "Hold the core temperature",
+      "text": "Use a manual continuous cooking stage at 133°F, sous vide mode on, 100% steam, rear element on, top and bottom off. Leave the probe in place to monitor the core. Start a separate 90-minute timer only after the center check. Monitor the coldest point and keep it at or above 131°F for all 90 minutes. If it falls below 131°F, return the center to 132°F and restart the full hold."
+    },
+    {
+      "title": "Infuse the rosemary",
+      "text": "During the final 15 minutes of the hold, simmer {broth}, {rosemary} and {garlic} in the HexClad, covered, for 6 minutes. Remove the rosemary sprig."
+    },
+    {
+      "title": "Add the mustard",
+      "text": "Whisk {mustard} into the rosemary broth."
+    },
+    {
+      "title": "Make the slurry",
+      "text": "Stir {starch} into {water} in a small cup until smooth."
+    },
+    {
+      "title": "Thicken the sauce",
+      "text": "Bring the sauce base to a simmer. Whisk in the freshly stirred slurry and keep it bubbling gently for 1 minute, until it coats the back of a spoon."
+    },
+    {
+      "title": "Carve after the hold",
+      "text": "Once the full hold is complete, slice the beef thinly across the grain. Plate the rosy portions with warm gravy."
+    },
+    {
+      "title": "Finish the more-done portions",
+      "text": "Keep the remaining slices submerged in the gravy over low heat, just below a simmer. Check from 1 minute and lift each serving when its center reaches 145°F. Rest these slices covered for 3 minutes, then serve with extra gravy."
+    }
+  ],
+  "notes": "Make ahead: Infuse the broth the day before. Keep the roast whole until the humid hold is complete. Use the low-temperature method only with the specified intact roast, a reliable probe and uninterrupted full steam. If you cannot verify the hold or humidity, finish the whole roast covered at 325°F, sous vide mode off, 80% steam, rear on, top and bottom off, probe target 145°F; then rest at least 3 minutes before carving. The timed hold is based on the FDA Food Code whole-roast table in section 3-401.11(B). For a gentler gravy, leave out the mustard. Refrigerate promptly in shallow portions and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze thin slices submerged in gravy for up to 6 weeks; reheating to 165°F changes their doneness. Fridge reheat: Place one portion and its sauce in a shallow covered dish. Install the APO bottom drip pan and preheat to 325°F, sous vide mode off, 60% steam, rear element on, top and bottom off. Insert the probe in the coldest center and set it to 165°F. Start checking after 12 minutes and heat to 165°F throughout. Freezer reheat: Thaw a single portion in the refrigerator overnight, then use the fridge reheating method. Stir the sauce until smooth.",
+  "source": "Glenn"
+}

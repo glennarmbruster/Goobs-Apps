@@ -1,0 +1,88 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "lemon-sage-and-smoked-paprika-poultry-rub",
+  "title": "Lemon-Sage and Smoked Paprika Poultry Rub",
+  "description": "A fine, salt-free sage blend seasons chicken thighs or turkey cutlets as they cook in broth.",
+  "category": "Sauce & condiment",
+  "tags": [
+    "bbq-rub",
+    "salt-free",
+    "poultry"
+  ],
+  "servings": 2,
+  "servingsLabel": "seasoning portions",
+  "prepMin": 5,
+  "cookMin": 0,
+  "equipment": [
+    "Mortar and pestle",
+    "Fine-mesh sieve",
+    "Small mixing bowl",
+    "Airtight spice jar"
+  ],
+  "ingredients": [
+    {
+      "id": "lemon",
+      "qty": 0.25,
+      "name": "food-grade dried lemon peel",
+      "group": "Rub",
+      "unit": "tsp",
+      "note": "Use finely granulated yellow peel without white pith."
+    },
+    {
+      "id": "sage",
+      "qty": 0.5,
+      "name": "rubbed sage",
+      "group": "Rub",
+      "unit": "tsp"
+    },
+    {
+      "id": "thyme",
+      "qty": 0.125,
+      "name": "dried thyme leaves",
+      "group": "Rub",
+      "unit": "tsp"
+    },
+    {
+      "id": "paprika",
+      "qty": 0.625,
+      "name": "sweet smoked paprika",
+      "group": "Rub",
+      "unit": "tsp"
+    },
+    {
+      "id": "garlic",
+      "qty": 0.375,
+      "name": "granulated garlic",
+      "group": "Rub",
+      "unit": "tsp"
+    },
+    {
+      "id": "parsley",
+      "qty": 0.125,
+      "name": "dried parsley flakes",
+      "group": "Rub",
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Grind the peel and herbs",
+      "text": "Crush {lemon}, {sage}, {thyme} and {parsley} in the mortar for about 1 minute until fine."
+    },
+    {
+      "title": "Sift away tough pieces",
+      "text": "Pass the ground mixture through a fine sieve into a small bowl, regrinding or discarding any stiff fragments."
+    },
+    {
+      "title": "Finish the blend",
+      "text": "Stir in {paprika} and {garlic} until evenly dispersed."
+    },
+    {
+      "title": "Season a moist cook",
+      "text": "Use about a teaspoon per serving. Whisk the blend into broth before poaching or covered braising so the herbs hydrate. It also seasons the gravy served with the poultry."
+    }
+  ],
+  "notes": "Make ahead: Store dry in a sealed spice jar for up to 2 months. Portion with a clean spoon before handling raw poultry. Freezer-Friendly Verdict: No. The dry herbs keep well in the cupboard, while freezer moisture can make them clump. Fridge reheat: Use directly without heating. If the blend was refrigerated, let it warm in its closed jar before opening. Freezer reheat: If already frozen, thaw in the sealed jar to keep condensation off the herbs. It needs no reheating. Option A uses dried lemon peel and smoked paprika. For gentler Option B, replace the peel with extra parsley and choose sweet unsmoked paprika.",
+  "source": "Glenn"
+}

@@ -1,0 +1,114 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "crispi-smashed-potatoes-with-malt-vinegar-dill-gravy",
+  "title": "Crispi Smashed Potatoes with Malt Vinegar and Dill Gravy",
+  "description": "Peeled baby potatoes braise in the Crispi and are gently smashed into a warm dill gravy with a little malt vinegar.",
+  "category": "Sides",
+  "tags": [
+    "ninja-crispi",
+    "potatoes",
+    "dill"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 8,
+  "cookMin": 32,
+  "equipment": [
+    "Ninja Crispi PowerPod with US Bake preset and 6-cup glass container",
+    "10-inch HexClad skillet",
+    "Silicone slotted spoon",
+    "Fork or potato masher",
+    "Small mixing bowl"
+  ],
+  "ingredients": [
+    {
+      "id": "potatoes",
+      "qty": 10,
+      "name": "baby yellow potatoes",
+      "group": "Potatoes",
+      "unit": "oz",
+      "note": "Peel and cut to pieces 1/2 inch thick."
+    },
+    {
+      "id": "broth",
+      "qty": 1,
+      "name": "low-sodium mushroom broth",
+      "group": "Liquid",
+      "unit": "cup",
+      "note": "Choose plain broth made with mushrooms and water."
+    },
+    {
+      "id": "dill",
+      "qty": 2,
+      "name": "fresh dill fronds",
+      "group": "Gravy",
+      "unit": "tsp",
+      "note": "Mince finely and discard coarse stems."
+    },
+    {
+      "id": "vinegar",
+      "qty": 1,
+      "name": "malt vinegar",
+      "group": "Gravy",
+      "unit": "tsp"
+    },
+    {
+      "id": "butter",
+      "qty": 1,
+      "name": "unsalted butter",
+      "group": "Gravy",
+      "unit": "tsp"
+    },
+    {
+      "id": "starch",
+      "qty": 2,
+      "name": "cornstarch",
+      "group": "Slurry",
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "qty": 2,
+      "name": "cold water",
+      "group": "Slurry",
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Set up the Crispi",
+      "text": "Use the room-temperature 6-cup Ninja glass container without its crisper plate or an adapter. Leave off the storage lid. Load the container before starting the PowerPod."
+    },
+    {
+      "title": "Load the potatoes",
+      "text": "Arrange {potatoes} and {broth} in the unheated glass. Settle the pieces in an even layer with as many cut faces as possible against the liquid."
+    },
+    {
+      "title": "Braise on Bake",
+      "text": "Seat the PowerPod and select Bake. Turn the pieces through the liquid after 10 minutes with a silicone spoon. Cook for another 8–18 minutes, until even the largest piece flattens under a fork."
+    },
+    {
+      "title": "Smash in the serving bowls",
+      "text": "Lift the potatoes into warm bowls and crush each piece gently in a spoonful of the cooking liquid. Leave the bowls loosely covered."
+    },
+    {
+      "title": "Warm the dill base",
+      "text": "Ladle the remaining potato liquid into the HexClad and bring to a simmer. Stir in {dill} for 30 seconds."
+    },
+    {
+      "title": "Mix the slurry",
+      "text": "Stir {starch} into {water} until completely smooth."
+    },
+    {
+      "title": "Thicken the sauce",
+      "text": "Bring the base to a simmer. Whisk in the freshly stirred slurry and let it bubble for 1 minute, stirring until it coats the back of a spoon."
+    },
+    {
+      "title": "Finish with malt vinegar",
+      "text": "Stir {vinegar} and {butter} into the gravy off heat. Spoon it generously into the broken potato centers."
+    }
+  ],
+  "notes": "Make ahead: Cut the potatoes the day before and refrigerate submerged in clean water; drain before cooking. Refrigerate leftovers for up to 3 days. Freezer-Friendly Verdict: No. These lightly smashed pieces can turn grainy after freezing. The dill gravy can be frozen separately for up to 1 month. Fridge reheat: Warm a single portion, covered, in the HexClad with a splash of broth or water. Stir or turn gently and heat to 165°F throughout. Freezer reheat: If already frozen, thaw in the refrigerator overnight and warm covered in gravy to 165°F. Mash more thoroughly if the texture is grainy. Option A uses malt vinegar. For gentler Option B, omit it and use a little extra dill. For dairy-free potatoes omit the finishing butter.",
+  "source": "Glenn"
+}

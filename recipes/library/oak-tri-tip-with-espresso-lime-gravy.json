@@ -1,0 +1,157 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "oak-tri-tip-with-espresso-lime-gravy",
+  "title": "Oak-Poached Tri-Tip with Espresso-Lime Gravy",
+  "description": "Thin slices of lean tri-tip carry a savory oak-smoked gravy with just a trace of espresso and lime.",
+  "category": "Main dish",
+  "tags": [
+    "pellet-smoker",
+    "extra-sauce",
+    "beef",
+    "tri-tip",
+    "poached"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 12,
+  "cookMin": 60,
+  "equipment": [
+    "Traeger Silverton 610 pellet smoker",
+    "Small enamel Dutch oven with tight lid, sized to hold the food snugly",
+    "10-inch HexClad skillet",
+    "Thin-tip instant-read thermometer"
+  ],
+  "ingredients": [
+    {
+      "id": "beef",
+      "name": "lean trimmed beef tri-tip",
+      "group": "Beef",
+      "qty": 10,
+      "unit": "oz",
+      "note": "Intact muscle with fat cap and silver skin removed."
+    },
+    {
+      "id": "broth",
+      "name": "low-sodium beef broth",
+      "group": "Braising liquid",
+      "qty": 1,
+      "unit": "cup",
+      "note": "Use plain broth made from meat, bones and water, with no added vegetable blend or seasonings."
+    },
+    {
+      "id": "espresso",
+      "name": "instant espresso powder",
+      "group": "Gravy",
+      "qty": 0.125,
+      "unit": "tsp"
+    },
+    {
+      "id": "garlic",
+      "name": "granulated garlic",
+      "group": "Gravy",
+      "qty": 0.25,
+      "unit": "tsp"
+    },
+    {
+      "id": "cumin",
+      "name": "ground cumin",
+      "group": "Gravy",
+      "qty": 0.125,
+      "unit": "tsp"
+    },
+    {
+      "id": "lime",
+      "name": "strained lime juice",
+      "group": "Gravy",
+      "qty": 0.5,
+      "unit": "tsp"
+    },
+    {
+      "id": "aminos",
+      "name": "coconut aminos",
+      "group": "Gravy",
+      "qty": 0.5,
+      "unit": "tsp",
+      "note": "Choose a lower-sodium brand."
+    },
+    {
+      "id": "starch",
+      "name": "cornstarch",
+      "group": "Sauce",
+      "qty": 2,
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "name": "cold water",
+      "group": "Sauce",
+      "qty": 2,
+      "unit": "tsp"
+    },
+    {
+      "id": "topup",
+      "qty": 0.5,
+      "unit": "cup",
+      "name": "hot drinking water",
+      "note": "Keep ready; use only as needed to maintain liquid depth or make up the sauce measure.",
+      "group": "Braising liquid"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Heat the Traeger",
+      "text": "Preheat the Traeger Silverton 610 to 275°F with oak pellets, about 15 minutes with the lid closed."
+    },
+    {
+      "title": "Warm the braising liquid",
+      "text": "Bring {broth} with {espresso}, {garlic} and {cumin} just to a simmer in the open Dutch oven on the stove, about 3–6 minutes."
+    },
+    {
+      "title": "Smoke the braising liquid",
+      "text": "Move the uncovered pot to the Traeger grate. Close the smoker lid and smoke the liquid for 20 minutes."
+    },
+    {
+      "title": "Cut against the grain",
+      "text": "Follow the grain in {beef} and divide it where the direction changes. Rotate each piece and slice across its grain into 1/3-inch slices."
+    },
+    {
+      "title": "Poach the slices",
+      "text": "Lay the slices in the smoked liquid without packing them tightly. Top up with {topup} to just cover. Lid immediately with no stall wrap."
+    },
+    {
+      "title": "Check individual slices",
+      "text": "Cook covered at 275°F for 6–16 minutes, checking the thickest slices sideways from 6 minutes. Transfer each to a covered bowl with hot juices once it reaches 145°F."
+    },
+    {
+      "title": "Rest in the juices",
+      "text": "Rest the covered beef off heat for 3 minutes."
+    },
+    {
+      "title": "Measure the sauce base",
+      "text": "Skim excess fat from the braising liquid. Measure 3/4 cup into the HexClad skillet, topping up with {topup} if needed."
+    },
+    {
+      "title": "Season the base",
+      "text": "Stir {aminos} into the measured broth."
+    },
+    {
+      "title": "Mix the slurry",
+      "text": "Stir {starch} into {water} until completely smooth."
+    },
+    {
+      "title": "Thicken the sauce",
+      "text": "Bring the skillet liquid to a boil. Whisk in the stirred slurry and simmer for 1 minute, stirring, until the sauce coats the back of a spoon."
+    },
+    {
+      "title": "Finish with lime",
+      "text": "Stir {lime} into the gravy off heat."
+    },
+    {
+      "title": "Spoon over the slices",
+      "text": "Divide the beef between shallow bowls and pour the gravy over both, turning the slices once to coat."
+    }
+  ],
+  "notes": "Make ahead: Slice the cold beef and refrigerate it covered up to a day ahead. Option A uses espresso and lime. For gentler Option B, omit both and stir a small dab of black garlic puree into the finished gravy. Refrigerate promptly in shallow portions and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze individual portions surrounded by sauce for up to 2 months to protect their moisture. Fridge reheat: Warm one portion covered in its sauce in the HexClad over medium-low heat. Turn gently, adding a splash of water if needed. Check after 6 minutes and continue until the food reaches 165°F throughout. Freezer reheat: Thaw overnight in the refrigerator. Follow the fridge reheating directions and stir the sauce smooth.",
+  "source": "Glenn"
+}

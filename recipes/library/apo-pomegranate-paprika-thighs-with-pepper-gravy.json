@@ -1,0 +1,122 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "apo-pomegranate-paprika-thighs-with-pepper-gravy",
+  "title": "APO Pomegranate-Paprika Thighs with Sweet Pepper Gravy",
+  "description": "Skinless chicken thighs braise in a mild sweet-pepper gravy finished with a touch of pomegranate.",
+  "category": "Main dish",
+  "tags": [
+    "apo",
+    "extra-sauce",
+    "combi-steam",
+    "chicken-thighs",
+    "mild"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 12,
+  "cookMin": 60,
+  "equipment": [
+    "Anova Precision Oven Gen 1 with food probe, bottom drip pan and middle wire rack",
+    "10-inch HexClad skillet",
+    "Thin-tip instant-read thermometer",
+    "Small deep baking dish and foil"
+  ],
+  "ingredients": [
+    {
+      "id": "thighs",
+      "qty": 10,
+      "name": "boneless skinless chicken thighs",
+      "group": "Chicken",
+      "unit": "oz",
+      "note": "Trim visible fat and unfold."
+    },
+    {
+      "id": "broth",
+      "qty": 0.875,
+      "name": "low-sodium chicken broth",
+      "group": "Sauce",
+      "unit": "cup",
+      "note": "Use plain broth made from meat, bones and water without a vegetable seasoning blend."
+    },
+    {
+      "id": "pepper",
+      "qty": 0.25,
+      "name": "smooth roasted red bell pepper puree",
+      "group": "Gravy",
+      "unit": "cup",
+      "note": "Use plain peeled, seeded sweet pepper, blended smooth without brine or vinegar."
+    },
+    {
+      "id": "paprika",
+      "qty": 0.5,
+      "name": "sweet smoked paprika",
+      "group": "Gravy",
+      "unit": "tsp"
+    },
+    {
+      "id": "coriander",
+      "qty": 0.25,
+      "name": "ground coriander",
+      "group": "Gravy",
+      "unit": "tsp"
+    },
+    {
+      "id": "molasses",
+      "qty": 0.5,
+      "name": "pomegranate molasses",
+      "group": "Gravy",
+      "unit": "tsp"
+    },
+    {
+      "id": "starch",
+      "qty": 2.5,
+      "name": "cornstarch",
+      "group": "Slurry",
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "qty": 2.5,
+      "name": "cold water",
+      "group": "Slurry",
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Preheat the APO",
+      "text": "Fill the water tank and install the bottom drip pan. Preheat to 275°F with sous vide mode off, 80% steam, rear element on, top and bottom elements off. Set the food probe target to 175°F."
+    },
+    {
+      "title": "Build the braising base",
+      "text": "Whisk {broth}, {pepper}, {paprika} and {coriander} in a small deep baking dish that fits the thighs snugly."
+    },
+    {
+      "title": "Set the chicken in liquid",
+      "text": "Nestle {thighs} in the base and spoon some over the exposed surfaces. Insert the probe from the side into the thickest thigh and cover the dish with foil around the cable."
+    },
+    {
+      "title": "Braise under cover",
+      "text": "Cook on the middle rack for 30–50 minutes until the largest thighs reach 175°F and part easily with a fork. Transfer the meat to a covered plate with a little of its liquid."
+    },
+    {
+      "title": "Finish the pepper base",
+      "text": "Pour the braising liquid into the HexClad and bring it to a full boil. Skim excess fat and whisk in {molasses}."
+    },
+    {
+      "title": "Make the slurry",
+      "text": "Stir {starch} into {water} in a small cup until smooth."
+    },
+    {
+      "title": "Thicken the sauce",
+      "text": "Bring the sauce base to a simmer. Whisk in the freshly stirred slurry and keep it bubbling gently for 1 minute, until it coats the back of a spoon."
+    },
+    {
+      "title": "Coat the chicken",
+      "text": "Slice the thighs across the grain and return them to the pepper gravy. Spoon the extra gravy over each serving."
+    }
+  ],
+  "notes": "Make ahead: Blend and strain the roasted peppers up to two days ahead and refrigerate. Option A uses pomegranate. For gentler Option B, replace it with smooth pear puree and halve the paprika. Offer hot honey separately for anyone who wants heat. Refrigerate promptly in shallow portions and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze the thighs in the pepper gravy for up to 2 months; the boneless meat stays easy to portion. Fridge reheat: Place one portion and its sauce in a shallow covered dish. Install the APO bottom drip pan and preheat to 325°F, sous vide mode off, 60% steam, rear element on, top and bottom off. Insert the probe in the coldest center and set it to 165°F. Start checking after 12 minutes and heat to 165°F throughout. Freezer reheat: Thaw a single portion in the refrigerator overnight, then use the fridge reheating method. Stir the sauce until smooth.",
+  "source": "Glenn"
+}

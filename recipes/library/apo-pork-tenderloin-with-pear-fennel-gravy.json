@@ -1,0 +1,127 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "apo-pork-tenderloin-with-pear-fennel-gravy",
+  "title": "APO Pork Tenderloin with Pear-Fennel Gravy",
+  "description": "Tenderloin medallions cook in full steam and are coated with a mild pear gravy scented with fennel and Bavarian mustard.",
+  "category": "Main dish",
+  "tags": [
+    "apo",
+    "extra-sauce",
+    "bagless-sous-vide",
+    "pork",
+    "pear"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 12,
+  "cookMin": 40,
+  "equipment": [
+    "Anova Precision Oven Gen 1 with food probe, bottom drip pan and middle wire rack",
+    "Shallow stainless steel baking pan",
+    "10-inch HexClad skillet",
+    "Thin-tip instant-read thermometer",
+    "Fine sieve"
+  ],
+  "ingredients": [
+    {
+      "id": "pork",
+      "qty": 10,
+      "name": "lean pork tenderloin",
+      "group": "Pork",
+      "unit": "oz",
+      "note": "Silver skin and visible fat removed."
+    },
+    {
+      "id": "fennel",
+      "qty": 0.25,
+      "name": "finely ground fennel seed",
+      "group": "Sauce",
+      "unit": "tsp"
+    },
+    {
+      "id": "garlic",
+      "qty": 0.25,
+      "name": "granulated garlic",
+      "group": "Sauce",
+      "unit": "tsp"
+    },
+    {
+      "id": "pear",
+      "qty": 0.5,
+      "name": "ripe pear",
+      "group": "Sauce",
+      "note": "Peel, core and finely grate."
+    },
+    {
+      "id": "broth",
+      "qty": 0.75,
+      "name": "low-sodium chicken broth",
+      "group": "Sauce",
+      "unit": "cup",
+      "note": "Use plain broth made from meat, bones and water without a vegetable seasoning blend."
+    },
+    {
+      "id": "mustard",
+      "qty": 1,
+      "name": "smooth Löwensenf Bavarian mustard",
+      "group": "Sauce",
+      "unit": "tsp",
+      "note": "Pass through a fine sieve if grainy."
+    },
+    {
+      "id": "starch",
+      "qty": 2,
+      "name": "cornstarch",
+      "group": "Slurry",
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "qty": 2,
+      "name": "cold water",
+      "group": "Slurry",
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Preheat the APO",
+      "text": "Fill the water tank and install the bottom drip pan. Preheat to 155°F with sous vide mode on, 100% steam, rear element on, top and bottom elements off. Set the food probe target to 145°F."
+    },
+    {
+      "title": "Cut the medallions",
+      "text": "Cut {pork} across the grain into 1/2-inch medallions. Arrange unbagged in the pan on the middle rack and slide the probe horizontally into the thickest piece. Begin cooking immediately and set a separate 12-minute reminder for the first temperature check; respond sooner if the probe signals."
+    },
+    {
+      "title": "Soften the pear",
+      "text": "While the pork cooks, simmer {pear}, {broth}, {fennel} and {garlic} in the HexClad over medium-low heat for 6–8 minutes, until the pear crushes easily."
+    },
+    {
+      "title": "Smooth the sauce base",
+      "text": "Press the pear and broth through a fine sieve into a bowl, scraping the underside. Return the smooth base to the skillet and whisk in {mustard}."
+    },
+    {
+      "title": "Make the slurry",
+      "text": "Stir {starch} into {water} in a small cup until smooth."
+    },
+    {
+      "title": "Thicken the sauce",
+      "text": "Bring the sauce base to a simmer. Whisk in the freshly stirred slurry and keep it bubbling gently for 1 minute, until it coats the back of a spoon."
+    },
+    {
+      "title": "Steam the pork",
+      "text": "Cook for about 15–35 minutes, checking from 12 minutes. Verify 145°F in the center of each piece."
+    },
+    {
+      "title": "Rest in the juices",
+      "text": "Remove the pan and rest the medallions loosely covered in their juices for 3 minutes."
+    },
+    {
+      "title": "Nestle and sauce",
+      "text": "Arrange the pork in the warm pear gravy, turning once to coat each face. Spoon extra gravy over the medallions."
+    }
+  ],
+  "notes": "Make ahead: Finely grate the pear directly into the broth to keep its color light. The sauce base can be chilled one day ahead. For a gentler gravy, leave out the mustard and add a little more pear. Refrigerate promptly in shallow portions and use within 3 days. Freezer-Friendly Verdict: Yes. Pear and gravy keep the thin medallions moist for up to 2 months in the freezer. Fridge reheat: Place one portion and its sauce in a shallow covered dish. Install the APO bottom drip pan and preheat to 325°F, sous vide mode off, 60% steam, rear element on, top and bottom off. Insert the probe in the coldest center and set it to 165°F. Start checking after 12 minutes and heat to 165°F throughout. Freezer reheat: Thaw a single portion in the refrigerator overnight, then use the fridge reheating method. Stir the sauce until smooth.",
+  "source": "Glenn"
+}

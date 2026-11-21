@@ -1,0 +1,112 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "poached-apple-cider-and-mustard-pan-sauce",
+  "title": "Poached Apple, Cider and Mustard Pan Sauce",
+  "description": "Soft apple is pressed into its cider poaching liquid to make a smooth, spoon-coating sauce for pork.",
+  "category": "Sauce & condiment",
+  "tags": [
+    "pan-sauce",
+    "hexclad",
+    "pork"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 8,
+  "cookMin": 18,
+  "equipment": [
+    "10-inch HexClad skillet",
+    "Fine-mesh sieve",
+    "Small mixing bowl",
+    "Heatproof bowl"
+  ],
+  "ingredients": [
+    {
+      "id": "apple",
+      "qty": 0.5,
+      "name": "small sweet apple",
+      "group": "Sauce",
+      "note": "Peel, core and grate finely."
+    },
+    {
+      "id": "cider",
+      "qty": 0.25,
+      "name": "unsweetened apple cider",
+      "group": "Sauce",
+      "unit": "cup",
+      "note": "Still, nonalcoholic."
+    },
+    {
+      "id": "broth",
+      "qty": 0.75,
+      "name": "low-sodium chicken broth",
+      "group": "Liquid",
+      "unit": "cup",
+      "note": "Use plain meat-and-bone broth without a vegetable seasoning blend."
+    },
+    {
+      "id": "thyme",
+      "qty": 1,
+      "name": "fresh thyme",
+      "group": "Sauce",
+      "unit": "sprig",
+      "note": "Keep whole for removal."
+    },
+    {
+      "id": "mustard",
+      "qty": 1,
+      "name": "smooth Löwensenf Bavarian mustard",
+      "group": "Sauce",
+      "unit": "tsp"
+    },
+    {
+      "id": "butter",
+      "qty": 1,
+      "name": "unsalted butter",
+      "group": "Sauce",
+      "unit": "tsp"
+    },
+    {
+      "id": "starch",
+      "qty": 2,
+      "name": "cornstarch",
+      "group": "Slurry",
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "qty": 2,
+      "name": "cold water",
+      "group": "Slurry",
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Poach the apple",
+      "text": "Place {apple}, {cider}, {broth} and {thyme} in the HexClad. Bring to a gentle simmer, then cover and cook over low heat for 8–10 minutes until the apple crushes easily."
+    },
+    {
+      "title": "Smooth the base",
+      "text": "Lift out the thyme. Press the apple and liquid through a sieve into a heatproof bowl, scraping the pulp from the underside. Return the smooth base to the pan."
+    },
+    {
+      "title": "Season with mustard",
+      "text": "Whisk in {mustard} over medium-low heat."
+    },
+    {
+      "title": "Mix the slurry",
+      "text": "Stir {starch} into {water} until completely smooth."
+    },
+    {
+      "title": "Thicken the sauce",
+      "text": "Bring the base to a simmer. Whisk in the freshly stirred slurry and let it bubble for 1 minute, stirring until it coats the back of a spoon."
+    },
+    {
+      "title": "Round out the sauce",
+      "text": "Swirl {butter} into the finished sauce off heat. Spoon it around lean pork medallions or turkey cutlets."
+    }
+  ],
+  "notes": "Make ahead: Poach the apple and sieve the sauce base a day ahead. Refrigerate finished sauce for up to 3 days. Freezer-Friendly Verdict: Yes. Freeze the sauce for up to 2 months; the pureed apple gives it body after thawing. Fridge reheat: Warm in the HexClad over medium-low, stirring with a splash of water or broth if needed. Bring the whole sauce briefly to a rolling boil, then serve. Freezer reheat: Thaw overnight in the refrigerator. Whisk smooth and follow the fridge reheating directions. Option A uses cider and mustard. For gentler Option B, replace the cider with extra broth and omit the mustard. For dairy-free sauce omit the finishing butter.",
+  "source": "Glenn"
+}

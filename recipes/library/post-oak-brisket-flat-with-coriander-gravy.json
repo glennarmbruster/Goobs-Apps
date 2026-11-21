@@ -1,0 +1,150 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "post-oak-brisket-flat-with-coriander-gravy",
+  "title": "Post Oak Brisket Flat with Coriander Gravy",
+  "description": "Lean brisket braises in oak-smoked beef broth and comes to the table thinly sliced under a smooth coriander gravy.",
+  "category": "Main dish",
+  "tags": [
+    "pellet-smoker",
+    "extra-sauce",
+    "beef",
+    "covered-braise",
+    "leftovers"
+  ],
+  "servings": 4,
+  "servingsLabel": "servings",
+  "prepMin": 15,
+  "cookMin": 190,
+  "equipment": [
+    "Traeger Silverton 610 pellet smoker",
+    "Small enamel Dutch oven with tight lid, sized to hold the food snugly",
+    "10-inch HexClad skillet",
+    "Thin-tip instant-read thermometer"
+  ],
+  "ingredients": [
+    {
+      "id": "brisket",
+      "name": "trimmed beef brisket flat",
+      "group": "Beef",
+      "qty": 20,
+      "unit": "oz",
+      "note": "Lean flat only, weighed after removing the fat cap and hard seams."
+    },
+    {
+      "id": "broth",
+      "name": "low-sodium beef broth",
+      "group": "Braising liquid",
+      "qty": 2,
+      "unit": "cup",
+      "note": "Use plain broth made from meat, bones and water, with no added vegetable blend or seasonings."
+    },
+    {
+      "id": "coriander",
+      "name": "ground coriander",
+      "group": "Gravy",
+      "qty": 0.75,
+      "unit": "tsp"
+    },
+    {
+      "id": "garlic",
+      "name": "granulated garlic",
+      "group": "Gravy",
+      "qty": 0.5,
+      "unit": "tsp"
+    },
+    {
+      "id": "pepper",
+      "name": "finely ground black pepper",
+      "group": "Gravy",
+      "qty": 0.125,
+      "unit": "tsp"
+    },
+    {
+      "id": "mustard",
+      "name": "smooth Löwensenf Bavarian mustard",
+      "group": "Gravy",
+      "qty": 1,
+      "unit": "tsp",
+      "note": "Pass through a fine sieve if visibly grainy."
+    },
+    {
+      "id": "starch",
+      "name": "cornstarch",
+      "group": "Sauce",
+      "qty": 4,
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "name": "cold water",
+      "group": "Sauce",
+      "qty": 4,
+      "unit": "tsp"
+    },
+    {
+      "id": "topup",
+      "qty": 1,
+      "unit": "cup",
+      "name": "hot drinking water",
+      "note": "Keep ready; use only as needed to maintain liquid depth or make up the sauce measure.",
+      "group": "Braising liquid"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Heat the Traeger",
+      "text": "Preheat the Traeger Silverton 610 to 300°F with post oak pellets, about 15 minutes with the lid closed."
+    },
+    {
+      "title": "Warm the braising liquid",
+      "text": "Bring {broth} with {coriander}, {garlic} and {pepper} just to a simmer in the open Dutch oven on the stove, about 3–6 minutes."
+    },
+    {
+      "title": "Smoke the braising liquid",
+      "text": "Move the uncovered pot to the Traeger grate. Close the smoker lid and smoke the liquid for 20 minutes."
+    },
+    {
+      "title": "Cut across the grain",
+      "text": "Cut {brisket} across the grain into slabs about 3/4 inch thick so the finished slices have short fibers."
+    },
+    {
+      "title": "Cover before braising",
+      "text": "Nestle the slabs in the hot broth in a snug single layer. Add {topup} if needed to come halfway up the meat and fit the lid now. There is no stall-wrap temperature."
+    },
+    {
+      "title": "Braise until yielding",
+      "text": "Cook covered at 300°F for 1 3/4 to 2 3/4 hours. Begin testing near 195°F. Continue until a fork slides into the lean center and turns easily, checking every 15 minutes. Keep the meat halfway submerged by adding {topup} if needed."
+    },
+    {
+      "title": "Rest in the juices",
+      "text": "Rest the covered brisket off heat for 10 minutes."
+    },
+    {
+      "title": "Keep the meat moist",
+      "text": "Lift the slabs into a covered bowl with a little cooking liquid."
+    },
+    {
+      "title": "Measure the sauce base",
+      "text": "Skim excess fat from the braising liquid. Measure 1 1/2 cups into the HexClad skillet, topping up with {topup} if needed."
+    },
+    {
+      "title": "Season the gravy",
+      "text": "Whisk {mustard} into the measured juices."
+    },
+    {
+      "title": "Mix the slurry",
+      "text": "Stir {starch} into {water} until completely smooth."
+    },
+    {
+      "title": "Thicken the sauce",
+      "text": "Bring the skillet liquid to a boil. Whisk in the stirred slurry and simmer for 1 minute, stirring, until the sauce coats the back of a spoon."
+    },
+    {
+      "title": "Slice and sauce",
+      "text": "Slice through the slabs into thin, short pieces. Return them to the gravy and spoon the remaining gravy over the portions."
+    }
+  ],
+  "notes": "Make ahead: Chill the beef in its juices and slice it cold for neater, thinner slices. For milder gravy, leave the black pepper for the table. Refrigerate promptly in shallow portions and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze individual portions surrounded by sauce for up to 2 months to protect their moisture. Fridge reheat: Place one portion with its sauce in a covered shallow dish. Install the bottom drip pan in the APO and preheat to 325°F, sous vide mode off, rear heat on, top and bottom off, 60% steam. Set the probe to 165°F in the center. Start checking after 12 minutes and heat until 165°F throughout. Freezer reheat: Thaw overnight in the refrigerator. Follow the fridge reheating directions and stir the sauce smooth.",
+  "source": "Glenn"
+}

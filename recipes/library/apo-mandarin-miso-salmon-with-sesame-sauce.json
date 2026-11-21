@@ -1,0 +1,127 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "apo-mandarin-miso-salmon-with-sesame-sauce",
+  "title": "APO Mandarin-Miso Salmon with Sesame Sauce",
+  "description": "Bagless salmon flakes into a glossy mandarin sauce with a small amount of white miso and toasted sesame oil.",
+  "category": "Main dish",
+  "tags": [
+    "apo",
+    "extra-sauce",
+    "bagless-sous-vide",
+    "salmon",
+    "mandarin"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 10,
+  "cookMin": 60,
+  "equipment": [
+    "Anova Precision Oven Gen 1 with food probe, bottom drip pan and middle wire rack",
+    "Shallow stainless steel baking pan",
+    "10-inch HexClad skillet",
+    "Thin-tip instant-read thermometer"
+  ],
+  "ingredients": [
+    {
+      "id": "salmon",
+      "qty": 9,
+      "name": "skinless boneless salmon",
+      "group": "Fish",
+      "unit": "oz",
+      "note": "Fully thawed, all pin bones removed; two equal portions no thicker than 3/4 inch."
+    },
+    {
+      "id": "broth",
+      "qty": 0.75,
+      "name": "low-sodium chicken broth",
+      "group": "Sauce",
+      "unit": "cup",
+      "note": "Use plain broth made from meat, bones and water without a vegetable seasoning blend."
+    },
+    {
+      "id": "juice",
+      "qty": 1,
+      "name": "strained mandarin juice",
+      "group": "Sauce",
+      "unit": "tbsp"
+    },
+    {
+      "id": "miso",
+      "qty": 0.5,
+      "name": "mild white miso",
+      "group": "Sauce",
+      "unit": "tsp",
+      "note": "Choose lower-sodium miso and measure level."
+    },
+    {
+      "id": "ginger",
+      "qty": 0.25,
+      "name": "fresh ginger juice",
+      "group": "Sauce",
+      "unit": "tsp",
+      "note": "Squeeze finely grated ginger and discard the fibers."
+    },
+    {
+      "id": "sesame",
+      "qty": 0.25,
+      "name": "toasted sesame oil",
+      "group": "Sauce",
+      "unit": "tsp"
+    },
+    {
+      "id": "starch",
+      "qty": 2,
+      "name": "cornstarch",
+      "group": "Slurry",
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "qty": 2,
+      "name": "cold water",
+      "group": "Slurry",
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Preheat the APO",
+      "text": "Fill the water tank and install the bottom drip pan. Preheat to 140°F with sous vide mode on, 100% steam, rear element on, top and bottom elements off. Set the food probe target to 139°F."
+    },
+    {
+      "title": "Position the fish",
+      "text": "Place {salmon} unbagged in the pan on the middle rack. Insert the probe horizontally into the center of the thickest portion. Begin cooking immediately and set a separate 25-minute reminder for the first temperature check; respond sooner if the probe signals."
+    },
+    {
+      "title": "Start the mandarin sauce",
+      "text": "While the fish cooks, simmer {broth}, {juice} and {ginger} in the HexClad over medium-low for 2 minutes."
+    },
+    {
+      "title": "Make the slurry",
+      "text": "Stir {starch} into {water} in a small cup until smooth."
+    },
+    {
+      "title": "Thicken the sauce",
+      "text": "Bring the sauce base to a simmer. Whisk in the freshly stirred slurry and keep it bubbling gently for 1 minute, until it coats the back of a spoon."
+    },
+    {
+      "title": "Finish with miso",
+      "text": "Blend {miso} into a spoonful of the warm sauce until smooth. Whisk it back in with {sesame} off heat."
+    },
+    {
+      "title": "Steam to the probe target",
+      "text": "Cook in full steam until the probe reaches 139°F, roughly 30–65 minutes from refrigerated, depending on thickness. Start checking after 25 minutes."
+    },
+    {
+      "title": "Check for doneness",
+      "text": "At 139°F, check the thickest center of each portion for flesh that is opaque all the way through and flakes easily with a fork. If either cue is missing, continue in the 140°F full-steam oven and recheck every 3 minutes before serving."
+    },
+    {
+      "title": "Serve in soft flakes",
+      "text": "Slide a thin spatula under each portion. Spoon a pool of sauce onto each plate, set the salmon in it and spoon the remaining sauce over the top."
+    }
+  ],
+  "notes": "Make ahead: Juice the mandarin and ginger ahead and refrigerate separately. Cook the fish close to serving. The 139–140°F center and flake check apply to the first cook; stored leftovers have a separate reheating endpoint. Option A uses mandarin and ginger. For gentler Option B, replace the juice with smooth pear puree and omit the ginger. Refrigerate promptly in shallow portions and use within 3 days. Freezer-Friendly Verdict: No. These thin portions flake apart after freezing and reheating; the sauce freezes well on its own. Fridge reheat: Place one portion and its sauce in a shallow covered dish. Install the APO bottom drip pan and preheat to 325°F, sous vide mode off, 60% steam, rear element on, top and bottom off. Insert the probe in the coldest center and set it to 165°F. Start checking after 12 minutes and heat to 165°F throughout. Freezer reheat: If previously frozen, thaw in the refrigerator overnight and use the same covered reheating method.",
+  "source": "Glenn"
+}

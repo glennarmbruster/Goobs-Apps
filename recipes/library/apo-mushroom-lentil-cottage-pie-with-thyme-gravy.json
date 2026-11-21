@@ -1,0 +1,149 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "apo-mushroom-lentil-cottage-pie-with-thyme-gravy",
+  "title": "APO Mushroom-Lentil Cottage Pie with Thyme Gravy",
+  "description": "Tender mushrooms and lentils bake under soft cheddar mash with extra thyme gravy to spoon into each bowl.",
+  "category": "Main dish",
+  "tags": [
+    "apo",
+    "extra-sauce",
+    "combi-steam",
+    "vegetarian",
+    "lentils"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 18,
+  "cookMin": 60,
+  "equipment": [
+    "Anova Precision Oven Gen 1 with food probe, bottom drip pan and middle wire rack",
+    "10-inch HexClad skillet",
+    "Thin-tip instant-read thermometer",
+    "Small baking dish and foil",
+    "Small saucepan with lid",
+    "Lid for HexClad skillet"
+  ],
+  "ingredients": [
+    {
+      "id": "lentils",
+      "qty": 1.5,
+      "name": "cooked brown lentils",
+      "group": "Filling",
+      "unit": "cup",
+      "note": "Use unsalted, fully tender lentils; drain well."
+    },
+    {
+      "id": "mushrooms",
+      "qty": 6,
+      "name": "cremini mushrooms",
+      "group": "Filling",
+      "unit": "oz",
+      "note": "Mince finely."
+    },
+    {
+      "id": "broth",
+      "qty": 1.25,
+      "name": "low-sodium mushroom broth",
+      "group": "Gravy",
+      "unit": "cup",
+      "note": "Use plain broth made with mushrooms and water, without added vegetable blends."
+    },
+    {
+      "id": "garlic",
+      "qty": 0.25,
+      "name": "jarred minced garlic",
+      "group": "Gravy",
+      "unit": "tsp"
+    },
+    {
+      "id": "thyme",
+      "qty": 0.25,
+      "name": "dried thyme",
+      "group": "Gravy",
+      "unit": "tsp",
+      "note": "Finely crumbled."
+    },
+    {
+      "id": "aminos",
+      "qty": 0.5,
+      "name": "coconut aminos",
+      "group": "Gravy",
+      "unit": "tsp"
+    },
+    {
+      "id": "mash",
+      "qty": 1,
+      "name": "smooth plain mashed potatoes",
+      "group": "Topping",
+      "unit": "cup",
+      "note": "Prepared with potato cooking water, without butter, milk or added salt."
+    },
+    {
+      "id": "cheddar",
+      "qty": 0.75,
+      "name": "mild cheddar cheese",
+      "group": "Topping",
+      "unit": "oz",
+      "note": "Finely grated."
+    },
+    {
+      "id": "starch",
+      "qty": 3.5,
+      "name": "cornstarch",
+      "group": "Slurry",
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "qty": 3.5,
+      "name": "cold water",
+      "group": "Slurry",
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Preheat the APO",
+      "text": "Fill the water tank and install the bottom drip pan. Preheat to 300°F with sous vide mode off, 80% steam, rear element on, top and bottom elements off. Set the food probe target to 165°F."
+    },
+    {
+      "title": "Steam the mushrooms",
+      "text": "Place {mushrooms}, {garlic} and a splash of {broth} in the covered HexClad. Cook over medium-low for 6–8 minutes, stirring twice, until the mushrooms are soft."
+    },
+    {
+      "title": "Build the thyme gravy",
+      "text": "Move the mushrooms to a bowl. Simmer the remaining {broth}, {thyme} and {aminos} in the HexClad for 3 minutes."
+    },
+    {
+      "title": "Make the slurry",
+      "text": "Stir {starch} into {water} in a small cup until smooth."
+    },
+    {
+      "title": "Thicken the sauce",
+      "text": "Bring the sauce base to a simmer. Whisk in the freshly stirred slurry and keep it bubbling gently for 1 minute, until it coats the back of a spoon."
+    },
+    {
+      "title": "Make the lentil filling",
+      "text": "Reserve about a third of the gravy in a covered saucepan for serving. Fold {lentils} and the mushrooms into the rest, crushing a few lentils to help the filling hold together."
+    },
+    {
+      "title": "Spread the topping",
+      "text": "Transfer the moist filling to a small baking dish. Fold {cheddar} into {mash} and spread the soft mash evenly over the lentils."
+    },
+    {
+      "title": "Probe the pie",
+      "text": "Insert the probe at an angle into the center of the filling, clear of the dish. Cover with foil and place on the middle rack."
+    },
+    {
+      "title": "Bake until hot",
+      "text": "Cook covered for 20–40 minutes until the center reaches 165°F. Rest covered for 5 minutes."
+    },
+    {
+      "title": "Serve with extra gravy",
+      "text": "Gently rewarm the reserved gravy while the pie rests. Scoop the soft layers into bowls and ladle the warm thyme gravy around the mash."
+    }
+  ],
+  "notes": "Make ahead: Make the filling and mash a day ahead and chill promptly. Allow extra time in the APO if assembling cold. For dairy-free pie, leave the cheddar out of the mash. The thyme gravy supplies enough richness to serve it plain. Refrigerate promptly in shallow portions and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze individual portions with some extra gravy for up to 6 weeks; stir the topping gently after reheating if it loosens. Fridge reheat: Place one portion and its sauce in a shallow covered dish. Install the APO bottom drip pan and preheat to 325°F, sous vide mode off, 60% steam, rear element on, top and bottom off. Insert the probe in the coldest center and set it to 165°F. Start checking after 12 minutes and heat to 165°F throughout. Freezer reheat: Thaw a single portion in the refrigerator overnight, then use the fridge reheating method. Stir the sauce until smooth.",
+  "source": "Glenn"
+}

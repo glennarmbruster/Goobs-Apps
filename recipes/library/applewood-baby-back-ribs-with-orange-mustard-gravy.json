@@ -1,0 +1,151 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "applewood-baby-back-ribs-with-orange-mustard-gravy",
+  "title": "Applewood Baby Back Ribs with Orange-Mustard Gravy",
+  "description": "Lean baby back ribs braise until the meat lifts free of the bone and folds into orange-mustard gravy.",
+  "category": "Main dish",
+  "tags": [
+    "pellet-smoker",
+    "extra-sauce",
+    "pork",
+    "baby-back-ribs",
+    "covered-braise"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 15,
+  "cookMin": 150,
+  "equipment": [
+    "Traeger Silverton 610 pellet smoker",
+    "Small enamel Dutch oven with tight lid, sized to hold the food snugly",
+    "10-inch HexClad skillet",
+    "Thin-tip instant-read thermometer"
+  ],
+  "ingredients": [
+    {
+      "id": "ribs",
+      "name": "lean pork baby back ribs",
+      "group": "Ribs",
+      "qty": 18,
+      "unit": "oz",
+      "note": "Bone-in weight; choose a lean center section and remove surface fat, membrane and any thick fatty cap."
+    },
+    {
+      "id": "broth",
+      "name": "low-sodium chicken broth",
+      "group": "Braising liquid",
+      "qty": 1.25,
+      "unit": "cup",
+      "note": "Use plain broth made from meat, bones and water, with no added vegetable blend or seasonings."
+    },
+    {
+      "id": "coriander",
+      "name": "ground coriander",
+      "group": "Gravy",
+      "qty": 0.25,
+      "unit": "tsp"
+    },
+    {
+      "id": "pepper",
+      "name": "finely ground black pepper",
+      "group": "Gravy",
+      "qty": 1,
+      "unit": "pinch"
+    },
+    {
+      "id": "orange",
+      "name": "smooth sweet orange marmalade",
+      "group": "Gravy",
+      "qty": 1,
+      "unit": "tbsp",
+      "note": "Pass through a sieve to remove strips of peel."
+    },
+    {
+      "id": "mustard",
+      "name": "smooth Löwensenf Bavarian mustard",
+      "group": "Gravy",
+      "qty": 1,
+      "unit": "tsp",
+      "note": "Pass through a fine sieve if visibly grainy."
+    },
+    {
+      "id": "starch",
+      "name": "cornstarch",
+      "group": "Sauce",
+      "qty": 2,
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "name": "cold water",
+      "group": "Sauce",
+      "qty": 2,
+      "unit": "tsp"
+    },
+    {
+      "id": "topup",
+      "qty": 0.5,
+      "unit": "cup",
+      "name": "hot drinking water",
+      "note": "Keep ready; use only as needed to maintain liquid depth or make up the sauce measure.",
+      "group": "Braising liquid"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Heat the Traeger",
+      "text": "Preheat the Traeger Silverton 610 to 300°F with apple pellets, about 15 minutes with the lid closed."
+    },
+    {
+      "title": "Warm the braising liquid",
+      "text": "Bring {broth} with {coriander} and {pepper} just to a simmer in the open Dutch oven on the stove, about 3–6 minutes."
+    },
+    {
+      "title": "Smoke the braising liquid",
+      "text": "Move the uncovered pot to the Traeger grate. Close the smoker lid and smoke the liquid for 15 minutes."
+    },
+    {
+      "title": "Portion the rack",
+      "text": "Separate {ribs} into two-rib sections so the lean meat sits deep in the braising liquid."
+    },
+    {
+      "title": "Cover the ribs",
+      "text": "Lay the ribs meat-side down in the liquid and cover the pot tightly from the outset. There is no stall-wrap temperature."
+    },
+    {
+      "title": "Braise until loose",
+      "text": "Braise at 300°F for 1 1/2–2 1/4 hours, adding {topup} as needed to keep the liquid halfway up the ribs. Begin checking the meaty spaces near 190°F and finish when a skewer slides in and the bones pull free easily."
+    },
+    {
+      "title": "Rest in the juices",
+      "text": "Rest the covered ribs off heat for 8 minutes."
+    },
+    {
+      "title": "Remove all bones",
+      "text": "Slip the meat into a covered bowl with a spoonful of braising liquid. Feel through for cartilage, bone tips and fat, then chop the lean meat coarsely."
+    },
+    {
+      "title": "Measure the sauce base",
+      "text": "Skim excess fat from the braising liquid. Measure 3/4 cup into the HexClad skillet, topping up with {topup} if needed."
+    },
+    {
+      "title": "Build the citrus gravy",
+      "text": "Warm {orange} and {mustard} in the measured broth, stirring until smooth."
+    },
+    {
+      "title": "Mix the slurry",
+      "text": "Stir {starch} into {water} until completely smooth."
+    },
+    {
+      "title": "Thicken the sauce",
+      "text": "Bring the skillet liquid to a boil. Whisk in the stirred slurry and simmer for 1 minute, stirring, until the sauce coats the back of a spoon."
+    },
+    {
+      "title": "Serve off the bone",
+      "text": "Fold the pork through the gravy and divide the sauced meat between two bowls."
+    }
+  ],
+  "notes": "Make ahead: Debone the ribs while warm and chill the meat in gravy. Option A uses marmalade and mustard. For gentler Option B, replace the marmalade with smooth apple butter and omit the mustard. Refrigerate promptly in shallow portions and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze individual portions surrounded by sauce for up to 2 months to protect their moisture. Fridge reheat: Warm one portion covered in its sauce in the HexClad over medium-low heat. Turn gently, adding a splash of water if needed. Check after 6 minutes and continue until the food reaches 165°F throughout. Freezer reheat: Thaw overnight in the refrigerator. Follow the fridge reheating directions and stir the sauce smooth.",
+  "source": "Glenn"
+}

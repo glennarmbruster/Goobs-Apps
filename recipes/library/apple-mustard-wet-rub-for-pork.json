@@ -1,0 +1,89 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "apple-mustard-wet-rub-for-pork",
+  "title": "Apple-Mustard Wet Rub for Pork",
+  "description": "Freeze-dried apple becomes a smooth, mild mustard paste that dissolves into the cooking juices of covered pork or ribs.",
+  "category": "Sauce & condiment",
+  "tags": [
+    "bbq-rub",
+    "wet-rub",
+    "pork"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 6,
+  "cookMin": 0,
+  "equipment": [
+    "Small mixing bowl",
+    "Spice grinder",
+    "Fine-mesh sieve"
+  ],
+  "ingredients": [
+    {
+      "id": "apple",
+      "qty": 2,
+      "name": "plain freeze-dried apple powder",
+      "group": "Rub",
+      "unit": "tsp",
+      "note": "Grind plain freeze-dried apple slices and measure the powder after grinding."
+    },
+    {
+      "id": "mustard",
+      "qty": 1,
+      "name": "smooth Löwensenf Bavarian mustard",
+      "group": "Rub",
+      "unit": "tsp",
+      "note": "Sieve first if coarse."
+    },
+    {
+      "id": "broth",
+      "qty": 2.5,
+      "name": "low-sodium chicken broth",
+      "group": "Rub",
+      "unit": "tsp",
+      "note": "Plain broth without a vegetable blend."
+    },
+    {
+      "id": "paprika",
+      "qty": 0.5,
+      "name": "sweet paprika",
+      "group": "Rub",
+      "unit": "tsp"
+    },
+    {
+      "id": "garlic",
+      "qty": 0.25,
+      "name": "granulated garlic",
+      "group": "Rub",
+      "unit": "tsp"
+    },
+    {
+      "id": "ginger",
+      "qty": 0.125,
+      "name": "ground ginger",
+      "group": "Rub",
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Smooth the apple powder",
+      "text": "Sift {apple} into a small bowl until no tough flakes remain."
+    },
+    {
+      "title": "Blend the spices",
+      "text": "Stir in {paprika}, {garlic} and {ginger}."
+    },
+    {
+      "title": "Hydrate the paste",
+      "text": "Whisk {mustard} and {broth} into the blend. Let stand 3 minutes and stir again until spreadable."
+    },
+    {
+      "title": "Portion before cooking",
+      "text": "Portion about a tablespoon of clean paste per serving. Spread it on lean pork just before a covered braise, or whisk it directly into the braising liquid. Discard any paste contacted by raw meat."
+    }
+  ],
+  "notes": "Make ahead: Mix the paste a day ahead, or keep the apple and spices dry and add mustard and broth just before use. Refrigerate clean prepared paste for up to 3 days. Freezer-Friendly Verdict: Yes. Freeze clean, unused portions for up to 1 month; the hydrated apple softens smoothly on thawing. Fridge reheat: Stir the chilled, unused paste and add directly to a braise before cooking. It needs no separate reheating. Freezer reheat: Thaw covered in the refrigerator overnight, stir well and add to the cooking liquid before the braise. Option A uses mustard and ginger. For gentler Option B, use smooth unsweetened applesauce in place of the mustard and omit the ginger.",
+  "source": "Glenn"
+}

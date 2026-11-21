@@ -1,0 +1,142 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "possiblecooker-fennel-pork-and-red-lentil-stew",
+  "title": "PossibleCooker Fennel Pork and Red Lentil Stew",
+  "description": "Lean pork is seasoned like mild fennel sausage and poached in a thick red lentil and squash gravy.",
+  "category": "Soup & stew",
+  "tags": [
+    "possiblecooker",
+    "weeknight",
+    "pork",
+    "lentils",
+    "extra-sauce",
+    "leftovers"
+  ],
+  "servings": 4,
+  "servingsLabel": "servings",
+  "prepMin": 15,
+  "cookMin": 37,
+  "equipment": [
+    "Ninja Foodi PossibleCooker",
+    "Thin-tip instant-read thermometer",
+    "Silicone spoon"
+  ],
+  "ingredients": [
+    {
+      "id": "pork",
+      "qty": 18,
+      "name": "lean ground pork",
+      "group": "Pork",
+      "unit": "oz",
+      "note": "Plain and unseasoned, about 90–93% lean."
+    },
+    {
+      "id": "fennel",
+      "qty": 1,
+      "name": "finely ground fennel seed",
+      "group": "Pork",
+      "unit": "tsp"
+    },
+    {
+      "id": "garlic",
+      "qty": 0.75,
+      "name": "granulated garlic",
+      "group": "Pork",
+      "unit": "tsp"
+    },
+    {
+      "id": "paprika",
+      "qty": 0.5,
+      "name": "sweet paprika",
+      "group": "Pork",
+      "unit": "tsp"
+    },
+    {
+      "id": "squash",
+      "qty": 1,
+      "name": "butternut squash",
+      "group": "Stew",
+      "unit": "cup",
+      "note": "Peel and dice to 1/4 inch."
+    },
+    {
+      "id": "lentils",
+      "qty": 0.75,
+      "name": "dry split red lentils",
+      "group": "Stew",
+      "unit": "cup",
+      "note": "Rinse and drain."
+    },
+    {
+      "id": "broth",
+      "qty": 4,
+      "name": "low-sodium chicken broth",
+      "group": "Sauce",
+      "unit": "cup",
+      "note": "Choose plain meat-and-bone broth without a vegetable blend."
+    },
+    {
+      "id": "spinach",
+      "qty": 1,
+      "name": "baby spinach",
+      "group": "Stew",
+      "unit": "oz",
+      "note": "Destem and chop very finely."
+    },
+    {
+      "id": "starch",
+      "qty": 3,
+      "name": "cornstarch",
+      "group": "Sauce",
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "qty": 3,
+      "name": "cold water",
+      "group": "Sauce",
+      "unit": "tsp"
+    },
+    {
+      "id": "topup",
+      "qty": 0.5,
+      "name": "water",
+      "group": "Cooking liquid",
+      "unit": "cup",
+      "note": "Keep warm and use only as needed."
+    }
+  ],
+  "steps": [
+    {
+      "title": "Season the pork",
+      "text": "Gently combine {pork} with {fennel}, {garlic} and {paprika}. Pinch off small, loosely formed pieces about 3/4 inch across."
+    },
+    {
+      "title": "Start the lentils",
+      "text": "Place {squash}, {lentils} and {broth} in the PossibleCooker. Use Sear/Sauté HIGH with the lid off to bring the liquid to a simmer, about 5–8 minutes."
+    },
+    {
+      "title": "Poach the pork",
+      "text": "Lower the pork pieces into the simmering broth and return to a simmer on HIGH. Switch to Sear/Sauté LOW and simmer uncovered for 16–22 minutes, stirring gently. The lentils should break down, the squash should mash easily, and several large pork centers must measure at least 160°F."
+    },
+    {
+      "title": "Soften the spinach",
+      "text": "Fold {spinach} into the hot stew and simmer for 2 minutes until tender."
+    },
+    {
+      "title": "Mix the slurry",
+      "text": "Stir {starch} into {water} in a small cup until smooth."
+    },
+    {
+      "title": "Bind the lentil gravy",
+      "text": "Stir the slurry into the stew at a gentle bubble for 1 minute until the gravy coats the back of a spoon. Add a little {topup} if the lentils have thickened it beyond a spoonable consistency."
+    },
+    {
+      "title": "Serve the stew",
+      "text": "Turn off the cooker and break up any larger pork pieces with the silicone spoon. Divide the stew and gravy evenly among the bowls."
+    }
+  ],
+  "notes": "Make ahead: Mix the fennel-spiced pork and refrigerate covered up to a day ahead. Cut the squash small so it softens at the same rate as the lentils. Option A uses mild fennel and paprika. For gentler Option B, halve the fennel and omit the paprika. Pass extra heat at the table. Refrigerate promptly in shallow portions and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze in individual portions for up to 2 months. Lentils continue to absorb liquid, so loosen the stew as it reheats. Fridge reheat: Warm a single portion with its sauce in a covered HexClad skillet over medium-low, adding a splash of water if thick. Stir or turn gently and begin checking after 5 minutes. Heat the pork to 165°F throughout. Freezer reheat: Thaw overnight in the refrigerator. Use the fridge reheating directions and stir the sauce smooth.",
+  "source": "Glenn"
+}

@@ -1,0 +1,178 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "apo-white-turkey-meatballs-with-ginger-lime-gravy",
+  "title": "APO White Turkey Meatballs with Ginger-Lime Gravy",
+  "description": "White turkey meatballs stay soft with a milk panade and covered steam, then get a glossy ginger-lime and sesame gravy.",
+  "category": "Main dish",
+  "tags": [
+    "apo",
+    "extra-sauce",
+    "combi-steam",
+    "white-meat-turkey",
+    "leftovers"
+  ],
+  "servings": 4,
+  "servingsLabel": "servings",
+  "prepMin": 18,
+  "cookMin": 48,
+  "equipment": [
+    "Anova Precision Oven Gen 1 with food probe, bottom drip pan and middle wire rack",
+    "10-inch HexClad skillet",
+    "Thin-tip instant-read thermometer",
+    "Deep oven dish and foil"
+  ],
+  "ingredients": [
+    {
+      "id": "turkey",
+      "qty": 18,
+      "name": "plain ground turkey breast",
+      "group": "Meatballs",
+      "unit": "oz",
+      "note": "White meat only, no added brine or seasoning."
+    },
+    {
+      "id": "crumbs",
+      "qty": 0.25,
+      "name": "fine plain breadcrumbs",
+      "group": "Meatballs",
+      "unit": "cup",
+      "note": "Low-sodium, dairy-free and unseasoned."
+    },
+    {
+      "id": "milk",
+      "qty": 0.25,
+      "name": "plain milk",
+      "group": "Meatballs",
+      "unit": "cup"
+    },
+    {
+      "id": "egg",
+      "qty": 1,
+      "name": "large egg",
+      "group": "Meatballs"
+    },
+    {
+      "id": "garlic",
+      "qty": 0.375,
+      "name": "granulated garlic",
+      "group": "Meatballs",
+      "unit": "tsp"
+    },
+    {
+      "id": "broth",
+      "qty": 1.75,
+      "name": "low-sodium chicken broth",
+      "group": "Sauce",
+      "unit": "cup",
+      "note": "Use plain broth made from meat, bones and water without a vegetable seasoning blend."
+    },
+    {
+      "id": "ginger",
+      "qty": 1,
+      "name": "fresh ginger juice",
+      "group": "Gravy",
+      "unit": "tsp",
+      "note": "Squeeze grated ginger and discard fibers."
+    },
+    {
+      "id": "aminos",
+      "qty": 1.5,
+      "name": "coconut aminos",
+      "group": "Gravy",
+      "unit": "tsp",
+      "note": "Choose a lower-sodium brand."
+    },
+    {
+      "id": "honey",
+      "qty": 2,
+      "name": "mild honey",
+      "group": "Gravy",
+      "unit": "tsp"
+    },
+    {
+      "id": "lime",
+      "qty": 1,
+      "name": "strained lime juice",
+      "group": "Gravy",
+      "unit": "tsp"
+    },
+    {
+      "id": "sesame",
+      "qty": 0.5,
+      "name": "toasted sesame oil",
+      "group": "Gravy",
+      "unit": "tsp"
+    },
+    {
+      "id": "starch",
+      "qty": 4.5,
+      "name": "cornstarch",
+      "group": "Slurry",
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "qty": 4.5,
+      "name": "cold water",
+      "group": "Slurry",
+      "unit": "tsp"
+    },
+    {
+      "id": "topup",
+      "qty": 0.5,
+      "name": "hot water",
+      "group": "Sauce",
+      "unit": "cup",
+      "note": "Keep ready for adjusting liquid depth or sauce yield; use only as needed."
+    }
+  ],
+  "steps": [
+    {
+      "title": "Preheat the APO",
+      "text": "Fill the water tank and install the bottom drip pan. Preheat to 275°F with sous vide mode off, 100% steam, rear element on, top and bottom elements off. Set the food probe target to 165°F."
+    },
+    {
+      "title": "Soften the crumbs",
+      "text": "Soak {crumbs} in {milk} for 5 minutes until fully soft."
+    },
+    {
+      "title": "Mix the meatballs",
+      "text": "Stir {egg} and {garlic} into the panade. Gently fold in {turkey} just until combined."
+    },
+    {
+      "title": "Portion into the pan",
+      "text": "Form three equal meatballs per serving. Arrange in a snug deep oven dish with a shallow layer of {broth}, reserving the remaining clean broth for gravy."
+    },
+    {
+      "title": "Probe and cover",
+      "text": "Insert the probe sideways into the center of the largest ball without touching the pan. Cover the dish with foil and place on the middle rack. Begin cooking immediately and set a separate 18-minute reminder for the first temperature check; respond sooner if the probe signals."
+    },
+    {
+      "title": "Simmer the ginger base",
+      "text": "While the meatballs cook, simmer the reserved {broth}, {ginger}, {aminos} and {honey} in the HexClad for 3 minutes. Add a splash of {topup} if needed to yield about 3/8 cup of sauce base per serving."
+    },
+    {
+      "title": "Make the slurry",
+      "text": "Stir {starch} into {water} in a small cup until smooth."
+    },
+    {
+      "title": "Thicken the sauce",
+      "text": "Bring the sauce base to a simmer. Whisk in the freshly stirred slurry and keep it bubbling gently for 1 minute, until it coats the back of a spoon."
+    },
+    {
+      "title": "Add lime and sesame",
+      "text": "Whisk {lime} and {sesame} into the gravy off heat."
+    },
+    {
+      "title": "Steam the meatballs",
+      "text": "Cook covered for 20–38 minutes until the probe reads 165°F. Verify 165°F in several other large centers before lifting the dish from the oven. Leave the meatballs covered in their liquid."
+    },
+    {
+      "title": "Coat all the meatballs",
+      "text": "Transfer the cooked meatballs to the skillet, roll them gently in gravy and divide the remaining gravy among the bowls."
+    }
+  ],
+  "notes": "Make ahead: Shape the meatballs up to a day ahead and refrigerate covered. Add the broth just before cooking. Option A uses lime and ginger. For gentler Option B, omit the lime and halve the ginger. Plain unsweetened oat milk can replace milk in the panade. Refrigerate promptly in shallow portions and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze several meatballs together in enough gravy to cover them for up to 2 months. Fridge reheat: Place one portion and its sauce in a shallow covered dish. Install the APO bottom drip pan and preheat to 325°F, sous vide mode off, 60% steam, rear element on, top and bottom off. Insert the probe in the coldest center and set it to 165°F. Start checking after 12 minutes and heat to 165°F throughout. Freezer reheat: Thaw a single portion in the refrigerator overnight, then use the fridge reheating method. Stir the sauce until smooth.",
+  "source": "Glenn"
+}

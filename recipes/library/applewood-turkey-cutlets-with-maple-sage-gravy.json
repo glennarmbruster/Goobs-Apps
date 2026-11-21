@@ -1,0 +1,151 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "applewood-turkey-cutlets-with-maple-sage-gravy",
+  "title": "Applewood Turkey Cutlets with Maple-Sage Gravy",
+  "description": "Thin turkey breast cutlets poach in applewood-smoked broth and receive an extra ladle of maple-sage gravy.",
+  "category": "Main dish",
+  "tags": [
+    "pellet-smoker",
+    "extra-sauce",
+    "turkey-breast",
+    "cutlets",
+    "extra-gravy"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 12,
+  "cookMin": 60,
+  "equipment": [
+    "Traeger Silverton 610 pellet smoker",
+    "Small enamel Dutch oven with tight lid, sized to hold the food snugly",
+    "10-inch HexClad skillet",
+    "Thin-tip instant-read thermometer"
+  ],
+  "ingredients": [
+    {
+      "id": "turkey",
+      "name": "unenhanced skinless turkey breast cutlets",
+      "group": "Turkey",
+      "qty": 10,
+      "unit": "oz",
+      "note": "Thin cutlets with no injected brine."
+    },
+    {
+      "id": "broth",
+      "name": "low-sodium turkey broth",
+      "group": "Braising liquid",
+      "qty": 1.25,
+      "unit": "cup",
+      "note": "Use plain broth made from meat, bones and water, with no added vegetable blend or seasonings."
+    },
+    {
+      "id": "sage",
+      "name": "fresh sage",
+      "group": "Gravy",
+      "qty": 1,
+      "unit": "sprig",
+      "note": "Leave whole for easy removal."
+    },
+    {
+      "id": "maple",
+      "name": "pure maple syrup",
+      "group": "Gravy",
+      "qty": 2,
+      "unit": "tsp"
+    },
+    {
+      "id": "mustard",
+      "name": "smooth Löwensenf Bavarian mustard",
+      "group": "Gravy",
+      "qty": 0.5,
+      "unit": "tsp",
+      "note": "Pass through a fine sieve if visibly grainy."
+    },
+    {
+      "id": "butter",
+      "name": "unsalted butter",
+      "group": "Gravy",
+      "qty": 1,
+      "unit": "tsp"
+    },
+    {
+      "id": "starch",
+      "name": "cornstarch",
+      "group": "Sauce",
+      "qty": 2.5,
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "name": "cold water",
+      "group": "Sauce",
+      "qty": 2.5,
+      "unit": "tsp"
+    },
+    {
+      "id": "topup",
+      "qty": 0.5,
+      "unit": "cup",
+      "name": "hot drinking water",
+      "note": "Keep ready; use only as needed to maintain liquid depth or make up the sauce measure.",
+      "group": "Braising liquid"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Heat the Traeger",
+      "text": "Preheat the Traeger Silverton 610 to 275°F with apple pellets, about 15 minutes with the lid closed."
+    },
+    {
+      "title": "Warm the braising liquid",
+      "text": "Bring {broth} with {sage} just to a simmer in the open Dutch oven on the stove, about 3–6 minutes."
+    },
+    {
+      "title": "Smoke the braising liquid",
+      "text": "Move the uncovered pot to the Traeger grate. Close the smoker lid and smoke the liquid for 15 minutes."
+    },
+    {
+      "title": "Even the cutlets",
+      "text": "Place {turkey} between sheets of parchment and gently flatten the thick ends with a small skillet to a uniform 1/3 inch."
+    },
+    {
+      "title": "Cover with broth",
+      "text": "Lay the cutlets in the smoked broth without overlapping. Add {topup} if needed to just cover. Fit the lid now. These thin cutlets need no stall wrap."
+    },
+    {
+      "title": "Poach to temperature",
+      "text": "Poach covered at 275°F for 8–20 minutes, checking from 8 minutes. Insert the probe sideways into each center and remove each cutlet to a covered dish with warm juices as it reaches 165°F."
+    },
+    {
+      "title": "Rest in the juices",
+      "text": "Rest the covered cutlets off heat for 3 minutes."
+    },
+    {
+      "title": "Reserve extra gravy",
+      "text": "Discard the sage and measure 1 cup of the poaching liquid into the HexClad, adding {topup} if needed."
+    },
+    {
+      "title": "Season the gravy",
+      "text": "Stir {maple} and {mustard} into the poaching liquid."
+    },
+    {
+      "title": "Mix the slurry",
+      "text": "Stir {starch} into {water} until completely smooth."
+    },
+    {
+      "title": "Thicken the sauce",
+      "text": "Bring the skillet liquid to a boil. Whisk in the stirred slurry and simmer for 1 minute, stirring, until the sauce coats the back of a spoon."
+    },
+    {
+      "title": "Enrich the gravy",
+      "text": "Swirl {butter} into the skillet off heat."
+    },
+    {
+      "title": "Serve generously",
+      "text": "Slice the tenderized cutlets thinly across the grain. Spoon half the gravy onto the plates, lay the slices in it and spoon the rest over their tops."
+    }
+  ],
+  "notes": "Make ahead: Flatten and refrigerate the cutlets up to a day ahead, then poach close to serving. For dairy-free gravy omit the butter. For a gentler flavor omit the mustard. Refrigerate promptly in shallow portions and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze individual portions surrounded by sauce for up to 2 months to protect their moisture. Fridge reheat: Place one portion with its sauce in a covered shallow dish. Install the bottom drip pan in the APO and preheat to 325°F, sous vide mode off, rear heat on, top and bottom off, 60% steam. Set the probe to 165°F in the center. Start checking after 12 minutes and heat until 165°F throughout. Freezer reheat: Thaw overnight in the refrigerator. Follow the fridge reheating directions and stir the sauce smooth.",
+  "source": "Glenn"
+}

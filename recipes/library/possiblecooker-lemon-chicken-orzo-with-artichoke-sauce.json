@@ -1,0 +1,135 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "possiblecooker-lemon-chicken-orzo-with-artichoke-sauce",
+  "title": "PossibleCooker Lemon Chicken Orzo with Artichoke Sauce",
+  "description": "Orzo cooks with chicken thighs in a smooth artichoke broth that becomes a cohesive, lemon-scented sauce.",
+  "category": "Main dish",
+  "tags": [
+    "possiblecooker",
+    "weeknight",
+    "chicken-thighs",
+    "one-pot",
+    "pasta",
+    "extra-sauce"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 12,
+  "cookMin": 30,
+  "equipment": [
+    "Ninja Foodi PossibleCooker",
+    "Thin-tip instant-read thermometer",
+    "Immersion blender and deep jug",
+    "Silicone spoon",
+    "Fine sieve"
+  ],
+  "ingredients": [
+    {
+      "id": "chicken",
+      "qty": 9,
+      "name": "boneless skinless chicken thighs",
+      "group": "Chicken",
+      "unit": "oz",
+      "note": "Trim fat and dice across the grain into 1/2-inch pieces."
+    },
+    {
+      "id": "orzo",
+      "qty": 0.625,
+      "name": "dry orzo",
+      "group": "Pasta",
+      "unit": "cup"
+    },
+    {
+      "id": "artichoke",
+      "qty": 0.5,
+      "name": "plain cooked artichoke hearts",
+      "group": "Sauce",
+      "unit": "cup",
+      "note": "Use tender unseasoned hearts; remove leaves with fibrous tips."
+    },
+    {
+      "id": "broth",
+      "qty": 2.25,
+      "name": "low-sodium chicken broth",
+      "group": "Sauce",
+      "unit": "cup",
+      "note": "Choose plain meat-and-bone broth without a vegetable blend."
+    },
+    {
+      "id": "garlic",
+      "qty": 0.25,
+      "name": "jarred minced garlic",
+      "group": "Sauce",
+      "unit": "tsp"
+    },
+    {
+      "id": "zest",
+      "qty": 0.25,
+      "name": "finely grated lemon zest",
+      "group": "Sauce",
+      "unit": "tsp"
+    },
+    {
+      "id": "parmesan",
+      "qty": 1,
+      "name": "finely grated Parmesan cheese",
+      "group": "Sauce",
+      "unit": "tbsp"
+    },
+    {
+      "id": "starch",
+      "qty": 1.5,
+      "name": "cornstarch",
+      "group": "Sauce",
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "qty": 1.5,
+      "name": "cold water",
+      "group": "Sauce",
+      "unit": "tsp"
+    },
+    {
+      "id": "topup",
+      "qty": 0.5,
+      "name": "water",
+      "group": "Cooking liquid",
+      "unit": "cup",
+      "note": "Keep warm and use only as needed."
+    }
+  ],
+  "steps": [
+    {
+      "title": "Puree the artichokes",
+      "text": "Blend {artichoke} with enough {broth} to make a pourable puree, then push through a sieve to remove remaining fibers."
+    },
+    {
+      "title": "Bring the sauce to a simmer",
+      "text": "Add the puree, remaining {broth} and {garlic} to the PossibleCooker. Select Sear/Sauté HIGH with the lid off and bring to a gentle simmer, about 5–7 minutes."
+    },
+    {
+      "title": "Start the chicken",
+      "text": "Slip {chicken} into the sauce, let the simmer return and cook for 3 minutes."
+    },
+    {
+      "title": "Cook the orzo in the sauce",
+      "text": "Stir {orzo} straight into the chicken sauce. Switch to Sear/Sauté LOW and simmer uncovered for 9–14 minutes, stirring the bottom frequently with a silicone spoon. Verify the orzo is tender and the largest chicken piece reaches at least 165°F. Add {topup} a splash at a time if the pasta absorbs the liquid early."
+    },
+    {
+      "title": "Mix the slurry",
+      "text": "Stir {starch} into {water} in a small cup until smooth."
+    },
+    {
+      "title": "Bind the sauce",
+      "text": "Fold the slurry into the bubbling sauce and stir gently for 1 minute, until it coats the back of a spoon and the orzo still moves freely."
+    },
+    {
+      "title": "Finish the orzo",
+      "text": "Turn the cooker off and fold in {parmesan} and {zest}. Serve immediately with the sauce pooled around the pasta."
+    }
+  ],
+  "notes": "Make ahead: Puree the artichokes and refrigerate the base a day ahead; cook the orzo in it right before dinner. Option A uses lemon zest. For gentler Option B, replace it with finely chopped parsley. For dairy-free orzo leave out the Parmesan. Refrigerate promptly in shallow portions and use within 3 days. Freezer-Friendly Verdict: No. The orzo continues absorbing sauce after freezing and reheating. Freeze the artichoke broth on its own instead. Fridge reheat: Warm a single portion with its sauce in a covered HexClad skillet over medium-low, adding a splash of water if thick. Stir or turn gently and begin checking after 5 minutes. Heat the chicken to 165°F throughout. Freezer reheat: If already frozen, thaw overnight in the refrigerator and follow the fridge reheating directions.",
+  "source": "Glenn"
+}

@@ -1,0 +1,126 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "apo-strip-steak-with-caramelized-shallot-gravy",
+  "title": "APO Strip Steak with Caramelized Shallot Gravy",
+  "description": "Trimmed strip steaks cook in full steam and are sliced into a sherry gravy sweetened with slowly caramelized shallot.",
+  "category": "Main dish",
+  "tags": [
+    "apo",
+    "extra-sauce",
+    "bagless-sous-vide",
+    "beef",
+    "caramelized-shallot"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 12,
+  "cookMin": 50,
+  "equipment": [
+    "Anova Precision Oven Gen 1 with food probe, bottom drip pan and middle wire rack",
+    "Shallow stainless steel baking pan",
+    "10-inch HexClad skillet",
+    "Thin-tip instant-read thermometer",
+    "Fine sieve"
+  ],
+  "ingredients": [
+    {
+      "id": "beef",
+      "qty": 10,
+      "name": "lean center-cut New York strip steak",
+      "group": "Steak",
+      "unit": "oz",
+      "note": "Two lean portions about 3/4 inch thick; weight after removing the fat edge and gristle."
+    },
+    {
+      "id": "shallot",
+      "qty": 1,
+      "name": "small shallot",
+      "group": "Gravy",
+      "note": "Slice very thinly; fully caramelize before serving."
+    },
+    {
+      "id": "butter",
+      "qty": 1,
+      "name": "unsalted butter",
+      "group": "Gravy",
+      "unit": "tsp"
+    },
+    {
+      "id": "broth",
+      "qty": 0.875,
+      "name": "low-sodium beef broth",
+      "group": "Sauce",
+      "unit": "cup",
+      "note": "Use plain broth made from meat, bones and water without a vegetable seasoning blend."
+    },
+    {
+      "id": "vinegar",
+      "qty": 0.75,
+      "name": "sherry vinegar",
+      "group": "Gravy",
+      "unit": "tsp"
+    },
+    {
+      "id": "pepper",
+      "qty": 1,
+      "name": "finely ground black pepper",
+      "group": "Gravy",
+      "unit": "pinch"
+    },
+    {
+      "id": "starch",
+      "qty": 2,
+      "name": "cornstarch",
+      "group": "Slurry",
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "qty": 2,
+      "name": "cold water",
+      "group": "Slurry",
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Preheat the APO",
+      "text": "Fill the water tank and install the bottom drip pan. Preheat to 155°F with sous vide mode on, 100% steam, rear element on, top and bottom elements off. Set the food probe target to 145°F."
+    },
+    {
+      "title": "Position the probe",
+      "text": "Lay {beef} unbagged in the shallow pan on the middle rack. Insert the probe sideways into the thickest center, clear of the pan. Begin cooking immediately and set a separate 20-minute reminder for the first temperature check; respond sooner if the probe signals."
+    },
+    {
+      "title": "Caramelize the shallot",
+      "text": "While the steaks cook, soften {shallot} in {butter} in the HexClad over medium-low for 20–25 minutes. Stir often, using a splash of {broth} if the pan catches, until the shallot is uniformly soft and golden brown."
+    },
+    {
+      "title": "Deglaze the skillet",
+      "text": "Stir {vinegar}, {pepper} and the remaining {broth} into the shallots and simmer for 2 minutes. Press the liquid and soft shallots through a fine sieve and return the smooth base to the skillet."
+    },
+    {
+      "title": "Make the slurry",
+      "text": "Stir {starch} into {water} in a small cup until smooth."
+    },
+    {
+      "title": "Thicken the sauce",
+      "text": "Bring the sauce base to a simmer. Whisk in the freshly stirred slurry and keep it bubbling gently for 1 minute, until it coats the back of a spoon."
+    },
+    {
+      "title": "Steam the steaks",
+      "text": "Cook in full steam for about 25–50 minutes, checking from 20 minutes. Remove each portion when its center reaches 145°F."
+    },
+    {
+      "title": "Rest in the juices",
+      "text": "Remove the pan and rest the steaks loosely covered in their juices for 3 minutes."
+    },
+    {
+      "title": "Slice into the gravy",
+      "text": "Slice the rested steaks thinly across the grain. Lay them in the gravy and divide all the sauce between the plates."
+    }
+  ],
+  "notes": "Make ahead: Caramelize the shallot a day ahead and refrigerate. Warm it in the stock while the steaks cook. Option A uses sherry vinegar. For gentler Option B, omit it and round out the gravy with a little more broth. For dairy-free gravy use avocado oil instead of butter. Refrigerate promptly in shallow portions and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze thin slices in gravy for up to 6 weeks; some pink color will be lost during reheating. Fridge reheat: Place one portion and its sauce in a shallow covered dish. Install the APO bottom drip pan and preheat to 325°F, sous vide mode off, 60% steam, rear element on, top and bottom off. Insert the probe in the coldest center and set it to 165°F. Start checking after 12 minutes and heat to 165°F throughout. Freezer reheat: Thaw a single portion in the refrigerator overnight, then use the fridge reheating method. Stir the sauce until smooth.",
+  "source": "Glenn"
+}

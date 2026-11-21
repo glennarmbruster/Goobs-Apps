@@ -1,0 +1,130 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "pecan-smoked-poblano-corn-spoonbread",
+  "title": "Pecan-Smoked Poblano Corn Spoonbread",
+  "description": "Pecan-smoked milk flavors a soft corn and mild poblano spoonbread that sets gently in a covered water bath.",
+  "category": "Sides",
+  "tags": [
+    "pellet-smoker",
+    "corn",
+    "soft-side",
+    "water-bath"
+  ],
+  "servings": 4,
+  "servingsLabel": "servings",
+  "prepMin": 15,
+  "cookMin": 95,
+  "equipment": [
+    "Traeger Silverton 610 pellet smoker",
+    "Shallow metal pan",
+    "Saucepan",
+    "Immersion blender and deep heatproof jug",
+    "Fine-mesh sieve",
+    "6-inch deep metal baking dish",
+    "Deep metal roasting pan and heavy-duty foil",
+    "Thin-tip instant-read thermometer"
+  ],
+  "ingredients": [
+    {
+      "id": "milk",
+      "qty": 1.5,
+      "name": "whole milk",
+      "group": "Spoonbread",
+      "unit": "cup"
+    },
+    {
+      "id": "corn",
+      "qty": 0.5,
+      "name": "sweet corn kernels",
+      "group": "Spoonbread",
+      "unit": "cup",
+      "note": "Fresh or thawed and drained."
+    },
+    {
+      "id": "poblano",
+      "qty": 0.25,
+      "name": "plain roasted mild poblano",
+      "group": "Spoonbread",
+      "unit": "cup",
+      "note": "Peeled, thoroughly seeded and drained."
+    },
+    {
+      "id": "meal",
+      "qty": 0.5,
+      "name": "fine yellow cornmeal",
+      "group": "Spoonbread",
+      "unit": "cup"
+    },
+    {
+      "id": "eggs",
+      "qty": 2,
+      "name": "large eggs",
+      "group": "Spoonbread"
+    },
+    {
+      "id": "jack",
+      "qty": 1,
+      "name": "Monterey Jack cheese",
+      "group": "Spoonbread",
+      "unit": "oz",
+      "note": "Finely shredded."
+    },
+    {
+      "id": "butter",
+      "qty": 2,
+      "name": "unsalted butter",
+      "group": "Spoonbread",
+      "unit": "tsp",
+      "note": "Melted, divided."
+    },
+    {
+      "id": "bath",
+      "qty": 4,
+      "name": "hot water",
+      "group": "Water bath",
+      "unit": "cup",
+      "note": "Have ready. Use only enough to reach halfway up the outside of the baking dish."
+    }
+  ],
+  "steps": [
+    {
+      "title": "Preheat the Traeger",
+      "text": "Preheat the Traeger Silverton 610 to 325°F with pecan pellets and the lid closed, about 15 minutes."
+    },
+    {
+      "title": "Smoke the milk",
+      "text": "Pour {milk} into a small shallow metal pan and set it uncovered on the grate. Close the smoker lid and heat for 15 minutes, stirring once."
+    },
+    {
+      "title": "Smooth the vegetables",
+      "text": "Blend {corn}, {poblano} and the warm smoked milk in a deep heatproof jug. Press through a fine sieve into a saucepan, discarding the hulls and skins."
+    },
+    {
+      "title": "Cook the cornmeal",
+      "text": "Bring the strained milk to a gentle simmer. Gradually whisk in {meal} over low heat for 4–6 minutes until thick and smooth."
+    },
+    {
+      "title": "Enrich the base",
+      "text": "Take the pan off heat, stir in {jack} and most of {butter}, then let it cool for about 5 minutes until warm rather than steaming."
+    },
+    {
+      "title": "Fold in the eggs",
+      "text": "Beat {eggs} in a bowl. Whisk a little warm cornmeal into them, then fold the tempered eggs into the remaining cornmeal."
+    },
+    {
+      "title": "Set the water bath",
+      "text": "Grease the baking dish with the remaining butter, add the corn mixture and seal the dish with foil before it goes on the grate. Set it inside the roasting pan on the grate and carefully pour {bath} around it. There is no stall or wrap-temperature trigger."
+    },
+    {
+      "title": "Steam-bake the spoonbread",
+      "text": "Cook at 325°F with the smoker lid closed for 30–50 minutes. Check the middle with a probe, clear of the dish. Finish when it reaches 165°F and the center is softly set with no wet batter."
+    },
+    {
+      "title": "Rest and spoon",
+      "text": "Lift the baking dish out of the bath with dry mitts. Rest covered for 8 minutes, then scoop the spoonbread into soft portions."
+    }
+  ],
+  "notes": "Make ahead: Smoke the milk and blend the vegetables up to a day ahead. Chill promptly, then reheat the base to a simmer before adding cornmeal. Refrigerate cooked spoonbread for up to 3 days. Freezer-Friendly Verdict: Yes. Freeze individual scoops for up to 1 month. The custard softens slightly but still spoons well. Fridge reheat: Place a portion in a covered oven-safe dish with a splash of milk. Install the bottom drip pan in the APO Gen 1 and preheat to 325°F, sous vide mode off, 60% steam, rear element on, top and bottom off. Set the food probe to 165°F in the coldest center; start checking after 12 minutes and heat to 165°F throughout. Freezer reheat: Thaw overnight in the refrigerator and follow the covered APO reheating directions. Option A uses mild poblano. For gentler Option B, use peeled roasted sweet green bell pepper. For dairy-free spoonbread, use plain unsweetened oat milk, omit Jack, and replace the butter with avocado oil.",
+  "source": "Glenn"
+}

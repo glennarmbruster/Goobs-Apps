@@ -1,0 +1,160 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "apo-ginger-pear-braised-beef-with-sesame-gravy",
+  "title": "APO Ginger-Pear Braised Beef with Sesame Gravy",
+  "description": "Lean chuck shoulder replaces fatty short ribs in an Asian pear braise with mild ginger and a glossy sesame gravy.",
+  "category": "Main dish",
+  "tags": [
+    "apo",
+    "extra-sauce",
+    "combi-steam",
+    "beef",
+    "covered-braise",
+    "leftovers"
+  ],
+  "servings": 4,
+  "servingsLabel": "servings",
+  "prepMin": 15,
+  "cookMin": 185,
+  "equipment": [
+    "Anova Precision Oven Gen 1 with food probe, bottom drip pan and middle wire rack",
+    "10-inch HexClad skillet",
+    "Thin-tip instant-read thermometer",
+    "Small deep oven dish and foil",
+    "Fine sieve"
+  ],
+  "ingredients": [
+    {
+      "id": "beef",
+      "qty": 20,
+      "name": "lean beef chuck shoulder",
+      "group": "Beef",
+      "unit": "oz",
+      "note": "Use the lean shoulder clod, trimmed of all fat seams and external fat before weighing."
+    },
+    {
+      "id": "broth",
+      "qty": 1.75,
+      "name": "low-sodium beef broth",
+      "group": "Sauce",
+      "unit": "cup",
+      "note": "Use plain broth made from meat, bones and water without a vegetable seasoning blend."
+    },
+    {
+      "id": "pear",
+      "qty": 0.5,
+      "name": "peeled Asian pear puree",
+      "group": "Gravy",
+      "unit": "cup",
+      "note": "Core and blend until smooth."
+    },
+    {
+      "id": "ginger",
+      "qty": 1,
+      "name": "fresh ginger juice",
+      "group": "Gravy",
+      "unit": "tsp",
+      "note": "Grate and squeeze, discarding fibers."
+    },
+    {
+      "id": "garlic",
+      "qty": 0.5,
+      "name": "jarred minced garlic",
+      "group": "Gravy",
+      "unit": "tsp"
+    },
+    {
+      "id": "aminos",
+      "qty": 2,
+      "name": "coconut aminos",
+      "group": "Gravy",
+      "unit": "tsp",
+      "note": "Choose a lower-sodium variety."
+    },
+    {
+      "id": "paprika",
+      "qty": 0.25,
+      "name": "sweet paprika",
+      "group": "Gravy",
+      "unit": "tsp"
+    },
+    {
+      "id": "sesame",
+      "qty": 0.5,
+      "name": "toasted sesame oil",
+      "group": "Gravy",
+      "unit": "tsp"
+    },
+    {
+      "id": "starch",
+      "qty": 4.5,
+      "name": "cornstarch",
+      "group": "Slurry",
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "qty": 4.5,
+      "name": "cold water",
+      "group": "Slurry",
+      "unit": "tsp"
+    },
+    {
+      "id": "topup",
+      "qty": 0.5,
+      "name": "hot water",
+      "group": "Sauce",
+      "unit": "cup",
+      "note": "Keep ready for adjusting liquid depth or sauce yield; use only as needed."
+    }
+  ],
+  "steps": [
+    {
+      "title": "Preheat the APO",
+      "text": "Fill the water tank and install the bottom drip pan. Preheat to 300°F with sous vide mode off, 80% steam, rear element on, top and bottom elements off. Set the food probe target to 200°F."
+    },
+    {
+      "title": "Portion the lean beef",
+      "text": "Cut {beef} across the grain into pieces about 1 inch thick, trimming away any remaining tough seams."
+    },
+    {
+      "title": "Make the pear braising liquid",
+      "text": "Bring {broth}, {pear}, {ginger}, {garlic}, {aminos} and {paprika} just to a simmer in the HexClad over medium heat."
+    },
+    {
+      "title": "Set up the covered braise",
+      "text": "Nestle the beef in a small deep oven dish and pour in the hot braising liquid. Choose a dish that brings the liquid at least halfway up the pieces. Insert the probe through the side of the largest piece and cover with foil around the cable."
+    },
+    {
+      "title": "Braise until fork-tender",
+      "text": "Cook covered on the middle rack for 1 3/4–3 hours. At the 200°F probe alarm, test several pieces: a fork should turn with little resistance. If needed, continue covered in 10-minute intervals, adding a splash of {topup} if the liquid runs low."
+    },
+    {
+      "title": "Rest in the braise",
+      "text": "Rest covered for 10 minutes and lift the beef into a warm covered bowl with a spoonful of its juices."
+    },
+    {
+      "title": "Smooth the gravy base",
+      "text": "Skim excess fat and press the braising liquid through a fine sieve into the HexClad. Aim for roughly 3/8 cup per serving, adding {topup} as needed. Bring it to a boil."
+    },
+    {
+      "title": "Make the slurry",
+      "text": "Stir {starch} into {water} in a small cup until smooth."
+    },
+    {
+      "title": "Thicken the sauce",
+      "text": "Bring the sauce base to a simmer. Whisk in the freshly stirred slurry and keep it bubbling gently for 1 minute, until it coats the back of a spoon."
+    },
+    {
+      "title": "Finish the gravy",
+      "text": "Swirl {sesame} into the finished gravy off heat."
+    },
+    {
+      "title": "Fold in the beef",
+      "text": "Break the beef across the grain into short, tender pieces and fold them into the gravy. Divide all the gravy among the portions."
+    }
+  ],
+  "notes": "Make ahead: Braise a day ahead and chill the meat in its juices. Lift off the firm fat and thicken the gravy when serving. Option A uses ginger and sweet paprika. For gentler Option B, halve the ginger and omit the paprika. Pass hot honey at the table for anyone who wants more heat. Refrigerate promptly in shallow portions and use within 3 days. Freezer-Friendly Verdict: Yes. Short pieces of beef keep their moisture in the pear gravy for up to 2 months. Fridge reheat: Place one portion and its sauce in a shallow covered dish. Install the APO bottom drip pan and preheat to 325°F, sous vide mode off, 60% steam, rear element on, top and bottom off. Insert the probe in the coldest center and set it to 165°F. Start checking after 12 minutes and heat to 165°F throughout. Freezer reheat: Thaw a single portion in the refrigerator overnight, then use the fridge reheating method. Stir the sauce until smooth.",
+  "source": "Glenn"
+}

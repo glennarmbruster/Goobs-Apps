@@ -1,0 +1,137 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "hickory-braised-pinto-beans-with-molasses-gravy",
+  "title": "Hickory-Braised Pinto Beans with Molasses Gravy",
+  "description": "Soft pinto beans sit in a smoky molasses gravy made with hickory broth, mild paprika and a little smooth tomato puree.",
+  "category": "Sides",
+  "tags": [
+    "pellet-smoker",
+    "beans",
+    "molasses",
+    "leftovers"
+  ],
+  "servings": 4,
+  "servingsLabel": "servings",
+  "prepMin": 10,
+  "cookMin": 75,
+  "equipment": [
+    "Traeger Silverton 610 pellet smoker",
+    "Small enamel Dutch oven with lid",
+    "10-inch HexClad skillet",
+    "Potato masher",
+    "Small mixing bowl",
+    "Thin-tip instant-read thermometer"
+  ],
+  "ingredients": [
+    {
+      "id": "beans",
+      "qty": 3,
+      "name": "fully cooked pinto beans",
+      "group": "Beans",
+      "unit": "cup",
+      "note": "Choose no-salt-added canned beans or home-cooked beans that mash easily; rinse and drain."
+    },
+    {
+      "id": "broth",
+      "qty": 1.75,
+      "name": "low-sodium mushroom broth",
+      "group": "Liquid",
+      "unit": "cup",
+      "note": "Choose plain broth made with mushrooms and water."
+    },
+    {
+      "id": "paprika",
+      "qty": 0.5,
+      "name": "sweet smoked paprika",
+      "group": "Beans",
+      "unit": "tsp"
+    },
+    {
+      "id": "molasses",
+      "qty": 1.5,
+      "name": "blackstrap molasses",
+      "group": "Gravy",
+      "unit": "tsp"
+    },
+    {
+      "id": "sugar",
+      "qty": 1,
+      "name": "dark brown sugar",
+      "group": "Gravy",
+      "unit": "tsp"
+    },
+    {
+      "id": "tomato",
+      "qty": 0.25,
+      "name": "smooth no-salt-added tomato puree",
+      "group": "Gravy",
+      "unit": "cup",
+      "note": "Plain strained puree."
+    },
+    {
+      "id": "mustard",
+      "qty": 1,
+      "name": "smooth Löwensenf Bavarian mustard",
+      "group": "Gravy",
+      "unit": "tsp"
+    },
+    {
+      "id": "vinegar",
+      "qty": 0.5,
+      "name": "apple cider vinegar",
+      "group": "Gravy",
+      "unit": "tsp"
+    },
+    {
+      "id": "starch",
+      "qty": 3,
+      "name": "cornstarch",
+      "group": "Slurry",
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "qty": 3,
+      "name": "cold water",
+      "group": "Slurry",
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Preheat the Traeger",
+      "text": "Preheat the Traeger Silverton 610 to 275°F with hickory pellets and the lid closed, about 15 minutes."
+    },
+    {
+      "title": "Smoke the paprika broth",
+      "text": "Bring {broth} and {paprika} to a simmer in the Dutch oven on the stove. Set the uncovered pot on the grate for 20 minutes with the Traeger lid closed."
+    },
+    {
+      "title": "Braise the beans",
+      "text": "Stir {beans} into the broth, fit the pot lid immediately and keep the smoker at 275°F. There is no stall or wrap temperature. Braise for 25–40 minutes, until the bean centers reach 165°F and crush easily."
+    },
+    {
+      "title": "Rest the beans",
+      "text": "Rest covered for 5 minutes. Ladle most of the hot cooking liquid into the HexClad, leaving a little around the beans."
+    },
+    {
+      "title": "Build the molasses gravy",
+      "text": "Whisk {molasses}, {sugar}, {tomato}, {mustard} and {vinegar} into the cooking liquid in the HexClad. Bring the smooth base to a simmer."
+    },
+    {
+      "title": "Mix the slurry",
+      "text": "Stir {starch} into {water} until completely smooth."
+    },
+    {
+      "title": "Thicken the sauce",
+      "text": "Bring the base to a simmer. Whisk in the freshly stirred slurry and let it bubble for 1 minute, stirring until it coats the back of a spoon."
+    },
+    {
+      "title": "Coat and soften",
+      "text": "Crush about a third of the beans against the side of the pot to break their skins. Fold the soft beans into the gravy in the HexClad and divide them among shallow bowls."
+    }
+  ],
+  "notes": "Make ahead: Fully cook the beans ahead if starting from dry. The smoker stage uses already tender beans. Refrigerate the finished beans for up to 3 days. Freezer-Friendly Verdict: Yes. Freeze with enough gravy to cover for up to 2 months. The beans soften further and can be mashed into the sauce. Fridge reheat: Warm a single portion, covered, in the HexClad with a splash of broth or water. Stir or turn gently and heat to 165°F throughout. Freezer reheat: Thaw overnight in the refrigerator. Use the same covered reheating method and heat the center to 165°F. Option A uses smooth tomato and vinegar. For gentler Option B, replace the puree with an equal volume of smooth peeled sweet pepper puree and omit the vinegar.",
+  "source": "Glenn"
+}

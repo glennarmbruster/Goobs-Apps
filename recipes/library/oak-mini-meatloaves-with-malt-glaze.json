@@ -1,0 +1,182 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "oak-mini-meatloaves-with-malt-glaze",
+  "title": "Oak-Steamed Mini Meatloaves with Malt Glaze",
+  "description": "Small lean beef loaves steam over oak-smoked broth and are served in a thick, smooth malt glaze.",
+  "category": "Main dish",
+  "tags": [
+    "pellet-smoker",
+    "extra-sauce",
+    "beef",
+    "meatloaf",
+    "leftovers"
+  ],
+  "servings": 4,
+  "servingsLabel": "servings",
+  "prepMin": 15,
+  "cookMin": 95,
+  "equipment": [
+    "Traeger Silverton 610 pellet smoker",
+    "Small enamel Dutch oven with tight lid, sized to hold the food snugly",
+    "10-inch HexClad skillet",
+    "Thin-tip instant-read thermometer",
+    "Low trivet and small heatproof metal plate"
+  ],
+  "ingredients": [
+    {
+      "id": "beef",
+      "name": "93% lean ground beef",
+      "group": "Loaves",
+      "qty": 18,
+      "unit": "oz"
+    },
+    {
+      "id": "crumbs",
+      "name": "fine plain breadcrumbs",
+      "group": "Loaves",
+      "qty": 0.25,
+      "unit": "cup",
+      "note": "Choose low-sodium, dairy-free crumbs with no seasoning."
+    },
+    {
+      "id": "milk",
+      "name": "plain milk",
+      "group": "Loaves",
+      "qty": 0.25,
+      "unit": "cup"
+    },
+    {
+      "id": "egg",
+      "name": "large egg",
+      "group": "Loaves",
+      "qty": 1
+    },
+    {
+      "id": "garlic",
+      "name": "granulated garlic",
+      "group": "Loaves",
+      "qty": 0.5,
+      "unit": "tsp"
+    },
+    {
+      "id": "onion",
+      "name": "granulated onion",
+      "group": "Loaves",
+      "qty": 0.25,
+      "unit": "tsp"
+    },
+    {
+      "id": "broth",
+      "name": "low-sodium beef broth",
+      "group": "Braising liquid",
+      "qty": 1.75,
+      "unit": "cup",
+      "note": "Use plain broth made from meat, bones and water, with no added vegetable blend or seasonings."
+    },
+    {
+      "id": "tomato",
+      "name": "smooth no-salt-added tomato puree",
+      "group": "Glaze",
+      "qty": 2,
+      "unit": "tbsp",
+      "note": "Plain, strained smooth."
+    },
+    {
+      "id": "vinegar",
+      "name": "malt vinegar",
+      "group": "Glaze",
+      "qty": 1,
+      "unit": "tsp"
+    },
+    {
+      "id": "sugar",
+      "name": "dark brown sugar",
+      "group": "Glaze",
+      "qty": 2,
+      "unit": "tsp"
+    },
+    {
+      "id": "starch",
+      "name": "cornstarch",
+      "group": "Sauce",
+      "qty": 4,
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "name": "cold water",
+      "group": "Sauce",
+      "qty": 4,
+      "unit": "tsp"
+    },
+    {
+      "id": "topup",
+      "qty": 1,
+      "unit": "cup",
+      "name": "hot drinking water",
+      "note": "Keep ready; use only as needed to maintain liquid depth or make up the sauce measure.",
+      "group": "Braising liquid"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Heat the Traeger",
+      "text": "Preheat the Traeger Silverton 610 to 300°F with oak pellets, about 15 minutes with the lid closed."
+    },
+    {
+      "title": "Warm the braising liquid",
+      "text": "Bring {broth} just to a simmer in the open Dutch oven on the stove, about 3–6 minutes."
+    },
+    {
+      "title": "Smoke the braising liquid",
+      "text": "Move the uncovered pot to the Traeger grate. Close the smoker lid and smoke the liquid for 15 minutes."
+    },
+    {
+      "title": "Soften the crumbs",
+      "text": "Soak {crumbs} in {milk} for 5 minutes until soft."
+    },
+    {
+      "title": "Mix the loaves",
+      "text": "Gently fold {beef}, {egg}, {garlic} and {onion} into the softened crumbs just until combined."
+    },
+    {
+      "title": "Shape the portions",
+      "text": "Form one small loaf per serving of even size and about 1 inch high on a lightly moistened heatproof metal plate that fits inside the pot."
+    },
+    {
+      "title": "Cover the steamer",
+      "text": "Place a short trivet in the Dutch oven and set the plate above the hot broth. Cover the pot immediately with its lid and check that the plate clears the liquid. No stall wrap is needed."
+    },
+    {
+      "title": "Steam the loaves",
+      "text": "Cook covered at 300°F for 25–45 minutes until the center of every loaf reaches 160°F."
+    },
+    {
+      "title": "Rest in the juices",
+      "text": "Rest the covered loaves off heat for 5 minutes."
+    },
+    {
+      "title": "Measure the drippings",
+      "text": "Lift the plate out carefully. Combine the cooked plate juices with the broth and skim the fat. Measure 1 1/2 cups into the HexClad, adding {topup} if needed."
+    },
+    {
+      "title": "Build the malt glaze",
+      "text": "Whisk {tomato}, {vinegar} and {sugar} into the liquid until smooth."
+    },
+    {
+      "title": "Mix the slurry",
+      "text": "Stir {starch} into {water} until completely smooth."
+    },
+    {
+      "title": "Thicken the sauce",
+      "text": "Bring the skillet liquid to a boil. Whisk in the stirred slurry and simmer for 1 minute, stirring, until the sauce coats the back of a spoon."
+    },
+    {
+      "title": "Glaze each serving",
+      "text": "Split each loaf into soft slices on its plate and ladle glaze over and between them."
+    }
+  ],
+  "notes": "Make ahead: Shape the loaves up to a day ahead, cover and refrigerate. Option A uses tomato and malt vinegar. For gentler Option B, replace the puree with smooth unsweetened apple butter and leave out the vinegar. Plain unsweetened oat milk works in the breadcrumb mixture. Refrigerate promptly in shallow portions and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze individual portions surrounded by sauce for up to 2 months to protect their moisture. Fridge reheat: Place one portion with its sauce in a covered shallow dish. Install the bottom drip pan in the APO and preheat to 325°F, sous vide mode off, rear heat on, top and bottom off, 60% steam. Set the probe to 165°F in the center. Start checking after 12 minutes and heat until 165°F throughout. Freezer reheat: Thaw overnight in the refrigerator. Follow the fridge reheating directions and stir the sauce smooth.",
+  "source": "Glenn"
+}

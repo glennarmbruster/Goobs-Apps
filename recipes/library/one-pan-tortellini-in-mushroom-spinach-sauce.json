@@ -1,0 +1,121 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "one-pan-tortellini-in-mushroom-spinach-sauce",
+  "title": "One-Pan Tortellini in Mushroom-Spinach Sauce",
+  "description": "Cheese tortellini cook directly in mushroom broth that thickens around the pasta with spinach and Parmesan.",
+  "category": "Main dish",
+  "tags": [
+    "stovetop",
+    "weeknight",
+    "pasta",
+    "one-pan",
+    "vegetarian",
+    "extra-sauce"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 10,
+  "cookMin": 22,
+  "equipment": [
+    "12-inch HexClad skillet with lid"
+  ],
+  "ingredients": [
+    {
+      "id": "pasta",
+      "qty": 9,
+      "name": "refrigerated cheese tortellini",
+      "group": "Pasta",
+      "unit": "oz",
+      "note": "Choose a short-cook variety with plain cheese filling, vegetarian rennet and the lowest available sodium."
+    },
+    {
+      "id": "mushrooms",
+      "qty": 6,
+      "name": "cremini mushrooms",
+      "group": "Sauce",
+      "unit": "oz",
+      "note": "Mince finely or pulse in a processor."
+    },
+    {
+      "id": "broth",
+      "qty": 1.75,
+      "name": "low-sodium mushroom broth",
+      "group": "Sauce",
+      "unit": "cup",
+      "note": "Use plain mushroom broth made with mushrooms and water."
+    },
+    {
+      "id": "garlic",
+      "qty": 0.5,
+      "name": "jarred minced garlic",
+      "group": "Sauce",
+      "unit": "tsp"
+    },
+    {
+      "id": "spinach",
+      "qty": 1.5,
+      "name": "baby spinach",
+      "group": "Sauce",
+      "unit": "oz",
+      "note": "Remove tough stems and chop finely."
+    },
+    {
+      "id": "parmesan",
+      "qty": 1,
+      "name": "finely grated vegetarian Parmesan-style cheese",
+      "group": "Sauce",
+      "unit": "tbsp"
+    },
+    {
+      "id": "cheese",
+      "qty": 8,
+      "name": "plain part-skim ricotta",
+      "group": "Sauce",
+      "unit": "oz",
+      "note": "Choose a lower-sodium variety; whisk smooth before using."
+    },
+    {
+      "id": "starch",
+      "qty": 2,
+      "name": "cornstarch",
+      "group": "Sauce",
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "qty": 2,
+      "name": "cold water",
+      "group": "Sauce",
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Soften the mushrooms",
+      "text": "Place {mushrooms} and {garlic} in the HexClad with a splash of {broth}. Cover and cook over medium-low for 5–7 minutes, until the mushrooms are soft."
+    },
+    {
+      "title": "Simmer the pasta in sauce",
+      "text": "Add the remaining {broth} and bring to a simmer. Add {pasta} directly to the mushroom base, cover and simmer gently for the package time, typically 3–6 minutes. Stir once and check a folded edge for tenderness."
+    },
+    {
+      "title": "Wilt the spinach",
+      "text": "Fold {spinach} into the pasta and cook, covered, for 1–2 minutes, until soft. Keep the cooking liquid in the pan."
+    },
+    {
+      "title": "Mix the slurry",
+      "text": "Stir {starch} into {water} in a small cup until smooth."
+    },
+    {
+      "title": "Bind the pasta sauce",
+      "text": "Stir the slurry into the bubbling liquid around the tortellini and simmer gently for 1 minute, folding carefully, until the sauce coats the back of a spoon."
+    },
+    {
+      "title": "Finish the pan",
+      "text": "Off heat, loosen {cheese} in a bowl with a spoonful of the warm sauce. Fold it into the tortellini with {parmesan} until creamy. Spoon the pasta and extra mushroom sauce into both bowls."
+    }
+  ],
+  "notes": "Make ahead: Mince the mushrooms and spinach the day before and refrigerate separately. Cook the tortellini directly in the sauce just before serving. For dairy-free bowls, use short-cook dairy-free tortellini, replace the ricotta with an equal weight of blended silken tofu and omit the Parmesan. Whisk the tofu smooth before stirring it into the hot pasta. Refrigerate promptly in shallow portions and use within 3 days. Freezer-Friendly Verdict: No. Filled pasta absorbs the sauce during freezing and can split when reheated. Freeze the mushroom base separately if desired. Fridge reheat: Warm a single portion with its sauce in a covered HexClad skillet over medium-low, adding a splash of water if thick. Stir or turn gently and begin checking after 5 minutes. Heat the food to 165°F throughout. Freezer reheat: If already frozen, thaw overnight in the refrigerator and follow the fridge reheating directions.",
+  "source": "Glenn"
+}

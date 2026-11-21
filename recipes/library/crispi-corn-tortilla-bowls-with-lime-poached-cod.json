@@ -1,0 +1,144 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "crispi-corn-tortilla-bowls-with-lime-poached-cod",
+  "title": "Crispi Corn Tortilla Bowls with Lime-Poached Cod",
+  "description": "Soft corn tortillas and cabbage braise in the Crispi while flaky cod poaches gently for a taco bowl with lime gravy.",
+  "category": "Main dish",
+  "tags": [
+    "ninja-crispi",
+    "weeknight",
+    "cod",
+    "soft-tacos",
+    "extra-sauce"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 12,
+  "cookMin": 32,
+  "equipment": [
+    "Ninja Crispi PowerPod with US Bake preset",
+    "Ninja Crispi 6-cup glass container",
+    "10-inch HexClad skillet with lid",
+    "Thin-tip instant-read thermometer",
+    "Silicone spoon",
+    "Fine sieve",
+    "Butter knife or fork for checking fish"
+  ],
+  "ingredients": [
+    {
+      "id": "cod",
+      "qty": 9,
+      "name": "skinless boneless cod",
+      "group": "Fish",
+      "unit": "oz",
+      "note": "Fully thawed, pin bones removed; cut across the loin into portions no thicker than 1/2 inch."
+    },
+    {
+      "id": "tortillas",
+      "qty": 2,
+      "name": "soft corn tortillas",
+      "group": "Base",
+      "note": "Small plain tortillas, about 5 inches across; cut into short narrow ribbons."
+    },
+    {
+      "id": "cabbage",
+      "qty": 0.5,
+      "name": "green cabbage",
+      "group": "Base",
+      "unit": "cup",
+      "note": "Remove the core and thick ribs; shred very finely, then cut into short shreds."
+    },
+    {
+      "id": "broth",
+      "qty": 2,
+      "name": "low-sodium chicken broth",
+      "group": "Sauce",
+      "unit": "cup",
+      "note": "Choose plain meat-and-bone broth without a vegetable blend."
+    },
+    {
+      "id": "ancho",
+      "qty": 1,
+      "name": "pure mild ground ancho chile",
+      "group": "Base",
+      "unit": "pinch"
+    },
+    {
+      "id": "lime",
+      "qty": 0.75,
+      "name": "strained lime juice",
+      "group": "Gravy",
+      "unit": "tsp"
+    },
+    {
+      "id": "crema",
+      "qty": 1,
+      "name": "plain whipped cream cheese",
+      "group": "Gravy",
+      "unit": "tbsp"
+    },
+    {
+      "id": "starch",
+      "qty": 2.5,
+      "name": "cornstarch",
+      "group": "Sauce",
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "qty": 2.5,
+      "name": "cold water",
+      "group": "Sauce",
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Set up the Crispi",
+      "text": "Use the room-temperature 6-cup Crispi glass container without an adapter. Leave out the crisper plate so the food sits in liquid. Load the container before starting the PowerPod and keep the storage lid off during cooking."
+    },
+    {
+      "title": "Moisten the tortilla base",
+      "text": "Toss {tortillas}, {cabbage} and {ancho} with one quarter of {broth} in the unheated glass. Press the ribbons down into the liquid."
+    },
+    {
+      "title": "Braise the cabbage",
+      "text": "Seat the PowerPod and select Bake for 10 minutes. Fold the top ribbons into the moist center with a silicone spoon. Cook in 2–3 minute intervals until the cabbage crushes easily and the tortillas are softened, about 12–20 minutes total."
+    },
+    {
+      "title": "Set the poaching temperature",
+      "text": "Meanwhile heat the remaining {broth} in the HexClad to 140°F, checking the liquid with a thermometer. Adjust the burner to maintain the poaching liquid at 139–140°F."
+    },
+    {
+      "title": "Poach the cod",
+      "text": "Lay {cod} in the broth in one layer. Keep the pan covered between thermometer checks and maintain the liquid at 139–140°F, checking every few minutes. Allow about 12–25 minutes for the thickest centers to reach 138–140°F."
+    },
+    {
+      "title": "Check the flake",
+      "text": "Check each thickest center: it must be opaque throughout and flake easily with a fork. If it is still translucent or sticks together, continue in the 139–140°F liquid, rechecking every 2 minutes. Transfer cooked portions to warm plates with a spoonful of broth."
+    },
+    {
+      "title": "Measure the gravy",
+      "text": "Strain the poaching broth and return about 1/2 cup per serving to the HexClad. Bring it to a full boil."
+    },
+    {
+      "title": "Mix the slurry",
+      "text": "Stir {starch} into {water} in a small cup until smooth."
+    },
+    {
+      "title": "Thicken the sauce",
+      "text": "Whisk the freshly stirred slurry into the simmering sauce and stir for 1 minute, until it coats the back of a spoon."
+    },
+    {
+      "title": "Finish the lime gravy",
+      "text": "Whisk {crema} and {lime} into the gravy off heat until smooth."
+    },
+    {
+      "title": "Assemble the bowls",
+      "text": "Divide the soft tortilla mixture between two bowls. Place the cod on top in moist flakes and coat generously with gravy."
+    }
+  ],
+  "notes": "Make ahead: Cut the cabbage and tortilla ribbons ahead. Keep the ribbons dry until cooking and poach the fish just before serving. Option A uses lime and mild ancho. For gentler Option B, omit both and add finely minced parsley to the gravy. For dairy-free sauce omit the cream cheese. Refrigerate promptly in shallow portions and use within 3 days. Freezer-Friendly Verdict: No. The softened tortillas lose their shape when frozen and the thin cod flakes can firm up after reheating. Fridge reheat: Warm a single portion with its sauce in a covered HexClad skillet over medium-low, adding a splash of water if thick. Stir or turn gently and begin checking after 5 minutes. Heat the cod to 165°F throughout. Freezer reheat: If already frozen, thaw overnight in the refrigerator and follow the fridge reheating directions.",
+  "source": "Glenn"
+}

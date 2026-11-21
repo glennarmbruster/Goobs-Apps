@@ -1,0 +1,147 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "pecan-pork-medallions-with-apricot-mustard-sauce",
+  "title": "Pecan Pork Medallions with Apricot-Mustard Sauce",
+  "description": "Thin, lean pork loin medallions poach under cover and are turned through a smooth apricot and Bavarian mustard sauce.",
+  "category": "Main dish",
+  "tags": [
+    "pellet-smoker",
+    "extra-sauce",
+    "pork-loin",
+    "medallions",
+    "poached"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 10,
+  "cookMin": 60,
+  "equipment": [
+    "Traeger Silverton 610 pellet smoker",
+    "Small enamel Dutch oven with tight lid, sized to hold the food snugly",
+    "10-inch HexClad skillet",
+    "Thin-tip instant-read thermometer"
+  ],
+  "ingredients": [
+    {
+      "id": "pork",
+      "name": "boneless center-cut pork loin",
+      "group": "Pork",
+      "qty": 10,
+      "unit": "oz",
+      "note": "Intact, unenhanced loin with exterior fat trimmed."
+    },
+    {
+      "id": "broth",
+      "name": "low-sodium chicken broth",
+      "group": "Braising liquid",
+      "qty": 1,
+      "unit": "cup",
+      "note": "Use plain broth made from meat, bones and water, with no added vegetable blend or seasonings."
+    },
+    {
+      "id": "ginger",
+      "name": "ground ginger",
+      "group": "Sauce",
+      "qty": 0.125,
+      "unit": "tsp"
+    },
+    {
+      "id": "garlic",
+      "name": "granulated garlic",
+      "group": "Sauce",
+      "qty": 0.25,
+      "unit": "tsp"
+    },
+    {
+      "id": "apricot",
+      "name": "smooth apricot preserves",
+      "group": "Sauce",
+      "qty": 1.5,
+      "unit": "tbsp",
+      "note": "Sieve out fruit skins or pieces."
+    },
+    {
+      "id": "mustard",
+      "name": "smooth Löwensenf Bavarian mustard",
+      "group": "Sauce",
+      "qty": 1,
+      "unit": "tsp",
+      "note": "Pass through a fine sieve if visibly grainy."
+    },
+    {
+      "id": "starch",
+      "name": "cornstarch",
+      "group": "Sauce",
+      "qty": 2,
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "name": "cold water",
+      "group": "Sauce",
+      "qty": 2,
+      "unit": "tsp"
+    },
+    {
+      "id": "topup",
+      "qty": 0.5,
+      "unit": "cup",
+      "name": "hot drinking water",
+      "note": "Keep ready; use only as needed to maintain liquid depth or make up the sauce measure.",
+      "group": "Braising liquid"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Heat the Traeger",
+      "text": "Preheat the Traeger Silverton 610 to 275°F with pecan pellets, about 15 minutes with the lid closed."
+    },
+    {
+      "title": "Warm the braising liquid",
+      "text": "Bring {broth} with {ginger} and {garlic} just to a simmer in the open Dutch oven on the stove, about 3–6 minutes."
+    },
+    {
+      "title": "Smoke the braising liquid",
+      "text": "Move the uncovered pot to the Traeger grate. Close the smoker lid and smoke the liquid for 15 minutes."
+    },
+    {
+      "title": "Slice the loin",
+      "text": "Cut {pork} across the grain into 3/8-inch medallions of even thickness."
+    },
+    {
+      "title": "Cover immediately",
+      "text": "Arrange the medallions in a single layer in the smoked broth. Top up with {topup} if needed to just cover the meat, then fit the lid immediately. No stall wrap is needed."
+    },
+    {
+      "title": "Poach the medallions",
+      "text": "Cook covered at 275°F for 8–18 minutes, checking early from the side. Remove each medallion to a covered dish with a little hot broth when its center reaches 145°F."
+    },
+    {
+      "title": "Rest in the juices",
+      "text": "Rest the covered pork off heat for 3 minutes."
+    },
+    {
+      "title": "Measure the sauce base",
+      "text": "Skim excess fat from the braising liquid. Measure 3/4 cup into the HexClad skillet, topping up with {topup} if needed."
+    },
+    {
+      "title": "Melt the preserves",
+      "text": "Stir {apricot} and {mustard} into the measured liquid over medium-low heat until smooth."
+    },
+    {
+      "title": "Mix the slurry",
+      "text": "Stir {starch} into {water} until completely smooth."
+    },
+    {
+      "title": "Thicken the sauce",
+      "text": "Bring the skillet liquid to a boil. Whisk in the stirred slurry and simmer for 1 minute, stirring, until the sauce coats the back of a spoon."
+    },
+    {
+      "title": "Coat and serve",
+      "text": "Lay the medallions in the apricot sauce and turn once. Fan them on the plates, spooning plenty of sauce over each piece."
+    }
+  ],
+  "notes": "Make ahead: The medallions can be sliced and refrigerated the day before. Option A uses Bavarian mustard. For gentler Option B, omit the mustard and ginger and finish with a little more smooth apricot puree. Refrigerate promptly in shallow portions and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze individual portions surrounded by sauce for up to 2 months to protect their moisture. Fridge reheat: Warm one portion covered in its sauce in the HexClad over medium-low heat. Turn gently, adding a splash of water if needed. Check after 6 minutes and continue until the food reaches 165°F throughout. Freezer reheat: Thaw overnight in the refrigerator. Follow the fridge reheating directions and stir the sauce smooth.",
+  "source": "Glenn"
+}

@@ -1,0 +1,120 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "cremini-marsala-and-thyme-pan-gravy",
+  "title": "Cremini, Marsala and Thyme Pan Gravy",
+  "description": "Finely chopped creminis simmer with thyme and dry Marsala before being blended into a rich mushroom gravy.",
+  "category": "Sauce & condiment",
+  "tags": [
+    "pan-sauce",
+    "hexclad",
+    "mushroom"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 9,
+  "cookMin": 32,
+  "equipment": [
+    "10-inch HexClad skillet",
+    "Immersion blender and heatproof jug",
+    "Fine-mesh sieve",
+    "Small mixing bowl"
+  ],
+  "ingredients": [
+    {
+      "id": "mushrooms",
+      "qty": 3,
+      "name": "cremini mushrooms",
+      "group": "Gravy",
+      "unit": "oz",
+      "note": "Wipe clean and mince."
+    },
+    {
+      "id": "shallot",
+      "qty": 1.5,
+      "name": "minced shallot",
+      "group": "Gravy",
+      "unit": "tbsp",
+      "note": "Caramelize completely."
+    },
+    {
+      "id": "oil",
+      "qty": 1,
+      "name": "avocado oil",
+      "group": "Gravy",
+      "unit": "tsp"
+    },
+    {
+      "id": "broth",
+      "qty": 0.875,
+      "name": "low-sodium chicken broth",
+      "group": "Liquid",
+      "unit": "cup",
+      "note": "Use plain meat-and-bone broth without a vegetable seasoning blend."
+    },
+    {
+      "id": "marsala",
+      "qty": 2,
+      "name": "dry Marsala wine",
+      "group": "Gravy",
+      "unit": "tbsp",
+      "note": "Choose unsalted drinking wine."
+    },
+    {
+      "id": "thyme",
+      "qty": 1,
+      "name": "fresh thyme",
+      "group": "Gravy",
+      "unit": "sprig"
+    },
+    {
+      "id": "cheese",
+      "qty": 1,
+      "name": "plain whipped cream cheese",
+      "group": "Gravy",
+      "unit": "tbsp"
+    },
+    {
+      "id": "starch",
+      "qty": 2,
+      "name": "cornstarch",
+      "group": "Slurry",
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "qty": 2,
+      "name": "cold water",
+      "group": "Slurry",
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Caramelize the shallot",
+      "text": "Soften {shallot} in {oil} in the HexClad over medium-low for 12–16 minutes. Stir often, using splashes of {broth} to keep the shallot moist until soft and deep gold."
+    },
+    {
+      "title": "Simmer the mushrooms",
+      "text": "Move the skillet off the burner to add {marsala}, then add {mushrooms}, {thyme} and the remaining {broth}. Return to medium-low heat, cover and simmer 6–8 minutes until the mushrooms are very tender."
+    },
+    {
+      "title": "Puree the gravy base",
+      "text": "Remove the thyme. Blend the hot mixture in a deep heatproof jug until smooth and strain it back into the skillet."
+    },
+    {
+      "title": "Mix the slurry",
+      "text": "Stir {starch} into {water} until completely smooth."
+    },
+    {
+      "title": "Thicken the sauce",
+      "text": "Bring the base to a simmer. Whisk in the freshly stirred slurry and let it bubble for 1 minute, stirring until it coats the back of a spoon."
+    },
+    {
+      "title": "Finish with cream cheese",
+      "text": "Off heat, whisk {cheese} with a spoonful of warm gravy, then blend it back into the pan. Divide the gravy between the plates or ladle it over mashed potatoes."
+    }
+  ],
+  "notes": "Make ahead: Blend the mushroom base up to a day ahead and refrigerate. Keep finished gravy chilled for up to 3 days. Freezer-Friendly Verdict: Yes. Freeze the base for up to 2 months and add cream cheese after reheating for a smooth finish. Fridge reheat: Warm in the HexClad over medium-low, stirring with a splash of water or broth if needed. Bring the whole sauce briefly to a rolling boil, then serve. Freezer reheat: Thaw overnight in the refrigerator. Whisk smooth and follow the fridge reheating directions. Option A includes Marsala. For a gentler, alcohol-free Option B, replace it with additional plain broth. For dairy-free gravy omit the cream cheese and rely on the mushroom puree and slurry.",
+  "source": "Glenn"
+}

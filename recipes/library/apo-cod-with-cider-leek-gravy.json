@@ -1,0 +1,130 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "apo-cod-with-cider-leek-gravy",
+  "title": "APO Cod with Silky Cider-Leek Gravy",
+  "description": "Bagless cod cooks through in full steam and is served on a smooth gravy of slowly softened leek and sweet apple cider.",
+  "category": "Main dish",
+  "tags": [
+    "apo",
+    "extra-sauce",
+    "bagless-sous-vide",
+    "cod",
+    "cider"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 12,
+  "cookMin": 60,
+  "equipment": [
+    "Anova Precision Oven Gen 1 with food probe, bottom drip pan and middle wire rack",
+    "Shallow stainless steel baking pan",
+    "10-inch HexClad skillet",
+    "Thin-tip instant-read thermometer",
+    "Immersion blender and heatproof jug",
+    "Fine sieve"
+  ],
+  "ingredients": [
+    {
+      "id": "cod",
+      "qty": 9,
+      "name": "skinless boneless cod loin",
+      "group": "Fish",
+      "unit": "oz",
+      "note": "Fully thawed and pin bones removed; portion horizontally to a uniform 3/4 inch."
+    },
+    {
+      "id": "leek",
+      "qty": 0.25,
+      "name": "white leek",
+      "group": "Gravy",
+      "unit": "cup",
+      "note": "Thinly slice, rinse between the layers and drain."
+    },
+    {
+      "id": "butter",
+      "qty": 1,
+      "name": "unsalted butter",
+      "group": "Gravy",
+      "unit": "tsp"
+    },
+    {
+      "id": "broth",
+      "qty": 0.75,
+      "name": "low-sodium chicken broth",
+      "group": "Sauce",
+      "unit": "cup",
+      "note": "Use plain broth made from meat, bones and water without a vegetable seasoning blend."
+    },
+    {
+      "id": "cider",
+      "qty": 0.25,
+      "name": "unsweetened apple cider",
+      "group": "Gravy",
+      "unit": "cup",
+      "note": "Still, nonalcoholic."
+    },
+    {
+      "id": "parsley",
+      "qty": 1,
+      "name": "fresh flat-leaf parsley leaves",
+      "group": "Gravy",
+      "unit": "tsp",
+      "note": "Finely mince, discarding stems."
+    },
+    {
+      "id": "starch",
+      "qty": 2.25,
+      "name": "cornstarch",
+      "group": "Slurry",
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "qty": 2.25,
+      "name": "cold water",
+      "group": "Slurry",
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Preheat the APO",
+      "text": "Fill the water tank and install the bottom drip pan. Preheat to 140°F with sous vide mode on, 100% steam, rear element on, top and bottom elements off. Set the food probe target to 139°F."
+    },
+    {
+      "title": "Set the cod in the pan",
+      "text": "Lay {cod} unbagged in the shallow pan on the middle rack. Insert the probe from the side into the thickest center. Begin cooking immediately and set a separate 25-minute reminder for the first temperature check; respond sooner if the probe signals."
+    },
+    {
+      "title": "Soften the leek",
+      "text": "While the cod steams, cover {leek}, {butter} and a spoonful of {broth} in the HexClad over low heat for 10–12 minutes until completely soft. Stir twice and add a splash more broth if needed."
+    },
+    {
+      "title": "Blend the gravy base",
+      "text": "Add the remaining {broth}, {cider} and {parsley} and simmer for 3 minutes. Purée in a deep heatproof jug, pass through a fine sieve to remove any fibers and return the gravy to the skillet."
+    },
+    {
+      "title": "Make the slurry",
+      "text": "Stir {starch} into {water} in a small cup until smooth."
+    },
+    {
+      "title": "Thicken the sauce",
+      "text": "Bring the sauce base to a simmer. Whisk in the freshly stirred slurry and keep it bubbling gently for 1 minute, until it coats the back of a spoon."
+    },
+    {
+      "title": "Steam the fish",
+      "text": "Cook until the probe reaches 139°F, generally 30–65 minutes from refrigerated. Start checking at 25 minutes."
+    },
+    {
+      "title": "Check for doneness",
+      "text": "At 139°F, check the thickest center of each portion for flesh that is opaque all the way through and flakes easily with a fork. If either cue is missing, continue in the 140°F full-steam oven and recheck every 3 minutes before serving."
+    },
+    {
+      "title": "Plate over gravy",
+      "text": "Spoon half the gravy into two shallow bowls. Lift the cooked cod onto it and ladle the remaining gravy over the fish."
+    }
+  ],
+  "notes": "Make ahead: Soften and blend the leeks a day ahead and chill. Add the slurry when ready to serve. For the initial fish cook, verify both opacity and easy flaking at the stated probe target. Option A uses sweet cider. For gentler Option B, replace it with more broth. For dairy-free gravy replace the butter with avocado oil. Refrigerate promptly in shallow portions and use within 3 days. Freezer-Friendly Verdict: No. Delicate cod flakes can turn firm or break up after freezing; the separate gravy can be frozen for up to 2 months. Fridge reheat: Place one portion and its sauce in a shallow covered dish. Install the APO bottom drip pan and preheat to 325°F, sous vide mode off, 60% steam, rear element on, top and bottom off. Insert the probe in the coldest center and set it to 165°F. Start checking after 12 minutes and heat to 165°F throughout. Freezer reheat: If previously frozen, thaw in the refrigerator overnight and use the same covered reheating method.",
+  "source": "Glenn"
+}

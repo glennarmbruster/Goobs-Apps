@@ -1,0 +1,132 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "patty-melt-bowls-with-caramelized-onion-gravy",
+  "title": "Patty Melt Bowls with Caramelized Onion Gravy",
+  "description": "Soft beef patties carry the flavors of rye and Swiss beneath a ladle of caramelized onion gravy.",
+  "category": "Main dish",
+  "tags": [
+    "stovetop",
+    "weeknight",
+    "beef",
+    "cast-iron",
+    "extra-sauce"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 12,
+  "cookMin": 38,
+  "equipment": [
+    "10-inch cast iron skillet with lid",
+    "Thin-tip instant-read thermometer",
+    "Immersion blender and deep heatproof jug"
+  ],
+  "ingredients": [
+    {
+      "id": "beef",
+      "qty": 9,
+      "name": "93% lean ground beef",
+      "group": "Patties",
+      "unit": "oz"
+    },
+    {
+      "id": "rye",
+      "qty": 0.5,
+      "name": "soft seedless rye bread",
+      "group": "Patties",
+      "unit": "slice",
+      "note": "Remove crust and tear finely; choose a lower-sodium loaf."
+    },
+    {
+      "id": "milk",
+      "qty": 2,
+      "name": "plain milk",
+      "group": "Patties",
+      "unit": "tbsp"
+    },
+    {
+      "id": "onion",
+      "qty": 1,
+      "name": "small yellow onion",
+      "group": "Gravy",
+      "note": "Peel and cut into very thin half-moons."
+    },
+    {
+      "id": "butter",
+      "qty": 1,
+      "name": "unsalted butter",
+      "group": "Gravy",
+      "unit": "tsp"
+    },
+    {
+      "id": "broth",
+      "qty": 1,
+      "name": "low-sodium beef broth",
+      "group": "Sauce",
+      "unit": "cup",
+      "note": "Choose plain meat-and-bone broth without a vegetable blend."
+    },
+    {
+      "id": "swiss",
+      "qty": 0.5,
+      "name": "Swiss cheese",
+      "group": "Gravy",
+      "unit": "oz",
+      "note": "Finely grated."
+    },
+    {
+      "id": "starch",
+      "qty": 2.25,
+      "name": "cornstarch",
+      "group": "Sauce",
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "qty": 2.25,
+      "name": "cold water",
+      "group": "Sauce",
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Caramelize the onion",
+      "text": "Cook {onion} in {butter} in the cast iron over medium-low heat for 18–25 minutes. Stir often and use small splashes of {broth} to loosen the pan until the onion is uniformly soft and deep gold."
+    },
+    {
+      "title": "Soften the rye",
+      "text": "While the onion cooks, mash {rye} with {milk} in a bowl and let stand 4 minutes until no firm pieces remain."
+    },
+    {
+      "title": "Shape thin patties",
+      "text": "Gently fold {beef} into the softened rye. Shape into two small patties per serving, about 1/2 inch thick."
+    },
+    {
+      "title": "Build the braising gravy",
+      "text": "Blend the caramelized onion with the remaining {broth} in a deep heatproof jug until smooth. Return to the cast iron and bring to a gentle simmer."
+    },
+    {
+      "title": "Poach the patties",
+      "text": "Nestle the patties into the shallow gravy and spoon some over them. Cover and cook over medium-low for 7–11 minutes, turning once, until the center of each patty measures 160°F. Keep the patties on a covered plate with a spoonful of gravy."
+    },
+    {
+      "title": "Mix the slurry",
+      "text": "Stir {starch} into {water} in a small cup until smooth."
+    },
+    {
+      "title": "Thicken the sauce",
+      "text": "Whisk the freshly stirred slurry into the simmering sauce and stir for 1 minute, until it coats the back of a spoon."
+    },
+    {
+      "title": "Melt in the Swiss",
+      "text": "Take the skillet off the heat and stir in {swiss} until smooth."
+    },
+    {
+      "title": "Serve the bowls",
+      "text": "Slip the patties back into the gravy. Spoon a pool into each bowl and ladle the rest over the patties."
+    }
+  ],
+  "notes": "Make ahead: Caramelize the onions a day ahead and chill. Soak the rye while the gravy warms. For dairy-free bowls use avocado oil for the butter, unsweetened oat milk for the panade and omit the Swiss. Refrigerate promptly in shallow portions and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze the cooked patties in the onion gravy for up to 2 months; Swiss melts most smoothly if added after reheating. Fridge reheat: Warm a single portion with its sauce in a covered HexClad skillet over medium-low, adding a splash of water if thick. Stir or turn gently and begin checking after 5 minutes. Heat the food to 165°F throughout. Freezer reheat: Thaw overnight in the refrigerator. Use the fridge reheating directions and stir the sauce smooth.",
+  "source": "Glenn"
+}

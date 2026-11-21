@@ -1,0 +1,128 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "paprika-thighs-in-sweet-corn-gravy",
+  "title": "Paprika Chicken Thighs in Sweet Corn Gravy",
+  "description": "Chicken thighs braise in a sweet paprika broth that becomes a velvety corn gravy.",
+  "category": "Main dish",
+  "tags": [
+    "stovetop",
+    "weeknight",
+    "chicken-thighs",
+    "cast-iron",
+    "extra-sauce"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 10,
+  "cookMin": 32,
+  "equipment": [
+    "10-inch cast iron skillet with lid",
+    "Thin-tip instant-read thermometer",
+    "Immersion blender, heatproof jug and fine sieve"
+  ],
+  "ingredients": [
+    {
+      "id": "thighs",
+      "qty": 10,
+      "name": "boneless skinless chicken thighs",
+      "group": "Chicken",
+      "unit": "oz",
+      "note": "Trim fat, unfold and halve crosswise."
+    },
+    {
+      "id": "broth",
+      "qty": 1,
+      "name": "low-sodium chicken broth",
+      "group": "Sauce",
+      "unit": "cup",
+      "note": "Choose plain meat-and-bone broth without a vegetable blend."
+    },
+    {
+      "id": "paprika",
+      "qty": 0.5,
+      "name": "sweet paprika",
+      "group": "Gravy",
+      "unit": "tsp"
+    },
+    {
+      "id": "garlic",
+      "qty": 0.25,
+      "name": "granulated garlic",
+      "group": "Gravy",
+      "unit": "tsp"
+    },
+    {
+      "id": "corn",
+      "qty": 0.75,
+      "name": "sweet corn kernels",
+      "group": "Gravy",
+      "unit": "cup",
+      "note": "Fresh or thawed."
+    },
+    {
+      "id": "cheese",
+      "qty": 1,
+      "name": "plain whipped cream cheese",
+      "group": "Gravy",
+      "unit": "tbsp"
+    },
+    {
+      "id": "zest",
+      "qty": 0.125,
+      "name": "finely grated lime zest",
+      "group": "Gravy",
+      "unit": "tsp"
+    },
+    {
+      "id": "starch",
+      "qty": 2,
+      "name": "cornstarch",
+      "group": "Sauce",
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "qty": 2,
+      "name": "cold water",
+      "group": "Sauce",
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Start the corn broth",
+      "text": "Bring {broth}, {paprika}, {garlic} and {corn} to a gentle simmer in the cast iron over medium heat."
+    },
+    {
+      "title": "Braise the thighs",
+      "text": "Nestle {thighs} into the liquid, spoon broth over the tops and cover. Lower the heat and simmer 12–20 minutes, turning halfway, until the thick centers reach 175°F and pierce easily."
+    },
+    {
+      "title": "Hold the chicken",
+      "text": "Move the thighs to a covered bowl with a spoonful of cooking liquid."
+    },
+    {
+      "title": "Smooth the corn",
+      "text": "Blend the kernels and hot cooking liquid in a deep heatproof jug. Press through a fine sieve to remove hulls and return the smooth gravy base to the skillet."
+    },
+    {
+      "title": "Mix the slurry",
+      "text": "Stir {starch} into {water} in a small cup until smooth."
+    },
+    {
+      "title": "Thicken the sauce",
+      "text": "Whisk the freshly stirred slurry into the simmering sauce and stir for 1 minute, until it coats the back of a spoon."
+    },
+    {
+      "title": "Finish the gravy",
+      "text": "Whisk {cheese} and {zest} into the gravy off heat until smooth."
+    },
+    {
+      "title": "Coat and serve",
+      "text": "Cut the thighs across the grain into short slices and fold them through the corn gravy."
+    }
+  ],
+  "notes": "Make ahead: Trim and portion the thighs and thaw the corn in the refrigerator a day ahead. Option A uses lime zest. For gentler Option B, omit the zest and use less paprika. For dairy-free gravy leave out the cream cheese. Refrigerate promptly in shallow portions and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze the thighs surrounded by corn gravy for up to 2 months; add the cream cheese after reheating for the smoothest texture. Fridge reheat: Transfer a single portion with its sauce to a shallow covered oven-safe dish. Install the APO Gen 1 bottom drip pan. Preheat to 325°F, sous vide mode off, 60% steam, rear element on, top and bottom off. Set the probe to 165°F at the coldest center. Start checking at 12 minutes and heat to 165°F throughout. Freezer reheat: Thaw overnight in the refrigerator. Use the fridge reheating directions and stir the sauce smooth.",
+  "source": "Glenn"
+}

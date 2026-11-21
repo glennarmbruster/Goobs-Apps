@@ -1,0 +1,131 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "apo-pork-chops-with-grape-and-sage-gravy",
+  "title": "APO Pork Chops with Grape and Sage Gravy",
+  "description": "Lean pork cutlets steam gently and finish in a smooth purple grape gravy infused with sage.",
+  "category": "Main dish",
+  "tags": [
+    "apo",
+    "extra-sauce",
+    "bagless-sous-vide",
+    "pork",
+    "sage"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 12,
+  "cookMin": 42,
+  "equipment": [
+    "Anova Precision Oven Gen 1 with food probe, bottom drip pan and middle wire rack",
+    "Shallow stainless steel baking pan",
+    "10-inch HexClad skillet",
+    "Thin-tip instant-read thermometer",
+    "Fine sieve"
+  ],
+  "ingredients": [
+    {
+      "id": "pork",
+      "qty": 10,
+      "name": "lean boneless center-cut pork loin chops",
+      "group": "Pork",
+      "unit": "oz",
+      "note": "Trim the fat edge and cut horizontally into 1/2-inch cutlets."
+    },
+    {
+      "id": "broth",
+      "qty": 0.75,
+      "name": "low-sodium chicken broth",
+      "group": "Sauce",
+      "unit": "cup",
+      "note": "Use plain broth made from meat, bones and water without a vegetable seasoning blend."
+    },
+    {
+      "id": "grapes",
+      "qty": 0.5,
+      "name": "red seedless grapes",
+      "group": "Gravy",
+      "unit": "cup",
+      "note": "Halve lengthwise for cooking; strain out skins."
+    },
+    {
+      "id": "sage",
+      "qty": 3,
+      "name": "fresh sage leaves",
+      "group": "Gravy",
+      "note": "Leave whole."
+    },
+    {
+      "id": "balsamic",
+      "qty": 0.5,
+      "name": "balsamic vinegar",
+      "group": "Gravy",
+      "unit": "tsp"
+    },
+    {
+      "id": "butter",
+      "qty": 1,
+      "name": "unsalted butter",
+      "group": "Gravy",
+      "unit": "tsp"
+    },
+    {
+      "id": "starch",
+      "qty": 2,
+      "name": "cornstarch",
+      "group": "Slurry",
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "qty": 2,
+      "name": "cold water",
+      "group": "Slurry",
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Preheat the APO",
+      "text": "Fill the water tank and install the bottom drip pan. Preheat to 155°F with sous vide mode on, 100% steam, rear element on, top and bottom elements off. Set the food probe target to 145°F."
+    },
+    {
+      "title": "Probe the cutlets",
+      "text": "Arrange {pork} unbagged in the shallow pan on the middle rack. Insert the probe parallel to the pan into the center of the thickest cutlet. Begin cooking immediately and set a separate 12-minute reminder for the first temperature check; respond sooner if the probe signals."
+    },
+    {
+      "title": "Poach the grapes",
+      "text": "While the pork steams, simmer {grapes}, {sage} and {broth} in the covered HexClad over medium-low for 6–8 minutes until the grapes collapse."
+    },
+    {
+      "title": "Strain the grape base",
+      "text": "Remove the sage. Press the cooked grapes and liquid through a fine sieve into a bowl, discarding all skins. Return the smooth base to the skillet and stir in {balsamic}."
+    },
+    {
+      "title": "Make the slurry",
+      "text": "Stir {starch} into {water} in a small cup until smooth."
+    },
+    {
+      "title": "Thicken the sauce",
+      "text": "Bring the sauce base to a simmer. Whisk in the freshly stirred slurry and keep it bubbling gently for 1 minute, until it coats the back of a spoon."
+    },
+    {
+      "title": "Finish the gravy",
+      "text": "Swirl {butter} into the gravy off heat."
+    },
+    {
+      "title": "Steam the pork",
+      "text": "Cook for about 15–35 minutes, checking at 12 minutes, until every cutlet reaches 145°F."
+    },
+    {
+      "title": "Rest in the juices",
+      "text": "Remove the pan and rest the cutlets loosely covered in their juices for 3 minutes."
+    },
+    {
+      "title": "Serve with the pork",
+      "text": "Slice the rested pork across the grain. Spoon the grape gravy onto each plate, nestle the slices into it and pour the rest over the top."
+    }
+  ],
+  "notes": "Make ahead: Poach and strain the grapes a day ahead and refrigerate. Add the slurry at serving time. Option A adds balsamic. For gentler Option B, omit it and let the cooked grapes supply the flavor. For dairy-free gravy omit the butter. Refrigerate promptly in shallow portions and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze the cutlets submerged in gravy for up to 2 months; the strained grape base reheats smoothly. Fridge reheat: Place one portion and its sauce in a shallow covered dish. Install the APO bottom drip pan and preheat to 325°F, sous vide mode off, 60% steam, rear element on, top and bottom off. Insert the probe in the coldest center and set it to 165°F. Start checking after 12 minutes and heat to 165°F throughout. Freezer reheat: Thaw a single portion in the refrigerator overnight, then use the fridge reheating method. Stir the sauce until smooth.",
+  "source": "Glenn"
+}

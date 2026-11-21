@@ -1,0 +1,120 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "crispi-butternut-half-moons-with-orange-pepita-glaze",
+  "title": "Crispi Butternut Half-Moons with Orange-Pepita Glaze",
+  "description": "Tender butternut half-moons are coated in a smooth orange and pumpkin-seed glaze with a little ground sumac.",
+  "category": "Sides",
+  "tags": [
+    "ninja-crispi",
+    "butternut-squash",
+    "pumpkin-seed"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 12,
+  "cookMin": 28,
+  "equipment": [
+    "Ninja Crispi PowerPod with US Bake preset and 6-cup glass container",
+    "10-inch HexClad skillet",
+    "Silicone slotted spoon",
+    "Small mixing bowl"
+  ],
+  "ingredients": [
+    {
+      "id": "squash",
+      "qty": 10,
+      "name": "butternut squash neck",
+      "group": "Squash",
+      "unit": "oz",
+      "note": "Peel, halve lengthwise and slice into 1/4-inch half-moons."
+    },
+    {
+      "id": "broth",
+      "qty": 0.75,
+      "name": "low-sodium mushroom broth",
+      "group": "Liquid",
+      "unit": "cup",
+      "note": "Choose plain broth made with mushrooms and water."
+    },
+    {
+      "id": "seed_paste",
+      "qty": 2,
+      "name": "smooth unsalted pumpkin seed paste",
+      "group": "Glaze",
+      "unit": "tsp",
+      "note": "Use finely milled pepita butter without coarse pieces."
+    },
+    {
+      "id": "orange",
+      "qty": 2,
+      "name": "strained sweet orange juice",
+      "group": "Glaze",
+      "unit": "tsp"
+    },
+    {
+      "id": "sumac",
+      "qty": 0.125,
+      "name": "finely ground unsalted sumac",
+      "group": "Glaze",
+      "unit": "tsp"
+    },
+    {
+      "id": "honey",
+      "qty": 1,
+      "name": "mild honey",
+      "group": "Glaze",
+      "unit": "tsp"
+    },
+    {
+      "id": "starch",
+      "qty": 1.5,
+      "name": "cornstarch",
+      "group": "Slurry",
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "qty": 1.5,
+      "name": "cold water",
+      "group": "Slurry",
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Set up the Crispi",
+      "text": "Use the room-temperature 6-cup Ninja glass container without its crisper plate or an adapter. Leave off the storage lid. Load the container before starting the PowerPod."
+    },
+    {
+      "title": "Moisten the squash",
+      "text": "Toss {squash} with {broth} in the unheated glass. Nestle the half-moons into the liquid in a shallow layer."
+    },
+    {
+      "title": "Braise on Bake",
+      "text": "Seat the PowerPod and select Bake. After 8 minutes, turn the top pieces into the broth. Cook another 6–12 minutes until the thickest half-moon is tender enough to split with a spoon."
+    },
+    {
+      "title": "Make the orange base",
+      "text": "Transfer the squash to a covered serving bowl. Ladle the warm cooking liquid into the HexClad and whisk in {orange}, {sumac} and {honey}."
+    },
+    {
+      "title": "Smooth the seed paste",
+      "text": "Whisk {seed_paste} with a spoonful of warm sauce base in a small bowl until smooth, then return it to the pan."
+    },
+    {
+      "title": "Mix the slurry",
+      "text": "Stir {starch} into {water} until completely smooth."
+    },
+    {
+      "title": "Thicken the sauce",
+      "text": "Bring the base to a simmer. Whisk in the freshly stirred slurry and let it bubble for 1 minute, stirring until it coats the back of a spoon."
+    },
+    {
+      "title": "Glaze the half-moons",
+      "text": "Turn the warm half-moons gently in the glaze and divide between two bowls, spooning the rest of the glaze over them."
+    }
+  ],
+  "notes": "Make ahead: Slice the squash up to two days ahead and keep it covered in the refrigerator. Refrigerate the finished dish for up to 3 days. Freezer-Friendly Verdict: Yes. Freeze in the glaze for up to 6 weeks. The half-moons soften after thawing and can be served as a spoonable mash. Fridge reheat: Warm a single portion, covered, in the HexClad with a splash of broth or water. Stir or turn gently and heat to 165°F throughout. Freezer reheat: Thaw overnight in the refrigerator. Use the same covered reheating method and heat the center to 165°F. Option A uses orange and sumac. For gentler Option B, replace the juice with smooth pear puree and leave out the sumac; the honey and seed paste carry the glaze.",
+  "source": "Glenn"
+}

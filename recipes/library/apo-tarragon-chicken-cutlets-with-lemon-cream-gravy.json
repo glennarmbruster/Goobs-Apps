@@ -1,0 +1,121 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "apo-tarragon-chicken-cutlets-with-lemon-cream-gravy",
+  "title": "APO Tarragon Chicken Cutlets with Lemon Cream Gravy",
+  "description": "Thin chicken breast cutlets poach in full steam and are served with an extra ladle of light tarragon cream gravy.",
+  "category": "Main dish",
+  "tags": [
+    "apo",
+    "extra-sauce",
+    "bagless-sous-vide",
+    "chicken-breast",
+    "extra-gravy"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 12,
+  "cookMin": 42,
+  "equipment": [
+    "Anova Precision Oven Gen 1 with food probe, bottom drip pan and middle wire rack",
+    "Shallow stainless steel baking pan",
+    "10-inch HexClad skillet",
+    "Thin-tip instant-read thermometer",
+    "Meat mallet and parchment",
+    "Fine sieve"
+  ],
+  "ingredients": [
+    {
+      "id": "chicken",
+      "qty": 10,
+      "name": "unenhanced boneless skinless chicken breast",
+      "group": "Chicken",
+      "unit": "oz",
+      "note": "Butterfly into cutlets; no injected brine."
+    },
+    {
+      "id": "broth",
+      "qty": 1,
+      "name": "low-sodium chicken broth",
+      "group": "Sauce",
+      "unit": "cup",
+      "note": "Use plain broth made from meat, bones and water without a vegetable seasoning blend."
+    },
+    {
+      "id": "tarragon",
+      "qty": 0.5,
+      "name": "dried tarragon",
+      "group": "Gravy",
+      "unit": "tsp",
+      "note": "Finely crumbled."
+    },
+    {
+      "id": "cheese",
+      "qty": 1,
+      "name": "plain whipped cream cheese",
+      "group": "Gravy",
+      "unit": "tbsp"
+    },
+    {
+      "id": "lemon",
+      "qty": 0.75,
+      "name": "strained lemon juice",
+      "group": "Gravy",
+      "unit": "tsp"
+    },
+    {
+      "id": "starch",
+      "qty": 2.5,
+      "name": "cornstarch",
+      "group": "Slurry",
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "qty": 2.5,
+      "name": "cold water",
+      "group": "Slurry",
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Preheat the APO",
+      "text": "Fill the water tank and install the bottom drip pan. Preheat to 175°F with sous vide mode on, 100% steam, rear element on, top and bottom elements off. Set the food probe target to 165°F."
+    },
+    {
+      "title": "Even the cutlets",
+      "text": "Place {chicken} between sheets of parchment and gently flatten the thick ends to 1/2 inch with a meat mallet."
+    },
+    {
+      "title": "Probe the chicken",
+      "text": "Arrange the cutlets unbagged in the shallow pan on the middle rack. Insert the probe sideways through the thickest center. Begin cooking immediately and set a separate 15-minute reminder for the first temperature check; respond sooner if the probe signals."
+    },
+    {
+      "title": "Steep the tarragon",
+      "text": "Meanwhile simmer {broth} and {tarragon} in the HexClad, covered, for 4 minutes. Strain and return the broth to the skillet."
+    },
+    {
+      "title": "Make the slurry",
+      "text": "Stir {starch} into {water} in a small cup until smooth."
+    },
+    {
+      "title": "Thicken the sauce",
+      "text": "Bring the sauce base to a simmer. Whisk in the freshly stirred slurry and keep it bubbling gently for 1 minute, until it coats the back of a spoon."
+    },
+    {
+      "title": "Make the cream finish",
+      "text": "Blend {cheese} with a spoonful of warm gravy, whisk it back into the pan off heat and stir in {lemon}."
+    },
+    {
+      "title": "Steam until cooked through",
+      "text": "Cook in full steam for about 17–35 minutes, checking from 15 minutes. Verify that each cutlet reaches 165°F, then cover it loosely with its juices."
+    },
+    {
+      "title": "Give each cutlet extra gravy",
+      "text": "Slice the chicken thinly across the grain. Place each serving in a pool of gravy, then pour the remaining gravy across the cut faces."
+    }
+  ],
+  "notes": "Make ahead: Flatten the cutlets a day ahead and refrigerate covered. Add the cream cheese just before serving for the smoothest sauce. Option A has a little lemon. For gentler Option B, omit it. For dairy-free gravy, leave out the cream cheese or use an unsweetened dairy-free equivalent. Refrigerate promptly in shallow portions and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze the cutlets in the starch-thickened tarragon gravy for up to 2 months. Add cream cheese and lemon after reheating for the best texture. Fridge reheat: Place one portion and its sauce in a shallow covered dish. Install the APO bottom drip pan and preheat to 325°F, sous vide mode off, 60% steam, rear element on, top and bottom off. Insert the probe in the coldest center and set it to 165°F. Start checking after 12 minutes and heat to 165°F throughout. Freezer reheat: Thaw a single portion in the refrigerator overnight, then use the fridge reheating method. Stir the sauce until smooth.",
+  "source": "Glenn"
+}

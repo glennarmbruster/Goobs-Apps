@@ -1,0 +1,121 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "apo-duck-cutlets-with-sour-cherry-thyme-gravy",
+  "title": "APO Duck Cutlets with Sour Cherry-Thyme Gravy",
+  "description": "Lean duck breast cutlets cook gently in steam and are sliced into a smooth cherry and thyme gravy.",
+  "category": "Main dish",
+  "tags": [
+    "apo",
+    "extra-sauce",
+    "bagless-sous-vide",
+    "duck-breast",
+    "extra-gravy"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 15,
+  "cookMin": 45,
+  "equipment": [
+    "Anova Precision Oven Gen 1 with food probe, bottom drip pan and middle wire rack",
+    "Shallow stainless steel baking pan",
+    "10-inch HexClad skillet",
+    "Thin-tip instant-read thermometer",
+    "Meat mallet and parchment"
+  ],
+  "ingredients": [
+    {
+      "id": "duck",
+      "qty": 10,
+      "name": "skinless boneless duck breast",
+      "group": "Duck",
+      "unit": "oz",
+      "note": "Weigh after removing skin, fat and silver skin; butterfly thick pieces."
+    },
+    {
+      "id": "broth",
+      "qty": 1,
+      "name": "low-sodium chicken broth",
+      "group": "Sauce",
+      "unit": "cup",
+      "note": "Use plain broth made from meat, bones and water without a vegetable seasoning blend."
+    },
+    {
+      "id": "cherry",
+      "qty": 1.5,
+      "name": "smooth pitted sour cherry spread",
+      "group": "Gravy",
+      "unit": "tbsp",
+      "note": "Strain out any fruit skins."
+    },
+    {
+      "id": "thyme",
+      "qty": 2,
+      "name": "fresh thyme",
+      "group": "Gravy",
+      "unit": "sprig",
+      "note": "Leave whole."
+    },
+    {
+      "id": "pepper",
+      "qty": 1,
+      "name": "finely ground black pepper",
+      "group": "Gravy",
+      "unit": "pinch"
+    },
+    {
+      "id": "starch",
+      "qty": 2.5,
+      "name": "cornstarch",
+      "group": "Slurry",
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "qty": 2.5,
+      "name": "cold water",
+      "group": "Slurry",
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Preheat the APO",
+      "text": "Fill the water tank and install the bottom drip pan. Preheat to 175°F with sous vide mode on, 100% steam, rear element on, top and bottom elements off. Set the food probe target to 165°F."
+    },
+    {
+      "title": "Thin the breast meat",
+      "text": "Flatten {duck} between sheets of parchment to a uniform 1/2 inch, using the flat face of a meat mallet."
+    },
+    {
+      "title": "Place the probe",
+      "text": "Set the cutlets unbagged in the pan on the middle rack. Insert the probe sideways to the center of the thickest piece. Begin cooking immediately and set a separate 15-minute reminder for the first temperature check; respond sooner if the probe signals."
+    },
+    {
+      "title": "Infuse the thyme",
+      "text": "While the duck steams, simmer {broth}, {thyme} and {pepper} together in the HexClad, covered, for 5 minutes. Lift out the herb sprigs."
+    },
+    {
+      "title": "Melt the cherries",
+      "text": "Stir {cherry} into the hot broth until it dissolves."
+    },
+    {
+      "title": "Make the slurry",
+      "text": "Stir {starch} into {water} in a small cup until smooth."
+    },
+    {
+      "title": "Thicken the sauce",
+      "text": "Bring the sauce base to a simmer. Whisk in the freshly stirred slurry and keep it bubbling gently for 1 minute, until it coats the back of a spoon."
+    },
+    {
+      "title": "Steam the duck",
+      "text": "Cook for 18–38 minutes, checking from 15 minutes. Verify 165°F throughout each portion. Keep the cooked duck loosely covered in its juices."
+    },
+    {
+      "title": "Slice and sauce",
+      "text": "Slice the duck very thinly across the grain and fold it through the warm cherry gravy. Spoon a generous layer of gravy over each portion."
+    }
+  ],
+  "notes": "Make ahead: Trim and flatten the duck a day ahead, cover and refrigerate. Option A uses tart cherry. For gentler Option B, use smooth pear puree instead and leave the pepper for the table. Refrigerate promptly in shallow portions and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze thin slices under the cherry gravy for up to 6 weeks; duck breast gets firmer with a second heating. Fridge reheat: Place one portion and its sauce in a shallow covered dish. Install the APO bottom drip pan and preheat to 325°F, sous vide mode off, 60% steam, rear element on, top and bottom off. Insert the probe in the coldest center and set it to 165°F. Start checking after 12 minutes and heat to 165°F throughout. Freezer reheat: Thaw a single portion in the refrigerator overnight, then use the fridge reheating method. Stir the sauce until smooth.",
+  "source": "Glenn"
+}

@@ -1,0 +1,132 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "apo-lamb-medallions-with-mint-almond-gravy",
+  "title": "APO Lamb Medallions with Mint-Almond Gravy",
+  "description": "Trimmed lamb loin medallions are sliced thinly and coated in a mint gravy thickened with a slurry and smooth almond paste.",
+  "category": "Main dish",
+  "tags": [
+    "apo",
+    "extra-sauce",
+    "bagless-sous-vide",
+    "lamb",
+    "mint"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 12,
+  "cookMin": 48,
+  "equipment": [
+    "Anova Precision Oven Gen 1 with food probe, bottom drip pan and middle wire rack",
+    "Shallow stainless steel baking pan",
+    "10-inch HexClad skillet",
+    "Thin-tip instant-read thermometer",
+    "Fine sieve"
+  ],
+  "ingredients": [
+    {
+      "id": "lamb",
+      "qty": 10,
+      "name": "lean boneless lamb loin",
+      "group": "Lamb",
+      "unit": "oz",
+      "note": "Remove exterior fat and silver skin before weighing; cut medallions 3/4 inch thick."
+    },
+    {
+      "id": "broth",
+      "qty": 0.875,
+      "name": "low-sodium chicken broth",
+      "group": "Sauce",
+      "unit": "cup",
+      "note": "Use plain broth made from meat, bones and water without a vegetable seasoning blend."
+    },
+    {
+      "id": "mint",
+      "qty": 1,
+      "name": "fresh mint leaves",
+      "group": "Gravy",
+      "unit": "tbsp",
+      "note": "Tear leaves in half, leaving pieces large enough to strain."
+    },
+    {
+      "id": "almond",
+      "qty": 2,
+      "name": "smooth unsalted blanched almond paste",
+      "group": "Gravy",
+      "unit": "tsp",
+      "note": "Use pure almonds, fully ground and unsweetened."
+    },
+    {
+      "id": "lemon",
+      "qty": 0.5,
+      "name": "strained lemon juice",
+      "group": "Gravy",
+      "unit": "tsp"
+    },
+    {
+      "id": "coriander",
+      "qty": 0.125,
+      "name": "ground coriander",
+      "group": "Gravy",
+      "unit": "tsp"
+    },
+    {
+      "id": "starch",
+      "qty": 2,
+      "name": "cornstarch",
+      "group": "Slurry",
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "qty": 2,
+      "name": "cold water",
+      "group": "Slurry",
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Preheat the APO",
+      "text": "Fill the water tank and install the bottom drip pan. Preheat to 155°F with sous vide mode on, 100% steam, rear element on, top and bottom elements off. Set the food probe target to 145°F."
+    },
+    {
+      "title": "Probe the loin",
+      "text": "Set {lamb} in a single layer, unbagged, in the pan on the middle rack. Insert the probe horizontally into the thickest center. Begin cooking immediately and set a separate 20-minute reminder for the first temperature check; respond sooner if the probe signals."
+    },
+    {
+      "title": "Steep the mint",
+      "text": "While the lamb cooks, bring {broth} and {coriander} to a simmer in the HexClad. Add {mint}, turn off the heat and cover for 4 minutes. Strain the broth back into the skillet."
+    },
+    {
+      "title": "Blend in almond paste",
+      "text": "Whisk {almond} with a splash of the strained broth until smooth, then stir it back into the pan."
+    },
+    {
+      "title": "Make the slurry",
+      "text": "Stir {starch} into {water} in a small cup until smooth."
+    },
+    {
+      "title": "Thicken the sauce",
+      "text": "Bring the sauce base to a simmer. Whisk in the freshly stirred slurry and keep it bubbling gently for 1 minute, until it coats the back of a spoon."
+    },
+    {
+      "title": "Brighten the gravy",
+      "text": "Stir {lemon} into the thick gravy off heat."
+    },
+    {
+      "title": "Cook in steam",
+      "text": "Cook 25–50 minutes, checking at 20 minutes, until every center is at least 145°F."
+    },
+    {
+      "title": "Rest in the juices",
+      "text": "Remove the pan and rest the medallions loosely covered in their juices for 3 minutes."
+    },
+    {
+      "title": "Coat the lamb",
+      "text": "Slice the lamb thinly across the grain. Spoon mint gravy between the slices and around both portions."
+    }
+  ],
+  "notes": "Make ahead: Trim and portion the loin a day ahead. Steep the fresh mint on the day of serving for a brighter flavor. Option A uses lemon and mint. For gentler Option B, omit the lemon and infuse with parsley instead of mint. Refrigerate promptly in shallow portions and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze lamb slices in gravy for up to 6 weeks. Stir the almond gravy smooth as it reheats. Fridge reheat: Place one portion and its sauce in a shallow covered dish. Install the APO bottom drip pan and preheat to 325°F, sous vide mode off, 60% steam, rear element on, top and bottom off. Insert the probe in the coldest center and set it to 165°F. Start checking after 12 minutes and heat to 165°F throughout. Freezer reheat: Thaw a single portion in the refrigerator overnight, then use the fridge reheating method. Stir the sauce until smooth.",
+  "source": "Glenn"
+}

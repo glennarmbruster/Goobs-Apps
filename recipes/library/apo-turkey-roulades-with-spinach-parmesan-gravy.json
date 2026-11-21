@@ -1,0 +1,141 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "apo-turkey-roulades-with-spinach-parmesan-gravy",
+  "title": "APO Turkey Roulades with Spinach and Parmesan Gravy",
+  "description": "Thin turkey breast rolls steam around a soft spinach filling and are served with extra Parmesan gravy.",
+  "category": "Main dish",
+  "tags": [
+    "apo",
+    "extra-sauce",
+    "combi-steam",
+    "turkey-breast",
+    "extra-gravy"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 22,
+  "cookMin": 55,
+  "equipment": [
+    "Anova Precision Oven Gen 1 with food probe, bottom drip pan and middle wire rack",
+    "10-inch HexClad skillet",
+    "Thin-tip instant-read thermometer",
+    "Meat mallet and parchment",
+    "Small lidded oven dish",
+    "Kitchen twine"
+  ],
+  "ingredients": [
+    {
+      "id": "turkey",
+      "qty": 10,
+      "name": "plain skinless turkey breast cutlets",
+      "group": "Turkey",
+      "unit": "oz",
+      "note": "Two wide pieces, no injected brine."
+    },
+    {
+      "id": "spinach",
+      "qty": 2,
+      "name": "baby spinach",
+      "group": "Filling",
+      "unit": "oz",
+      "note": "Wash and remove thick stems."
+    },
+    {
+      "id": "garlic",
+      "qty": 0.25,
+      "name": "jarred minced garlic",
+      "group": "Filling",
+      "unit": "tsp",
+      "note": "Water-packed."
+    },
+    {
+      "id": "cheese",
+      "qty": 1,
+      "name": "finely grated Parmesan cheese",
+      "group": "Gravy",
+      "unit": "tbsp"
+    },
+    {
+      "id": "broth",
+      "qty": 1.5,
+      "name": "low-sodium turkey broth",
+      "group": "Sauce",
+      "unit": "cup",
+      "note": "Use plain broth made from meat, bones and water without a vegetable seasoning blend. Reserve three quarters of the measured broth for the gravy."
+    },
+    {
+      "id": "zest",
+      "qty": 0.125,
+      "name": "finely grated lemon zest",
+      "group": "Gravy",
+      "unit": "tsp"
+    },
+    {
+      "id": "starch",
+      "qty": 3,
+      "name": "cornstarch",
+      "group": "Slurry",
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "qty": 3,
+      "name": "cold water",
+      "group": "Slurry",
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Preheat the APO",
+      "text": "Fill the water tank and install the bottom drip pan. Preheat to 300°F with sous vide mode off, 80% steam, rear element on, top and bottom elements off. Set the food probe target to 165°F."
+    },
+    {
+      "title": "Soften the spinach",
+      "text": "Steam {spinach} and {garlic} with a splash of {broth} in the covered HexClad over medium heat for 2–3 minutes. Cool just enough to handle, press out excess liquid and mince to a soft paste."
+    },
+    {
+      "title": "Thin the cutlets",
+      "text": "Pound {turkey} gently between parchment sheets to about 1/4 inch thick using a meat mallet."
+    },
+    {
+      "title": "Roll around the filling",
+      "text": "Spread a thin layer of spinach over each cutlet, leaving a small border. Roll from a short end and secure with kitchen twine; keep each finished roll no thicker than 1 1/2 inches."
+    },
+    {
+      "title": "Insert the probe",
+      "text": "Lay the rolls seam down in a small covered oven dish with just enough {broth} to moisten the bottom, reserving three quarters for gravy. Insert the probe from one end into the center of the thickest filling."
+    },
+    {
+      "title": "Steam the roulades",
+      "text": "Cook covered on the middle rack for 20–40 minutes. Check the center of the spinach and the thickest turkey seam in each roll with a clean thermometer. Continue until both places reach 165°F in every roll."
+    },
+    {
+      "title": "Rest the rolls",
+      "text": "Rest the turkey covered in its juices for 5 minutes, then remove all twine."
+    },
+    {
+      "title": "Start the gravy",
+      "text": "Meanwhile bring the reserved {broth} and {zest} to a simmer in the HexClad for 2 minutes."
+    },
+    {
+      "title": "Make the slurry",
+      "text": "Stir {starch} into {water} in a small cup until smooth."
+    },
+    {
+      "title": "Thicken the sauce",
+      "text": "Bring the sauce base to a simmer. Whisk in the freshly stirred slurry and keep it bubbling gently for 1 minute, until it coats the back of a spoon."
+    },
+    {
+      "title": "Melt the Parmesan",
+      "text": "Turn off the heat and whisk in {cheese} until smooth."
+    },
+    {
+      "title": "Serve the pinwheels",
+      "text": "Slice each roulade across the spiral. Spoon the gravy over and between the pinwheels, with extra around each serving."
+    }
+  ],
+  "notes": "Make ahead: Make the spinach filling a day ahead and refrigerate. Roll the turkey just before cooking. Option A uses lemon zest. For gentler Option B, omit it. For a dairy-free version, replace Parmesan with finely chopped parsley stirred into the finished gravy. Refrigerate promptly in shallow portions and use within 3 days. Freezer-Friendly Verdict: Yes. Chill and freeze individual sliced rolls with gravy for up to 2 months to protect the thin turkey layers. Fridge reheat: Place one portion and its sauce in a shallow covered dish. Install the APO bottom drip pan and preheat to 325°F, sous vide mode off, 60% steam, rear element on, top and bottom off. Insert the probe in the coldest center and set it to 165°F. Start checking after 12 minutes and heat to 165°F throughout. Freezer reheat: Thaw a single portion in the refrigerator overnight, then use the fridge reheating method. Stir the sauce until smooth.",
+  "source": "Glenn"
+}

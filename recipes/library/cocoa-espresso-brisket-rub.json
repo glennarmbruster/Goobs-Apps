@@ -1,0 +1,83 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "cocoa-espresso-brisket-rub",
+  "title": "Cocoa-Espresso Brisket Rub",
+  "description": "A finely ground, salt-free blend of cocoa, espresso and coriander gives covered brisket braises a deep peppery flavor.",
+  "category": "Sauce & condiment",
+  "tags": [
+    "bbq-rub",
+    "salt-free",
+    "beef"
+  ],
+  "servings": 2,
+  "servingsLabel": "seasoning portions",
+  "prepMin": 4,
+  "cookMin": 0,
+  "equipment": [
+    "Small mixing bowl",
+    "Fine-mesh sieve",
+    "Airtight spice jar"
+  ],
+  "ingredients": [
+    {
+      "id": "cocoa",
+      "qty": 0.375,
+      "name": "unsweetened cocoa powder",
+      "group": "Rub",
+      "unit": "tsp"
+    },
+    {
+      "id": "espresso",
+      "qty": 0.125,
+      "name": "instant espresso powder",
+      "group": "Rub",
+      "unit": "tsp",
+      "note": "Use soluble powder."
+    },
+    {
+      "id": "paprika",
+      "qty": 0.5,
+      "name": "sweet paprika",
+      "group": "Rub",
+      "unit": "tsp"
+    },
+    {
+      "id": "garlic",
+      "qty": 0.375,
+      "name": "granulated garlic",
+      "group": "Rub",
+      "unit": "tsp"
+    },
+    {
+      "id": "coriander",
+      "qty": 0.375,
+      "name": "ground coriander",
+      "group": "Rub",
+      "unit": "tsp"
+    },
+    {
+      "id": "pepper",
+      "qty": 0.25,
+      "name": "finely ground black pepper",
+      "group": "Rub",
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Sift the cocoa",
+      "text": "Sift {cocoa} and {espresso} into a small dry bowl, pressing any clumps through with a spoon."
+    },
+    {
+      "title": "Blend the seasonings",
+      "text": "Stir in {paprika}, {garlic}, {coriander} and {pepper} for about 30 seconds until the color is even."
+    },
+    {
+      "title": "Portion the rub",
+      "text": "Portion about a teaspoon per serving. For a moist brisket braise, stir the measured seasoning into the braising liquid before covering the meat."
+    }
+  ],
+  "notes": "Make ahead: Store the dry blend in a tightly sealed jar in a cool cupboard for up to 2 months for best flavor. Measure with a clean dry spoon before handling meat. Freezer-Friendly Verdict: No. This dry blend stores well in a cupboard; condensation can clump the cocoa. Fridge reheat: Use the dry blend directly. If refrigerated, let the sealed jar come to room temperature before opening. Freezer reheat: If already frozen, bring the still-sealed jar to room temperature before opening and stir out lumps; no heating is needed. Option A uses espresso and black pepper. For gentler Option B, omit the espresso, halve the pepper and use extra sweet paprika to keep a similar yield.",
+  "source": "Glenn"
+}

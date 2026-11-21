@@ -1,0 +1,156 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "smoky-chicken-rice-bowls-with-cheddar-pepper-sauce",
+  "title": "Smoky Chicken and Rice Bowls with Cheddar-Pepper Sauce",
+  "description": "The chicken, rice and cheddar from poblano boats become a soft spoonable bowl with a smooth sweet-pepper sauce.",
+  "category": "Main dish",
+  "tags": [
+    "pellet-smoker",
+    "extra-sauce",
+    "ground-chicken",
+    "rice",
+    "mild"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 15,
+  "cookMin": 80,
+  "equipment": [
+    "Traeger Silverton 610 pellet smoker",
+    "Small enamel Dutch oven with tight lid, sized to hold the food snugly",
+    "10-inch HexClad skillet",
+    "Thin-tip instant-read thermometer",
+    "Immersion blender and deep heatproof jug"
+  ],
+  "ingredients": [
+    {
+      "id": "chicken",
+      "name": "plain lean ground chicken",
+      "group": "Filling",
+      "qty": 9,
+      "unit": "oz",
+      "note": "Unseasoned, preferably skinless thigh meat."
+    },
+    {
+      "id": "rice",
+      "name": "cooked white rice",
+      "group": "Filling",
+      "qty": 0.75,
+      "unit": "cup",
+      "note": "Soft, freshly cooked or promptly chilled."
+    },
+    {
+      "id": "garlic",
+      "name": "granulated garlic",
+      "group": "Filling",
+      "qty": 0.25,
+      "unit": "tsp"
+    },
+    {
+      "id": "cumin",
+      "name": "ground cumin",
+      "group": "Filling",
+      "qty": 0.125,
+      "unit": "tsp"
+    },
+    {
+      "id": "broth",
+      "name": "low-sodium chicken broth",
+      "group": "Braising liquid",
+      "qty": 1.5,
+      "unit": "cup",
+      "note": "Use plain broth made from meat, bones and water, with no added vegetable blend or seasonings."
+    },
+    {
+      "id": "pepper",
+      "name": "peeled roasted sweet bell pepper",
+      "group": "Sauce",
+      "qty": 0.25,
+      "unit": "cup",
+      "note": "Plain, unsalted and seedless; use home-roasted or water-packed without vinegar."
+    },
+    {
+      "id": "cheese",
+      "name": "mild cheddar cheese",
+      "group": "Sauce",
+      "qty": 0.75,
+      "unit": "oz",
+      "note": "Finely grated from a block."
+    },
+    {
+      "id": "starch",
+      "name": "cornstarch",
+      "group": "Sauce",
+      "qty": 2.5,
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "name": "cold water",
+      "group": "Sauce",
+      "qty": 2.5,
+      "unit": "tsp"
+    },
+    {
+      "id": "topup",
+      "qty": 0.5,
+      "unit": "cup",
+      "name": "hot drinking water",
+      "note": "Keep ready; use only as needed to maintain liquid depth or make up the sauce measure.",
+      "group": "Braising liquid"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Heat the Traeger",
+      "text": "Preheat the Traeger Silverton 610 to 300°F with apple and pecan, mixed in equal parts pellets, about 15 minutes with the lid closed."
+    },
+    {
+      "title": "Warm the braising liquid",
+      "text": "Bring {broth} just to a simmer in the open Dutch oven on the stove, about 3–6 minutes."
+    },
+    {
+      "title": "Smoke the braising liquid",
+      "text": "Move the uncovered pot to the Traeger grate. Close the smoker lid and smoke the liquid for 15 minutes."
+    },
+    {
+      "title": "Reserve the sauce base",
+      "text": "Before adding meat, transfer 1 cup of the smoked broth into the HexClad and set aside. Leave the rest in the Dutch oven."
+    },
+    {
+      "title": "Assemble the filling",
+      "text": "Crumble {chicken} finely into the remaining broth. Fold in {rice}, {garlic} and {cumin}, breaking up clumps. Add {topup} if needed to make a loose, moist mixture."
+    },
+    {
+      "title": "Steam under cover",
+      "text": "Spread the filling in a shallow, even layer. Fit the lid immediately, with no stall wrap. Cook at 300°F for 20–35 minutes, stirring halfway, until several places in the center register 165°F."
+    },
+    {
+      "title": "Rest the filling",
+      "text": "Rest covered for 3 minutes so the rice absorbs the juices."
+    },
+    {
+      "title": "Blend the pepper sauce",
+      "text": "While the filling cooks, blend {pepper} and the reserved clean broth in a deep heatproof jug with an immersion blender until completely smooth. Return the puree to the HexClad."
+    },
+    {
+      "title": "Mix the slurry",
+      "text": "Stir {starch} into {water} until completely smooth."
+    },
+    {
+      "title": "Thicken the sauce",
+      "text": "Bring the skillet liquid to a boil. Whisk in the stirred slurry and simmer for 1 minute, stirring, until the sauce coats the back of a spoon."
+    },
+    {
+      "title": "Melt the cheddar",
+      "text": "Take the skillet off the heat and whisk in {cheese} until it melts into the spoon-coating sauce."
+    },
+    {
+      "title": "Serve as soft bowls",
+      "text": "Fold most of the sauce through the warm rice and chicken. Divide between bowls and spoon the last of the sauce over both tops."
+    }
+  ],
+  "notes": "Make ahead: Use freshly cooked rice or cool it promptly in a shallow container and refrigerate. For dairy-free bowls omit cheddar; the thickened pepper puree supplies the sauce. For a mild poblano variation, replace half the sweet pepper with peeled, seeded roasted mild poblano. Refrigerate promptly in shallow portions and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze promptly in small portions with the sauce stirred through; a splash of water restores the rice when reheating. Fridge reheat: Warm one portion covered in its sauce in the HexClad over medium-low heat. Turn gently, adding a splash of water if needed. Check after 6 minutes and continue until the food reaches 165°F throughout. Freezer reheat: Thaw overnight in the refrigerator. Follow the fridge reheating directions and stir the sauce smooth.",
+  "source": "Glenn"
+}

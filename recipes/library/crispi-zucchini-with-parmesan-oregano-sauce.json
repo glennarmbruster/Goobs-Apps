@@ -1,0 +1,121 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "crispi-zucchini-with-parmesan-oregano-sauce",
+  "title": "Crispi Zucchini with Parmesan-Oregano Sauce",
+  "description": "Thin zucchini half-moons braise in the Crispi and finish in a light Parmesan and oregano sauce.",
+  "category": "Sides",
+  "tags": [
+    "ninja-crispi",
+    "weeknight",
+    "zucchini",
+    "vegetarian",
+    "sauced-side"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 8,
+  "cookMin": 22,
+  "equipment": [
+    "Ninja Crispi PowerPod with US Bake preset",
+    "Ninja Crispi 6-cup glass container",
+    "10-inch HexClad skillet with lid",
+    "Slotted silicone spoon"
+  ],
+  "ingredients": [
+    {
+      "id": "zucchini",
+      "qty": 10,
+      "name": "fresh zucchini",
+      "group": "Vegetables",
+      "unit": "oz",
+      "note": "Peel if preferred; cut into 1/4-inch half-moons."
+    },
+    {
+      "id": "broth",
+      "qty": 1,
+      "name": "low-sodium mushroom broth",
+      "group": "Sauce",
+      "unit": "cup",
+      "note": "Use plain mushroom broth made with mushrooms and water."
+    },
+    {
+      "id": "oregano",
+      "qty": 0.25,
+      "name": "finely crumbled dried oregano",
+      "group": "Sauce",
+      "unit": "tsp"
+    },
+    {
+      "id": "garlic",
+      "qty": 0.125,
+      "name": "granulated garlic",
+      "group": "Sauce",
+      "unit": "tsp"
+    },
+    {
+      "id": "parmesan",
+      "qty": 1,
+      "name": "finely grated vegetarian Parmesan-style cheese",
+      "group": "Sauce",
+      "unit": "tbsp"
+    },
+    {
+      "id": "zest",
+      "qty": 0.125,
+      "name": "finely grated lemon zest",
+      "group": "Sauce",
+      "unit": "tsp"
+    },
+    {
+      "id": "starch",
+      "qty": 2.25,
+      "name": "cornstarch",
+      "group": "Sauce",
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "qty": 2.25,
+      "name": "cold water",
+      "group": "Sauce",
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Set up the Crispi",
+      "text": "Use the room-temperature 6-cup Crispi glass container without an adapter. Leave out the crisper plate so the food sits in liquid. Load the container before starting the PowerPod and keep the storage lid off during cooking."
+    },
+    {
+      "title": "Moisten the zucchini",
+      "text": "Fold {zucchini} through {broth}, {oregano} and {garlic} in the unheated glass. Press the half-moons down into the liquid in a shallow layer."
+    },
+    {
+      "title": "Braise on Bake",
+      "text": "Seat the PowerPod and select Bake. Stir after 7 minutes, folding the top pieces into the broth. Continue for 4–9 minutes until the half-moons yield to a fork and still hold their shape."
+    },
+    {
+      "title": "Save the cooking liquid",
+      "text": "Lift the zucchini into a covered serving bowl with a slotted spoon. Transfer the cooking liquid to the HexClad and bring to a simmer."
+    },
+    {
+      "title": "Mix the slurry",
+      "text": "Stir {starch} into {water} in a small cup until smooth."
+    },
+    {
+      "title": "Thicken the sauce",
+      "text": "Whisk the freshly stirred slurry into the simmering sauce and stir for 1 minute, until it coats the back of a spoon."
+    },
+    {
+      "title": "Add cheese and zest",
+      "text": "Take the skillet off heat. Whisk {parmesan} and {zest} into the thickened liquid until smooth."
+    },
+    {
+      "title": "Dress the zucchini",
+      "text": "Fold the sauce gently through the tender half-moons and serve warm."
+    }
+  ],
+  "notes": "Make ahead: Slice the zucchini earlier the same day. Refrigerate it separately from the broth to keep the pieces intact. Option A uses lemon zest. For gentler Option B, omit it. For dairy-free sauce skip the Parmesan and finish with finely chopped fresh basil. Refrigerate promptly in shallow portions and use within 3 days. Freezer-Friendly Verdict: No. Zucchini releases water after thawing and loses the tender shape that makes this side work. Fridge reheat: Warm a single portion with its sauce in a covered HexClad skillet over medium-low, adding a splash of water if thick. Stir or turn gently and begin checking after 5 minutes. Heat the zucchini to 165°F throughout. Freezer reheat: If already frozen, thaw overnight in the refrigerator and follow the fridge reheating directions.",
+  "source": "Glenn"
+}

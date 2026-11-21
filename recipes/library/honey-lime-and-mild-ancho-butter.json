@@ -1,0 +1,91 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "honey-lime-and-mild-ancho-butter",
+  "title": "Honey, Lime and Mild Ancho Butter",
+  "description": "A short lime and honey infusion gives this smooth finishing butter a bright flavor and gentle ancho warmth.",
+  "category": "Sauce & condiment",
+  "tags": [
+    "compound-butter",
+    "mild",
+    "lime"
+  ],
+  "servings": 2,
+  "servingsLabel": "finishing portions",
+  "prepMin": 7,
+  "cookMin": 2,
+  "equipment": [
+    "10-inch HexClad skillet",
+    "Small mixing bowl",
+    "Fine-mesh sieve"
+  ],
+  "ingredients": [
+    {
+      "id": "butter",
+      "qty": 2,
+      "name": "unsalted butter",
+      "group": "Butter",
+      "unit": "tbsp",
+      "note": "Softened just enough to mash."
+    },
+    {
+      "id": "juice",
+      "qty": 1,
+      "name": "strained lime juice",
+      "group": "Infusion",
+      "unit": "tsp"
+    },
+    {
+      "id": "zest",
+      "qty": 0.125,
+      "name": "finely grated lime zest",
+      "group": "Infusion",
+      "unit": "tsp"
+    },
+    {
+      "id": "honey",
+      "qty": 0.5,
+      "name": "mild honey",
+      "group": "Infusion",
+      "unit": "tsp"
+    },
+    {
+      "id": "ancho",
+      "qty": 0.125,
+      "name": "pure mild ground ancho chile",
+      "group": "Butter",
+      "unit": "tsp"
+    },
+    {
+      "id": "paprika",
+      "qty": 0.125,
+      "name": "sweet smoked paprika",
+      "group": "Butter",
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Warm the lime and honey",
+      "text": "Combine {juice}, {zest} and {honey} in the HexClad. Stir over low heat for 45–60 seconds until fluid and fragrant."
+    },
+    {
+      "title": "Strain the infusion",
+      "text": "Press the mixture through a fine sieve into a small bowl. Let it cool for about 5 minutes."
+    },
+    {
+      "title": "Blend the spices",
+      "text": "Mash {ancho} and {paprika} into {butter} until no spice clumps remain."
+    },
+    {
+      "title": "Whip in the lime",
+      "text": "Beat the cooled infusion into the seasoned butter a little at a time until smooth. Divide into two portions and chill covered."
+    },
+    {
+      "title": "Melt into a moist side",
+      "text": "Stir a portion into warm sweet potato mash or fold it into hot corn gravy just before serving."
+    }
+  ],
+  "notes": "Make ahead: Make the butter up to 3 days ahead and refrigerate in a small covered dish. Freezer-Friendly Verdict: Yes. Freeze individual portions for up to 1 month; the small amount of infusion mixes back in as the butter melts. Fridge reheat: Stir one chilled portion into hot, freshly cooked mash or gravy until melted. If using leftovers, reheat the dish to 165°F first. Freezer reheat: Thaw the covered butter in the refrigerator and use it in a hot dish as for chilled butter. Option A uses lime and mild ancho. For gentler Option B, use smooth pear puree in place of the juice, omit the zest and ancho, and use sweet unsmoked paprika. An unsalted plant-based butter works for dairy-free portions.",
+  "source": "Glenn"
+}
