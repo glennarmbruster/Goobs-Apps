@@ -1,0 +1,86 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "basil-pistachio-aioli",
+  "title": "Basil-Pistachio Aioli",
+  "description": "Basil and smooth pistachio paste turn a garlic mayonnaise into a pale green sauce for poached cod or tender chicken.",
+  "category": "Sauce & condiment",
+  "tags": [
+    "aioli",
+    "chilled"
+  ],
+  "servings": 8,
+  "servingsLabel": "2-tablespoon portions",
+  "prepMin": 10,
+  "cookMin": 0,
+  "equipment": [
+    "Mixing bowl and flexible spatula",
+    "Small whisk",
+    "Heatproof liquid measuring cup",
+    "Mortar and pestle or small food processor"
+  ],
+  "ingredients": [
+    {
+      "id": "mayo",
+      "qty": 0.75,
+      "name": "plain full-fat mayonnaise",
+      "group": "Sauce",
+      "unit": "cup",
+      "note": "Use plain commercial mayonnaise made with pasteurized eggs."
+    },
+    {
+      "id": "pistachio",
+      "qty": 1.5,
+      "name": "smooth unsalted pistachio paste",
+      "group": "Sauce",
+      "unit": "tbsp",
+      "note": "Pure pistachios, ground smooth."
+    },
+    {
+      "id": "basil",
+      "qty": 0.25,
+      "name": "fresh basil leaves",
+      "group": "Sauce",
+      "unit": "cup",
+      "note": "Loosely packed, washed and dried."
+    },
+    {
+      "id": "garlic",
+      "qty": 0.125,
+      "name": "granulated garlic",
+      "group": "Sauce",
+      "unit": "tsp"
+    },
+    {
+      "id": "lemon",
+      "qty": 1,
+      "name": "strained lemon juice",
+      "group": "Sauce",
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Make the basil paste",
+      "text": "Tear {basil} into the mortar and work it with {lemon} and {garlic} for 1–2 minutes, until the leaves form a soft paste."
+    },
+    {
+      "title": "Smooth the pistachio",
+      "text": "Stir {pistachio} into the herb paste. Loosen it with a spoonful of {mayo} until smooth."
+    },
+    {
+      "title": "Fold the aioli",
+      "text": "Fold the pistachio mixture through the remaining mayonnaise just until the color is even."
+    },
+    {
+      "title": "Adjust the consistency",
+      "text": "Scrape all of the mixture into the measuring cup. Add cold water a teaspoon at a time if needed to reach about 1 cup, maintaining a smooth spoonable texture."
+    },
+    {
+      "title": "Serve",
+      "text": "Chill covered for 20 minutes. Spoon onto warm poached fish or swirl into a separate portion of thick gravy just before serving."
+    }
+  ],
+  "notes": "Yield: About 1 cup. One serving is 2 tablespoons. Make ahead: Prepare up to a day ahead and press a cover against the surface to protect the basil color. Refrigerate within 2 hours and use within 3 days. Freezer-Friendly Verdict: No. Mayonnaise can split after freezing, and the fresh basil darkens. Fridge reheat: Serve chilled. Stir until smooth just before portioning. Freezer reheat: If already frozen, thaw covered in the refrigerator, then whisk or blend briefly and serve cold. Option A uses lemon juice. For gentler Option B, use water for the lemon and halve the granulated garlic. The aioli is dairy-free. Estimated nutrition per serving (1/8 of recipe): 158 kcal, 0.8 g protein, 1.0 g total carbohydrate, 16.8 g fat, 0.3 g fiber, 131 mg sodium. The estimate covers the prepared condiment. Add separately served foods when totaling a meal.",
+  "source": "Glenn"
+}

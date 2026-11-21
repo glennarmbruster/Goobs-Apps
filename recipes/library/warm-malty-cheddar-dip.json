@@ -1,0 +1,92 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "warm-malty-cheddar-dip",
+  "title": "Warm Malty Cheddar Dip",
+  "description": "A mild lager reduction and a butter roux carry sharp cheddar in a smooth, warm dip for soft potatoes or chicken.",
+  "category": "Sauce & condiment",
+  "tags": [
+    "dip",
+    "dipping-sauce"
+  ],
+  "servings": 6,
+  "servingsLabel": "1/4-cup portions",
+  "prepMin": 7,
+  "cookMin": 14,
+  "equipment": [
+    "10-inch HexClad skillet",
+    "Small whisk",
+    "Heatproof liquid measuring cup",
+    "Instant-read thermometer"
+  ],
+  "ingredients": [
+    {
+      "id": "beer",
+      "qty": 0.5,
+      "name": "plain lager beer",
+      "group": "Sauce",
+      "unit": "cup",
+      "note": "A mild, low-bitterness lager."
+    },
+    {
+      "id": "milk",
+      "qty": 1,
+      "name": "skim milk",
+      "group": "Sauce",
+      "unit": "cup"
+    },
+    {
+      "id": "butter",
+      "qty": 2,
+      "name": "unsalted butter",
+      "group": "Sauce",
+      "unit": "tsp"
+    },
+    {
+      "id": "flour",
+      "qty": 1,
+      "name": "all-purpose flour",
+      "group": "Roux",
+      "unit": "tbsp"
+    },
+    {
+      "id": "cheese",
+      "qty": 2.5,
+      "name": "sharp cheddar cheese",
+      "group": "Sauce",
+      "unit": "oz",
+      "note": "Finely grate from a block."
+    },
+    {
+      "id": "mustard",
+      "qty": 0.25,
+      "name": "ground yellow mustard seed",
+      "group": "Sauce",
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Reduce the lager",
+      "text": "Simmer {beer} in the HexClad for 4–6 minutes until reduced to about half its starting volume. Pour into the heatproof cup."
+    },
+    {
+      "title": "Cook the mustard roux",
+      "text": "Melt {butter} in the emptied pan. Whisk in {flour} and {mustard} over low heat for 1–2 minutes."
+    },
+    {
+      "title": "Thicken the milk base",
+      "text": "Whisk {milk} and the reduced lager into the roux in stages. Simmer for 2–3 minutes until it coats the back of a spoon."
+    },
+    {
+      "title": "Melt the cheddar",
+      "text": "Remove the skillet from the heat and whisk in {cheese} gradually until smooth."
+    },
+    {
+      "title": "Serve",
+      "text": "Measure about 1 1/2 cups, loosening with warm water as needed. Spoon warm over potatoes or serve in small dipping bowls beside sauced chicken."
+    }
+  ],
+  "notes": "Yield: 1 1/2 cups. One serving is 1/4 cup. Make ahead: Reduce the lager a day ahead. Grate the cheddar shortly before making the dip. Refrigerate in shallow covered portions within 2 hours and use within 3 days. Freezer-Friendly Verdict: No. Cheddar can separate when the finished dip freezes. For freezer prep, freeze the thickened milk base for up to 1 month and add the cheese after reheating. Fridge reheat: Bring a portion to a boil in a small pan, stirring until it reaches at least 165°F. Loosen with a little water as needed. Freezer reheat: Thaw in the refrigerator overnight and reheat as for a chilled portion. Option A uses lager and mustard. For gentler Option B, replace the lager with low-sodium chicken broth and omit the mustard. For dairy-free dip, use avocado oil, unsweetened oat milk and a mild melting dairy-free cheddar. Calories include all of the measured beer before simmering. Estimated nutrition per serving (1/6 of recipe): 87 kcal, 4.4 g protein, 4.0 g total carbohydrate, 5.4 g fat, 0.0 g fiber, 95 mg sodium. The estimate covers the prepared condiment. Add separately served foods when totaling a meal.",
+  "source": "Glenn"
+}

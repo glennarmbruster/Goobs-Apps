@@ -1,0 +1,94 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "artichoke-cannellini-and-lemon-dip",
+  "title": "Artichoke, Cannellini and Lemon Dip",
+  "description": "Tender artichoke hearts and white beans blend into a spoonable dip with lemon and a little thyme.",
+  "category": "Sauce & condiment",
+  "tags": [
+    "dip",
+    "dipping-sauce"
+  ],
+  "servings": 6,
+  "servingsLabel": "1/4-cup portions",
+  "prepMin": 9,
+  "cookMin": 8,
+  "equipment": [
+    "10-inch HexClad skillet",
+    "Immersion blender and tall heatproof jug",
+    "Fine-mesh sieve",
+    "Heatproof liquid measuring cup"
+  ],
+  "ingredients": [
+    {
+      "id": "artichoke",
+      "qty": 0.75,
+      "name": "plain cooked artichoke hearts",
+      "group": "Sauce",
+      "unit": "cup",
+      "note": "Tender unseasoned hearts. Trim any tough tips."
+    },
+    {
+      "id": "beans",
+      "qty": 0.75,
+      "name": "cooked cannellini beans",
+      "group": "Sauce",
+      "unit": "cup",
+      "note": "Use plain, unsalted and drained beans."
+    },
+    {
+      "id": "broth",
+      "qty": 0.5,
+      "name": "low-sodium mushroom broth",
+      "group": "Sauce",
+      "unit": "cup",
+      "note": "Use plain, unsalted mushroom-and-water broth."
+    },
+    {
+      "id": "lemon",
+      "qty": 2,
+      "name": "strained lemon juice",
+      "group": "Sauce",
+      "unit": "tsp"
+    },
+    {
+      "id": "oil",
+      "qty": 2,
+      "name": "avocado oil",
+      "group": "Sauce",
+      "unit": "tsp"
+    },
+    {
+      "id": "thyme",
+      "qty": 0.25,
+      "name": "fresh thyme leaves",
+      "group": "Sauce",
+      "unit": "tsp",
+      "note": "Mince finely."
+    }
+  ],
+  "steps": [
+    {
+      "title": "Soften the artichokes",
+      "text": "Cover {artichoke}, {beans} and {thyme} with {broth} in the HexClad. Simmer covered for 6–8 minutes until the hearts mash under a spoon."
+    },
+    {
+      "title": "Blend the dip",
+      "text": "Blend the warm mixture with {lemon} and {oil} for 1 minute, until loose and silky."
+    },
+    {
+      "title": "Remove any fibers",
+      "text": "Press the dip through a fine sieve, scraping smooth puree from the underside."
+    },
+    {
+      "title": "Adjust the consistency",
+      "text": "Scrape all of the mixture into the measuring cup. Add cold water a teaspoon at a time if needed to reach about 1 1/2 cups, maintaining a smooth spoonable texture."
+    },
+    {
+      "title": "Serve",
+      "text": "Chill until cool, about 45 minutes in a shallow container. Spoon onto soft potatoes or serve alongside chicken."
+    }
+  ],
+  "notes": "Yield: About 1 1/2 cups. One serving is 1/4 cup. Make ahead: Blend and strain up to a day ahead. The beans firm slightly as they cool. Refrigerate within 2 hours and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze in quarter-cup portions for up to 1 month. Stir in a teaspoon of water as needed after thawing. Fridge reheat: Serve chilled. Stir until smooth just before portioning. Freezer reheat: If already frozen, thaw covered in the refrigerator, then whisk or blend briefly and serve cold. Option A uses lemon. For gentler Option B, substitute water for the juice and add a little extra thyme. The dip is dairy-free. Estimated nutrition per serving (1/6 of recipe): 57 kcal, 2.9 g protein, 8.3 g total carbohydrate, 1.7 g fat, 2.6 g fiber, 15 mg sodium. The estimate covers the prepared condiment. Add separately served foods when totaling a meal. Fiber is estimated before straining.",
+  "source": "Glenn"
+}

@@ -1,0 +1,137 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "fontina-chicken-and-broccoli-impastable-rotini",
+  "title": "Fontina Chicken and Broccoli Rotini",
+  "description": "Chicken thighs and Impastable rotini share one skillet of sauce, with fresh broccoli folded into a smooth Fontina finish.",
+  "category": "Main dish",
+  "tags": [
+    "hexclad",
+    "one-pan",
+    "pasta",
+    "chicken-thighs",
+    "extra-sauce"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 12,
+  "cookMin": 38,
+  "equipment": [
+    "12-inch HexClad skillet with lid",
+    "Thin-tip instant-read thermometer",
+    "Silicone spoon"
+  ],
+  "ingredients": [
+    {
+      "id": "chicken",
+      "name": "boneless skinless chicken thighs",
+      "group": "Chicken",
+      "qty": 10,
+      "unit": "oz",
+      "note": "Use plain, unenhanced poultry. Remove visible fat before weighing."
+    },
+    {
+      "id": "rotini",
+      "name": "dry ThinSlim Foods Impastable rotini",
+      "group": "Pasta",
+      "qty": 3,
+      "unit": "oz"
+    },
+    {
+      "id": "broccoli",
+      "name": "fresh broccoli florets",
+      "group": "Vegetables",
+      "qty": 3,
+      "unit": "oz",
+      "note": "Cut into small, evenly sized florets; use only fresh broccoli."
+    },
+    {
+      "id": "broth",
+      "name": "low-sodium chicken broth",
+      "group": "Sauce",
+      "qty": 1.875,
+      "unit": "cup",
+      "note": "Use plain chicken-and-water broth without a vegetable blend or added seasoning."
+    },
+    {
+      "id": "milk",
+      "name": "skim milk",
+      "group": "Sauce",
+      "qty": 0.625,
+      "unit": "cup"
+    },
+    {
+      "id": "fontina",
+      "name": "Fontina cheese",
+      "group": "Sauce",
+      "qty": 0.75,
+      "unit": "oz",
+      "note": "Finely grate from a block."
+    },
+    {
+      "id": "nutmeg",
+      "name": "ground nutmeg",
+      "group": "Sauce",
+      "qty": 1,
+      "unit": "pinch"
+    },
+    {
+      "id": "extra",
+      "name": "hot water",
+      "group": "Pasta",
+      "qty": 0.5,
+      "unit": "cup",
+      "note": "Keep ready to replace liquid absorbed by the pasta."
+    },
+    {
+      "id": "starch",
+      "name": "cornstarch",
+      "group": "Slurry",
+      "qty": 2.75,
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "name": "cold water",
+      "group": "Slurry",
+      "qty": 2.75,
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Start the chicken",
+      "text": "Cut {chicken} across the grain into 3/4-inch pieces. Bring {broth} to a gentle simmer in the HexClad and lower in the chicken. Cover and poach for 4 minutes."
+    },
+    {
+      "title": "Cook the rotini in sauce",
+      "text": "Stir {rotini} directly into the chicken broth. Return to a steady simmer and cook for the package time, checking from 8 minutes. Stir every 2–3 minutes and add {extra} as needed to keep the spirals surrounded by liquid."
+    },
+    {
+      "title": "Pull the thigh pieces",
+      "text": "Start checking the chicken after 10 minutes total. Lift pieces as their centers reach 175°F into a warm covered bowl with a spoonful of cooking liquid. Continue cooking the rotini in its original liquid until tender."
+    },
+    {
+      "title": "Steam the fresh broccoli",
+      "text": "When the pasta is nearly tender, scatter {broccoli} over it and cover for 2–4 minutes. Lift out the florets when bright green and crisp-tender and place with the chicken."
+    },
+    {
+      "title": "Build the Fontina base",
+      "text": "Stir {milk} and {nutmeg} into the pasta without draining it. Bring to a gentle simmer. Loosen with any reserved hot water so there is about 5/8 cup of free sauce per serving."
+    },
+    {
+      "title": "Mix the slurry",
+      "text": "Stir {starch} into {water} until completely smooth."
+    },
+    {
+      "title": "Thicken around the pasta",
+      "text": "Fold the slurry into the bubbling liquid between the spirals. Simmer for 1 minute, until the sauce coats the back of a spoon."
+    },
+    {
+      "title": "Melt the cheese",
+      "text": "Remove from heat and stir in {fontina} until smooth. Fold in the reserved chicken, its juices and the broccoli, and serve immediately with sauce around each portion."
+    }
+  ],
+  "notes": "Sauce yield: About 1 1/4 cups for two, in addition to the pasta and vegetables. Make ahead: Cut the chicken and broccoli ahead and keep them refrigerated separately. Grate the cheese before starting so it melts quickly at the finish. For dairy-free portions, use plain unsweetened oat milk and replace the Fontina with a spoonful of unsalted cashew cream. Chill leftovers promptly in shallow portions and refrigerate for up to 3 days. Freezer-Friendly Verdict: No. Rotini absorbs the sauce and the broccoli softens after freezing; this dish is best cooked for two. Fridge reheat: Warm one portion covered in its sauce in a HexClad skillet over medium-low, loosening with a splash of water if needed. Stir or turn the chicken gently, checking from 6 minutes, until it reaches 165°F throughout. Freezer reheat: If already frozen, thaw overnight in the refrigerator and follow the fridge reheating directions. Estimated nutrition per serving (1/2 of recipe): 320 kcal, 39.2 g protein, 43.4 g total carbohydrate, 9.7 g fat, 27.9 g fiber, 469 mg sodium. Includes the measured broth and sauce. Sodium varies with your broth.",
+  "source": "Glenn"
+}

@@ -1,0 +1,109 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "bay-braised-chicken-with-brown-butter-parsnip-gravy",
+  "title": "Bay-Braised Chicken with Brown Butter Parsnip Gravy",
+  "description": "Chicken thighs braise under cover with sweet parsnip and bay, then finish in a nutty brown butter gravy.",
+  "category": "Main dish",
+  "tags": [
+    "apo",
+    "combi-steam",
+    "chicken-thighs",
+    "extra-sauce"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 12,
+  "cookMin": 60,
+  "equipment": [
+    "Anova Precision Oven Gen 1 with bottom drip pan, wire rack and food probe",
+    "Small deep metal baking dish and foil",
+    "10-inch HexClad skillet with lid",
+    "Thin-tip instant-read thermometer",
+    "Immersion blender and deep heatproof jug",
+    "Fine-mesh sieve"
+  ],
+  "ingredients": [
+    {
+      "id": "chicken",
+      "name": "boneless skinless chicken thighs",
+      "group": "Chicken",
+      "qty": 10,
+      "unit": "oz",
+      "note": "Use plain, unenhanced poultry. Remove visible fat before weighing."
+    },
+    {
+      "id": "parsnip",
+      "name": "parsnip",
+      "group": "Gravy",
+      "qty": 3,
+      "unit": "oz",
+      "note": "Peel, remove any woody core and cut into 1/4-inch dice."
+    },
+    {
+      "id": "bay",
+      "name": "small dried bay leaf",
+      "group": "Braise",
+      "qty": 1,
+      "note": "Leave whole. Remove before serving."
+    },
+    {
+      "id": "broth",
+      "name": "low-sodium chicken broth",
+      "group": "Sauce",
+      "qty": 1.375,
+      "unit": "cup",
+      "note": "Use plain chicken-and-water broth without a vegetable blend or added seasoning."
+    },
+    {
+      "id": "butter",
+      "name": "unsalted butter",
+      "group": "Gravy",
+      "qty": 1,
+      "unit": "tbsp"
+    },
+    {
+      "id": "flour",
+      "name": "all-purpose flour",
+      "group": "Roux",
+      "qty": 1,
+      "unit": "tbsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Set the APO",
+      "text": "Fill the tank and install the bottom drip pan. Preheat to 300°F with sous vide mode off, 80% steam, rear element on, top and bottom elements off. Set the food probe target to 175°F."
+    },
+    {
+      "title": "Warm the braising liquid",
+      "text": "Bring {parsnip}, {bay} and {broth} to a simmer in the HexClad for 3 minutes."
+    },
+    {
+      "title": "Cover the chicken",
+      "text": "Lay {chicken} flat in a snug baking dish and pour the hot broth and parsnips around it, reaching at least halfway up the meat. Insert the probe sideways into the thickest thigh and seal with foil around the cable."
+    },
+    {
+      "title": "Braise in combi steam",
+      "text": "Place on the middle rack and cook for 25–45 minutes, checking from 25 minutes. Pull each thigh at 175°F and rest covered with a spoonful of braising liquid."
+    },
+    {
+      "title": "Puree the parsnip",
+      "text": "Discard the bay leaf. If the parsnip resists a fork, simmer it in the braising liquid until soft. Blend the parsnip and liquid in a heatproof jug and strain until smooth."
+    },
+    {
+      "title": "Make the brown butter roux",
+      "text": "Melt {butter} in the empty HexClad over medium-low for 2–3 minutes until the milk solids are hazelnut brown. Whisk in {flour} and stir for 1 minute."
+    },
+    {
+      "title": "Finish the gravy",
+      "text": "Slowly whisk the parsnip puree into the roux. Bring to a full boil, then simmer for 2 minutes until the gravy coats the back of a spoon."
+    },
+    {
+      "title": "Serve the braise",
+      "text": "Break each thigh across the grain into short pieces with a fork. Coat the pieces with gravy and ladle the remainder into both bowls."
+    }
+  ],
+  "notes": "Sauce yield: About 1 1/2 cups for two. Make ahead: Dice the parsnip up to a day ahead. Make the brown butter roux while the cooked chicken rests. For dairy-free gravy, cook the flour in avocado oil over low heat for 1 minute and skip browning the butter. Chill leftovers promptly in shallow portions and refrigerate for up to 3 days. Freezer-Friendly Verdict: Yes. The pureed root vegetable keeps the gravy smooth around frozen chicken portions for up to 2 months. Fridge reheat: Transfer one portion with its gravy to a shallow covered oven-safe dish. Install the bottom drip pan and preheat the APO to 325°F with sous vide mode off, 60% steam, rear element on, top and bottom off. Set the food probe to 165°F at the coldest center. Check after 12 minutes and heat to 165°F throughout. Freezer reheat: Thaw overnight in the refrigerator, then follow the fridge reheating directions and stir the sauce smooth. Estimated nutrition per serving (1/2 of recipe): 275 kcal, 30.3 g protein, 11.0 g total carbohydrate, 11.7 g fat, 2.2 g fiber, 164 mg sodium. Includes the measured broth and sauce. Sodium varies with your broth.",
+  "source": "Glenn"
+}

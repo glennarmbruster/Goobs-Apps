@@ -1,0 +1,139 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "mahi-mahi-with-mango-lime-gravy-and-coconut-rice",
+  "title": "Mahi-Mahi with Mango-Lime Sauce and Coconut Rice",
+  "description": "Mango puree makes a mellow golden poaching sauce for mahi-mahi over rice softened with light coconut milk.",
+  "category": "Main dish",
+  "tags": [
+    "hexclad",
+    "mahi-mahi",
+    "coconut-rice",
+    "extra-sauce"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 12,
+  "cookMin": 24,
+  "equipment": [
+    "10-inch HexClad skillet with lid",
+    "Small saucepan with lid",
+    "Thin-tip instant-read thermometer",
+    "Immersion blender and deep heatproof jug",
+    "Flexible fish spatula"
+  ],
+  "ingredients": [
+    {
+      "id": "fish",
+      "name": "skinless mahi-mahi fillet",
+      "group": "Fish",
+      "qty": 10,
+      "unit": "oz",
+      "note": "Weight after skin and pin bones are removed. Divide into two even portions about 3/4 to 1 inch thick. Fully thaw before cooking."
+    },
+    {
+      "id": "mango",
+      "name": "peeled ripe mango flesh",
+      "group": "Sauce",
+      "qty": 4,
+      "unit": "oz",
+      "note": "Weight after peeling and pitting. Choose a low-fiber ripe mango."
+    },
+    {
+      "id": "broth",
+      "name": "low-sodium chicken broth",
+      "group": "Sauce",
+      "qty": 1,
+      "unit": "cup",
+      "note": "Choose unsalted plain meat-and-water broth without a vegetable blend."
+    },
+    {
+      "id": "lime",
+      "name": "strained lime juice",
+      "group": "Sauce",
+      "qty": 1,
+      "unit": "tsp"
+    },
+    {
+      "id": "rice",
+      "name": "cooked white rice",
+      "group": "Rice",
+      "qty": 0.75,
+      "unit": "cup"
+    },
+    {
+      "id": "coconut",
+      "name": "plain light coconut milk",
+      "group": "Rice",
+      "qty": 0.25,
+      "unit": "cup",
+      "note": "Unsweetened. Stir before measuring."
+    },
+    {
+      "id": "basil",
+      "name": "fresh basil leaves",
+      "group": "Sauce",
+      "qty": 1,
+      "unit": "tbsp",
+      "note": "Mince very finely."
+    },
+    {
+      "id": "starch",
+      "name": "cornstarch",
+      "group": "Slurry",
+      "qty": 2.5,
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "name": "cold water",
+      "group": "Slurry",
+      "qty": 2.5,
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Soften the coconut rice",
+      "text": "Warm {rice} and {coconut} in the covered saucepan over low heat for 4–7 minutes until creamy and at least 165°F throughout. Stir once and keep covered."
+    },
+    {
+      "title": "Make the mango base",
+      "text": "Blend {mango} and {broth} smooth in a deep jug. Pour into the HexClad and bring to a gentle simmer. Set aside a spoonful in a clean covered cup for resting the fish."
+    },
+    {
+      "title": "Poach the mahi-mahi",
+      "text": "Nestle {fish} into the mango base, spoon the liquid over the top and cover. Poach at a bare simmer for about 7–13 minutes, checking after 6 minutes. Pull each portion at 135°F."
+    },
+    {
+      "title": "Rest the fish",
+      "text": "Place the portions on a warm plate and moisten with the reserved mango base and cover. Rest for 3 minutes."
+    },
+    {
+      "title": "Boil the poaching liquid",
+      "text": "Bring the mango base in the HexClad to a full boil for 1 minute, stirring along the bottom."
+    },
+    {
+      "title": "Mix the slurry",
+      "text": "Stir {starch} into {water} until completely smooth."
+    },
+    {
+      "title": "Bind the sauce",
+      "text": "Bring the sauce to a simmer. Whisk in the freshly stirred slurry and let it bubble gently for 1 minute, stirring until it coats the back of a spoon."
+    },
+    {
+      "title": "Finish with basil and lime",
+      "text": "Stir {lime} and {basil} into the warm mango sauce off heat."
+    },
+    {
+      "title": "Check carryover and doneness",
+      "text": "After resting, check each thickest center for about 140°F. Open a natural seam with a fork. The center should be opaque and separate easily into flakes. If either cue is unclear or the center is below 140°F, finish covered in hot sauce in the HexClad over low heat to a measured 145°F, checking every minute."
+    },
+    {
+      "title": "Spoon into bowls",
+      "text": "Spoon the coconut rice into shallow bowls and top with the mahi-mahi. Ladle mango sauce over the fish and rice."
+    }
+  ],
+  "notes": "Sauce yield: About 1 1/2 cups of sauce for two in addition to the coconut rice. Make ahead: Puree mango and broth up to a day ahead. Refrigerate separately from the fish. Refrigerate in shallow portions within 2 hours. Use refrigerated leftovers within 3 days. Freezer-Friendly Verdict: Yes. Freeze up to 1 month with the rice underneath and the fish covered in mango sauce. A splash of water loosens the rice as it reheats. Fridge reheat: Warm a portion covered in its sauce over medium-low heat in the HexClad. Add a little water if it has thickened in storage. Check from 5 minutes and heat to 165°F at the coldest center. Freezer reheat: If frozen, thaw the covered portion in the refrigerator overnight, then follow the fridge method. Option A uses a little lime. For gentler Option B, omit it and finish with extra minced basil. The dish is dairy-free. Estimated nutrition per serving (1/2 of recipe): 269 kcal, 29.3 g protein, 29.1 g total carbohydrate, 3.3 g fat, 1.2 g fiber, 152 mg sodium. Includes both the fish and its full share of sauce and any rice or potatoes listed. Sodium varies with the broth.",
+  "source": "Glenn"
+}

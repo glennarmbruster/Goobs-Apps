@@ -1,0 +1,104 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "parsley-and-poached-garlic-sauce",
+  "title": "Parsley and Poached Garlic Sauce",
+  "description": "Gently simmered garlic turns mellow enough to blend by the clove into a vivid parsley sauce for cod or poultry.",
+  "category": "Sauce & condiment",
+  "tags": [
+    "herb-sauce",
+    "extra-sauce"
+  ],
+  "servings": 6,
+  "servingsLabel": "1/4-cup portions",
+  "prepMin": 7,
+  "cookMin": 21,
+  "equipment": [
+    "10-inch HexClad skillet",
+    "Immersion blender and tall heatproof jug",
+    "Fine-mesh sieve",
+    "Small whisk",
+    "Heatproof liquid measuring cup",
+    "Instant-read thermometer"
+  ],
+  "ingredients": [
+    {
+      "id": "garlic",
+      "qty": 5,
+      "name": "fresh garlic cloves",
+      "group": "Sauce",
+      "unit": "clove",
+      "note": "Peeled and sliced thinly."
+    },
+    {
+      "id": "broth",
+      "qty": 1.625,
+      "name": "low-sodium chicken broth",
+      "group": "Sauce",
+      "unit": "cup",
+      "note": "Use plain, unsalted meat-and-water broth."
+    },
+    {
+      "id": "parsley",
+      "qty": 0.5,
+      "name": "fresh flat-leaf parsley leaves",
+      "group": "Sauce",
+      "unit": "oz",
+      "note": "Weigh tender leaves after picking them from the stems."
+    },
+    {
+      "id": "almond",
+      "qty": 1,
+      "name": "smooth unsweetened blanched almond paste",
+      "group": "Sauce",
+      "unit": "tbsp",
+      "note": "Pure blanched almonds, unsalted, without sugar."
+    },
+    {
+      "id": "starch",
+      "qty": 2.75,
+      "name": "cornstarch",
+      "group": "Slurry",
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "qty": 2.75,
+      "name": "cold water",
+      "group": "Slurry",
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Poach the garlic",
+      "text": "Cover {garlic} with {broth} in the HexClad and simmer gently for 9–13 minutes until the slices mash under a spoon."
+    },
+    {
+      "title": "Wilt the parsley",
+      "text": "Submerge {parsley} in the simmering broth for 20–30 seconds, just until wilted."
+    },
+    {
+      "title": "Make the herb puree",
+      "text": "Blend the garlic, parsley and cooking broth with {almond} until smooth. Press through a fine sieve back into the skillet."
+    },
+    {
+      "title": "Stir the slurry",
+      "text": "Stir {starch} into {water} in a small cup until smooth."
+    },
+    {
+      "title": "Thicken the sauce",
+      "text": "Bring the sauce to a simmer. Stir in the freshly mixed slurry and cook for about 1 minute, whisking until it coats the back of a spoon."
+    },
+    {
+      "title": "Check the yield",
+      "text": "Measure the finished sauce in a heatproof cup. Aim for 1 1/2 cups total. If it measures short, whisk in a little hot water. If it measures over, return it to the skillet and simmer briefly to the mark."
+    },
+    {
+      "title": "Serve",
+      "text": "Spoon over steamed cod or tender chicken. Swirl a little through the vegetables on the same plate."
+    }
+  ],
+  "notes": "Yield: 1 1/2 cups. One serving is 1/4 cup. Make ahead: Poach the garlic in broth up to a day ahead, refrigerate promptly, then add the parsley just before blending. Refrigerate in shallow covered portions within 2 hours and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze in quarter-cup portions for up to 1 month. The sauce may darken a little but its texture stays smooth. Fridge reheat: Bring a portion to a boil in a small pan, stirring until it reaches at least 165°F. Loosen with a little water as needed. Freezer reheat: Thaw in the refrigerator overnight and reheat as for a chilled portion. Option A uses five poached cloves. For gentler Option B, use one clove and the same quantity of broth. The sauce is dairy-free. Estimated nutrition per serving (1/6 of recipe): 28 kcal, 1.4 g protein, 2.6 g total carbohydrate, 1.4 g fat, 0.4 g fiber, 12 mg sodium. The estimate covers the prepared condiment. Add separately served foods when totaling a meal. Fiber is estimated before straining.",
+  "source": "Glenn"
+}

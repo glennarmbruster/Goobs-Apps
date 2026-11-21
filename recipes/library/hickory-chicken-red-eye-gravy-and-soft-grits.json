@@ -1,0 +1,144 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "hickory-chicken-red-eye-gravy-and-soft-grits",
+  "title": "Hickory Chicken with Red-Eye Gravy and Soft Grits",
+  "description": "A splash of decaf coffee gives hickory-braised chicken a toasty Southern gravy for a bowl of soft grits.",
+  "category": "Main dish",
+  "tags": [
+    "traeger",
+    "hickory",
+    "chicken-thighs",
+    "grits",
+    "extra-sauce"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 10,
+  "cookMin": 70,
+  "equipment": [
+    "Traeger Silverton 610 pellet smoker",
+    "Lidded enamel Dutch oven",
+    "10-inch HexClad skillet with lid",
+    "Small saucepan with lid",
+    "Thin-tip instant-read thermometer"
+  ],
+  "ingredients": [
+    {
+      "id": "chicken",
+      "name": "boneless skinless chicken thighs",
+      "group": "Chicken",
+      "qty": 10,
+      "unit": "oz",
+      "note": "Use plain, unenhanced poultry. Remove visible fat before weighing."
+    },
+    {
+      "id": "broth",
+      "name": "low-sodium chicken broth",
+      "group": "Sauce",
+      "qty": 1.375,
+      "unit": "cup",
+      "note": "Use plain chicken-and-water broth without a vegetable blend or added seasoning."
+    },
+    {
+      "id": "coffee",
+      "name": "brewed unsweetened decaf coffee",
+      "group": "Sauce",
+      "qty": 0.25,
+      "unit": "cup"
+    },
+    {
+      "id": "molasses",
+      "name": "blackstrap molasses",
+      "group": "Sauce",
+      "qty": 0.5,
+      "unit": "tsp"
+    },
+    {
+      "id": "paprika",
+      "name": "sweet smoked paprika",
+      "group": "Sauce",
+      "qty": 0.25,
+      "unit": "tsp"
+    },
+    {
+      "id": "grits",
+      "name": "plain quick-cooking grits",
+      "group": "Grits",
+      "qty": 0.25,
+      "unit": "cup"
+    },
+    {
+      "id": "grits_water",
+      "name": "water",
+      "group": "Grits",
+      "qty": 1.125,
+      "unit": "cup"
+    },
+    {
+      "id": "butter",
+      "name": "unsalted butter",
+      "group": "Sauce",
+      "qty": 2,
+      "unit": "tsp"
+    },
+    {
+      "id": "starch",
+      "name": "cornstarch",
+      "group": "Slurry",
+      "qty": 3.5,
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "name": "cold water",
+      "group": "Slurry",
+      "qty": 3.5,
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Heat the pellet smoker",
+      "text": "Load the Traeger Silverton 610 with hickory wood pellets. Preheat with the lid closed to 275°F, allowing about 15 minutes."
+    },
+    {
+      "title": "Perfume the coffee broth",
+      "text": "Bring {broth}, {coffee}, {molasses} and {paprika} to a simmer in the Dutch oven on the stovetop. Transfer to the smoker grate with the pot uncovered and close the smoker lid for 8 minutes."
+    },
+    {
+      "title": "Braise the chicken",
+      "text": "Place {chicken} flat in the hot coffee broth and spoon the broth over each thigh. Fit the pot lid immediately as the wrap point. Cook at 275°F for 30–45 minutes, checking from 25 minutes until each thigh reaches 175°F."
+    },
+    {
+      "title": "Cook the soft grits",
+      "text": "While the thighs braise, bring {grits_water} to a boil in the saucepan. Whisk in {grits} and simmer on low for 5–8 minutes, stirring often until tender and spoonable."
+    },
+    {
+      "title": "Enrich the grits",
+      "text": "Stir {butter} into the grits. Keep covered off heat until the gravy is ready."
+    },
+    {
+      "title": "Rest in the braising liquid",
+      "text": "Transfer the chicken and a ladle of its liquid to a warm bowl. Cover and rest for 5 minutes while finishing the sauce."
+    },
+    {
+      "title": "Concentrate the gravy",
+      "text": "Pour the braising liquid into the HexClad. Simmer until it measures about 1 1/4 cups, checking after 2 minutes."
+    },
+    {
+      "title": "Mix the slurry",
+      "text": "Stir {starch} into {water} until completely smooth."
+    },
+    {
+      "title": "Bind the sauce",
+      "text": "Bring the sauce to a simmer. Whisk in the freshly stirred slurry and let it bubble gently for 1 minute, stirring until it coats the back of a spoon."
+    },
+    {
+      "title": "Sauce and serve",
+      "text": "Divide the grits between shallow bowls. Slice the chicken across the grain onto the grits and spoon the gravy and resting juices over both."
+    }
+  ],
+  "notes": "Sauce yield: About 1 1/4 cups of gravy for two, in addition to the grits. Make ahead: Brew the decaf the day before and refrigerate it. Cook the grits fresh if possible. Refrigerate shallow portions within 2 hours, or within 1 hour outdoors above 90°F. Use refrigerated leftovers within 3 days. Freezer-Friendly Verdict: Yes. Freeze the sliced chicken in its gravy for up to 2 months. Freeze the grits separately and loosen them with water as they warm. Fridge reheat: Warm the grits and sauced chicken covered in separate pans, adding a splash of water to the grits. Stir on medium-low and check from 6 minutes until both reach 165°F throughout. Freezer reheat: Thaw overnight in the refrigerator, then follow the fridge reheating directions. Option A uses a little decaf coffee. For gentler Option B, use additional broth for the coffee and sweet unsmoked paprika. For dairy-free grits, use avocado oil in place of the butter. Estimated nutrition per serving (1/2 of recipe): 310 kcal, 31.0 g protein, 21.9 g total carbohydrate, 10.1 g fat, 1.1 g fiber, 167 mg sodium. Includes all the chicken and sauce in the listed recipe. Sodium varies with the broth.",
+  "source": "Glenn"
+}

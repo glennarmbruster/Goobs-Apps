@@ -1,0 +1,129 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "saffron-almond-chicken-cutlets",
+  "title": "Saffron Chicken Cutlets with Silky Almond Sauce",
+  "description": "Thin steam-poached breast cutlets are served in a golden saffron sauce enriched with smooth blanched almond paste.",
+  "category": "Main dish",
+  "tags": [
+    "apo",
+    "bagless-sous-vide",
+    "chicken-cutlets",
+    "extra-sauce"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 13,
+  "cookMin": 40,
+  "equipment": [
+    "Anova Precision Oven Gen 1 with bottom drip pan, wire rack and food probe",
+    "Shallow stainless steel baking pan",
+    "10-inch HexClad skillet with lid",
+    "Thin-tip instant-read thermometer",
+    "Meat mallet and parchment",
+    "Fine-mesh sieve"
+  ],
+  "ingredients": [
+    {
+      "id": "chicken",
+      "name": "boneless skinless chicken breast",
+      "group": "Chicken",
+      "qty": 10,
+      "unit": "oz",
+      "note": "Use plain, unenhanced poultry. Remove visible fat before weighing."
+    },
+    {
+      "id": "broth",
+      "name": "low-sodium chicken broth",
+      "group": "Sauce",
+      "qty": 1.25,
+      "unit": "cup",
+      "note": "Use plain chicken-and-water broth without a vegetable blend or added seasoning."
+    },
+    {
+      "id": "saffron",
+      "name": "saffron threads",
+      "group": "Sauce",
+      "qty": 1,
+      "unit": "pinch",
+      "note": "A small loose pinch, gently crushed. Remove before serving."
+    },
+    {
+      "id": "almond",
+      "name": "smooth unsweetened blanched almond paste",
+      "group": "Sauce",
+      "qty": 1.5,
+      "unit": "tbsp",
+      "note": "Use pure ground almonds with no added salt, sugar or pieces."
+    },
+    {
+      "id": "garlic",
+      "name": "granulated garlic",
+      "group": "Sauce",
+      "qty": 0.25,
+      "unit": "tsp"
+    },
+    {
+      "id": "parsley",
+      "name": "fresh flat-leaf parsley",
+      "group": "Sauce",
+      "qty": 1,
+      "unit": "sprig",
+      "note": "Keep whole for easy removal. Remove before serving."
+    },
+    {
+      "id": "starch",
+      "name": "cornstarch",
+      "group": "Slurry",
+      "qty": 2.75,
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "name": "cold water",
+      "group": "Slurry",
+      "qty": 2.75,
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Set the APO",
+      "text": "Fill the tank and install the bottom drip pan. Preheat to 175°F with sous vide mode on, 100% steam, rear element on, top and bottom elements off. Set the food probe target to 165°F."
+    },
+    {
+      "title": "Even the cutlets",
+      "text": "Butterfly {chicken} into cutlets. Between two sheets of parchment, gently tap the thick ends with the flat face of a meat mallet to an even 3/8 inch."
+    },
+    {
+      "title": "Start the steam cook",
+      "text": "Lay the cutlets unbagged in the shallow pan on the middle rack. Insert the probe sideways into the center of the thickest cutlet and set a 15-minute reminder."
+    },
+    {
+      "title": "Bloom the saffron",
+      "text": "While the chicken cooks, bring {broth} to a simmer in the HexClad. Take off the heat, add {saffron} and {parsley}, then cover and steep for 7 minutes."
+    },
+    {
+      "title": "Smooth the almond base",
+      "text": "Strain the infusion back into the pan. Loosen {almond} with a spoonful of warm infusion and whisk it into the rest with {garlic}."
+    },
+    {
+      "title": "Mix the slurry",
+      "text": "Stir {starch} into {water} until completely smooth."
+    },
+    {
+      "title": "Bind the sauce",
+      "text": "Bring the sauce to a simmer. Whisk in the freshly stirred slurry and let it bubble gently for 1 minute, stirring until it coats the back of a spoon."
+    },
+    {
+      "title": "Pull the cutlets",
+      "text": "Check each center from the side at 15 minutes from loading and pull each cutlet at 165°F, usually after 18–35 minutes. Keep it loosely covered in its juices."
+    },
+    {
+      "title": "Ladle over the chicken",
+      "text": "Slice the chicken thinly across the grain. Put half the sauce on the plates, nestle the chicken into it and spoon the rest over the cut faces."
+    }
+  ],
+  "notes": "Sauce yield: About 1 1/4 cups for two. Make ahead: Flatten the cutlets the night before and keep them covered in the refrigerator. Bloom the saffron while the oven is running. The almond paste provides the creamy texture without dairy. Chill leftovers promptly in shallow portions and refrigerate for up to 3 days. Freezer-Friendly Verdict: Yes. Freeze portions in their sauce for up to 6 weeks; whisk the almond sauce smooth after thawing. Fridge reheat: Transfer one portion with its gravy to a shallow covered oven-safe dish. Install the bottom drip pan and preheat the APO to 325°F with sous vide mode off, 60% steam, rear element on, top and bottom off. Set the food probe to 165°F at the coldest center. Check after 12 minutes and heat to 165°F throughout. Freezer reheat: Thaw overnight in the refrigerator, then follow the fridge reheating directions and stir the sauce smooth. Estimated nutrition per serving (1/2 of recipe): 263 kcal, 35.8 g protein, 6.2 g total carbohydrate, 10.0 g fat, 1.3 g fiber, 89 mg sodium. Includes the measured broth and sauce. Sodium varies with your broth.",
+  "source": "Glenn"
+}

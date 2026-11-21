@@ -1,0 +1,145 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "apo-cod-over-rice-with-ginger-shiitake-gravy",
+  "title": "APO Cod over Rice with Ginger-Shiitake Gravy",
+  "description": "Combi-steamed cod sits on soft white rice under a glossy mushroom gravy finished with ginger and white miso.",
+  "category": "Main dish",
+  "tags": [
+    "apo",
+    "combi-steam",
+    "cod",
+    "rice",
+    "extra-sauce"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 14,
+  "cookMin": 32,
+  "equipment": [
+    "Anova Precision Oven Gen 1 with bottom drip pan, wire rack and food probe",
+    "Shallow stainless steel baking pan",
+    "Small saucepan with lid",
+    "10-inch HexClad skillet with lid",
+    "Thin-tip instant-read thermometer",
+    "Immersion blender and deep heatproof jug",
+    "Flexible fish spatula"
+  ],
+  "ingredients": [
+    {
+      "id": "fish",
+      "name": "skinless Atlantic cod loin",
+      "group": "Fish",
+      "qty": 10,
+      "unit": "oz",
+      "note": "Weight after skin and pin bones are removed. Divide into two even portions about 3/4 to 1 inch thick. Fully thaw before cooking."
+    },
+    {
+      "id": "caps",
+      "name": "fresh shiitake mushroom caps",
+      "group": "Sauce",
+      "qty": 3,
+      "unit": "oz",
+      "note": "Weigh caps after trimming off the tough stems, then slice."
+    },
+    {
+      "id": "broth",
+      "name": "low-sodium chicken broth",
+      "group": "Sauce",
+      "qty": 1.375,
+      "unit": "cup",
+      "note": "Choose unsalted plain meat-and-water broth without a vegetable blend."
+    },
+    {
+      "id": "rice",
+      "name": "cooked white rice",
+      "group": "Rice",
+      "qty": 0.75,
+      "unit": "cup",
+      "note": "Plain, unsalted and freshly cooked or promptly chilled."
+    },
+    {
+      "id": "ginger",
+      "name": "fresh ginger juice",
+      "group": "Sauce",
+      "qty": 0.5,
+      "unit": "tsp"
+    },
+    {
+      "id": "miso",
+      "name": "mild white miso",
+      "group": "Sauce",
+      "qty": 1,
+      "unit": "tsp"
+    },
+    {
+      "id": "sesame",
+      "name": "toasted sesame oil",
+      "group": "Sauce",
+      "qty": 0.5,
+      "unit": "tsp"
+    },
+    {
+      "id": "starch",
+      "name": "cornstarch",
+      "group": "Slurry",
+      "qty": 3,
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "name": "cold water",
+      "group": "Slurry",
+      "qty": 3,
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Preheat the APO",
+      "text": "Fill the APO Gen 1 water tank and install the bottom drip pan. Preheat to 230°F with sous vide mode off, 80% steam, rear element on, top and bottom elements off. Set the food probe target to 135°F."
+    },
+    {
+      "title": "Soften the mushrooms",
+      "text": "Simmer {caps} and {ginger} with most of {broth} in the covered HexClad for 8–10 minutes until tender. Reserve a splash of broth for the rice."
+    },
+    {
+      "title": "Warm the rice",
+      "text": "Heat {rice} with the reserved broth in the covered saucepan for 4–6 minutes, stirring once, until moist and at least 165°F throughout. Keep covered."
+    },
+    {
+      "title": "Blend the mushroom broth",
+      "text": "Puree the mushroom mixture until smooth in the deep jug. Return it to the HexClad."
+    },
+    {
+      "title": "Mix the slurry",
+      "text": "Stir {starch} into {water} until completely smooth."
+    },
+    {
+      "title": "Bind the sauce",
+      "text": "Bring the sauce to a simmer. Whisk in the freshly stirred slurry and let it bubble gently for 1 minute, stirring until it coats the back of a spoon."
+    },
+    {
+      "title": "Season the gravy",
+      "text": "Loosen {miso} with some warm gravy and whisk it back into the skillet with {sesame}. Keep warm over very low heat."
+    },
+    {
+      "title": "Steam the cod",
+      "text": "Lay {fish} in the shallow pan on the middle APO rack with a spoonful of warm gravy over each loin. Insert the probe sideways into the thickest center. Cook for 7–16 minutes, checking from 6 minutes or when the probe signals. Pull each piece at 135°F after checking both centers."
+    },
+    {
+      "title": "Rest under sauce",
+      "text": "Nestle the fish in the warm shiitake gravy off heat. Spoon sauce over the top, cover and rest for 3 minutes."
+    },
+    {
+      "title": "Check carryover and doneness",
+      "text": "After resting, check each thickest center for about 140°F. Open a natural seam with a fork. The center should be opaque and separate easily into flakes. If either cue is unclear or the center is below 140°F, finish covered in hot sauce in the HexClad over low heat to a measured 145°F, checking every minute."
+    },
+    {
+      "title": "Spoon into bowls",
+      "text": "Divide the soft rice between bowls, nestle the cod on top and ladle the shiitake gravy over the rice and through the cod flakes."
+    }
+  ],
+  "notes": "Sauce yield: About 1 1/2 cups of gravy for two in addition to the rice. Make ahead: Cook and chill the rice the previous day. The mushroom broth can also be blended a day ahead. Refrigerate in shallow portions within 2 hours. Use refrigerated leftovers within 3 days. Freezer-Friendly Verdict: Yes. Freeze the cod, gravy and rice in a shallow portion for up to 1 month. Add a splash of water when warming the rice. Fridge reheat: Place a portion in a covered shallow pan with its sauce. Install the bottom drip pan and set the APO to 325°F, sous vide mode off, 60% steam, rear element on, top and bottom elements off. Set the probe target to 165°F and check from 10 minutes until the coldest center reaches 165°F. Freezer reheat: If frozen, thaw the covered portion in the refrigerator overnight, then follow the fridge method. Option A uses ginger and toasted sesame oil. For gentler Option B, leave out the ginger and halve the sesame oil. The gravy is dairy-free. Estimated nutrition per serving (1/2 of recipe): 247 kcal, 29.5 g protein, 24.6 g total carbohydrate, 2.7 g fat, 1.5 g fiber, 212 mg sodium. Includes both the fish and its full share of sauce and any rice or potatoes listed. Sodium varies with the broth.",
+  "source": "Glenn"
+}

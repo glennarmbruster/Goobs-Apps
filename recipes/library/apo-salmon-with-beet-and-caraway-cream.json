@@ -1,0 +1,132 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "apo-salmon-with-beet-and-caraway-cream",
+  "title": "APO Salmon with Beet and Caraway Cream",
+  "description": "Bagless steam keeps the salmon moist while sweet beets and a pinch of caraway give its cream sauce a deep ruby color.",
+  "category": "Main dish",
+  "tags": [
+    "apo",
+    "bagless-sous-vide",
+    "salmon",
+    "extra-sauce"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 10,
+  "cookMin": 38,
+  "equipment": [
+    "Anova Precision Oven Gen 1 with bottom drip pan, wire rack and food probe",
+    "Shallow stainless steel baking pan",
+    "10-inch HexClad skillet with lid",
+    "Thin-tip instant-read thermometer",
+    "Immersion blender and deep heatproof jug",
+    "Flexible fish spatula"
+  ],
+  "ingredients": [
+    {
+      "id": "fish",
+      "name": "skinless farmed Atlantic salmon fillet",
+      "group": "Fish",
+      "qty": 10,
+      "unit": "oz",
+      "note": "Weight after skin and pin bones are removed. Divide into two even portions about 3/4 to 1 inch thick. Fully thaw before cooking."
+    },
+    {
+      "id": "beet",
+      "name": "plain cooked peeled beets",
+      "group": "Sauce",
+      "qty": 4,
+      "unit": "oz",
+      "note": "Plain steamed or boiled beet, diced. Choose unsalted and unseasoned."
+    },
+    {
+      "id": "caraway",
+      "name": "finely ground caraway seed",
+      "group": "Sauce",
+      "qty": 0.125,
+      "unit": "tsp"
+    },
+    {
+      "id": "broth",
+      "name": "low-sodium chicken broth",
+      "group": "Sauce",
+      "qty": 1,
+      "unit": "cup",
+      "note": "Choose unsalted plain meat-and-water broth without a vegetable blend."
+    },
+    {
+      "id": "cheese",
+      "name": "plain whipped cream cheese",
+      "group": "Sauce",
+      "qty": 2,
+      "unit": "tbsp"
+    },
+    {
+      "id": "chives",
+      "name": "fresh chives",
+      "group": "Sauce",
+      "qty": 1.5,
+      "unit": "tsp",
+      "note": "Snip very finely."
+    },
+    {
+      "id": "starch",
+      "name": "cornstarch",
+      "group": "Slurry",
+      "qty": 2.25,
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "name": "cold water",
+      "group": "Slurry",
+      "qty": 2.25,
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Preheat the APO",
+      "text": "Fill the APO Gen 1 water tank and install the bottom drip pan. Preheat to 155°F with sous vide mode on, 100% steam, rear element on, top and bottom elements off. Set the food probe target to 135°F."
+    },
+    {
+      "title": "Warm the beet base",
+      "text": "Cover {beet}, {caraway} and {broth} in the HexClad over medium-low heat. Simmer for 6–8 minutes until the beet crushes easily."
+    },
+    {
+      "title": "Blend the sauce",
+      "text": "Blend the beet and cooking liquid in a deep heatproof jug until completely smooth. Return to the HexClad."
+    },
+    {
+      "title": "Mix the slurry",
+      "text": "Stir {starch} into {water} until completely smooth."
+    },
+    {
+      "title": "Bind the sauce",
+      "text": "Bring the sauce to a simmer. Whisk in the freshly stirred slurry and let it bubble gently for 1 minute, stirring until it coats the back of a spoon."
+    },
+    {
+      "title": "Enrich the beet cream",
+      "text": "Whisk {cheese} into the beet sauce off heat. Cover while the fish cooks and gently rewarm the sauce just before the probe alert."
+    },
+    {
+      "title": "Steam the fish",
+      "text": "Lay {fish} unbagged in the shallow pan on the middle rack. Insert the probe sideways into the center of the thickest portion. Cook for about 12–26 minutes, checking from 10 minutes or at the probe alert, whichever comes first. Pull each portion at 135°F, verifying both with the instant-read thermometer."
+    },
+    {
+      "title": "Rest under sauce",
+      "text": "Nestle the fish in the warm beet cream off heat. Spoon sauce over the top, cover and rest for 3 minutes."
+    },
+    {
+      "title": "Check carryover and doneness",
+      "text": "After resting, check each thickest center for about 140°F. Open a natural seam with a fork. The center should be opaque and separate easily into flakes. If either cue is unclear or the center is below 140°F, finish covered in hot sauce in the HexClad over low heat to a measured 145°F, checking every minute."
+    },
+    {
+      "title": "Spoon into bowls",
+      "text": "Lift the salmon into two bowls. Spoon the beet cream between the large flakes and scatter {chives} over the sauce."
+    }
+  ],
+  "notes": "Sauce yield: About 1 1/2 cups for two. Make ahead: Blend the beet and broth a day ahead and chill. Add the slurry and cream cheese the day you cook the salmon. Refrigerate in shallow portions within 2 hours. Use refrigerated leftovers within 3 days. Freezer-Friendly Verdict: Yes. Freeze up to 1 month with each portion covered in beet sauce. Whisk the sauce smooth as it reheats. Fridge reheat: Place a portion in a covered shallow pan with its sauce. Install the bottom drip pan and set the APO to 325°F, sous vide mode off, 60% steam, rear element on, top and bottom elements off. Set the probe target to 165°F and check from 10 minutes until the coldest center reaches 165°F. Freezer reheat: If frozen, thaw the covered portion in the refrigerator overnight, then follow the fridge method. For dairy-free sauce, use plain unsweetened oat cream in place of the whipped cream cheese. Estimated nutrition per serving (1/2 of recipe): 370 kcal, 31.5 g protein, 9.2 g total carbohydrate, 22.3 g fat, 1.2 g fiber, 180 mg sodium. Includes both the fish and its full share of sauce and any rice or potatoes listed. Sodium varies with the broth.",
+  "source": "Glenn"
+}

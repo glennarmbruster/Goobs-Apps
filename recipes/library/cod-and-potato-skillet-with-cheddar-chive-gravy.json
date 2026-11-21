@@ -1,0 +1,126 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "cod-and-potato-skillet-with-cheddar-chive-gravy",
+  "title": "Cod and Potato Skillet with Cheddar-Chive Gravy",
+  "description": "Tender potato slices and broad flakes of cod share a chowder-style skillet with enough cheddar-chive gravy to spoon over every bite.",
+  "category": "Main dish",
+  "tags": [
+    "hexclad",
+    "cod",
+    "potatoes",
+    "extra-sauce"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 12,
+  "cookMin": 35,
+  "equipment": [
+    "10-inch HexClad skillet with lid",
+    "Thin-tip instant-read thermometer",
+    "Flexible fish spatula"
+  ],
+  "ingredients": [
+    {
+      "id": "fish",
+      "name": "skinless Atlantic cod loin",
+      "group": "Fish",
+      "qty": 10,
+      "unit": "oz",
+      "note": "Weight after skin and pin bones are removed. Divide into two even portions about 3/4 to 1 inch thick. Fully thaw before cooking."
+    },
+    {
+      "id": "potato",
+      "name": "Yukon Gold potatoes",
+      "group": "Potatoes",
+      "qty": 7,
+      "unit": "oz",
+      "note": "Peel, then slice into thin half-moons about 1/8 inch thick."
+    },
+    {
+      "id": "broth",
+      "name": "low-sodium chicken broth",
+      "group": "Sauce",
+      "qty": 1.25,
+      "unit": "cup",
+      "note": "Choose unsalted plain meat-and-water broth without a vegetable blend."
+    },
+    {
+      "id": "milk",
+      "name": "skim milk",
+      "group": "Sauce",
+      "qty": 0.5,
+      "unit": "cup"
+    },
+    {
+      "id": "cheddar",
+      "name": "mild cheddar cheese",
+      "group": "Sauce",
+      "qty": 0.75,
+      "unit": "oz",
+      "note": "Finely grated."
+    },
+    {
+      "id": "chives",
+      "name": "fresh chives",
+      "group": "Sauce",
+      "qty": 2,
+      "unit": "tsp",
+      "note": "Snip finely."
+    },
+    {
+      "id": "starch",
+      "name": "cornstarch",
+      "group": "Slurry",
+      "qty": 3.25,
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "name": "cold water",
+      "group": "Slurry",
+      "qty": 3.25,
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Soften the potatoes",
+      "text": "Simmer {potato} with {broth} in the covered HexClad over medium-low heat for 8–12 minutes, until a fork slides easily through the slices."
+    },
+    {
+      "title": "Nestle the cod",
+      "text": "Stir {milk} into the potatoes and bring back to a bare simmer. Reserve a spoonful of hot broth in a clean cup. Lay {fish} on top and spoon milky broth over the exposed surface."
+    },
+    {
+      "title": "Poach the portions",
+      "text": "Cover over low heat for 6–12 minutes, checking the thickest centers from 5 minutes. Pull each piece at 135°F."
+    },
+    {
+      "title": "Rest the cod",
+      "text": "Lift the fish gently onto a warm plate and moisten with the reserved broth. Cover and rest for 3 minutes."
+    },
+    {
+      "title": "Mix the slurry",
+      "text": "Stir {starch} into {water} until completely smooth."
+    },
+    {
+      "title": "Turn the broth into gravy",
+      "text": "Bring the potato broth back to a simmer. Stir the slurry into the liquid around the slices and cook for 1 minute, until the gravy coats the back of a spoon."
+    },
+    {
+      "title": "Melt the cheddar",
+      "text": "Off heat, fold in {cheddar} a little at a time, then stir in {chives}."
+    },
+    {
+      "title": "Check carryover and doneness",
+      "text": "After resting, check each thickest center for about 140°F. Open a natural seam with a fork. The center should be opaque and separate easily into flakes. If either cue is unclear or the center is below 140°F, finish covered in hot sauce in the HexClad over low heat to a measured 145°F, checking every minute."
+    },
+    {
+      "title": "Spoon into bowls",
+      "text": "Ladle the potatoes and some gravy into bowls. Rest each cod portion on the potatoes and spoon over the remaining cheddar-chive gravy."
+    }
+  ],
+  "notes": "Sauce yield: About 1 1/2 cups of gravy for two in addition to the potatoes. Make ahead: Slice the potatoes up to a day ahead and refrigerate submerged in water. Drain before cooking. Refrigerate in shallow portions within 2 hours. Use refrigerated leftovers within 3 days. Freezer-Friendly Verdict: No. Reheated frozen potato slices can turn mealy and the cheese gravy can separate. Refrigerated portions keep the intended texture better. Fridge reheat: Warm a portion covered in its sauce over medium-low heat in the HexClad. Add a little water if it has thickened in storage. Check from 5 minutes and heat to 165°F at the coldest center. Freezer reheat: If frozen, thaw the covered portion in the refrigerator overnight, then follow the fridge method. For a dairy-free gravy, use plain unsweetened oat milk and replace cheddar with whipped dairy-free cream cheese. Estimated nutrition per serving (1/2 of recipe): 282 kcal, 33.2 g protein, 25.6 g total carbohydrate, 4.8 g fat, 1.4 g fiber, 199 mg sodium. Includes both the fish and its full share of sauce and any rice or potatoes listed. Sodium varies with the broth.",
+  "source": "Glenn"
+}

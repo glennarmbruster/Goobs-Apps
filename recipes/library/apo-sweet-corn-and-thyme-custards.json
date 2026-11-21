@@ -1,0 +1,98 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "apo-sweet-corn-and-thyme-custards",
+  "title": "APO Sweet Corn and Thyme Custards",
+  "description": "Fresh corn and thyme make two soft, savory custards that can be served warm in their ramekins.",
+  "category": "Sides",
+  "tags": [
+    "apo",
+    "combi-steam",
+    "corn"
+  ],
+  "servings": 2,
+  "servingsLabel": "side servings",
+  "prepMin": 12,
+  "cookMin": 40,
+  "equipment": [
+    "Anova Precision Oven Gen 1 with food probe and bottom drip pan",
+    "Vitamix or immersion blender and tall jug",
+    "Small saucepan with lid",
+    "Two 6-ounce ovenproof ramekins and shallow tray",
+    "Fine-mesh sieve",
+    "Instant-read thermometer"
+  ],
+  "ingredients": [
+    {
+      "id": "corn",
+      "qty": 3.5,
+      "name": "sweet corn kernels",
+      "unit": "oz",
+      "note": "Freshly cut from the cob."
+    },
+    {
+      "id": "milk",
+      "qty": 0.375,
+      "name": "skim milk",
+      "unit": "cup"
+    },
+    {
+      "id": "thyme",
+      "qty": 0.5,
+      "name": "fresh thyme leaves",
+      "unit": "tsp"
+    },
+    {
+      "id": "eggs",
+      "qty": 1,
+      "name": "large egg"
+    },
+    {
+      "id": "yolk",
+      "qty": 1,
+      "name": "large egg yolk"
+    },
+    {
+      "id": "butter",
+      "qty": 1,
+      "name": "unsalted butter",
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Preheat the APO",
+      "text": "Install the bottom drip pan and preheat the APO to 225°F, sous vide mode off, 100% steam, rear element on, top and bottom off."
+    },
+    {
+      "title": "Soften the corn",
+      "text": "Heat {corn}, {milk} and {thyme} at a bare simmer in a small covered saucepan for 5–6 minutes until the kernels yield to a spoon."
+    },
+    {
+      "title": "Puree the base",
+      "text": "Take the pan off the heat and puree the warm corn mixture with an immersion blender until smooth. An upright blender should be vented for warm liquids."
+    },
+    {
+      "title": "Strain the puree",
+      "text": "Press the puree through a fine sieve into a bowl and let it cool for 5 minutes, until warm to the touch."
+    },
+    {
+      "title": "Whisk in the eggs",
+      "text": "Whisk {eggs} and {yolk} into the warm puree just until combined."
+    },
+    {
+      "title": "Fill the ramekins",
+      "text": "Use {butter} to grease both ramekins, then divide the custard between them and set them on a shallow tray."
+    },
+    {
+      "title": "Steam the custards",
+      "text": "Place the probe tip in the center of one custard, clear of the ceramic, and set it to 165°F. Steam for 16–28 minutes, checking both centers from 16 minutes. Remove each at 165°F with a gentle wobble."
+    },
+    {
+      "title": "Rest before serving",
+      "text": "Rest the ramekins for 3 minutes and serve with a spoon."
+    }
+  ],
+  "notes": "Make ahead: Make the strained corn base the day before. Refrigerate and bring it back to lukewarm before adding the eggs. Refrigerate in shallow portions within 2 hours and use within 3 days. Freezer-Friendly Verdict: No. Freezing can make the custard spongy and release water. Fridge reheat: Set the APO with the drip pan installed to 325°F, sous vide mode off, 60% steam, rear element on, top and bottom off. Cover the ramekins and start checking after 9 minutes. Check for 165°F in the center with the food probe or an instant-read thermometer. Freezer reheat: Thaw in the refrigerator overnight, then follow the fridge reheat instructions. For dairy-free custards, use plain unsweetened oat milk and grease the ramekins with neutral oil. The estimate counts the corn before straining, so some fiber stays in the sieve. Estimated nutrition per serving (1/2 of recipe): 139 kcal, 7.7 g protein, 12.1 g total carbohydrate, 7.3 g fat, 1.0 g fiber, 67 mg sodium.",
+  "source": "Glenn"
+}

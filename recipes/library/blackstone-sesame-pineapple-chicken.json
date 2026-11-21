@@ -1,0 +1,127 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "blackstone-sesame-pineapple-chicken",
+  "title": "Blackstone Sesame-Pineapple Chicken",
+  "description": "Chicken steams in pineapple and ginger under a griddle dome before its juices become a glossy sesame glaze.",
+  "category": "Main dish",
+  "tags": [
+    "blackstone",
+    "chicken-thighs",
+    "sesame",
+    "extra-sauce"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 12,
+  "cookMin": 28,
+  "equipment": [
+    "Blackstone 36-inch griddle",
+    "Stainless steel basting dome",
+    "Small rimmed stainless steel tray that fits beneath the basting dome",
+    "10-inch HexClad skillet with lid",
+    "Thin-tip instant-read thermometer",
+    "Immersion blender and deep heatproof jug"
+  ],
+  "ingredients": [
+    {
+      "id": "chicken",
+      "name": "boneless skinless chicken thighs",
+      "group": "Chicken",
+      "qty": 10,
+      "unit": "oz",
+      "note": "Use plain, unenhanced poultry. Remove visible fat before weighing."
+    },
+    {
+      "id": "pineapple",
+      "name": "crushed pineapple in pineapple juice",
+      "group": "Sauce",
+      "qty": 0.5,
+      "unit": "cup",
+      "note": "Unsweetened. Measure the fruit and its juice together."
+    },
+    {
+      "id": "broth",
+      "name": "low-sodium chicken broth",
+      "group": "Sauce",
+      "qty": 0.875,
+      "unit": "cup",
+      "note": "Use plain chicken-and-water broth without a vegetable blend or added seasoning."
+    },
+    {
+      "id": "ginger",
+      "name": "fresh ginger juice",
+      "group": "Sauce",
+      "qty": 0.5,
+      "unit": "tsp"
+    },
+    {
+      "id": "aminos",
+      "name": "coconut aminos",
+      "group": "Sauce",
+      "qty": 2,
+      "unit": "tsp"
+    },
+    {
+      "id": "sesame",
+      "name": "toasted sesame oil",
+      "group": "Sauce",
+      "qty": 1,
+      "unit": "tsp"
+    },
+    {
+      "id": "starch",
+      "name": "cornstarch",
+      "group": "Slurry",
+      "qty": 2.75,
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "name": "cold water",
+      "group": "Slurry",
+      "qty": 2.75,
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Smooth the pineapple",
+      "text": "Blend {pineapple}, {broth}, {ginger} and {aminos} until smooth."
+    },
+    {
+      "title": "Warm the tray",
+      "text": "Set one Blackstone burner to medium-low and preheat for 5 minutes. Place a shallow rimmed stainless steel tray over the burner, pour in the pineapple liquid and cover with the basting dome until the liquid gently simmers."
+    },
+    {
+      "title": "Steam the thighs",
+      "text": "Cut {chicken} across the grain into short strips about 1/2 inch thick. Lay them in one layer in the simmering liquid and cover the tray with the dome."
+    },
+    {
+      "title": "Check the centers",
+      "text": "Maintain a gentle simmer for 8–14 minutes, turning the pieces once with tongs. Transfer each piece to a covered bowl with a spoonful of liquid when its thickest center reaches 175°F."
+    },
+    {
+      "title": "Boil the cooking liquid",
+      "text": "Use heatproof mitts to pour the tray liquid into the HexClad. Bring to a full boil on the stovetop and stir for 1 minute."
+    },
+    {
+      "title": "Mix the slurry",
+      "text": "Stir {starch} into {water} until completely smooth."
+    },
+    {
+      "title": "Bind the sauce",
+      "text": "Bring the sauce to a simmer. Whisk in the freshly stirred slurry and let it bubble gently for 1 minute, stirring until it coats the back of a spoon."
+    },
+    {
+      "title": "Finish with sesame",
+      "text": "Whisk {sesame} into the hot glaze off heat."
+    },
+    {
+      "title": "Sauce and serve",
+      "text": "Fold the chicken and its juices into the glaze and spoon into bowls, dividing the glaze evenly."
+    }
+  ],
+  "notes": "Sauce yield: About 1 1/4 cups for two. Make ahead: Blend the pineapple base up to 1 day ahead and refrigerate it separately from the chicken. Refrigerate shallow portions within 2 hours, or within 1 hour outdoors above 90°F. Use refrigerated leftovers within 3 days. Freezer-Friendly Verdict: Yes. Freeze the chicken submerged in its glaze for up to 2 months. Stir gently as it warms. Fridge reheat: Warm the glazed chicken covered in the HexClad over medium-low with a splash of water. Stir or turn occasionally and check from 6 minutes, until the center reaches 165°F. Freezer reheat: Thaw overnight in the refrigerator, then follow the fridge reheating directions. Option A uses pineapple and ginger. For gentler Option B, replace the pineapple with the same volume of peeled ripe pear puree and omit the ginger. The glaze is dairy-free. Estimated nutrition per serving (1/2 of recipe): 253 kcal, 29.1 g protein, 14.9 g total carbohydrate, 8.2 g fat, 0.6 g fiber, 241 mg sodium. Includes all the chicken and sauce in the listed recipe. Sodium varies with the broth.",
+  "source": "Glenn"
+}

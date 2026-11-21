@@ -1,0 +1,105 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "traeger-black-garlic-braised-portobellos",
+  "title": "Traeger Black Garlic Braised Portobellos",
+  "description": "Thin portobello slices take on oak smoke before a covered braise turns their black garlic broth into a glossy pan sauce.",
+  "category": "Sides",
+  "tags": [
+    "traeger",
+    "braised",
+    "mushrooms"
+  ],
+  "servings": 2,
+  "servingsLabel": "side servings",
+  "prepMin": 12,
+  "cookMin": 75,
+  "equipment": [
+    "Traeger Silverton 610 pellet smoker",
+    "Small shallow metal baking pan and foil",
+    "10-inch HexClad skillet with lid"
+  ],
+  "ingredients": [
+    {
+      "id": "mushrooms",
+      "qty": 10,
+      "name": "fresh portobello mushroom caps",
+      "unit": "oz",
+      "note": "Trimmed weight, cut across the caps into 1/4-inch slices."
+    },
+    {
+      "id": "broth",
+      "qty": 0.75,
+      "name": "low-sodium mushroom broth",
+      "unit": "cup",
+      "note": "Use plain unsalted mushroom-and-water broth."
+    },
+    {
+      "id": "garlic",
+      "qty": 2,
+      "name": "black garlic puree",
+      "unit": "tsp"
+    },
+    {
+      "id": "thyme",
+      "qty": 1,
+      "name": "fresh thyme leaves",
+      "unit": "tsp",
+      "note": "Finely chopped."
+    },
+    {
+      "id": "starch",
+      "qty": 1.5,
+      "name": "cornstarch",
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "qty": 2,
+      "name": "water",
+      "unit": "tsp"
+    },
+    {
+      "id": "oil",
+      "qty": 1,
+      "name": "avocado oil",
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Heat the smoker",
+      "text": "Preheat the Traeger Silverton 610 to 300°F with oak pellets for about 15 minutes, following its startup cycle."
+    },
+    {
+      "title": "Mix the braising liquid",
+      "text": "Whisk {broth}, {garlic}, {thyme} and {oil} together in a small shallow metal pan."
+    },
+    {
+      "title": "Add the mushrooms",
+      "text": "Toss {mushrooms} in the braising liquid and spread the slices in an even layer."
+    },
+    {
+      "title": "Take on smoke",
+      "text": "Cook the pan uncovered on the Traeger for 15 minutes with the smoker lid shut. The bottom of the pan should stay wet."
+    },
+    {
+      "title": "Cover and braise",
+      "text": "Seal the pan with foil at the 15-minute mark. There is no stall or wrap temperature for vegetables. Braise for 25–35 minutes until the slices bend easily around a fork."
+    },
+    {
+      "title": "Rest the mushrooms",
+      "text": "Rest the pan covered off the smoker for 5 minutes."
+    },
+    {
+      "title": "Mix the slurry",
+      "text": "Stir {starch} into {water} until smooth."
+    },
+    {
+      "title": "Glaze the slices",
+      "text": "Slide the mushrooms and pan juices into the HexClad skillet over medium heat. Stir in the slurry and simmer for 1–2 minutes until the glossy juices cling to the slices."
+    }
+  ],
+  "notes": "Make ahead: Trim and slice the mushrooms a day ahead and refrigerate. Braise them ahead if desired and thicken the sauce at serving time. Refrigerate in shallow portions within 2 hours and use within 3 days. Freezer-Friendly Verdict: Yes. The sliced mushrooms freeze well in their braising liquid for up to 2 months. Fridge reheat: Warm a portion in its sauce in a covered skillet over medium-low heat for 5–8 minutes. Stir until smooth and 165°F throughout. Freezer reheat: Thaw in the refrigerator overnight, then follow the fridge reheat instructions. Estimated nutrition per serving (1/2 of recipe): 72 kcal, 3.8 g protein, 9.5 g total carbohydrate, 2.8 g fat, 2.1 g fiber, 20 mg sodium.",
+  "source": "Glenn"
+}

@@ -1,0 +1,91 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "wok-steamed-broccoli-with-ginger-sesame-sauce",
+  "title": "Wok-Steamed Broccoli with Ginger-Sesame Sauce",
+  "description": "Fresh broccoli steams just to crisp-tender and picks up a glossy ginger sauce with a little toasted sesame oil.",
+  "category": "Sides",
+  "tags": [
+    "hexclad-wok",
+    "steam",
+    "fresh-broccoli"
+  ],
+  "servings": 2,
+  "servingsLabel": "side servings",
+  "prepMin": 10,
+  "cookMin": 11,
+  "equipment": [
+    "HexClad lidded wok",
+    "Small bowl and whisk"
+  ],
+  "ingredients": [
+    {
+      "id": "broccoli",
+      "qty": 9,
+      "name": "fresh broccoli florets",
+      "unit": "oz",
+      "note": "Use bite-size 1-inch florets, splitting thick stems lengthwise."
+    },
+    {
+      "id": "water",
+      "qty": 0.25,
+      "name": "water",
+      "unit": "cup"
+    },
+    {
+      "id": "broth",
+      "qty": 0.375,
+      "name": "low-sodium mushroom broth",
+      "unit": "cup",
+      "note": "Use plain unsalted mushroom-and-water broth."
+    },
+    {
+      "id": "ginger",
+      "qty": 1,
+      "name": "fresh ginger juice",
+      "unit": "tsp"
+    },
+    {
+      "id": "aminos",
+      "qty": 1.5,
+      "name": "coconut aminos",
+      "unit": "tsp"
+    },
+    {
+      "id": "starch",
+      "qty": 1.5,
+      "name": "cornstarch",
+      "unit": "tsp"
+    },
+    {
+      "id": "oil",
+      "qty": 0.75,
+      "name": "toasted sesame oil",
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Whisk the sauce",
+      "text": "Whisk {broth}, {ginger}, {aminos} and {starch} together in a bowl until the starch disperses."
+    },
+    {
+      "title": "Steam the broccoli",
+      "text": "Bring {water} to a boil in the HexClad wok. Add {broccoli}, cover, and steam for 3–5 minutes until bright green and crisp-tender at the stem."
+    },
+    {
+      "title": "Lift out the florets",
+      "text": "Transfer the broccoli to a warm bowl with a slotted spoon and pour off any remaining steaming water."
+    },
+    {
+      "title": "Thicken the ginger sauce",
+      "text": "Whisk the sauce mixture again, pour it into the wok, and simmer over medium heat for 1 minute until it coats the back of a spoon."
+    },
+    {
+      "title": "Coat the florets",
+      "text": "Turn off the heat and fold the broccoli and {oil} into the sauce. Serve immediately while the stems retain their bite."
+    }
+  ],
+  "notes": "Make ahead: Cut the florets and whisk the sauce base up to a day ahead. Store separately and stir the sauce well before cooking. Refrigerate in shallow portions within 2 hours and use within 3 days. Freezer-Friendly Verdict: No. Frozen and reheated florets lose their crisp-tender texture. Fridge reheat: Warm covered in the wok with a splash of water for 3–5 minutes, folding once, until the center reaches 165°F. Freezer reheat: Thaw in the refrigerator overnight, then follow the fridge reheat instructions. Option A uses the measured ginger juice. Option B omits the ginger for a milder sesame sauce. Estimated nutrition per serving (1/2 of recipe): 80 kcal, 3.6 g protein, 11.5 g total carbohydrate, 2.1 g fat, 3.1 g fiber, 118 mg sodium.",
+  "source": "Glenn"
+}

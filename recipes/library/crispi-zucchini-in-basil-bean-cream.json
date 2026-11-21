@@ -1,0 +1,90 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "crispi-zucchini-in-basil-bean-cream",
+  "title": "Crispi Zucchini in Basil Bean Cream",
+  "description": "Thin zucchini half-moons bake in a creamy cannellini and basil sauce until just tender.",
+  "category": "Sides",
+  "tags": [
+    "ninja-crispi",
+    "zucchini",
+    "white-beans"
+  ],
+  "servings": 2,
+  "servingsLabel": "side servings",
+  "prepMin": 10,
+  "cookMin": 19,
+  "equipment": [
+    "Ninja Crispi with 6-cup glass container",
+    "Vitamix or immersion blender and tall jug"
+  ],
+  "ingredients": [
+    {
+      "id": "zucchini",
+      "qty": 8,
+      "name": "fresh zucchini",
+      "unit": "oz",
+      "note": "Cut into 1/4-inch half-moons."
+    },
+    {
+      "id": "beans",
+      "qty": 3,
+      "name": "cooked cannellini beans",
+      "unit": "oz",
+      "note": "Cooked without salt, well drained."
+    },
+    {
+      "id": "broth",
+      "qty": 0.375,
+      "name": "low-sodium mushroom broth",
+      "unit": "cup",
+      "note": "Use plain unsalted mushroom-and-water broth."
+    },
+    {
+      "id": "basil",
+      "qty": 0.25,
+      "name": "fresh basil leaves",
+      "unit": "cup"
+    },
+    {
+      "id": "oil",
+      "qty": 1,
+      "name": "avocado oil",
+      "unit": "tsp"
+    },
+    {
+      "id": "garlic",
+      "qty": 0.125,
+      "name": "granulated garlic",
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Blend the bean cream",
+      "text": "Blend {beans}, {broth}, {basil}, {oil} and {garlic} for 45 seconds until smooth enough to pour slowly."
+    },
+    {
+      "title": "Coat the zucchini",
+      "text": "Fold {zucchini} into the bean cream in the room-temperature 6-cup Crispi glass container, leaving the crisper plate out. Press the slices down so each carries sauce."
+    },
+    {
+      "title": "Bake in the sauce",
+      "text": "Attach the Crispi PowerPod directly to the container with the storage lid removed. Use Bake for 12 minutes."
+    },
+    {
+      "title": "Turn the slices",
+      "text": "Fold the outer slices toward the middle so the cooler slices are exposed to the heat."
+    },
+    {
+      "title": "Finish the bake",
+      "text": "Continue on Bake for 3–7 minutes until the sauce bubbles at the edges and the zucchini yields to a fork with slight resistance."
+    },
+    {
+      "title": "Spoon onto plates",
+      "text": "Let stand for 2 minutes and spoon the zucchini with its bean cream onto two plates."
+    }
+  ],
+  "notes": "Make ahead: Blend the bean cream up to 2 days ahead and keep it chilled. Slice the zucchini just before baking. Refrigerate in shallow portions within 2 hours and use within 3 days. Freezer-Friendly Verdict: No. The zucchini releases water after freezing and loses its bite. Fridge reheat: Reheat a portion gently in a covered skillet with a splash of water for 4–6 minutes, folding once, until it reaches 165°F throughout. Freezer reheat: Thaw in the refrigerator overnight, then follow the fridge reheat instructions. Estimated nutrition per serving (1/2 of recipe): 102 kcal, 5.8 g protein, 14.6 g total carbohydrate, 2.8 g fat, 3.9 g fiber, 15 mg sodium.",
+  "source": "Glenn"
+}

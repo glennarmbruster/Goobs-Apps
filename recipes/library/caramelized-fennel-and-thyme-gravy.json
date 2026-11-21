@@ -1,0 +1,96 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "caramelized-fennel-and-thyme-gravy",
+  "title": "Caramelized Fennel and Thyme Gravy",
+  "description": "Thinly sliced fennel turns sweet in butter and blends into a pale thyme gravy for chicken or pork.",
+  "category": "Sauce & condiment",
+  "tags": [
+    "gravy",
+    "extra-sauce"
+  ],
+  "servings": 6,
+  "servingsLabel": "1/4-cup portions",
+  "prepMin": 9,
+  "cookMin": 32,
+  "equipment": [
+    "10-inch HexClad skillet",
+    "Immersion blender and tall heatproof jug",
+    "Fine-mesh sieve",
+    "Small whisk",
+    "Heatproof liquid measuring cup",
+    "Instant-read thermometer"
+  ],
+  "ingredients": [
+    {
+      "id": "fennel",
+      "qty": 5,
+      "name": "trimmed fresh fennel bulb",
+      "group": "Sauce",
+      "unit": "oz",
+      "note": "Remove tough core and stalks before weighing and slice thinly."
+    },
+    {
+      "id": "butter",
+      "qty": 5,
+      "name": "unsalted butter",
+      "group": "Sauce",
+      "unit": "tsp"
+    },
+    {
+      "id": "broth",
+      "qty": 1.75,
+      "name": "low-sodium chicken broth",
+      "group": "Sauce",
+      "unit": "cup",
+      "note": "Use plain, unsalted meat-and-water broth."
+    },
+    {
+      "id": "thyme",
+      "qty": 0.5,
+      "name": "fresh thyme leaves",
+      "group": "Sauce",
+      "unit": "tsp",
+      "note": "Mince finely."
+    },
+    {
+      "id": "flour",
+      "qty": 1,
+      "name": "all-purpose flour",
+      "group": "Roux",
+      "unit": "tbsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Caramelize the fennel",
+      "text": "Melt half of {butter} in the HexClad over medium-low heat. Cook {fennel} for 12–18 minutes, stirring until fully soft and golden. Use a splash of {broth} if the edges brown too quickly."
+    },
+    {
+      "title": "Soften the fennel core",
+      "text": "Add {thyme} and the rest of the broth. Cover and simmer for 5 minutes until every slice is tender."
+    },
+    {
+      "title": "Puree the fennel",
+      "text": "Blend the fennel and its cooking broth in the deep jug. Press through a fine sieve to catch any fibers."
+    },
+    {
+      "title": "Cook the roux",
+      "text": "Melt the remaining butter in the empty skillet. Whisk in {flour} over low heat for 1–2 minutes until it smells lightly toasted."
+    },
+    {
+      "title": "Build the gravy",
+      "text": "Whisk the strained fennel broth into the roux in stages. Simmer for 2–3 minutes until the gravy coats the back of a spoon."
+    },
+    {
+      "title": "Check the yield",
+      "text": "Measure the finished sauce in a heatproof cup. Aim for 1 1/2 cups total. If it measures short, whisk in a little hot water. If it measures over, return it to the skillet and simmer briefly to the mark."
+    },
+    {
+      "title": "Serve",
+      "text": "Ladle over moist chicken thighs, pork loin or mashed sweet potato."
+    }
+  ],
+  "notes": "Yield: 1 1/2 cups. One serving is 1/4 cup. Make ahead: Caramelize the fennel a day ahead and refrigerate it with its broth. Refrigerate in shallow covered portions within 2 hours and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze the finished gravy in small portions for up to 2 months. Whisk after thawing to smooth the roux. Fridge reheat: Bring a portion to a boil in a small pan, stirring until it reaches at least 165°F. Loosen with a little water as needed. Freezer reheat: Thaw in the refrigerator overnight and reheat as for a chilled portion. For dairy-free gravy, use avocado oil in place of the butter and divide it between the fennel and roux in the same proportions. Estimated nutrition per serving (1/6 of recipe): 43 kcal, 1.0 g protein, 2.9 g total carbohydrate, 3.3 g fat, 0.8 g fiber, 23 mg sodium. The estimate covers the prepared condiment. Add separately served foods when totaling a meal. Fiber is estimated before straining.",
+  "source": "Glenn"
+}

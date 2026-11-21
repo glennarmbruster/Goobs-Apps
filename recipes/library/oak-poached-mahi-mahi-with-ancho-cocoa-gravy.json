@@ -1,0 +1,142 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "oak-poached-mahi-mahi-with-ancho-cocoa-gravy",
+  "title": "Oak-Poached Mahi-Mahi with Mild Ancho-Cocoa Gravy",
+  "description": "A little cocoa and smooth pumpkin seed paste round out a mild ancho gravy for oak-poached mahi-mahi.",
+  "category": "Main dish",
+  "tags": [
+    "traeger",
+    "mahi-mahi",
+    "oak",
+    "extra-sauce"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 10,
+  "cookMin": 54,
+  "equipment": [
+    "Traeger Silverton 610 pellet smoker",
+    "Small lidded enamel Dutch oven",
+    "10-inch HexClad skillet with lid",
+    "Thin-tip instant-read thermometer",
+    "Flexible fish spatula"
+  ],
+  "ingredients": [
+    {
+      "id": "fish",
+      "name": "skinless mahi-mahi fillet",
+      "group": "Fish",
+      "qty": 10,
+      "unit": "oz",
+      "note": "Weight after skin and pin bones are removed. Divide into two even portions about 3/4 to 1 inch thick. Fully thaw before cooking."
+    },
+    {
+      "id": "broth",
+      "name": "low-sodium chicken broth",
+      "group": "Sauce",
+      "qty": 1.5,
+      "unit": "cup",
+      "note": "Choose unsalted plain meat-and-water broth without a vegetable blend."
+    },
+    {
+      "id": "ancho",
+      "name": "pure mild ground ancho chile",
+      "group": "Sauce",
+      "qty": 0.25,
+      "unit": "tsp",
+      "note": "Single-ingredient ground chile."
+    },
+    {
+      "id": "cocoa",
+      "name": "unsweetened cocoa powder",
+      "group": "Sauce",
+      "qty": 0.5,
+      "unit": "tsp"
+    },
+    {
+      "id": "pepita",
+      "name": "smooth unsalted pumpkin seed paste",
+      "group": "Sauce",
+      "qty": 1,
+      "unit": "tbsp",
+      "note": "Pure pumpkin seeds, ground completely smooth."
+    },
+    {
+      "id": "maple",
+      "name": "pure maple syrup",
+      "group": "Sauce",
+      "qty": 1,
+      "unit": "tsp"
+    },
+    {
+      "id": "garlic",
+      "name": "granulated garlic",
+      "group": "Sauce",
+      "qty": 0.125,
+      "unit": "tsp"
+    },
+    {
+      "id": "starch",
+      "name": "cornstarch",
+      "group": "Slurry",
+      "qty": 2.75,
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "name": "cold water",
+      "group": "Slurry",
+      "qty": 2.75,
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Heat the Traeger",
+      "text": "Load the Traeger Silverton 610 with oak wood pellets. Preheat with the lid closed to 300°F, allowing about 15 minutes."
+    },
+    {
+      "title": "Infuse the poaching broth",
+      "text": "Bring {broth} and {garlic} to a simmer in the small Dutch oven on the stovetop. Place the pot uncovered on the smoker grate under the closed smoker lid for 10–12 minutes."
+    },
+    {
+      "title": "Make the cocoa paste",
+      "text": "In the cool HexClad, whisk {ancho}, {cocoa}, {pepita} and {maple} with a splash of the smoky broth until the paste is smooth. Keep it on the stovetop for finishing."
+    },
+    {
+      "title": "Cover the mahi-mahi",
+      "text": "Lay {fish} in the remaining hot broth on the Traeger and spoon some broth over the tops. Fit the pot lid immediately as the wrap from the start."
+    },
+    {
+      "title": "Poach to the pull point",
+      "text": "Cook at 300°F and check from 7 minutes. Pull each portion at 135°F in its thickest center, typically after 9–18 minutes."
+    },
+    {
+      "title": "Rest under cover",
+      "text": "Transfer the fish to a warm plate. Cover and rest for 3 minutes while finishing the gravy."
+    },
+    {
+      "title": "Build the ancho gravy",
+      "text": "Whisk the poaching broth into the cocoa paste in stages. Bring the sauce to a full boil for 1 minute, scraping the sides of the pan."
+    },
+    {
+      "title": "Mix the slurry",
+      "text": "Stir {starch} into {water} until completely smooth."
+    },
+    {
+      "title": "Bind the sauce",
+      "text": "Bring the sauce to a simmer. Whisk in the freshly stirred slurry and let it bubble gently for 1 minute, stirring until it coats the back of a spoon."
+    },
+    {
+      "title": "Check carryover and doneness",
+      "text": "After resting, check each thickest center for about 140°F. Open a natural seam with a fork. The center should be opaque and separate easily into flakes. If either cue is unclear or the center is below 140°F, finish covered in hot sauce in the HexClad over low heat to a measured 145°F, checking every minute."
+    },
+    {
+      "title": "Spoon into bowls",
+      "text": "Lay a piece of fish in each bowl. Spoon the ancho gravy over the surface and between the flakes. Serve with the rest of the gravy around the fish."
+    }
+  ],
+  "notes": "Sauce yield: About 1 1/2 cups for two. Make ahead: Blend the cocoa, pumpkin seed paste, maple and ancho together a day ahead and refrigerate. Loosen with warm broth when ready to cook. Refrigerate shallow portions within 2 hours, or within 1 hour outdoors above 90°F. Use refrigerated leftovers within 3 days. Freezer-Friendly Verdict: Yes. The pumpkin seed paste helps the reheated sauce cling to the fish. Freeze covered portions for up to 1 month. Fridge reheat: Warm a portion covered in its sauce over medium-low heat in the HexClad. Add a little water if it has thickened in storage. Check from 5 minutes and heat to 165°F at the coldest center. Freezer reheat: If frozen, thaw the covered portion in the refrigerator overnight, then follow the fridge method. Option A uses a small amount of mild ancho and cocoa. For gentler Option B, leave out both and use sweet paprika with a little extra pumpkin seed paste. Both versions are dairy-free. Estimated nutrition per serving (1/2 of recipe): 199 kcal, 30.3 g protein, 7.8 g total carbohydrate, 5.0 g fat, 0.9 g fiber, 154 mg sodium. Includes both the fish and its full share of sauce and any rice or potatoes listed. Sodium varies with the broth.",
+  "source": "Glenn"
+}

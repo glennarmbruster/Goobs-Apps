@@ -1,0 +1,132 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "chicken-thighs-in-poblano-pumpkin-seed-sauce",
+  "title": "Chicken Thighs in Poblano Pumpkin Seed Sauce",
+  "description": "Chicken thighs poach in the Crispi and finish in a smooth green sauce of mild poblano, cilantro and pumpkin seed paste.",
+  "category": "Main dish",
+  "tags": [
+    "ninja-crispi",
+    "chicken-thighs",
+    "mild",
+    "extra-sauce"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 12,
+  "cookMin": 38,
+  "equipment": [
+    "Ninja Crispi PowerPod with US Bake preset and 6-cup glass container",
+    "10-inch HexClad skillet with lid",
+    "Thin-tip instant-read thermometer",
+    "Immersion blender and deep heatproof jug",
+    "Fine-mesh sieve",
+    "Silicone tongs"
+  ],
+  "ingredients": [
+    {
+      "id": "chicken",
+      "name": "boneless skinless chicken thighs",
+      "group": "Chicken",
+      "qty": 10,
+      "unit": "oz",
+      "note": "Use plain, unenhanced poultry. Remove visible fat before weighing."
+    },
+    {
+      "id": "broth",
+      "name": "low-sodium chicken broth",
+      "group": "Sauce",
+      "qty": 1.375,
+      "unit": "cup",
+      "note": "Use plain chicken-and-water broth without a vegetable blend or added seasoning."
+    },
+    {
+      "id": "poblano",
+      "name": "plain cooked mild poblano pepper",
+      "group": "Sauce",
+      "qty": 0.25,
+      "unit": "cup",
+      "note": "Peeled, seeded, ribs removed; choose unsalted and unpickled, without vinegar."
+    },
+    {
+      "id": "pepita",
+      "name": "smooth unsalted pumpkin seed paste",
+      "group": "Sauce",
+      "qty": 1.5,
+      "unit": "tbsp",
+      "note": "Use pure pepita paste without coarse pieces."
+    },
+    {
+      "id": "cilantro",
+      "name": "fresh cilantro leaves",
+      "group": "Sauce",
+      "qty": 2,
+      "unit": "tbsp",
+      "note": "Loosely packed; leave out stems."
+    },
+    {
+      "id": "garlic",
+      "name": "jarred minced garlic",
+      "group": "Sauce",
+      "qty": 0.25,
+      "unit": "tsp"
+    },
+    {
+      "id": "cumin",
+      "name": "ground cumin",
+      "group": "Sauce",
+      "qty": 0.125,
+      "unit": "tsp"
+    },
+    {
+      "id": "starch",
+      "name": "cornstarch",
+      "group": "Slurry",
+      "qty": 3,
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "name": "cold water",
+      "group": "Slurry",
+      "qty": 3,
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Set up the Crispi",
+      "text": "Start with the room-temperature 6-cup Ninja glass container. Leave the crisper plate out so the chicken sits in the liquid. Load the glass before starting the PowerPod; keep the storage lid off."
+    },
+    {
+      "title": "Nestle chicken into broth",
+      "text": "Cut {chicken} into pieces about 3/4 inch thick. In the unheated glass, stir {poblano}, {garlic}, {cumin} and {broth} together. Lay the chicken flat under the liquid."
+    },
+    {
+      "title": "Poach on Bake",
+      "text": "Seat the PowerPod and select Bake. Check after 12 minutes, turn the chicken with silicone tongs and check every 2–3 minutes after that. Pull pieces at 175°F in their thickest centers, typically 18–30 minutes total. Keep the chicken covered in a little liquid."
+    },
+    {
+      "title": "Blend the green sauce",
+      "text": "Ladle the cooked pepper and poaching liquid into a deep heatproof jug. Add {cilantro} and {pepita}, then blend until silky."
+    },
+    {
+      "title": "Refine the base",
+      "text": "Press the blended sauce through a fine sieve into the HexClad. Bring it to a full boil, stirring, and reduce to about 3/4 cup per serving if needed."
+    },
+    {
+      "title": "Mix the slurry",
+      "text": "Stir {starch} into {water} until completely smooth."
+    },
+    {
+      "title": "Bind the sauce",
+      "text": "Bring the sauce to a simmer. Whisk in the freshly stirred slurry and let it bubble gently for 1 minute, stirring until it coats the back of a spoon."
+    },
+    {
+      "title": "Coat and plate",
+      "text": "Turn the warm thigh pieces in the pumpkin seed sauce off heat. Divide the chicken between shallow bowls and ladle all the remaining green sauce around it."
+    }
+  ],
+  "notes": "Sauce yield: About 1 1/2 cups for two. Make ahead: Portion the pepper and trim the thighs a day ahead. Refrigerate them separately and blend in the cilantro on the day of serving. Option A uses seeded mild poblano. For gentler Option B, use plain peeled sweet green bell pepper and leave out the cumin. Pass hot honey separately if someone wants heat. Chill leftovers promptly in shallow portions and refrigerate for up to 3 days. Freezer-Friendly Verdict: Yes. Freeze the chicken in its sauce for up to 6 weeks. The color will dull slightly but the pumpkin seed paste keeps the texture smooth. Fridge reheat: Warm one portion covered in its sauce in a HexClad skillet over medium-low, loosening with a splash of water if needed. Stir or turn the chicken gently, checking from 6 minutes, until it reaches 165°F throughout. Freezer reheat: Thaw overnight in the refrigerator, then follow the fridge reheating directions and stir the sauce smooth. Estimated nutrition per serving (1/2 of recipe): 272 kcal, 33.3 g protein, 7.9 g total carbohydrate, 11.8 g fat, 1.2 g fiber, 164 mg sodium. Includes the measured broth and sauce. Sodium varies with your broth.",
+  "source": "Glenn"
+}

@@ -1,0 +1,86 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "one-pan-red-pepper-ricotta-rotini",
+  "title": "One-Pan Red Pepper and Ricotta Rotini",
+  "description": "Impastable rotini cooks directly in a silky roasted pepper sauce, with ricotta folded through the spirals at the end.",
+  "category": "Sides",
+  "tags": [
+    "hexclad",
+    "one-pan",
+    "pasta"
+  ],
+  "servings": 2,
+  "servingsLabel": "side servings",
+  "prepMin": 8,
+  "cookMin": 22,
+  "equipment": [
+    "10-inch HexClad skillet with lid",
+    "Vitamix or immersion blender and tall jug"
+  ],
+  "ingredients": [
+    {
+      "id": "rotini",
+      "qty": 57,
+      "name": "dry ThinSlim Foods Impastable rotini",
+      "unit": "g"
+    },
+    {
+      "id": "pepper",
+      "qty": 3,
+      "name": "peeled roasted red bell pepper",
+      "unit": "oz",
+      "note": "Use plain home-roasted pepper without brine, with skin and seeds removed."
+    },
+    {
+      "id": "broth",
+      "qty": 1,
+      "name": "low-sodium chicken broth",
+      "unit": "cup",
+      "note": "Use plain unsalted chicken-and-water broth."
+    },
+    {
+      "id": "ricotta",
+      "qty": 0.25,
+      "name": "plain part-skim ricotta",
+      "unit": "cup"
+    },
+    {
+      "id": "basil",
+      "qty": 0.125,
+      "name": "fresh basil leaves",
+      "unit": "cup",
+      "note": "Finely chopped."
+    },
+    {
+      "id": "garlic",
+      "qty": 0.125,
+      "name": "granulated garlic",
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Blend the sauce base",
+      "text": "Blend {pepper}, {broth} and {garlic} until completely smooth, about 30 seconds."
+    },
+    {
+      "title": "Start the pasta",
+      "text": "Bring the pepper sauce to a simmer in the HexClad skillet and stir in {rotini}."
+    },
+    {
+      "title": "Cook in the sauce",
+      "text": "Cover and simmer gently for 10–18 minutes, stirring every 2 minutes to keep the spirals submerged. Check a spiral at 10 minutes and continue until tender throughout, adding hot water a splash at a time if needed."
+    },
+    {
+      "title": "Smooth the ricotta",
+      "text": "In a cup, whisk {ricotta} with a spoonful of the hot cooking sauce until smooth."
+    },
+    {
+      "title": "Finish the spirals",
+      "text": "Take the skillet off the heat and fold the loosened ricotta and {basil} through the pasta until the sauce fills the spirals."
+    }
+  ],
+  "notes": "Make ahead: Blend the pepper base up to 2 days ahead and refrigerate. Add the dry pasta only when ready to cook. Refrigerate in shallow portions within 2 hours and use within 3 days. Freezer-Friendly Verdict: No. The fiber-rich spirals soften with freezing and the ricotta can weep. Fridge reheat: Warm covered in the skillet with a splash of water over medium-low heat for 4–7 minutes, stirring gently until the center reaches 165°F. Freezer reheat: Thaw in the refrigerator overnight, then follow the fridge reheat instructions. Option A uses sweet roasted pepper. For a gentler Option B, use an equal weight of cooked butternut squash. For dairy-free sauce, use smooth unsalted white bean puree in place of ricotta. Estimated nutrition per serving (1/2 of recipe): 88 kcal, 7.0 g protein, 26.8 g total carbohydrate, 2.8 g fat, 18.6 g fiber, 160 mg sodium.",
+  "source": "Glenn"
+}

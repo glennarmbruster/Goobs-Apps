@@ -1,0 +1,124 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "tomato-basil-chicken-cutlets-with-whipped-ricotta",
+  "title": "Tomato-Basil Chicken Cutlets with Whipped Ricotta",
+  "description": "Thin chicken breast cutlets poach directly in a smooth tomato-basil sauce finished with whipped ricotta.",
+  "category": "Main dish",
+  "tags": [
+    "hexclad",
+    "chicken-cutlets",
+    "tomato-basil",
+    "extra-sauce"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 12,
+  "cookMin": 22,
+  "equipment": [
+    "10-inch HexClad skillet with lid",
+    "Thin-tip instant-read thermometer",
+    "Meat mallet and parchment",
+    "Immersion blender and deep heatproof jug"
+  ],
+  "ingredients": [
+    {
+      "id": "chicken",
+      "name": "boneless skinless chicken breast",
+      "group": "Chicken",
+      "qty": 10,
+      "unit": "oz",
+      "note": "Use plain, unenhanced poultry. Remove visible fat before weighing."
+    },
+    {
+      "id": "tomato",
+      "name": "plain smooth no-salt-added tomato passata",
+      "group": "Sauce",
+      "qty": 0.75,
+      "unit": "cup",
+      "note": "Choose strained passata without pieces or added seasoning."
+    },
+    {
+      "id": "broth",
+      "name": "low-sodium chicken broth",
+      "group": "Sauce",
+      "qty": 0.75,
+      "unit": "cup",
+      "note": "Use plain chicken-and-water broth without a vegetable blend or added seasoning."
+    },
+    {
+      "id": "garlic",
+      "name": "jarred minced garlic",
+      "group": "Sauce",
+      "qty": 0.375,
+      "unit": "tsp",
+      "note": "Water-packed, finely minced."
+    },
+    {
+      "id": "basil",
+      "name": "fresh basil",
+      "group": "Sauce",
+      "qty": 1,
+      "unit": "sprig",
+      "note": "Use a leafy sprig; keep whole for removal. Remove before serving."
+    },
+    {
+      "id": "ricotta",
+      "name": "plain part-skim ricotta",
+      "group": "Finish",
+      "qty": 0.25,
+      "unit": "cup",
+      "note": "Choose a lower-sodium variety."
+    },
+    {
+      "id": "starch",
+      "name": "cornstarch",
+      "group": "Slurry",
+      "qty": 2.5,
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "name": "cold water",
+      "group": "Slurry",
+      "qty": 2.5,
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Even the cutlets",
+      "text": "Butterfly {chicken} into cutlets. Between two sheets of parchment, gently tap the thick ends with the flat face of a meat mallet to an even 3/8 inch."
+    },
+    {
+      "title": "Infuse the sauce",
+      "text": "Simmer {tomato}, {broth}, {garlic} and {basil} in the HexClad over medium-low for 4 minutes with the lid on."
+    },
+    {
+      "title": "Poach the cutlets",
+      "text": "Lower the cutlets into the sauce in a single layer and spoon sauce over them. Cover and cook gently for 5–10 minutes, turning once. Pull each cutlet when a sideways probe reads 165°F in its thickest center."
+    },
+    {
+      "title": "Smooth the base",
+      "text": "Let the cutlets rest on a covered plate with a little sauce. Remove the basil sprig from the pan and bring the sauce to a full boil, then reduce to a simmer."
+    },
+    {
+      "title": "Mix the slurry",
+      "text": "Stir {starch} into {water} until completely smooth."
+    },
+    {
+      "title": "Bind the sauce",
+      "text": "Bring the sauce to a simmer. Whisk in the freshly stirred slurry and let it bubble gently for 1 minute, stirring until it coats the back of a spoon."
+    },
+    {
+      "title": "Whip the ricotta",
+      "text": "In a deep heatproof jug, blend {ricotta} with a ladle of the thickened sauce until completely smooth. Fold the mixture into the pan off heat."
+    },
+    {
+      "title": "Dress the cutlets",
+      "text": "Slice the rested chicken across the grain. Spoon sauce beneath the slices and cover their cut faces with the remaining tomato-ricotta sauce."
+    }
+  ],
+  "notes": "Sauce yield: About 1 1/2 cups for two. Make ahead: Infuse the passata a day ahead and chill separately from the chicken. Add ricotta only at the finish. Option A uses tomato passata. For gentler Option B, replace it with an equal volume of plain, smooth butternut squash puree and loosen with broth as needed. For dairy-free sauce replace the ricotta with smooth silken tofu. Chill leftovers promptly in shallow portions and refrigerate for up to 3 days. Freezer-Friendly Verdict: Yes. Freeze the cutlets surrounded by tomato sauce for up to 2 months and whip in the ricotta after reheating for the best texture. Fridge reheat: Warm one portion covered in its sauce in a HexClad skillet over medium-low, loosening with a splash of water if needed. Stir or turn the chicken gently, checking from 6 minutes, until it reaches 165°F throughout. Freezer reheat: Thaw overnight in the refrigerator, then follow the fridge reheating directions and stir the sauce smooth. Estimated nutrition per serving (1/2 of recipe): 266 kcal, 37.7 g protein, 13.5 g total carbohydrate, 6.3 g fat, 1.8 g fiber, 134 mg sodium. Includes the measured broth and sauce. Sodium varies with your broth.",
+  "source": "Glenn"
+}

@@ -1,0 +1,94 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "saffron-orange-aioli",
+  "title": "Saffron and Orange Aioli",
+  "description": "A short orange infusion draws the color and aroma from saffron before it is folded into a mellow garlic aioli.",
+  "category": "Sauce & condiment",
+  "tags": [
+    "aioli",
+    "chilled"
+  ],
+  "servings": 8,
+  "servingsLabel": "2-tablespoon portions",
+  "prepMin": 8,
+  "cookMin": 7,
+  "equipment": [
+    "Small saucepan with lid",
+    "Mixing bowl and flexible spatula",
+    "Small whisk",
+    "Heatproof liquid measuring cup",
+    "Small plate"
+  ],
+  "ingredients": [
+    {
+      "id": "mayo",
+      "qty": 13,
+      "name": "plain full-fat mayonnaise",
+      "group": "Sauce",
+      "unit": "tbsp",
+      "note": "Use plain commercial mayonnaise made with pasteurized eggs."
+    },
+    {
+      "id": "orange",
+      "qty": 2,
+      "name": "strained sweet orange juice",
+      "group": "Sauce",
+      "unit": "tbsp"
+    },
+    {
+      "id": "water",
+      "qty": 1,
+      "name": "water",
+      "group": "Sauce",
+      "unit": "tbsp"
+    },
+    {
+      "id": "saffron",
+      "qty": 1,
+      "name": "saffron threads",
+      "group": "Sauce",
+      "unit": "pinch"
+    },
+    {
+      "id": "garlic",
+      "qty": 1,
+      "name": "fresh garlic cloves",
+      "group": "Sauce",
+      "unit": "clove",
+      "note": "Peeled and sliced thinly."
+    },
+    {
+      "id": "zest",
+      "qty": 0.125,
+      "name": "finely grated orange zest",
+      "group": "Sauce",
+      "unit": "tsp",
+      "note": "Colored peel only, grated to a paste."
+    }
+  ],
+  "steps": [
+    {
+      "title": "Infuse the orange juice",
+      "text": "Combine {orange}, {water}, {saffron} and {garlic} in a small covered saucepan. Simmer very gently for 5–7 minutes until the sliced garlic mashes with a fork."
+    },
+    {
+      "title": "Mash and cool",
+      "text": "Mash the garlic and saffron into the liquid with the back of a spoon. Spread the mixture on a small plate and chill about 10 minutes until cold."
+    },
+    {
+      "title": "Fold in the saffron",
+      "text": "Whisk the cooled infusion and {zest} into {mayo} until evenly colored."
+    },
+    {
+      "title": "Adjust the consistency",
+      "text": "Scrape all of the mixture into the measuring cup. Add cold water a teaspoon at a time if needed to reach about 1 cup, maintaining a smooth spoonable texture."
+    },
+    {
+      "title": "Serve",
+      "text": "Chill for 15 minutes to let the saffron develop, then serve a measured spoonful with steamed halibut or soft potatoes."
+    }
+  ],
+  "notes": "Yield: About 1 cup. One serving is 2 tablespoons. Make ahead: Make the infusion a day ahead or chill the finished aioli for at least 15 minutes before using. Refrigerate within 2 hours and use within 3 days. Freezer-Friendly Verdict: No. The mayonnaise emulsion can separate as it thaws. Fridge reheat: Serve chilled. Stir until smooth just before portioning. Freezer reheat: If already frozen, thaw covered in the refrigerator, then whisk or blend briefly and serve cold. Option A includes orange juice and zest. For gentler Option B, steep the saffron and garlic in water and omit the zest. The aioli is dairy-free. Estimated nutrition per serving (1/8 of recipe): 155 kcal, 0.3 g protein, 0.7 g total carbohydrate, 16.8 g fat, 0.0 g fiber, 143 mg sodium. The estimate covers the prepared condiment. Add separately served foods when totaling a meal.",
+  "source": "Glenn"
+}

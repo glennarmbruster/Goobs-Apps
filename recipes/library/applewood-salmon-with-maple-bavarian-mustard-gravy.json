@@ -1,0 +1,135 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "applewood-salmon-with-maple-bavarian-mustard-gravy",
+  "title": "Applewood Salmon with Maple-Bavarian Mustard Gravy",
+  "description": "Applewood scents the poaching broth before maple and Bavarian mustard turn it into a glossy gravy for salmon.",
+  "category": "Main dish",
+  "tags": [
+    "traeger",
+    "salmon",
+    "applewood",
+    "extra-sauce"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 10,
+  "cookMin": 52,
+  "equipment": [
+    "Traeger Silverton 610 pellet smoker",
+    "Small lidded enamel Dutch oven",
+    "10-inch HexClad skillet with lid",
+    "Thin-tip instant-read thermometer",
+    "Flexible fish spatula"
+  ],
+  "ingredients": [
+    {
+      "id": "fish",
+      "name": "skinless farmed Atlantic salmon fillet",
+      "group": "Fish",
+      "qty": 10,
+      "unit": "oz",
+      "note": "Weight after skin and pin bones are removed. Divide into two even portions about 3/4 to 1 inch thick. Fully thaw before cooking."
+    },
+    {
+      "id": "broth",
+      "name": "low-sodium chicken broth",
+      "group": "Sauce",
+      "qty": 1.375,
+      "unit": "cup",
+      "note": "Choose unsalted plain meat-and-water broth without a vegetable blend."
+    },
+    {
+      "id": "maple",
+      "name": "pure maple syrup",
+      "group": "Sauce",
+      "qty": 2,
+      "unit": "tsp"
+    },
+    {
+      "id": "mustard",
+      "name": "smooth Löwensenf Bavarian mustard",
+      "group": "Sauce",
+      "qty": 1.5,
+      "unit": "tsp",
+      "note": "Pass through a fine sieve first if the mustard contains coarse seeds."
+    },
+    {
+      "id": "dill",
+      "name": "fresh dill fronds",
+      "group": "Sauce",
+      "qty": 1.5,
+      "unit": "tsp",
+      "note": "Finely minced."
+    },
+    {
+      "id": "butter",
+      "name": "unsalted butter",
+      "group": "Sauce",
+      "qty": 1,
+      "unit": "tsp"
+    },
+    {
+      "id": "starch",
+      "name": "cornstarch",
+      "group": "Slurry",
+      "qty": 3,
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "name": "cold water",
+      "group": "Slurry",
+      "qty": 3,
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Heat the Traeger",
+      "text": "Load the Traeger Silverton 610 with applewood wood pellets. Preheat with the lid closed to 275°F, allowing about 15 minutes."
+    },
+    {
+      "title": "Smoke the broth",
+      "text": "Bring {broth} to a simmer in the small Dutch oven on the stove. Move the uncovered pot to the smoker grate. Close the smoker lid and leave for 12 minutes."
+    },
+    {
+      "title": "Poach under cover",
+      "text": "Slip {fish} into the hot applewood broth and spoon broth over the tops. Cover the Dutch oven as soon as the salmon goes in. This lid is the wrap from the start."
+    },
+    {
+      "title": "Pull at temperature",
+      "text": "Keep the Traeger at 275°F. Check from 8 minutes and pull each fillet at 135°F in the thickest center, usually after 10–20 minutes."
+    },
+    {
+      "title": "Rest the salmon",
+      "text": "Transfer the fish to a warm plate, cover and rest for 3 minutes. Keep the poaching broth in the pot."
+    },
+    {
+      "title": "Season the smoky liquid",
+      "text": "Pour the hot poaching broth into the HexClad. Whisk in {maple} and {mustard} and bring to a full boil for 1 minute."
+    },
+    {
+      "title": "Mix the slurry",
+      "text": "Stir {starch} into {water} until completely smooth."
+    },
+    {
+      "title": "Bind the sauce",
+      "text": "Bring the sauce to a simmer. Whisk in the freshly stirred slurry and let it bubble gently for 1 minute, stirring until it coats the back of a spoon."
+    },
+    {
+      "title": "Finish with dill",
+      "text": "Take the gravy off heat. Swirl in {butter} and {dill} until glossy."
+    },
+    {
+      "title": "Check carryover and doneness",
+      "text": "After resting, check each thickest center for about 140°F. Open a natural seam with a fork. The center should be opaque and separate easily into flakes. If either cue is unclear or the center is below 140°F, finish covered in hot sauce in the HexClad over low heat to a measured 145°F, checking every minute."
+    },
+    {
+      "title": "Spoon into bowls",
+      "text": "Place the salmon in two shallow bowls and spoon the mustard gravy between the flakes. Divide the rest of the gravy evenly."
+    }
+  ],
+  "notes": "Sauce yield: About 1 1/4 cups for two. Make ahead: Smoke the broth a day ahead while the Traeger is running. Cool promptly, refrigerate, then return it to a simmer before you add the fish. Refrigerate shallow portions within 2 hours, or within 1 hour outdoors above 90°F. Use refrigerated leftovers within 3 days. Freezer-Friendly Verdict: Yes. Freeze the salmon submerged in its gravy for up to 1 month. A short whisk restores the gravy after thawing. Fridge reheat: Warm a portion covered in its sauce over medium-low heat in the HexClad. Add a little water if it has thickened in storage. Check from 5 minutes and heat to 165°F at the coldest center. Freezer reheat: If frozen, thaw the covered portion in the refrigerator overnight, then follow the fridge method. Option A uses the Bavarian mustard. For gentler Option B, omit it and use a little extra dill with the maple. For dairy-free gravy, omit the finishing butter. Estimated nutrition per serving (1/2 of recipe): 361 kcal, 30.6 g protein, 9.9 g total carbohydrate, 21.2 g fat, 0.2 g fiber, 110 mg sodium. Includes both the fish and its full share of sauce and any rice or potatoes listed. Sodium varies with the broth.",
+  "source": "Glenn"
+}

@@ -1,0 +1,87 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "goat-cheese-polenta-with-golden-beet-swirl",
+  "title": "Goat Cheese Polenta with a Golden Beet Swirl",
+  "description": "A spoonful of golden beet puree runs through soft goat cheese polenta, leaving ribbons of sweet beet in each serving.",
+  "category": "Sides",
+  "tags": [
+    "stovetop",
+    "polenta",
+    "golden-beet"
+  ],
+  "servings": 2,
+  "servingsLabel": "side servings",
+  "prepMin": 8,
+  "cookMin": 32,
+  "equipment": [
+    "Small saucepan with lid",
+    "Vitamix or immersion blender and tall jug",
+    "Small bowl and whisk"
+  ],
+  "ingredients": [
+    {
+      "id": "cornmeal",
+      "qty": 55,
+      "name": "fine yellow cornmeal",
+      "unit": "g",
+      "note": "Use fine whole-grain cornmeal."
+    },
+    {
+      "id": "water",
+      "qty": 1.25,
+      "name": "water",
+      "unit": "cup"
+    },
+    {
+      "id": "milk",
+      "qty": 0.5,
+      "name": "skim milk",
+      "unit": "cup"
+    },
+    {
+      "id": "beet",
+      "qty": 3,
+      "name": "plain cooked peeled golden beet",
+      "unit": "oz",
+      "note": "Plain steamed beet, cubed and brought to room temperature."
+    },
+    {
+      "id": "cheese",
+      "qty": 1,
+      "name": "plain fresh soft goat cheese",
+      "unit": "oz"
+    },
+    {
+      "id": "thyme",
+      "qty": 0.5,
+      "name": "fresh thyme leaves",
+      "unit": "tsp",
+      "note": "Finely minced."
+    }
+  ],
+  "steps": [
+    {
+      "title": "Blend the beet ribbon",
+      "text": "Blend {beet} with a splash of {milk} until smooth and spoonable, reserving the rest of the milk for the pan."
+    },
+    {
+      "title": "Whisk the cornmeal",
+      "text": "Whisk {cornmeal} into {water} and the remaining milk in a cold saucepan until evenly dispersed."
+    },
+    {
+      "title": "Cook the polenta",
+      "text": "Bring to a gentle simmer over medium heat, stirring constantly. Reduce the heat to low and cook partially covered for 20–28 minutes, stirring every 3 minutes until the grains are tender and the polenta falls softly from a spoon. Add a splash of water if it stiffens early."
+    },
+    {
+      "title": "Melt in the cheese",
+      "text": "Remove the pan from the heat and stir in {cheese} and {thyme} until creamy."
+    },
+    {
+      "title": "Swirl in the beet",
+      "text": "Spoon the beet puree into the hot polenta and fold just twice to leave golden ribbons. Warm over low heat for 1 minute before serving."
+    }
+  ],
+  "notes": "Make ahead: Steam and puree the beet up to 2 days ahead and chill. For the clearest swirl, fold it into the polenta just before serving. Refrigerate in shallow portions within 2 hours and use within 3 days. Freezer-Friendly Verdict: Yes. The swirl may blend together, but the polenta becomes creamy again when whisked with liquid. Freeze for up to 1 month. Fridge reheat: Loosen one portion with a splash of milk and whisk over medium-low heat for 5–8 minutes until creamy and at least 165°F. Freezer reheat: Thaw in the refrigerator overnight, then follow the fridge reheat instructions. For dairy-free polenta, use plain unsweetened oat milk and plain whipped dairy-free cream cheese. Estimated nutrition per serving (1/2 of recipe): 177 kcal, 7.7 g protein, 28.5 g total carbohydrate, 4.1 g fat, 2.9 g fiber, 139 mg sodium.",
+  "source": "Glenn"
+}

@@ -1,0 +1,137 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "oval-pan-snapper-with-mild-cajun-pecan-gravy",
+  "title": "Oval-Pan Snapper with Mild Cajun Pecan Gravy",
+  "description": "Smoked paprika, thyme and smooth toasted pecan paste give two individual pans of poached snapper a mild Louisiana-style gravy.",
+  "category": "Main dish",
+  "tags": [
+    "oval-cast-iron",
+    "snapper",
+    "mild",
+    "extra-sauce"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 10,
+  "cookMin": 25,
+  "equipment": [
+    "Two small oval cast iron pans with foil or fitted lids",
+    "10-inch HexClad skillet with lid",
+    "Thin-tip instant-read thermometer",
+    "Flexible fish spatula"
+  ],
+  "ingredients": [
+    {
+      "id": "fish",
+      "name": "skinless red snapper fillet",
+      "group": "Fish",
+      "qty": 10,
+      "unit": "oz",
+      "note": "Weight after skin and pin bones are removed. Divide into two even portions about 1/2 to 3/4 inch thick. Fully thaw before cooking."
+    },
+    {
+      "id": "pecan",
+      "name": "smooth unsalted roasted pecan paste",
+      "group": "Sauce",
+      "qty": 1.25,
+      "unit": "tbsp",
+      "note": "Use finely milled pure pecans without pieces. Stir before measuring."
+    },
+    {
+      "id": "broth",
+      "name": "low-sodium chicken broth",
+      "group": "Sauce",
+      "qty": 1.375,
+      "unit": "cup",
+      "note": "Choose unsalted plain meat-and-water broth without a vegetable blend."
+    },
+    {
+      "id": "butter",
+      "name": "unsalted butter",
+      "group": "Sauce",
+      "qty": 1,
+      "unit": "tsp"
+    },
+    {
+      "id": "paprika",
+      "name": "sweet smoked paprika",
+      "group": "Sauce",
+      "qty": 0.5,
+      "unit": "tsp"
+    },
+    {
+      "id": "thyme",
+      "name": "fresh thyme leaves",
+      "group": "Sauce",
+      "qty": 0.25,
+      "unit": "tsp",
+      "note": "Mince finely."
+    },
+    {
+      "id": "garlic",
+      "name": "granulated garlic",
+      "group": "Sauce",
+      "qty": 0.125,
+      "unit": "tsp"
+    },
+    {
+      "id": "starch",
+      "name": "cornstarch",
+      "group": "Slurry",
+      "qty": 2.75,
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "name": "cold water",
+      "group": "Slurry",
+      "qty": 2.75,
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Warm the spices",
+      "text": "Melt {butter} in the HexClad over low heat. Add {paprika}, {thyme} and {garlic} and stir for 20 seconds, just until fragrant."
+    },
+    {
+      "title": "Loosen the pecan paste",
+      "text": "Whisk {pecan} with a little {broth} until smooth. Whisk it into the skillet with the remaining broth and bring to a gentle simmer."
+    },
+    {
+      "title": "Fill the oval pans",
+      "text": "Ladle enough thin pecan broth into each small oval cast iron pan to come partway up the fish when added. Keep the remainder in the HexClad."
+    },
+    {
+      "title": "Poach the snapper",
+      "text": "Divide {fish} between the ovals and spoon liquid over the surface. Cover and maintain a bare simmer on low burners for 4–9 minutes, checking the centers from the side after 4 minutes."
+    },
+    {
+      "title": "Pull each portion",
+      "text": "Lift each fillet out at 135°F. Place it on a warm plate with a spoonful of the reserved warm pecan broth, cover and rest for 3 minutes."
+    },
+    {
+      "title": "Gather the gravy",
+      "text": "Pour the remaining liquid from both ovals into the HexClad. Bring the combined gravy to a full boil for 1 minute."
+    },
+    {
+      "title": "Mix the slurry",
+      "text": "Stir {starch} into {water} until completely smooth."
+    },
+    {
+      "title": "Bind the sauce",
+      "text": "Bring the sauce to a simmer. Whisk in the freshly stirred slurry and let it bubble gently for 1 minute, stirring until it coats the back of a spoon."
+    },
+    {
+      "title": "Check carryover and doneness",
+      "text": "After resting, check each thickest center for about 140°F. Open a natural seam with a fork. The center should be opaque and separate easily into flakes. If either cue is unclear or the center is below 140°F, finish covered in hot sauce in the HexClad over low heat to a measured 145°F, checking every minute."
+    },
+    {
+      "title": "Spoon into bowls",
+      "text": "Set each portion in a shallow bowl. Spoon the glossy pecan gravy under and over the flakes."
+    }
+  ],
+  "notes": "Sauce yield: About 1 1/4 cups for two. Make ahead: Mix the paprika, thyme and garlic the day before and refrigerate covered. Stir the pecan paste smooth before cooking. Refrigerate in shallow portions within 2 hours. Use refrigerated leftovers within 3 days. Freezer-Friendly Verdict: Yes. Freeze the fish submerged in the gravy for up to 1 month. Whisk the gravy after reheating to disperse the nut oil. Fridge reheat: Warm a portion covered in its sauce over medium-low heat in the HexClad. Add a little water if it has thickened in storage. Check from 5 minutes and heat to 165°F at the coldest center. Freezer reheat: If frozen, thaw the covered portion in the refrigerator overnight, then follow the fridge method. Option A uses smoked paprika and garlic. For gentler Option B, use half as much sweet unsmoked paprika and omit the garlic. Avocado oil can replace the butter for a dairy-free dish. Estimated nutrition per serving (1/2 of recipe): 253 kcal, 31.5 g protein, 5.6 g total carbohydrate, 11.3 g fat, 1.2 g fiber, 116 mg sodium. Includes both the fish and its full share of sauce and any rice or potatoes listed. Sodium varies with the broth.",
+  "source": "Glenn"
+}

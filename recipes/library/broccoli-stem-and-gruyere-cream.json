@@ -1,0 +1,110 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "broccoli-stem-and-gruyere-cream",
+  "title": "Broccoli Stem and Gruyère Cream",
+  "description": "Peeled fresh broccoli stems give this smooth Gruyère sauce a mild sweetness and a use for the tender centers of the stalks.",
+  "category": "Sauce & condiment",
+  "tags": [
+    "cream-sauce",
+    "extra-sauce"
+  ],
+  "servings": 6,
+  "servingsLabel": "1/4-cup portions",
+  "prepMin": 10,
+  "cookMin": 21,
+  "equipment": [
+    "10-inch HexClad skillet",
+    "Immersion blender and tall heatproof jug",
+    "Fine-mesh sieve",
+    "Small whisk",
+    "Heatproof liquid measuring cup",
+    "Instant-read thermometer"
+  ],
+  "ingredients": [
+    {
+      "id": "stems",
+      "qty": 4,
+      "name": "peeled fresh broccoli stems",
+      "group": "Sauce",
+      "unit": "oz",
+      "note": "Weigh after removing the woody outer layer. Cut into thin coins."
+    },
+    {
+      "id": "broth",
+      "qty": 0.875,
+      "name": "low-sodium chicken broth",
+      "group": "Sauce",
+      "unit": "cup",
+      "note": "Use plain, unsalted meat-and-water broth."
+    },
+    {
+      "id": "milk",
+      "qty": 0.625,
+      "name": "skim milk",
+      "group": "Sauce",
+      "unit": "cup"
+    },
+    {
+      "id": "gruyere",
+      "qty": 1,
+      "name": "Gruyère cheese",
+      "group": "Sauce",
+      "unit": "oz",
+      "note": "Finely grated."
+    },
+    {
+      "id": "mustard",
+      "qty": 0.125,
+      "name": "ground yellow mustard seed",
+      "group": "Sauce",
+      "unit": "tsp"
+    },
+    {
+      "id": "starch",
+      "qty": 2.75,
+      "name": "cornstarch",
+      "group": "Slurry",
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "qty": 2.75,
+      "name": "cold water",
+      "group": "Slurry",
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Soften the broccoli stems",
+      "text": "Put {stems}, {mustard} and {broth} in the HexClad. Cover and simmer for 9–13 minutes until a coin mashes under a spoon."
+    },
+    {
+      "title": "Make the stem puree",
+      "text": "Blend the stems and broth with {milk} in a deep jug until smooth. Press through a fine sieve into the skillet to remove any tough fibers."
+    },
+    {
+      "title": "Stir the slurry",
+      "text": "Stir {starch} into {water} in a small cup until smooth."
+    },
+    {
+      "title": "Thicken the sauce",
+      "text": "Bring the sauce to a simmer. Stir in the freshly mixed slurry and cook for about 1 minute, whisking until it coats the back of a spoon."
+    },
+    {
+      "title": "Set the reduction",
+      "text": "Measure the base and return it to the skillet. Aim for about 1 3/8 cups. If needed, simmer briefly to reduce or add a splash of water to reach the mark."
+    },
+    {
+      "title": "Melt the Gruyère",
+      "text": "Take the skillet off heat and add {gruyere} gradually, whisking until each addition melts."
+    },
+    {
+      "title": "Serve",
+      "text": "Spoon around pieces of chicken or over a baked potato split and mashed with its sauce."
+    }
+  ],
+  "notes": "Yield: 1 1/2 cups. One serving is 1/4 cup. Make ahead: Peel and slice the broccoli stems a day ahead and refrigerate covered. Finely grate the cheese shortly before cooking. Refrigerate in shallow covered portions within 2 hours and use within 3 days. Freezer-Friendly Verdict: No. Fully finished Gruyère sauce can turn grainy after thawing. For freezer prep, keep the blended stem base for up to 2 months and add the cheese after reheating. Fridge reheat: Reheat a portion over medium-low heat, whisking to a brief boil and at least 165°F. Whisk off heat until smooth. Freezer reheat: Thaw in the refrigerator overnight and reheat as for a chilled portion. For dairy-free sauce, use plain unsweetened oat milk and a smooth mild dairy-free cheese that melts. For a gentler flavor, leave out the ground mustard. Estimated nutrition per serving (1/6 of recipe): 42 kcal, 3.1 g protein, 3.7 g total carbohydrate, 1.6 g fat, 0.5 g fiber, 57 mg sodium. The estimate covers the prepared condiment. Add separately served foods when totaling a meal. Fiber is estimated before straining.",
+  "source": "Glenn"
+}

@@ -1,0 +1,89 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "apple-braised-sweet-potato-coins",
+  "title": "Apple-Braised Sweet Potato Coins",
+  "description": "Sweet potato coins and grated apple braise together until the fruit melts into a lightly spiced cider glaze.",
+  "category": "Sides",
+  "tags": [
+    "hexclad",
+    "braised",
+    "sweet-potatoes"
+  ],
+  "servings": 2,
+  "servingsLabel": "side servings",
+  "prepMin": 10,
+  "cookMin": 28,
+  "equipment": [
+    "10-inch HexClad skillet with lid",
+    "Box grater"
+  ],
+  "ingredients": [
+    {
+      "id": "potato",
+      "qty": 10,
+      "name": "sweet potatoes",
+      "unit": "oz",
+      "note": "Peeled weight, cut in 1/4-inch coins or half-moons."
+    },
+    {
+      "id": "apple",
+      "qty": 3,
+      "name": "small sweet apple",
+      "unit": "oz",
+      "note": "Peeled and cored weight, finely grated with the juices retained."
+    },
+    {
+      "id": "cider",
+      "qty": 0.25,
+      "name": "unsweetened apple cider",
+      "unit": "cup"
+    },
+    {
+      "id": "water",
+      "qty": 0.25,
+      "name": "water",
+      "unit": "cup"
+    },
+    {
+      "id": "coriander",
+      "qty": 0.25,
+      "name": "ground coriander",
+      "unit": "tsp"
+    },
+    {
+      "id": "butter",
+      "qty": 2,
+      "name": "unsalted butter",
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Build the braise",
+      "text": "Spread {apple} in the skillet and stir in {cider}, {water} and {coriander}."
+    },
+    {
+      "title": "Arrange the coins",
+      "text": "Nestle {potato} in overlapping rows in the apple mixture and bring to a gentle simmer over medium heat."
+    },
+    {
+      "title": "Cook until tender",
+      "text": "Cover and braise over medium-low heat for 15–20 minutes, gently turning the slices halfway through, until a fork slips through without breaking them."
+    },
+    {
+      "title": "Reduce the glaze",
+      "text": "Lift the coins onto a warm plate and simmer the apple juices uncovered for 2–4 minutes until thick enough to leave a trail behind a spoon."
+    },
+    {
+      "title": "Finish the apples",
+      "text": "Take the skillet off the heat and swirl {butter} into the reduced fruit."
+    },
+    {
+      "title": "Dress the coins",
+      "text": "Return the sweet potatoes to the skillet and tilt it to coat the coins with the apple glaze."
+    }
+  ],
+  "notes": "Make ahead: Peel and slice the sweet potatoes up to a day ahead and chill submerged in water. Drain well before braising. Refrigerate in shallow portions within 2 hours and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze the tender coins in a single layer with their glaze for up to 1 month. They will be a little softer after thawing. Fridge reheat: Warm covered with a splash of water over medium-low heat for 5–8 minutes until the center of the thickest slice reaches 165°F. Freezer reheat: Thaw in the refrigerator overnight, then follow the fridge reheat instructions. For dairy-free glaze, use avocado oil in place of butter. Option A uses cider. For gentler Option B, replace the cider with water and keep the grated apple. Estimated nutrition per serving (1/2 of recipe): 191 kcal, 2.5 g protein, 37.6 g total carbohydrate, 4.1 g fat, 5.0 g fiber, 81 mg sodium.",
+  "source": "Glenn"
+}

@@ -1,0 +1,148 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "chicken-enchilada-suiza-spoon-bake",
+  "title": "Chicken Enchilada Suiza Spoon Bake",
+  "description": "Soft corn tortillas soak up a mild tomatillo cream sauce in a covered chicken bake finished with Monterey Jack.",
+  "category": "Main dish",
+  "tags": [
+    "samsung-oven",
+    "hexclad",
+    "chicken-thighs",
+    "covered-casserole",
+    "extra-sauce"
+  ],
+  "servings": 4,
+  "servingsLabel": "servings",
+  "prepMin": 18,
+  "cookMin": 48,
+  "equipment": [
+    "Samsung oven with conventional Bake",
+    "2-quart oven-safe casserole with lid",
+    "12-inch HexClad skillet with lid",
+    "Thin-tip instant-read thermometer",
+    "Immersion blender and deep heatproof jug",
+    "Fine-mesh sieve"
+  ],
+  "ingredients": [
+    {
+      "id": "chicken",
+      "name": "boneless skinless chicken thighs",
+      "group": "Chicken",
+      "qty": 20,
+      "unit": "oz",
+      "note": "Use plain, unenhanced poultry. Remove visible fat before weighing."
+    },
+    {
+      "id": "tomatillos",
+      "name": "fresh tomatillos",
+      "group": "Sauce",
+      "qty": 8,
+      "unit": "oz",
+      "note": "Husk, rinse thoroughly and quarter."
+    },
+    {
+      "id": "pepper",
+      "name": "plain cooked mild poblano pepper",
+      "group": "Sauce",
+      "qty": 0.5,
+      "unit": "cup",
+      "note": "Peeled and seeded, with ribs removed."
+    },
+    {
+      "id": "broth",
+      "name": "low-sodium chicken broth",
+      "group": "Sauce",
+      "qty": 2,
+      "unit": "cup",
+      "note": "Use plain chicken-and-water broth without a vegetable blend or added seasoning."
+    },
+    {
+      "id": "cumin",
+      "name": "ground cumin",
+      "group": "Sauce",
+      "qty": 0.25,
+      "unit": "tsp"
+    },
+    {
+      "id": "cream",
+      "name": "plain whipped cream cheese",
+      "group": "Sauce",
+      "qty": 3,
+      "unit": "tbsp"
+    },
+    {
+      "id": "tortillas",
+      "name": "soft corn tortillas",
+      "group": "Layers",
+      "qty": 4,
+      "note": "Use small six-inch tortillas. Tear into small soft pieces."
+    },
+    {
+      "id": "jack",
+      "name": "Monterey Jack cheese",
+      "group": "Layers",
+      "qty": 1,
+      "unit": "oz",
+      "note": "Finely grated."
+    },
+    {
+      "id": "starch",
+      "name": "cornstarch",
+      "group": "Slurry",
+      "qty": 6,
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "name": "cold water",
+      "group": "Slurry",
+      "qty": 6,
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Heat the oven",
+      "text": "Preheat the Samsung oven to 350°F on conventional Bake with the middle rack in place."
+    },
+    {
+      "title": "Simmer the tomatillos",
+      "text": "In the lidded HexClad, simmer {tomatillos}, {pepper}, {cumin} and {broth} for 8–12 minutes until the tomatillos are soft and dull green."
+    },
+    {
+      "title": "Smooth the green sauce",
+      "text": "Blend the hot vegetables and liquid in a deep heatproof jug. Pass through a fine sieve back into the HexClad to catch skin and seeds."
+    },
+    {
+      "title": "Mix the slurry",
+      "text": "Stir {starch} into {water} until completely smooth."
+    },
+    {
+      "title": "Bind the sauce",
+      "text": "Bring the sauce to a simmer. Whisk in the freshly stirred slurry and let it bubble gently for 1 minute, stirring until it coats the back of a spoon."
+    },
+    {
+      "title": "Enrich the sauce",
+      "text": "Off heat, whisk {cream} into the warm green sauce until completely smooth."
+    },
+    {
+      "title": "Layer the spoon bake",
+      "text": "Spread a thin layer of sauce in the casserole. Cut {chicken} into short 1/2-inch pieces. Layer the chicken and {tortillas} loosely in the dish, coating each layer with sauce and finishing with a generous layer of sauce."
+    },
+    {
+      "title": "Bake until tender",
+      "text": "Cover and bake for 20–30 minutes, checking from 18 minutes. Probe several of the thickest chicken pieces for 175°F and check the center of the bake for at least 165°F."
+    },
+    {
+      "title": "Melt the Jack",
+      "text": "Scatter {jack} over the steaming sauce and replace the lid for 3 minutes until the cheese melts."
+    },
+    {
+      "title": "Sauce and serve",
+      "text": "Spoon into four shallow bowls while the tortillas are soft, drawing sauce from the edges over each portion."
+    }
+  ],
+  "notes": "Sauce yield: About 3 cups of sauce before layering. The tortillas soften in it and the finished bake stays spoonable. Make ahead: Cook and strain the tomatillo base a day ahead. Bring it to a simmer before thickening and assembling the casserole. Refrigerate shallow portions within 2 hours. Use refrigerated leftovers within 3 days. Freezer-Friendly Verdict: Yes. The tortillas are meant to be soft and the sauce protects the chicken. Freeze covered portions for up to 6 weeks. Fridge reheat: Spoon one portion and its sauce into a small covered oven-safe dish. Warm at 325°F on conventional Bake, checking after 15 minutes, until the coldest center reaches 165°F. Freezer reheat: Thaw overnight in the refrigerator, then follow the fridge reheating directions. Option A uses tomatillos and mild poblano. For gentler Option B, substitute cooked peeled zucchini for the tomatillos by weight and peeled sweet bell pepper for the poblano by volume. For a dairy-free bake, replace the cream cheese with unsweetened oat cream and omit the Jack. Estimated nutrition per serving (1/4 of recipe): 327 kcal, 33.4 g protein, 21.1 g total carbohydrate, 11.9 g fat, 3.0 g fiber, 240 mg sodium. Includes all the chicken and sauce in the listed recipe. Sodium varies with the broth. Fiber is estimated before straining.",
+  "source": "Glenn"
+}

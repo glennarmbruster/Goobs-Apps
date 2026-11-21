@@ -1,0 +1,113 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "golden-beet-tarragon-and-white-wine-pan-sauce",
+  "title": "Golden Beet, Tarragon and White Wine Pan Sauce",
+  "description": "Golden beet gives a buttery tarragon and white wine reduction enough body to cling to poached fish.",
+  "category": "Sauce & condiment",
+  "tags": [
+    "pan-sauce",
+    "extra-sauce"
+  ],
+  "servings": 6,
+  "servingsLabel": "1/4-cup portions",
+  "prepMin": 8,
+  "cookMin": 19,
+  "equipment": [
+    "10-inch HexClad skillet",
+    "Immersion blender and tall heatproof jug",
+    "Small whisk",
+    "Heatproof liquid measuring cup",
+    "Instant-read thermometer"
+  ],
+  "ingredients": [
+    {
+      "id": "beet",
+      "qty": 4,
+      "name": "plain cooked peeled golden beet",
+      "group": "Sauce",
+      "unit": "oz",
+      "note": "Choose unsalted and unseasoned, then dice finely."
+    },
+    {
+      "id": "butter",
+      "qty": 2,
+      "name": "unsalted butter",
+      "group": "Sauce",
+      "unit": "tsp"
+    },
+    {
+      "id": "wine",
+      "qty": 0.25,
+      "name": "dry white drinking wine",
+      "group": "Sauce",
+      "unit": "cup"
+    },
+    {
+      "id": "broth",
+      "qty": 1.25,
+      "name": "low-sodium chicken broth",
+      "group": "Sauce",
+      "unit": "cup",
+      "note": "Use plain, unsalted meat-and-water broth."
+    },
+    {
+      "id": "tarragon",
+      "qty": 0.25,
+      "name": "dried tarragon",
+      "group": "Sauce",
+      "unit": "tsp",
+      "note": "Crumble finely."
+    },
+    {
+      "id": "starch",
+      "qty": 2.5,
+      "name": "cornstarch",
+      "group": "Slurry",
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "qty": 2.5,
+      "name": "cold water",
+      "group": "Slurry",
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Color the beet",
+      "text": "Melt {butter} in the HexClad over medium heat. Cook {beet} for 3–4 minutes, turning until small golden spots appear."
+    },
+    {
+      "title": "Reduce the wine",
+      "text": "Take the skillet off the burner to add {wine}. Return to medium heat and scrape the bottom for about 2 minutes until the liquid looks syrupy."
+    },
+    {
+      "title": "Steep the tarragon",
+      "text": "Add {broth} and {tarragon}. Cover and simmer for 5 minutes."
+    },
+    {
+      "title": "Puree the beet",
+      "text": "Blend the beet and all the liquid in the deep jug until smooth. Return the sauce to the skillet."
+    },
+    {
+      "title": "Stir the slurry",
+      "text": "Stir {starch} into {water} in a small cup until smooth."
+    },
+    {
+      "title": "Thicken the sauce",
+      "text": "Bring the sauce to a simmer. Stir in the freshly mixed slurry and cook for about 1 minute, whisking until it coats the back of a spoon."
+    },
+    {
+      "title": "Check the yield",
+      "text": "Measure the finished sauce in a heatproof cup. Aim for 1 1/2 cups total. If it measures short, whisk in a little hot water. If it measures over, return it to the skillet and simmer briefly to the mark."
+    },
+    {
+      "title": "Serve",
+      "text": "Ladle under steamed halibut or cod and work a little sauce between the flakes."
+    }
+  ],
+  "notes": "Yield: 1 1/2 cups. One serving is 1/4 cup. Make ahead: Dice the cooked beet the day before or prepare the puree up to a day ahead. Refrigerate in shallow covered portions within 2 hours and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze the sauce for up to 2 months. Its beet puree stays smooth after thawing. Fridge reheat: Bring a portion to a boil in a small pan, stirring until it reaches at least 165°F. Loosen with a little water as needed. Freezer reheat: Thaw in the refrigerator overnight and reheat as for a chilled portion. Option A uses white wine. For gentler Option B, replace it with additional plain broth and simmer the beet briefly in the broth before blending. Avocado oil works in place of butter. Nutrition counts the full measured wine before reduction. Evaporation can lower the calories in the finished sauce. Estimated nutrition per serving (1/6 of recipe): 34 kcal, 0.8 g protein, 3.3 g total carbohydrate, 1.3 g fat, 0.4 g fiber, 23 mg sodium. The estimate covers the prepared condiment. Add separately served foods when totaling a meal.",
+  "source": "Glenn"
+}

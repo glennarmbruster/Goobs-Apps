@@ -1,0 +1,133 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "chicken-cutlets-with-asparagus-dill-cream",
+  "title": "Chicken Cutlets with Asparagus-Dill Cream",
+  "description": "Thin chicken cutlets are poached in the Crispi and covered with a light, velvety sauce made from fresh asparagus and dill.",
+  "category": "Main dish",
+  "tags": [
+    "ninja-crispi",
+    "chicken-cutlets",
+    "asparagus",
+    "extra-sauce"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 15,
+  "cookMin": 35,
+  "equipment": [
+    "Ninja Crispi PowerPod with US Bake preset and 6-cup glass container",
+    "10-inch HexClad skillet with lid",
+    "Thin-tip instant-read thermometer",
+    "Immersion blender and deep heatproof jug",
+    "Fine-mesh sieve",
+    "Meat mallet and parchment",
+    "Silicone tongs"
+  ],
+  "ingredients": [
+    {
+      "id": "chicken",
+      "name": "boneless skinless chicken breast",
+      "group": "Chicken",
+      "qty": 10,
+      "unit": "oz",
+      "note": "Use plain, unenhanced poultry. Remove visible fat before weighing."
+    },
+    {
+      "id": "asparagus",
+      "name": "fresh slender asparagus",
+      "group": "Sauce",
+      "qty": 3,
+      "unit": "oz",
+      "note": "Snap off woody bases and leave out; slice the tender stalks and tips into small pieces."
+    },
+    {
+      "id": "broth",
+      "name": "low-sodium chicken broth",
+      "group": "Sauce",
+      "qty": 1.25,
+      "unit": "cup",
+      "note": "Use plain chicken-and-water broth without a vegetable blend or added seasoning."
+    },
+    {
+      "id": "milk",
+      "name": "skim milk",
+      "group": "Sauce",
+      "qty": 0.375,
+      "unit": "cup"
+    },
+    {
+      "id": "dill",
+      "name": "fresh dill fronds",
+      "group": "Sauce",
+      "qty": 1.5,
+      "unit": "tsp",
+      "note": "Remove coarse stems and mince finely."
+    },
+    {
+      "id": "cheese",
+      "name": "plain whipped cream cheese",
+      "group": "Finish",
+      "qty": 1,
+      "unit": "tbsp"
+    },
+    {
+      "id": "starch",
+      "name": "cornstarch",
+      "group": "Slurry",
+      "qty": 3,
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "name": "cold water",
+      "group": "Slurry",
+      "qty": 3,
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Set up the Crispi",
+      "text": "Start with the room-temperature 6-cup Ninja glass container. Leave the crisper plate out so the chicken sits in the liquid. Load the glass before starting the PowerPod; keep the storage lid off."
+    },
+    {
+      "title": "Even the cutlets",
+      "text": "Butterfly {chicken} into cutlets. Between two sheets of parchment, gently tap the thick ends with the flat face of a meat mallet to an even 3/8 inch."
+    },
+    {
+      "title": "Cover the cutlets with liquid",
+      "text": "Cut the flattened cutlets to fit. Spread {asparagus} in the bottom of the unheated glass and pour in {broth}. Set the chicken in a shallow layer in the liquid, with the cutlets fully moistened."
+    },
+    {
+      "title": "Poach on Bake",
+      "text": "Seat the PowerPod and select Bake. Check the centers sideways after 10 minutes, turn the cutlets and check every 2–3 minutes. Pull each at 165°F, typically 15–25 minutes total, and keep it covered in its juices."
+    },
+    {
+      "title": "Simmer the asparagus",
+      "text": "Ladle the asparagus and poaching broth into the HexClad. Bring to a full boil and cook for 1–3 minutes until a stalk piece crushes easily."
+    },
+    {
+      "title": "Make the dill cream",
+      "text": "Blend the asparagus and broth in a heatproof jug with {milk} and {dill}. Strain back into the HexClad to remove fibers."
+    },
+    {
+      "title": "Mix the slurry",
+      "text": "Stir {starch} into {water} until completely smooth."
+    },
+    {
+      "title": "Bind the sauce",
+      "text": "Bring the sauce to a simmer. Whisk in the freshly stirred slurry and let it bubble gently for 1 minute, stirring until it coats the back of a spoon."
+    },
+    {
+      "title": "Finish the sauce",
+      "text": "Loosen {cheese} with a spoonful of hot sauce. Whisk back into the skillet off heat until smooth."
+    },
+    {
+      "title": "Serve with extra sauce",
+      "text": "Slice the cutlets thinly across the grain and nestle them into a generous layer of asparagus cream. Spoon the remaining cream over the cut faces."
+    }
+  ],
+  "notes": "Sauce yield: About 1 1/2 cups for two. Make ahead: Flatten the cutlets and trim the asparagus up to a day ahead. Keep the raw poultry covered and separate in the refrigerator. For dairy-free asparagus cream, use plain unsweetened oat milk and omit the whipped cream cheese. The slurry keeps the sauce thick. Chill leftovers promptly in shallow portions and refrigerate for up to 3 days. Freezer-Friendly Verdict: No. The strained asparagus sauce is freshest with the dill just blended in, and thin cutlets firm up after freezing and reheating. The plain poached chicken can be frozen in broth separately. Fridge reheat: Warm one portion covered in its sauce in a HexClad skillet over medium-low, loosening with a splash of water if needed. Stir or turn the chicken gently, checking from 6 minutes, until it reaches 165°F throughout. Freezer reheat: If already frozen, thaw overnight in the refrigerator and follow the fridge reheating directions. Estimated nutrition per serving (1/2 of recipe): 232 kcal, 35.9 g protein, 8.2 g total carbohydrate, 5.4 g fat, 0.9 g fiber, 124 mg sodium. Includes the measured broth and sauce. Sodium varies with your broth.",
+  "source": "Glenn"
+}

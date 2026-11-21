@@ -1,0 +1,126 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "avgolemono-chicken-cutlets-and-rice",
+  "title": "Avgolemono Chicken Cutlets and Rice",
+  "description": "Egg yolk, a little lemon and fresh dill turn the poaching broth into a velvety Greek-style sauce that settles into the rice.",
+  "category": "Main dish",
+  "tags": [
+    "hexclad",
+    "chicken-cutlets",
+    "rice",
+    "extra-sauce"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 12,
+  "cookMin": 24,
+  "equipment": [
+    "10-inch HexClad skillet with lid",
+    "Small saucepan with lid",
+    "Meat mallet and parchment",
+    "Thin-tip instant-read thermometer",
+    "Small bowl and whisk"
+  ],
+  "ingredients": [
+    {
+      "id": "chicken",
+      "name": "boneless skinless chicken breast",
+      "group": "Chicken",
+      "qty": 10,
+      "unit": "oz",
+      "note": "Use plain, unenhanced poultry. Remove visible fat before weighing."
+    },
+    {
+      "id": "broth",
+      "name": "low-sodium chicken broth",
+      "group": "Sauce",
+      "qty": 1.625,
+      "unit": "cup",
+      "note": "Use plain chicken-and-water broth without a vegetable blend or added seasoning."
+    },
+    {
+      "id": "rice",
+      "name": "cooked white rice",
+      "group": "Rice",
+      "qty": 0.75,
+      "unit": "cup",
+      "note": "Plain, unsalted and either freshly cooked or promptly chilled."
+    },
+    {
+      "id": "yolk",
+      "name": "large egg yolk",
+      "group": "Sauce",
+      "qty": 1
+    },
+    {
+      "id": "lemon",
+      "name": "strained lemon juice",
+      "group": "Sauce",
+      "qty": 1.5,
+      "unit": "tsp"
+    },
+    {
+      "id": "dill",
+      "name": "fresh dill fronds",
+      "group": "Sauce",
+      "qty": 1,
+      "unit": "tsp",
+      "note": "Mince finely."
+    },
+    {
+      "id": "starch",
+      "name": "cornstarch",
+      "group": "Slurry",
+      "qty": 2.75,
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "name": "cold water",
+      "group": "Slurry",
+      "qty": 2.75,
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Even the cutlets",
+      "text": "Butterfly {chicken} into cutlets. Between two sheets of parchment, gently tap the thick ends with the flat face of a meat mallet to an even 3/8 inch."
+    },
+    {
+      "title": "Warm the rice",
+      "text": "Put {rice} in the saucepan with a splash of {broth}. Cover over low heat for 4–7 minutes, stirring once, until steaming hot and 165°F throughout. Keep covered."
+    },
+    {
+      "title": "Poach the chicken",
+      "text": "Heat the remaining broth in the HexClad to a bare simmer. Submerge the cutlets and cover. Poach for 4–8 minutes, turning once until each thickest center reaches 165°F. Hold covered in a little broth."
+    },
+    {
+      "title": "Prepare the egg base",
+      "text": "Whisk {yolk} with {lemon} in a heatproof bowl until smooth."
+    },
+    {
+      "title": "Mix the slurry",
+      "text": "Stir {starch} into {water} until completely smooth."
+    },
+    {
+      "title": "Thicken the poaching broth",
+      "text": "Boil the poaching broth for 1 minute. Stir in the freshly mixed slurry and simmer for 1 minute, until it coats the back of a spoon."
+    },
+    {
+      "title": "Temper the yolk",
+      "text": "Gradually whisk several spoonfuls of hot thickened broth into the yolk mixture until warm and fluid."
+    },
+    {
+      "title": "Finish the lemon sauce",
+      "text": "Whisk the tempered yolk into the skillet over low heat. Stir constantly for 1–3 minutes, until the sauce reaches 160°F and flows evenly off the spoon. Take off heat and stir in {dill}."
+    },
+    {
+      "title": "Sauce and serve",
+      "text": "Divide the hot rice between two bowls. Thinly slice the cutlets and lay them on the rice, then ladle the warm lemon sauce generously over both."
+    }
+  ],
+  "notes": "Sauce yield: About 1 1/2 cups of sauce for two, in addition to the rice. Make ahead: Use promptly chilled rice from the previous day or cook it fresh. Make the egg sauce just before serving. Refrigerate shallow portions within 2 hours. Use refrigerated leftovers within 3 days. Freezer-Friendly Verdict: No. The egg-enriched sauce can separate after freezing. For freezer prep, freeze the chicken in its plain thickened broth for up to 2 months and add fresh yolk and lemon after reheating. Fridge reheat: Warm the rice and chicken in the sauce over low heat, covered, stirring often and adding a splash of water if needed. Check from 6 minutes until rice, chicken and sauce reach 165°F. Freezer reheat: Thaw overnight in the refrigerator, then follow the fridge reheating directions. Option A uses the measured lemon juice. For gentler Option B, start with a few drops in the yolk and add more dill. The sauce contains no dairy. Estimated nutrition per serving (1/2 of recipe): 298 kcal, 36.5 g protein, 21.1 g total carbohydrate, 6.1 g fat, 0.3 g fiber, 98 mg sodium. Includes all the chicken and sauce in the listed recipe. Sodium varies with the broth.",
+  "source": "Glenn"
+}

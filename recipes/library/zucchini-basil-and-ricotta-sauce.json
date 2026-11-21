@@ -1,0 +1,109 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "zucchini-basil-and-ricotta-sauce",
+  "title": "Zucchini, Basil and Ricotta Sauce",
+  "description": "Peeled zucchini and soft ricotta make a pale green basil sauce for fish, chicken or pasta simmered directly in its sauce.",
+  "category": "Sauce & condiment",
+  "tags": [
+    "cream-sauce",
+    "extra-sauce"
+  ],
+  "servings": 6,
+  "servingsLabel": "1/4-cup portions",
+  "prepMin": 8,
+  "cookMin": 17,
+  "equipment": [
+    "10-inch HexClad skillet",
+    "Immersion blender and tall heatproof jug",
+    "Small whisk",
+    "Heatproof liquid measuring cup",
+    "Instant-read thermometer"
+  ],
+  "ingredients": [
+    {
+      "id": "zucchini",
+      "qty": 5,
+      "name": "fresh zucchini",
+      "group": "Sauce",
+      "unit": "oz",
+      "note": "Peel, weigh and cut into small cubes."
+    },
+    {
+      "id": "broth",
+      "qty": 1.125,
+      "name": "low-sodium chicken broth",
+      "group": "Sauce",
+      "unit": "cup",
+      "note": "Use plain, unsalted meat-and-water broth."
+    },
+    {
+      "id": "ricotta",
+      "qty": 0.25,
+      "name": "plain part-skim ricotta",
+      "group": "Sauce",
+      "unit": "cup"
+    },
+    {
+      "id": "basil",
+      "qty": 0.25,
+      "name": "fresh basil leaves",
+      "group": "Sauce",
+      "unit": "cup",
+      "note": "Lightly packed. Remove thick stems."
+    },
+    {
+      "id": "oil",
+      "qty": 1,
+      "name": "avocado oil",
+      "group": "Sauce",
+      "unit": "tsp"
+    },
+    {
+      "id": "starch",
+      "qty": 2.75,
+      "name": "cornstarch",
+      "group": "Slurry",
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "qty": 2.75,
+      "name": "cold water",
+      "group": "Slurry",
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Soften the zucchini",
+      "text": "Warm {oil} in the HexClad over medium-low heat. Add {zucchini} and {broth}, cover and simmer for 7–9 minutes until tender."
+    },
+    {
+      "title": "Blend the basil base",
+      "text": "Blend the cooked zucchini, broth and {basil} in the deep jug until silky. Return to the skillet."
+    },
+    {
+      "title": "Stir the slurry",
+      "text": "Stir {starch} into {water} in a small cup until smooth."
+    },
+    {
+      "title": "Thicken the sauce",
+      "text": "Bring the sauce to a simmer. Stir in the freshly mixed slurry and cook for about 1 minute, whisking until it coats the back of a spoon."
+    },
+    {
+      "title": "Set the reduction",
+      "text": "Measure the base and return it to the skillet. Aim for 1 1/4 cups. If needed, simmer briefly to reduce or add a splash of water to reach the mark."
+    },
+    {
+      "title": "Whip in the ricotta",
+      "text": "Take the base off heat. Blend it with {ricotta} for 20–30 seconds until smooth and pale green."
+    },
+    {
+      "title": "Serve",
+      "text": "Spoon over steamed fish or poached chicken while warm. For a pasta meal, loosen the zucchini base with broth, simmer the pasta directly in it and fold in the ricotta at the end."
+    }
+  ],
+  "notes": "Yield: 1 1/2 cups. One serving is 1/4 cup. Make ahead: Chop the zucchini a day ahead. Add the basil on serving day for the freshest flavor. Refrigerate in shallow covered portions within 2 hours and use within 3 days. Freezer-Friendly Verdict: No. Finished ricotta can become grainy in the freezer. For freezer prep, freeze the cooked zucchini base for up to 2 months, then blend in the fresh basil and ricotta after warming. Fridge reheat: Reheat a portion over medium-low heat, whisking to a brief boil and at least 165°F. Whisk off heat until smooth. Freezer reheat: Thaw in the refrigerator overnight and reheat as for a chilled portion. For dairy-free sauce, replace the ricotta with plain unsweetened dairy-free ricotta that blends smooth. Estimated nutrition per serving (1/6 of recipe): 32 kcal, 1.9 g protein, 2.5 g total carbohydrate, 1.7 g fat, 0.3 g fiber, 19 mg sodium. The estimate covers the prepared condiment. Add separately served foods when totaling a meal.",
+  "source": "Glenn"
+}

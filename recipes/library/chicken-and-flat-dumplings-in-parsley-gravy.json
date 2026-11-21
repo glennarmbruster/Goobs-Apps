@@ -1,0 +1,137 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "chicken-and-flat-dumplings-in-parsley-gravy",
+  "title": "Chicken and Flat Dumplings in Parsley Gravy",
+  "description": "Thin, hand-cut dumplings simmer in the chicken cooking broth, which becomes a parsley gravy around the tender thigh pieces.",
+  "category": "Main dish",
+  "tags": [
+    "possiblecooker",
+    "chicken-thighs",
+    "dumplings",
+    "leftovers",
+    "extra-sauce"
+  ],
+  "servings": 4,
+  "servingsLabel": "servings",
+  "prepMin": 20,
+  "cookMin": 42,
+  "equipment": [
+    "Ninja Foodi PossibleCooker",
+    "Thin-tip instant-read thermometer",
+    "Rolling pin and parchment",
+    "Silicone spoon",
+    "Heatproof measuring jug and slotted spoon"
+  ],
+  "ingredients": [
+    {
+      "id": "chicken",
+      "name": "boneless skinless chicken thighs",
+      "group": "Chicken",
+      "qty": 20,
+      "unit": "oz",
+      "note": "Use plain, unenhanced poultry. Remove visible fat before weighing."
+    },
+    {
+      "id": "broth",
+      "name": "low-sodium chicken broth",
+      "group": "Sauce",
+      "qty": 4,
+      "unit": "cup",
+      "note": "Use plain chicken-and-water broth without a vegetable blend or added seasoning."
+    },
+    {
+      "id": "bay",
+      "name": "dried bay leaf",
+      "group": "Broth",
+      "qty": 1,
+      "note": "Remove before serving."
+    },
+    {
+      "id": "flour",
+      "name": "all-purpose flour",
+      "group": "Dumplings",
+      "qty": 1,
+      "unit": "cup",
+      "note": "Spoon into the measure and level."
+    },
+    {
+      "id": "milk",
+      "name": "skim milk",
+      "group": "Dumplings",
+      "qty": 0.375,
+      "unit": "cup",
+      "note": "Add gradually to make a supple dough."
+    },
+    {
+      "id": "butter",
+      "name": "unsalted butter",
+      "group": "Dumplings",
+      "qty": 1,
+      "unit": "tsp",
+      "note": "Melt and cool until lukewarm."
+    },
+    {
+      "id": "parsley",
+      "name": "fresh flat-leaf parsley leaves",
+      "group": "Gravy",
+      "qty": 1,
+      "unit": "tbsp",
+      "note": "Remove coarse stems and mince the leaves finely."
+    },
+    {
+      "id": "starch",
+      "name": "cornstarch",
+      "group": "Slurry",
+      "qty": 5,
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "name": "cold water",
+      "group": "Slurry",
+      "qty": 5,
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Make the dumpling dough",
+      "text": "Mix {flour} with {butter}. Work in {milk} gradually until the dough holds together. Rest covered for 8 minutes."
+    },
+    {
+      "title": "Heat the broth",
+      "text": "Meanwhile put {broth} and {bay} into the PossibleCooker. Use Sear/Sauté HIGH with the lid off until the broth simmers, about 5–8 minutes."
+    },
+    {
+      "title": "Poach the chicken",
+      "text": "Cut {chicken} across the grain into 1-inch pieces and lower into the broth. Return to a simmer and switch to Sear/Sauté LOW, lid off. Cook gently for 10–17 minutes. Pull the pieces at 175°F and cover in a bowl with some of the broth."
+    },
+    {
+      "title": "Cut the dumplings",
+      "text": "Roll the rested dough between parchment sheets to about 1/8 inch thick. Cut short ribbons about 1/2 inch wide and 1 inch long."
+    },
+    {
+      "title": "Simmer the ribbons",
+      "text": "Remove the bay leaf. Bring the broth back to a steady simmer and slip in the ribbons a few at a time. Cook uncovered for 8–12 minutes, stirring gently, until a split dumpling has no floury core."
+    },
+    {
+      "title": "Measure the gravy base",
+      "text": "Lift the cooked dumplings into the bowl with the chicken. Reserve 1/2 cup of the remaining hot broth per serving in the cooker; set aside any surplus to loosen the finished dish."
+    },
+    {
+      "title": "Mix the slurry",
+      "text": "Stir {starch} into {water} until completely smooth."
+    },
+    {
+      "title": "Thicken the parsley gravy",
+      "text": "Add {parsley} to the simmering broth. Stir in the slurry and maintain a gentle bubble for 1 minute, until the gravy coats the back of a spoon."
+    },
+    {
+      "title": "Bring the dish together",
+      "text": "Turn the cooker off. Fold the chicken, its juices and the dumplings into the gravy. Add reserved broth a spoonful at a time if the dumplings tighten the sauce and ladle into four bowls."
+    }
+  ],
+  "notes": "Sauce yield: About 2 cups for four, or 1/2 cup per bowl. Make ahead: Roll and cut the dumplings up to a day ahead and refrigerate them between sheets of parchment. Cook them directly in the chicken broth. For dairy-free dumplings, use unsweetened oat milk and avocado oil in place of skim milk and butter. Chill leftovers promptly in shallow portions and refrigerate for up to 3 days. Freezer-Friendly Verdict: Yes. The soft flat dumplings freeze well enough for a spoonable meal for up to 6 weeks. Add a splash of broth on reheating as they absorb gravy. Fridge reheat: Warm one portion covered in its sauce in a HexClad skillet over medium-low, loosening with a splash of water if needed. Stir or turn the chicken gently, checking from 6 minutes, until it reaches 165°F throughout. Freezer reheat: Thaw overnight in the refrigerator, then follow the fridge reheating directions and stir the sauce smooth. Estimated nutrition per serving (1/4 of recipe): 325 kcal, 34.0 g protein, 28.6 g total carbohydrate, 7.1 g fat, 0.9 g fiber, 181 mg sodium. Includes the measured broth and sauce. Sodium varies with your broth.",
+  "source": "Glenn"
+}

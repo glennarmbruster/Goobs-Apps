@@ -1,0 +1,131 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "snapper-in-smooth-tomato-fennel-and-orange-sauce",
+  "title": "Snapper in Smooth Tomato, Fennel and Orange Sauce",
+  "description": "Ground fennel and a little orange juice lift a smooth tomato sauce that gently poaches the snapper.",
+  "category": "Main dish",
+  "tags": [
+    "hexclad",
+    "snapper",
+    "tomato",
+    "extra-sauce"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 8,
+  "cookMin": 22,
+  "equipment": [
+    "10-inch HexClad skillet with lid",
+    "Thin-tip instant-read thermometer",
+    "Flexible fish spatula"
+  ],
+  "ingredients": [
+    {
+      "id": "fish",
+      "name": "skinless red snapper fillet",
+      "group": "Fish",
+      "qty": 10,
+      "unit": "oz",
+      "note": "Weight after skin and pin bones are removed. Divide into two even portions about 1/2 to 3/4 inch thick. Fully thaw before cooking."
+    },
+    {
+      "id": "oil",
+      "name": "avocado oil",
+      "group": "Sauce",
+      "qty": 1,
+      "unit": "tsp"
+    },
+    {
+      "id": "fennel",
+      "name": "finely ground fennel seed",
+      "group": "Sauce",
+      "qty": 0.25,
+      "unit": "tsp"
+    },
+    {
+      "id": "garlic",
+      "name": "jarred minced garlic",
+      "group": "Sauce",
+      "qty": 0.25,
+      "unit": "tsp"
+    },
+    {
+      "id": "tomato",
+      "name": "plain smooth no-salt-added tomato passata",
+      "group": "Sauce",
+      "qty": 0.625,
+      "unit": "cup",
+      "note": "Fully strained."
+    },
+    {
+      "id": "broth",
+      "name": "low-sodium chicken broth",
+      "group": "Sauce",
+      "qty": 0.75,
+      "unit": "cup",
+      "note": "Choose unsalted plain meat-and-water broth without a vegetable blend."
+    },
+    {
+      "id": "orange",
+      "name": "strained sweet orange juice",
+      "group": "Sauce",
+      "qty": 2,
+      "unit": "tbsp"
+    },
+    {
+      "id": "starch",
+      "name": "cornstarch",
+      "group": "Slurry",
+      "qty": 2.75,
+      "unit": "tsp"
+    },
+    {
+      "id": "water",
+      "name": "cold water",
+      "group": "Slurry",
+      "qty": 2.75,
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Warm the fennel",
+      "text": "Heat {oil} in the HexClad over low heat. Stir in {fennel} and {garlic} for about 30 seconds until fragrant."
+    },
+    {
+      "title": "Simmer the tomato base",
+      "text": "Add {tomato}, {broth} and {orange}. Cover and simmer for 5 minutes, stirring once. Reserve a spoonful of sauce in a clean covered cup."
+    },
+    {
+      "title": "Poach the snapper",
+      "text": "Lower {fish} into the sauce and coat the tops. Cover and poach over low heat for 4–9 minutes, checking from 4 minutes. Pull each fillet at 135°F."
+    },
+    {
+      "title": "Rest the snapper",
+      "text": "Spoon the reserved sauce onto a warm plate, set the fish on it, cover and rest for 3 minutes."
+    },
+    {
+      "title": "Boil the sauce",
+      "text": "Bring the remaining tomato base to a full boil in the HexClad for 1 minute."
+    },
+    {
+      "title": "Mix the slurry",
+      "text": "Stir {starch} into {water} until completely smooth."
+    },
+    {
+      "title": "Bind the sauce",
+      "text": "Bring the sauce to a simmer. Whisk in the freshly stirred slurry and let it bubble gently for 1 minute, stirring until it coats the back of a spoon."
+    },
+    {
+      "title": "Check carryover and doneness",
+      "text": "After resting, check each thickest center for about 140°F. Open a natural seam with a fork. The center should be opaque and separate easily into flakes. If either cue is unclear or the center is below 140°F, finish covered in hot sauce in the HexClad over low heat to a measured 145°F, checking every minute."
+    },
+    {
+      "title": "Spoon into bowls",
+      "text": "Place each fillet in a shallow bowl. Spoon the tomato-fennel sauce generously between and over the flakes."
+    }
+  ],
+  "notes": "Sauce yield: About 1 1/4 cups for two. Make ahead: Cook the tomato-fennel base up to 2 days ahead and refrigerate. Bring it to a simmer before adding snapper. Refrigerate in shallow portions within 2 hours. Use refrigerated leftovers within 3 days. Freezer-Friendly Verdict: Yes. Freeze individual portions surrounded by sauce for up to 1 month. The tomato base reheats smoothly. Fridge reheat: Warm a portion covered in its sauce over medium-low heat in the HexClad. Add a little water if it has thickened in storage. Check from 5 minutes and heat to 165°F at the coldest center. Freezer reheat: If frozen, thaw the covered portion in the refrigerator overnight, then follow the fridge method. Option A uses passata and orange juice. For gentler Option B, replace the passata with the same volume of silky cooked butternut squash puree and use extra broth in place of orange juice. Both versions are dairy-free. Estimated nutrition per serving (1/2 of recipe): 219 kcal, 31.3 g protein, 12.5 g total carbohydrate, 4.4 g fat, 1.7 g fiber, 127 mg sodium. Includes both the fish and its full share of sauce and any rice or potatoes listed. Sodium varies with the broth.",
+  "source": "Glenn"
+}

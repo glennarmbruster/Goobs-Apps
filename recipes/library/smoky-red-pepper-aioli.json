@@ -1,0 +1,87 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "smoky-red-pepper-aioli",
+  "title": "Smoky Red Pepper Aioli",
+  "description": "Peeled sweet pepper and smoked paprika give this garlicky dipping sauce a deep red color and gentle heat.",
+  "category": "Sauce & condiment",
+  "tags": [
+    "aioli",
+    "chilled"
+  ],
+  "servings": 8,
+  "servingsLabel": "2-tablespoon portions",
+  "prepMin": 7,
+  "cookMin": 6,
+  "equipment": [
+    "10-inch HexClad skillet",
+    "Immersion blender and tall heatproof jug",
+    "Fine-mesh sieve",
+    "Mixing bowl and flexible spatula",
+    "Small whisk",
+    "Heatproof liquid measuring cup"
+  ],
+  "ingredients": [
+    {
+      "id": "mayo",
+      "qty": 11,
+      "name": "plain full-fat mayonnaise",
+      "group": "Sauce",
+      "unit": "tbsp",
+      "note": "Use plain commercial mayonnaise made with pasteurized eggs."
+    },
+    {
+      "id": "pepper",
+      "qty": 0.375,
+      "name": "peeled roasted red bell pepper",
+      "group": "Sauce",
+      "unit": "cup",
+      "note": "Plain and unsalted. Drain well."
+    },
+    {
+      "id": "garlic",
+      "qty": 0.5,
+      "name": "jarred minced garlic",
+      "group": "Sauce",
+      "unit": "tsp"
+    },
+    {
+      "id": "paprika",
+      "qty": 0.375,
+      "name": "sweet smoked paprika",
+      "group": "Sauce",
+      "unit": "tsp"
+    },
+    {
+      "id": "vinegar",
+      "qty": 0.5,
+      "name": "sherry vinegar",
+      "group": "Sauce",
+      "unit": "tsp"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Concentrate the pepper",
+      "text": "Simmer {pepper}, {garlic}, {paprika} and {vinegar} in the HexClad for 4–6 minutes, stirring, until most of the loose liquid has evaporated."
+    },
+    {
+      "title": "Cool the puree",
+      "text": "Blend the pepper mixture smooth. Press it through the sieve into a bowl and refrigerate for about 10 minutes until cold."
+    },
+    {
+      "title": "Whisk the aioli",
+      "text": "Fold the cold red pepper puree into {mayo} until the color is uniform."
+    },
+    {
+      "title": "Adjust the consistency",
+      "text": "Scrape all of the mixture into the measuring cup. Add cold water a teaspoon at a time if needed to reach about 1 cup, maintaining a smooth spoonable texture."
+    },
+    {
+      "title": "Serve",
+      "text": "Chill covered for 15 minutes and spoon alongside saucy chicken cutlets or tender potato wedges."
+    }
+  ],
+  "notes": "Yield: About 1 cup. One serving is 2 tablespoons. Make ahead: Cook the pepper puree a day ahead and fold it into the mayonnaise on serving day. Refrigerate within 2 hours and use within 3 days. Freezer-Friendly Verdict: No. The mayonnaise can separate and release liquid after thawing. Fridge reheat: Serve chilled. Stir until smooth just before portioning. Freezer reheat: If already frozen, thaw covered in the refrigerator, then whisk or blend briefly and serve cold. Option A uses sherry vinegar and smoked paprika. For gentler Option B, omit the vinegar and use half as much sweet unsmoked paprika. The aioli is dairy-free. Estimated nutrition per serving (1/8 of recipe): 132 kcal, 0.3 g protein, 0.8 g total carbohydrate, 14.2 g fat, 0.1 g fiber, 121 mg sodium. The estimate covers the prepared condiment. Add separately served foods when totaling a meal. Fiber is estimated before straining.",
+  "source": "Glenn"
+}

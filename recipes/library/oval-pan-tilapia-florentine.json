@@ -1,0 +1,131 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "oval-pan-tilapia-florentine",
+  "title": "Oval-Pan Tilapia Florentine",
+  "description": "A soft spinach and Parmesan sauce surrounds thin tilapia fillets as they cook gently under cover in individual oval pans.",
+  "category": "Main dish",
+  "tags": [
+    "oval-cast-iron",
+    "tilapia",
+    "spinach",
+    "roux",
+    "extra-sauce"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 12,
+  "cookMin": 25,
+  "equipment": [
+    "Two small oval cast iron pans with foil or fitted lids",
+    "10-inch HexClad skillet with lid",
+    "Thin-tip instant-read thermometer",
+    "Immersion blender and deep heatproof jug",
+    "Flexible fish spatula"
+  ],
+  "ingredients": [
+    {
+      "id": "fish",
+      "name": "skinless tilapia fillet",
+      "group": "Fish",
+      "qty": 10,
+      "unit": "oz",
+      "note": "Weight after skin and pin bones are removed. Divide into two even portions about 1/2 inch thick. Fully thaw before cooking."
+    },
+    {
+      "id": "spinach",
+      "name": "baby spinach",
+      "group": "Sauce",
+      "qty": 2,
+      "unit": "oz",
+      "note": "Remove coarse stems."
+    },
+    {
+      "id": "broth",
+      "name": "low-sodium chicken broth",
+      "group": "Sauce",
+      "qty": 0.625,
+      "unit": "cup",
+      "note": "Choose unsalted plain meat-and-water broth without a vegetable blend."
+    },
+    {
+      "id": "milk",
+      "name": "skim milk",
+      "group": "Sauce",
+      "qty": 0.75,
+      "unit": "cup"
+    },
+    {
+      "id": "butter",
+      "name": "unsalted butter",
+      "group": "Sauce",
+      "qty": 2,
+      "unit": "tsp"
+    },
+    {
+      "id": "flour",
+      "name": "all-purpose flour",
+      "group": "Roux",
+      "qty": 1,
+      "unit": "tbsp"
+    },
+    {
+      "id": "parmesan",
+      "name": "finely grated Parmesan cheese",
+      "group": "Sauce",
+      "qty": 1,
+      "unit": "tbsp"
+    },
+    {
+      "id": "nutmeg",
+      "name": "ground nutmeg",
+      "group": "Sauce",
+      "qty": 1,
+      "unit": "pinch"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Wilt the spinach",
+      "text": "Cook {spinach} with {broth} in the covered HexClad over medium-low heat for 2–3 minutes until tender."
+    },
+    {
+      "title": "Blend the spinach milk",
+      "text": "Blend the spinach and cooking broth with {milk} until smooth and uniformly green."
+    },
+    {
+      "title": "Make a pale roux",
+      "text": "Melt {butter} in the empty skillet over low heat. Whisk in {flour} for 1–2 minutes until smooth."
+    },
+    {
+      "title": "Thicken the Florentine sauce",
+      "text": "Gradually add the spinach milk to the roux, whisking over medium-low heat for 2–3 minutes until the sauce coats the back of a spoon."
+    },
+    {
+      "title": "Add the Parmesan",
+      "text": "Take off heat and stir in {parmesan} and {nutmeg}. Divide half the sauce between the two oval pans. Reserve the other half in the covered HexClad."
+    },
+    {
+      "title": "Poach in the ovals",
+      "text": "Divide {fish} between the ovals and spoon some sauce over the top. Cover each pan and heat on low until tiny bubbles appear at the edge. Check from 3 minutes and then every minute. Pull each fillet at 135°F, usually after 4–8 minutes of gentle cooking."
+    },
+    {
+      "title": "Rest under sauce",
+      "text": "Nestle the fish in the reserved warm Florentine sauce in the HexClad off heat. Spoon sauce over the top, cover and rest for 3 minutes."
+    },
+    {
+      "title": "Check carryover and doneness",
+      "text": "After resting, check each thickest center for about 140°F. Open a natural seam with a fork. The center should be opaque and separate easily into flakes. If either cue is unclear or the center is below 140°F, finish covered in hot sauce in the HexClad over low heat to a measured 145°F, checking every minute."
+    },
+    {
+      "title": "Heat the pan sauce",
+      "text": "While the fish stays covered in the HexClad, bring the sauce left in each oval to a bubbling simmer for 1 minute, stirring."
+    },
+    {
+      "title": "Spoon into bowls",
+      "text": "Divide the hot oval-pan sauce between shallow bowls. Lay the tilapia over it and spoon the reserved green sauce over each fillet."
+    }
+  ],
+  "notes": "Sauce yield: About 1 1/2 cups for two. Make ahead: Wilt and blend the spinach base a day ahead and chill it. Make the roux just before cooking. Refrigerate in shallow portions within 2 hours. Use refrigerated leftovers within 3 days. Freezer-Friendly Verdict: No. Thin tilapia flakes easily and the spinach cream can weep after thawing. If already frozen, reheat one covered portion slowly and stir the sauce smooth. Fridge reheat: Warm a portion covered in its sauce over medium-low heat in the HexClad. Add a little water if it has thickened in storage. Check from 5 minutes and heat to 165°F at the coldest center. Freezer reheat: If frozen, thaw the covered portion in the refrigerator overnight, then follow the fridge method. For dairy-free sauce, use avocado oil, plain unsweetened oat milk and a little extra nutmeg in place of butter, milk and Parmesan. Estimated nutrition per serving (1/2 of recipe): 237 kcal, 34.2 g protein, 8.8 g total carbohydrate, 7.3 g fat, 0.6 g fiber, 200 mg sodium. Includes both the fish and its full share of sauce and any rice or potatoes listed. Sodium varies with the broth.",
+  "source": "Glenn"
+}
