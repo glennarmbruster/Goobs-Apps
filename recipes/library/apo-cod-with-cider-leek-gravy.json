@@ -6,11 +6,18 @@
   "description": "Bagless cod cooks through in full steam and is served on a smooth gravy of slowly softened leek and sweet apple cider.",
   "category": "Main dish",
   "tags": [
+    "cod",
     "apo",
+    "apple-cider",
+    "fish",
+    "seafood",
+    "white-fish",
     "extra-sauce",
     "bagless-sous-vide",
-    "cod",
-    "cider"
+    "cider",
+    "leek-gravy",
+    "anova",
+    "sous-vide"
   ],
   "servings": 2,
   "servingsLabel": "servings",

@@ -6,12 +6,18 @@
   "description": "Orzo cooks with chicken thighs in a smooth artichoke broth that becomes a cohesive, lemon-scented sauce.",
   "category": "Main dish",
   "tags": [
-    "possiblecooker",
-    "weeknight",
     "chicken-thighs",
+    "possiblecooker",
+    "rice-shaped-pasta",
+    "chicken",
+    "poultry",
+    "dark-meat",
+    "weeknight",
     "one-pot",
     "pasta",
-    "extra-sauce"
+    "extra-sauce",
+    "orzo",
+    "lemon-artichoke"
   ],
   "servings": 2,
   "servingsLabel": "servings",
