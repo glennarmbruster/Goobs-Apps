@@ -294,6 +294,29 @@ textarea.tall{min-height:220px;font-family:ui-monospace,Menlo,Consolas,monospace
   #editForm{max-width:1180px}
 
 }
+.sm-entry{display:grid;grid-template-columns:1fr auto;align-items:center;row-gap:1px;padding:12px 17px;margin:0 0 13px;border:1px solid #658774;border-left:5px solid #385c46;border-radius:11px;background:#eef3e8;color:#254c35;text-decoration:none}
+.sm-entry strong{font:700 1.25rem/1.15 Georgia,serif}.sm-entry small{grid-column:1;color:#455c4e}.sm-entry .sm-arrow{grid-area:1/2/3/3;font-size:1.6rem;line-height:1}
+.sm-entry:hover,.sm-entry:focus-visible{background:#e3eddd}.sm-entry:focus-visible,.sm-book :focus-visible{outline:3px solid #937327;outline-offset:2px}
+.sm-page{--sm-paper:#fffaf0;--sm-ink:#292419;--sm-muted:#685d49;--sm-green:#24553d;--sm-line:#d8cbb1;--sm-tint:#f4ecdc;--sm-edge:#a59474}
+main.wrap.sm-page{max-width:1040px;margin-inline:auto}.sm-book{min-width:0;padding:clamp(14px,4.5vw,44px);border:1px solid var(--sm-line);border-radius:15px;background:var(--sm-paper);color:var(--sm-ink);line-height:1.5}
+.sm-book h1,.sm-book h2,.sm-book h3{font-family:Georgia,serif;color:var(--sm-green);line-height:1.19}
+.sm-book h1{font-size:clamp(2.15rem,5.8vw,3.6rem);margin:0 0 8px}.sm-intro{margin:0 0 18px;color:var(--sm-muted)}
+.sm-controls{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:12px;padding:14px 0 18px;margin-bottom:12px;border-top:3px solid var(--sm-green);border-bottom:1px solid var(--sm-line)}
+.sm-controls label{display:grid;align-content:start;gap:4px;min-width:0;color:var(--sm-green);font-weight:650;font-size:.88rem}
+.sm-controls :is(input,select){width:100%;min-width:0;box-sizing:border-box;padding:9px 10px;min-height:44px;background:var(--sm-paper);color:var(--sm-ink);border:1px solid var(--sm-edge);border-radius:6px;font:inherit;font-size:1rem}
+.sm-grid{display:grid;grid-template-columns:minmax(0,1fr) 66px 69px 69px;align-items:center;column-gap:9px}
+.sm-head,.sm-row>summary{padding:8px 6px}.sm-head{color:var(--sm-muted);font-size:.83rem;font-weight:700}.sm-head span:not(:first-child),.sm-num,.sm-time{text-align:right;font-variant-numeric:tabular-nums}
+.sm-section{margin:0 0 18px}.sm-section h2{padding:8px 6px;margin:0;background:var(--sm-tint);border-top:1px solid var(--sm-line);font-size:1.23rem}
+.sm-row{border-bottom:1px solid var(--sm-line)}.sm-row>summary{list-style:none;cursor:pointer;min-height:49px}.sm-row>summary::-webkit-details-marker{display:none}
+.sm-title{position:relative;padding-left:16px;line-height:1.25;font-weight:650;overflow-wrap:anywhere}.sm-title::before{content:'▸';position:absolute;left:0;color:var(--sm-green)}.sm-row[open]>summary .sm-title::before{content:'▾'}
+.sm-title small,.sm-detail li small{display:block;color:var(--sm-muted);font-weight:400;font-size:.8rem;line-height:1.35}.sm-time,.sm-num{color:var(--sm-muted);font-size:.9rem;white-space:normal}
+.sm-row>summary:hover{background:var(--sm-tint)}.sm-detail{padding:4px 8px 19px 22px}.sm-deck{margin:4px 0}.sm-batch{margin:8px 0;color:var(--sm-green);font-size:.9rem;font-weight:650}
+.sm-columns{display:grid;grid-template-columns:minmax(0,0.85fr) minmax(0,1.15fr);gap:clamp(12px,3vw,32px)}.sm-detail h3{margin:10px 0 4px;font-size:1.1rem}.sm-detail ul,.sm-detail ol{margin:4px 0;padding-left:1.35rem}.sm-detail li{margin:5px 0}.sm-notes{margin:8px 0 14px}.sm-notes summary{cursor:pointer;color:var(--sm-green);font-weight:650}.sm-notes p{white-space:pre-line}.sm-empty{margin:22px 0;color:var(--sm-muted)}
+@media(max-width:670px){.sm-controls{grid-template-columns:1fr 1fr}.sm-controls label:first-child{grid-column:1/-1}.sm-columns{grid-template-columns:1fr;gap:0}.sm-grid{grid-template-columns:minmax(0,1fr) 38px 43px 43px;column-gap:4px}.sm-head{font-size:.71rem}.sm-head,.sm-row>summary{padding-inline:1px}.sm-num,.sm-time{font-size:.8rem}.sm-detail{padding-left:2px}}
+@media(max-width:385px){.sm-controls{grid-template-columns:1fr}.sm-book{padding:12px 9px}}
+@media(prefers-color-scheme:dark){.sm-page{--sm-paper:#25251f;--sm-ink:#f5eee0;--sm-muted:#c4bbab;--sm-green:#aed1af;--sm-line:#514e3f;--sm-tint:#34392d;--sm-edge:#89836d}.sm-entry{background:#29362c;color:#d8ecd5;border-color:#728e73}.sm-entry small{color:#c1d2c0}.sm-entry:hover,.sm-entry:focus-visible{background:#354635}}
+
+.sm-sr{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 </style>
 </head>
 <body>
@@ -1662,6 +1685,127 @@ function matches(x, q, cat) {
   return !q || testRecipeQuery(x.r, q);
 }
 
+const SAUCE_CATEGORY = 'Sauce & condiment';
+const sauceMenu = { query: '', group: '', low: false, open: new Set(), fromRecipe: '' };
+const sauceGroups = [
+  ['Chinese & Chinese-American', /^(chinese|cantonese|sichuan)/],
+  ['Japanese', /^japanese/], ['Korean', /^korean/], ['Vietnamese', /^vietnamese/],
+  ['Thai', /^thai/], ['Filipino', /^filipino/], ['Caribbean & Hawaiian', /^(jamaican|caribbean|hawaiian)/],
+  ['Mexican & Peruvian', /^(mexican|peruvian)/], ['Spanish & Lebanese', /^(spanish|catalan|lebanese)/],
+  ['Southern American', /^(southern|louisiana|cajun|carolina-gold)$/], ['French & Swedish', /^(french|swedish)/],
+  ['Asian-inspired', /^asian-inspired$/], ['Aiolis & dips', /^(aioli|dip|dipping-sauce)$/],
+  ['Marinades & dressings', /^(marinade|dressing)$/], ['Finishing butters', /^(compound-butter|finishing-butter)$/],
+  ['Rubs & seasonings', /^(bbq-rub|dry-rub|wet-rub|seasoning-paste)$/],
+  ['Barbecue sauces & glazes', /^(barbecue-sauce|barbecue-glaze|bbq-sauce|glaze)$/],
+  ['Gravies & pan sauces', /^(gravy|pan-sauce|country-gravy)$/],
+  ['Cream & herb sauces', /^(cream-sauce|herb-sauce)$/]
+];
+function sauceGroup(r) {
+  const tags = [...r.tags, ...(cookbookSearchTags[r.id] || [])];
+  return sauceGroups.find(([, re]) => tags.some(t => re.test(t)))?.[0] || 'Other sauces & condiments';
+}
+const menuRecipes = () => allRecipes().map(x => x.r).filter(r => r.category === SAUCE_CATEGORY);
+function menuPortion(r) {
+  const label = (r.servingsLabel || '').trim();
+  const measured = label.match(/^(\d+(?:\/\d+|\.\d+)?)\s*[- ]\s*(cup|tablespoon|teaspoon)s?\b/i);
+  if (measured) return measured[1]+' '+({tablespoon:'tbsp',teaspoon:'tsp',cup:'cup'})[measured[2].toLowerCase()];
+  if (/^cups?$/i.test(label)) return '1 cup';
+  return '1 of '+fmtNum(r.servings)+' portions';
+}
+function sauceStats(r) {
+  const note = r.notes || '';
+  const standard = note.match(/estimated nutrition per serving[^:]{0,100}:\s*([\d.,]+\s*kcal[\s\S]{0,220}?\b([\d,]+(?:\.\d+)?)\s*mg sodium)/i);
+  const lower = note.match(/low.sodium version per ([^:]{1,45}):\s*([^:]*?\bkcal[\s\S]{0,220}?\b([\d,]+(?:\.\d+)?)\s*mg sodium)/i);
+  let sodium = standard ? Number(standard[2].replace(/,/g, '')) : null;
+  if (sodium === null) {
+    const calc = recipeNutrition(r);
+    if (calc && calc.counted && calc.keys.includes('na') && !calc.unmatched.length && !calc.gaps.has('na')) sodium = Math.round(nVal(calc, 'na', calc.servings));
+  }
+  return { standard: standard?.[1] || '', sodium, lower: lower?.[2] || '', lowerPortion: lower?.[1] || '', lowSodium: lower ? Number(lower[3].replace(/,/g, '')) : null };
+}
+function sauceAmount(g, low) {
+  const match = (g.note || '').match(/\bLow-sodium batch:\s*(?:use (.+?) total|omit)\./i);
+  if (low && match) return match[1] || 'Omit';
+  // Preserve the small spice measures and simple fractions on the original cards.
+  function number(n) {
+    if (n == null) return '';
+    for (const d of [1,2,3,4,8,16,32,64]) {
+      const scaled = Math.round(n*d);
+      if (Math.abs(n*d-scaled)>0.0001) continue;
+      const whole = Math.floor(n), rest = scaled % d;
+      return [whole || '', rest ? rest+'/'+d : ''].filter(Boolean).join(' ') || '0';
+    }
+    return String(n);
+  }
+  return [number(g.qty)+(g.qtyMax!=null?'–'+number(g.qtyMax):''), g.unit].filter(Boolean).join(' ');
+}
+function sauceBody(r) {
+  const stats = sauceStats(r);
+  const low = sauceMenu.low && !!stats.lower;
+  const portion = low ? stats.lowerPortion : menuPortion(r);
+  const ingredients = r.ingredients.map(g => {
+    const note = (g.note || '').replace(/\s*Low-sodium batch:\s*(?:use .+? total|omit)\./ig, '').trim();
+    return '<li><strong>'+esc(sauceAmount(g, low))+'</strong> '+esc(g.name)+(note?'<small>'+esc(note)+'</small>':'')+'</li>';
+  }).join('');
+  const steps = r.steps.map(st => {
+    const plain = st.text.replace(TOKEN_RE,(token,id) => r.ingredients.find(g=>g.id===id)?.name || token);
+    return '<li>'+(st.title?'<strong>'+esc(st.title)+'.</strong> ':'')+esc(plain)+'</li>';
+  }).join('');
+  const note = (r.notes || '').split(/\s*Estimated nutrition per serving/i)[0].trim();
+  const totals = low ? stats.lower : stats.standard;
+  const label = low ? 'Lower-sodium amounts' : 'Standard amounts';
+  return '<div class="sm-detail">'+(r.description?'<p class="sm-deck">'+esc(r.description)+'</p>':'')+
+    '<p class="sm-batch">'+label+' · Full recipe · '+esc(fmtNum(r.servings))+' '+esc(r.servingsLabel || 'servings')+'</p>'+
+    '<div class="sm-columns"><div><h3>Ingredients</h3><ul>'+ingredients+'</ul></div><div><h3>Directions</h3><ol>'+steps+'</ol></div></div>'+
+    (totals?'<p><strong>Estimated per '+esc(portion)+'</strong><br>'+esc(totals)+'</p>':'')+
+    (note?'<details class="sm-notes"><summary>Recipe notes</summary><p>'+esc(note)+'</p></details>':'')+
+    '<a class="btn small" data-sauce-recipe="'+esc(r.id)+'" href="#/r/'+esc(r.id)+'">Open full recipe</a></div>';
+}
+function sauceMatches(r,q) {
+  if (!q || testRecipeQuery(r,q)) return true;
+  // In a condiment catalog a single food name can also mean a suggested pairing.
+  if(q.tokens.length!==1 || q.fishSauce || q.pairing || q.cut || q.minutes!=null || q.forTwo || q.onePan || q.whiteFish || q.oilyFish || q.ingredientPhrases.length) return false;
+  const food = q.tokens[0], pairs = recipeSearchIndex(r).pairings;
+  return pairs.has(food) || (finfishNames.includes(food) && pairs.has('fish'));
+}
+function sauceRows(list = menuRecipes()) {
+  const query = sauceMenu.query.trim() ? compileRecipeQuery(sauceMenu.query) : null;
+  const groups = new Map();
+  for (const r of list) {
+    const group = sauceGroup(r);
+    if ((sauceMenu.group && group !== sauceMenu.group) || !sauceMatches(r,query)) continue;
+    if (!groups.has(group)) groups.set(group,[]);
+    groups.get(group).push(r);
+  }
+  if (!groups.size) return '<p class="sm-empty">'+(list.length?'No sauces match these filters.':LIB.loading?'Loading sauces…':'No saved sauces or condiments yet.')+'</p>';
+  const headings = [...sauceGroups.map(([label])=>label),'Other sauces & condiments'].filter(label=>groups.has(label));
+  return '<div class="sm-grid sm-head" aria-hidden="true"><span>Sauce · serving size</span><span>Time</span><span>Std. mg</span><span>Low mg</span></div>'+
+    headings.map(label=>'<section class="sm-section"><h2>'+esc(label)+'</h2>'+
+      groups.get(label).sort((a,b)=>a.title.localeCompare(b.title,undefined,{sensitivity:'base'})).map(r=>{
+        const stats = sauceStats(r), open = sauceMenu.open.has(r.id), portion = menuPortion(r);
+        const number = (value, label) => '<span class="sm-num"><span class="sm-sr">'+esc(label)+' </span>'+(value==null?'—':esc(String(value)))+'</span>';
+        const lowPortion = stats.lowerPortion && stats.lowerPortion!==portion ? ' · Lower: '+stats.lowerPortion : '';
+        return '<details class="sm-row" data-sauce-id="'+esc(r.id)+'"'+(open?' open':'')+'><summary class="sm-grid"><span class="sm-title">'+esc(r.title)+'<small>'+esc(portion+lowPortion)+'</small></span><span class="sm-time">'+(r.totalMin==null?'—':esc(fmtMin(r.totalMin)))+'</span>'+number(stats.sodium,'Standard sodium')+number(stats.lowSodium,'Lower sodium')+'</summary><div class="sm-body">'+(open?sauceBody(r):'')+'</div></details>';
+      }).join('')+'</section>').join('');
+}
+function sauceMenuScreen() {
+  ui.cat = SAUCE_CATEGORY;
+  const list = menuRecipes(), currentGroups = new Set(list.map(sauceGroup));
+  if(list.length && !currentGroups.has(sauceMenu.group)) sauceMenu.group = '';
+  const options = [...currentGroups].sort((a,b)=>a.localeCompare(b)).map(s=>'<option'+(sauceMenu.group===s?' selected':'')+'>'+esc(s)+'</option>').join('');
+  return headerHTML({back:'#/',backLabel:'Sauce & condiment',title:'Sauce Menu',sub:plural(list.length,'recipe')})+
+    '<main class="wrap sm-page"><div class="sm-book"><h1>Sauce Menu</h1><p class="sm-intro">Open a sauce for ingredients and directions. Sodium is shown in milligrams per listed serving.</p>'+
+    '<div class="sm-controls"><label>Find a sauce<input type="search" id="sm-query" placeholder="Bulgogi, jerk, shrimp…" value="'+esc(sauceMenu.query)+'" autocomplete="off"></label>'+
+    '<label>Cuisine or style<select id="sm-group"><option value="">All sauces</option>'+options+'</select></label>'+
+    '<label>Ingredient amounts<select id="sm-version"><option value="standard">Standard</option><option value="low"'+(sauceMenu.low?' selected':'')+'>Low sodium when available</option></select></label></div>'+
+    '<div id="sm-results">'+sauceRows(list)+'</div></div></main>';
+}
+function refreshSauceRows() {
+  const box = $('#sm-results');
+  if (box) box.innerHTML = sauceRows();
+}
+
+
 function cardsHTML() {
   const query = ui.q.trim() ? compileRecipeQuery(ui.q) : null;
   const list = allRecipes().filter(x => matches(x, query, ui.cat)).sort((a, b) => a.r.title.localeCompare(b.r.title, undefined, { sensitivity: 'base' }));
@@ -1683,6 +1827,7 @@ function homeScreen() {
   return headerHTML({ title: '🍳 Recipes', sub: LIB.loading && !all.length ? 'Loading…' : plural(all.length, 'recipe'), right: '<button type="button" class="btn small primary" data-action="add">+ Add</button><a class="btn small" href="#/backup">Backup</a>' })
     + `<main class="wrap">${storageBannerHTML()}${LIB.error && !LIB.loading ? `<div class="banner">${esc(LIB.error)}</div>` : ''}
     ${all.length ? `<input class="search" type="search" id="q" placeholder="Search fish, chicken thighs, air fryer…" value="${esc(ui.q)}" aria-label="Search recipes" autocomplete="off" autocapitalize="none" enterkeyhint="search">` : ''}${chips}
+    ${ui.cat === SAUCE_CATEGORY ? '<a class="sm-entry" href="#/sauce-menu"><strong>Menu</strong><small>Browse all sauces &amp; condiments</small><span class="sm-arrow" aria-hidden="true">›</span></a>' : ''}
     <div id="rlist">${cardsHTML()}</div>${empty}</main>`;
 }
 const TABS = [['ingredients', 'Ingredients', '🧂'], ['steps', 'Steps', '👩‍🍳'], ['nutrition', 'Nutrition', '🥗'], ['notes', 'Notes', '📝']];
@@ -1779,7 +1924,7 @@ function recipeScreen(rt) {
   const body = tab === 'steps' ? stepsTab(r) : tab === 'notes' ? notesTab(r) : tab === 'nutrition' ? nutritionTab(r)
     : both ? `<div class="rx2"><div>${ingredientsTab(r)}</div><div><div class="grp rx2h">Steps</div>${stepsTab(r).replace(/^<button[^>]*data-action="cook"[^>]*>Start cooking<\/button>/, '')}</div></div>` : ingredientsTab(r);
   const nav = `<nav class="tabs" aria-label="Recipe sections"><div class="wrap">${TABS.map(([k, l, ic]) => `<a href="#/r/${esc(r.id)}/${k}"${k === tab ? ' aria-current="page"' : ''}><span class="ico">${ic}</span>${l}</a>`).join('')}</div></nav>`;
-  return headerHTML({ back: '#/', title: r.title, sub: metaLine(r), right: `<button type="button" class="btn small" data-action="fav" aria-pressed="${m.fav}" aria-label="${m.fav ? 'Remove from favourites' : 'Add to favourites'}">${m.fav ? '★' : '☆'}</button><button type="button" class="btn small" data-action="more">More</button>` })
+  return headerHTML({ back: sauceMenu.fromRecipe === r.id ? '#/sauce-menu' : '#/', backLabel: sauceMenu.fromRecipe === r.id ? 'Sauce Menu' : 'Recipes', title: r.title, sub: metaLine(r), right: `<button type="button" class="btn small" data-action="fav" aria-pressed="${m.fav}" aria-label="${m.fav ? 'Remove from favourites' : 'Add to favourites'}">${m.fav ? '★' : '☆'}</button><button type="button" class="btn small" data-action="more">More</button>` })
     + `<main class="wrap">${storageBannerHTML()}${body}</main>${nav}`;
 }
 function editScreen(rt) {
@@ -1849,6 +1994,7 @@ function route() {
   if (a === 'edit' && b) { const f = findRecipe(b); if (f) return { name: 'edit', r: f.r }; }
   if (a === 'new') return { name: 'edit', r: null };
   if (a === 'backup') return { name: 'backup' };
+  if (a === 'sauce-menu') return { name: 'sauce-menu' };
   if (a === 'meal') return { name: 'meal' };
   return { name: 'home' };
 }
@@ -1857,8 +2003,17 @@ async function wakeOn() { try { if ('wakeLock' in navigator && !wakeLock) { wake
 function wakeOff() { try { if (wakeLock) wakeLock.release(); } catch { /* ignore */ } wakeLock = null; }
 function render() {
   const r = route(), key = r.name + (r.r ? r.r.id : '') + (r.tab || ''), y = window.scrollY;
-  app.innerHTML = r.name === 'recipe' ? recipeScreen(r) : r.name === 'edit' ? editScreen(r) : r.name === 'backup' ? backupScreen() : r.name === 'meal' ? mealScreen() : homeScreen() + mealBarHTML();
-  document.title = r.name === 'recipe' ? r.r.title : r.name === 'edit' ? (r.r ? 'Edit recipe' : 'New recipe') : r.name === 'backup' ? 'Backup & library' : r.name === 'meal' ? 'Meal' : 'Recipes';
+  if (r.name === 'home') sauceMenu.fromRecipe = '';
+  const focused = r.name === 'sauce-menu' && key === lastKey ? document.activeElement : null;
+  const control = ['sm-query','sm-group','sm-version'].includes(focused?.id) ? focused.id : '';
+  const selection = control === 'sm-query' ? [focused.selectionStart, focused.selectionEnd] : null;
+  app.innerHTML = r.name === 'sauce-menu' ? sauceMenuScreen() : r.name === 'recipe' ? recipeScreen(r) : r.name === 'edit' ? editScreen(r) : r.name === 'backup' ? backupScreen() : r.name === 'meal' ? mealScreen() : homeScreen() + mealBarHTML();
+  document.title = r.name === 'sauce-menu' ? 'Sauce Menu' : r.name === 'recipe' ? r.r.title : r.name === 'edit' ? (r.r ? 'Edit recipe' : 'New recipe') : r.name === 'backup' ? 'Backup & library' : r.name === 'meal' ? 'Meal' : 'Recipes';
+  if (control) {
+    const el = document.getElementById(control);
+    el?.focus({preventScroll:true});
+    if (selection && el) el.setSelectionRange(...selection);
+  }
   window.scrollTo(0, key === lastKey ? y : 0); lastKey = key;
   if (r.name === 'recipe' && r.tab === 'cook') wakeOn(); else wakeOff();
   if (r.name === 'edit') updateTokHint();
@@ -2127,16 +2282,33 @@ function handleAction(a, el) {
   }
 }
 app.addEventListener('click', e => {
-  if (e.target.closest('a')) return;
+  const anchor = e.target.closest('a');
+  if (anchor) {
+    if (anchor.hasAttribute('data-sauce-recipe')) sauceMenu.fromRecipe = anchor.dataset.sauceRecipe;
+    return;
+  }
   const el = e.target.closest('[data-action]'); if (!el || el.matches('input[type=checkbox]')) return;
   handleAction(el.dataset.action, el);
 });
 $('#timerbar').addEventListener('click', e => { const el = e.target.closest('[data-action]'); if (el) handleAction(el.dataset.action, el); });
+app.addEventListener('toggle', e => {
+  const row = e.target;
+  if (!row.matches?.('details[data-sauce-id]') || !row.isConnected) return;
+  const id = row.dataset.sauceId;
+  if (row.open) {
+    sauceMenu.open.add(id);
+    const body = row.querySelector('.sm-body'), card = findRecipe(id);
+    if (body && card && !body.hasChildNodes()) body.innerHTML = sauceBody(card.r);
+  } else sauceMenu.open.delete(id);
+}, true);
 app.addEventListener('change', e => {
+  if (e.target.id === 'sm-group') { sauceMenu.group = e.target.value; return refreshSauceRows(); }
+  if (e.target.id === 'sm-version') { sauceMenu.low = e.target.value === 'low'; return refreshSauceRows(); }
   if (e.target.matches('input[type=checkbox][data-action]')) return handleAction(e.target.dataset.action, e.target);
   if (e.target.matches('textarea[data-note]')) { setMark(e.target.dataset.note, { note: e.target.value }); persist(); }
 });
 app.addEventListener('input', e => {
+  if (e.target.id === 'sm-query') { sauceMenu.query = e.target.value; return refreshSauceRows(); }
   if (e.target.id === 'q') { ui.q = e.target.value; const l = $('#rlist'); if (l) l.innerHTML = cardsHTML(); }
   else if (e.target.id === 'e_ing') updateTokHint();
 });
