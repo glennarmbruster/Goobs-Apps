@@ -157,5 +157,68 @@
     }
   ],
   "notes": "Make ahead: Mix the tamarind, sugar and coconut aminos a day ahead and refrigerate. Option A uses tamarind. For gentler Option B, use smooth pear puree in place of tamarind and halve the brown sugar. Leave any added heat for the table. Refrigerate promptly in shallow portions and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze individual portions surrounded by sauce for up to 2 months to protect their moisture. Fridge reheat: Place one portion with its sauce in a covered shallow dish. Install the bottom drip pan in the APO and preheat to 325°F, sous vide mode off, rear heat on, top and bottom off, 60% steam. Set the probe to 165°F in the center. Start checking after 12 minutes and heat until 165°F throughout. Freezer reheat: Thaw overnight in the refrigerator. Follow the fridge reheating directions and stir the sauce smooth. Estimated nutrition per serving (1/2 of recipe): 214 kcal, 29.1 g protein, 9.5 g total carbohydrate, 5.9 g fat, 0.4 g fiber, 180 mg sodium. Includes the measured broth and sauce. Sodium varies with your broth.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "Traeger Silverton 610 pellet smoker",
+  "methods": [
+    {
+      "label": "Samsung conventional oven",
+      "cookMin": 85,
+      "equipment": [
+        "Samsung conventional oven",
+        "Small enamel Dutch oven with tight lid, sized to hold the food snugly",
+        "10-inch HexClad skillet",
+        "Thin-tip instant-read thermometer"
+      ],
+      "steps": [
+        {
+          "title": "Heat the conventional oven",
+          "text": "Preheat Samsung Bake to 300°F with the rack in the middle. Use an oven-safe pan; keep any braising lid ready."
+        },
+        {
+          "title": "Warm the braising liquid",
+          "text": "Bring {broth} with {coriander} and {paprika} just to a simmer in the open Dutch oven on the stove, about 3–6 minutes."
+        },
+        {
+          "title": "Warm the braising liquid",
+          "text": "Move the uncovered pot to the oven rack. Close the oven door and warm the liquid for 20 minutes."
+        },
+        {
+          "title": "Braise under cover",
+          "text": "Nestle {chicken} into the hot liquid, topping up with {topup} if needed to reach at least halfway up the thighs. Cover the pot immediately."
+        },
+        {
+          "title": "Check the thighs",
+          "text": "Cook covered at 300°F for 25–45 minutes until the thickest centers reach 175°F and the flesh parts easily."
+        },
+        {
+          "title": "Rest in the juices",
+          "text": "Rest the covered chicken off heat for 5 minutes."
+        },
+        {
+          "title": "Slice into soft pieces",
+          "text": "Slice across the grain and keep the pieces covered in a bowl with a little cooking liquid."
+        },
+        {
+          "title": "Measure the sauce base",
+          "text": "Skim excess fat from the braising liquid. Measure 3/4 cup into the HexClad skillet, topping up with {topup} if needed."
+        },
+        {
+          "title": "Balance the tamarind",
+          "text": "Whisk {tamarind}, {sugar} and {aminos} into the measured broth until fully dissolved."
+        },
+        {
+          "title": "Mix the slurry",
+          "text": "Stir {starch} into {water} until completely smooth."
+        },
+        {
+          "title": "Thicken the sauce",
+          "text": "Bring the skillet liquid to a boil. Whisk in the stirred slurry and simmer for 1 minute, stirring, until the sauce coats the back of a spoon."
+        },
+        {
+          "title": "Sauce the chicken",
+          "text": "Turn the chicken pieces in the tamarind gravy and spoon the extra gravy over each serving."
+        }
+      ]
+    }
+  ]
 }

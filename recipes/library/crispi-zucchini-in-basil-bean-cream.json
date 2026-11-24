@@ -92,5 +92,50 @@
     }
   ],
   "notes": "Make ahead: Blend the bean cream up to 2 days ahead and keep it chilled. Slice the zucchini just before baking. Refrigerate in shallow portions within 2 hours and use within 3 days. Freezer-Friendly Verdict: No. The zucchini releases water after freezing and loses its bite. Fridge reheat: Reheat a portion gently in a covered skillet with a splash of water for 4–6 minutes, folding once, until it reaches 165°F throughout. Freezer reheat: Thaw in the refrigerator overnight, then follow the fridge reheat instructions. Estimated nutrition per serving (1/2 of recipe): 102 kcal, 5.8 g protein, 14.6 g total carbohydrate, 2.8 g fat, 3.9 g fiber, 15 mg sodium.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "Ninja Crispi with 6-cup glass container",
+  "methods": [
+    {
+      "label": "Samsung conventional oven",
+      "cookMin": 24,
+      "equipment": [
+        "Samsung conventional oven",
+        "Vitamix or immersion blender and tall jug"
+      ],
+      "steps": [
+        {
+          "title": "Allow for oven timing",
+          "text": "Use the first time given as a check. A covered metal dish may need 3–10 minutes longer; check tenderness or the center temperature every 2–3 minutes."
+        },
+        {
+          "title": "Heat the oven",
+          "text": "Preheat Samsung Bake to 350°F and select a small shallow metal dish."
+        },
+        {
+          "title": "Blend the bean cream",
+          "text": "Blend {beans}, {broth}, {basil}, {oil} and {garlic} for 45 seconds until smooth enough to pour slowly."
+        },
+        {
+          "title": "Coat the zucchini",
+          "text": "Fold {zucchini} into the bean cream in the metal baking dish. Press the slices down so each carries sauce."
+        },
+        {
+          "title": "Bake in the sauce",
+          "text": "Cover the dish and bake at 350°F Cover the dish and bake at 350°F for 12 minutes."
+        },
+        {
+          "title": "Turn the slices",
+          "text": "Fold the outer slices toward the middle so the cooler slices are exposed to the heat."
+        },
+        {
+          "title": "Finish the bake",
+          "text": "Cover the dish and bake at 350°F for 3–7 minutes until the sauce bubbles at the edges and the zucchini yields to a fork with slight resistance."
+        },
+        {
+          "title": "Spoon onto plates",
+          "text": "Let stand for 2 minutes and spoon the zucchini with its bean cream onto two plates."
+        }
+      ]
+    }
+  ]
 }

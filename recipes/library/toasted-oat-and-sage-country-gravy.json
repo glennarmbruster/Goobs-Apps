@@ -112,5 +112,53 @@
     }
   ],
   "notes": "Yield: 1 1/2 cups. One serving is 1/4 cup. Make ahead: Toast the oats a day ahead or refrigerate the blended oat base until dinner. Refrigerate in shallow covered portions within 2 hours and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze for up to 1 month. The oats thicken on standing, so whisk in a little water when reheating. Fridge reheat: Reheat a portion over medium-low heat, whisking to a brief boil and at least 165°F. Whisk off heat until smooth. Freezer reheat: Thaw in the refrigerator overnight and reheat as for a chilled portion. For dairy-free country gravy, use plain unsweetened oat milk and avocado oil in the same quantities as the milk and butter. Estimated nutrition per serving (1/6 of recipe): 36 kcal, 2.0 g protein, 4.0 g total carbohydrate, 1.4 g fat, 0.2 g fiber, 22 mg sodium. The estimate covers the prepared condiment. Add separately served foods when totaling a meal.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "10-inch HexClad skillet",
+  "methods": [
+    {
+      "label": "Enamel Dutch oven",
+      "cookMin": 19,
+      "equipment": [
+        "Enamel Dutch oven",
+        "Immersion blender and tall heatproof jug",
+        "Small whisk",
+        "Heatproof liquid measuring cup",
+        "Instant-read thermometer"
+      ],
+      "steps": [
+        {
+          "title": "Set up the cooking vessel",
+          "text": "Start the enamel Dutch oven over medium-low heat for 2–3 minutes; use the lid for covered steps. Reduce heat once liquids simmer and stir across the heavy base."
+        },
+        {
+          "title": "Toast the oats",
+          "text": "Stir {oats} in the dry HexClad over medium-low heat for 2–3 minutes until lightly fragrant."
+        },
+        {
+          "title": "Cook until soft",
+          "text": "Add {broth} and {milk}. Bring to a bare simmer and stir for 6–8 minutes until the oat flakes are fully tender."
+        },
+        {
+          "title": "Blend the oat milk",
+          "text": "Puree the warm oat mixture until silky in a deep heatproof jug."
+        },
+        {
+          "title": "Toast the sage roux",
+          "text": "Melt {butter} in the emptied the Enamel Dutch oven. Whisk in {flour}, {sage} and {pepper} and cook over medium-low for 1–2 minutes."
+        },
+        {
+          "title": "Finish the country gravy",
+          "text": "Slowly whisk the oat mixture into the roux. Simmer gently for 2–3 minutes until the gravy coats the back of a spoon."
+        },
+        {
+          "title": "Check the yield",
+          "text": "Measure the finished sauce in a heatproof cup. Aim for 1 1/2 cups total. If it measures short, whisk in a little hot water. If it measures over, return it to the Enamel Dutch oven and simmer briefly to the mark."
+        },
+        {
+          "title": "Serve",
+          "text": "Ladle over braised poultry. For breakfast, stir the gravy into hot grits until both flow from the spoon."
+        }
+      ]
+    }
+  ]
 }

@@ -1,0 +1,121 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "cauliflower-and-mild-cheddar-bisque",
+  "title": "Cauliflower and Mild Cheddar Bisque",
+  "description": "Pureed cauliflower carries melted cheddar in a velvety bisque.",
+  "category": "Soup & stew",
+  "tags": [
+    "soup",
+    "soup-for-four",
+    "vegetables"
+  ],
+  "servings": 4,
+  "servingsLabel": "bowls",
+  "prepMin": 15,
+  "cookMin": 32,
+  "equipment": [
+    "Enamel Dutch oven",
+    "Immersion blender"
+  ],
+  "ingredients": [
+    {
+      "id": "caul",
+      "qty": 560,
+      "unit": "g",
+      "name": "fresh cauliflower florets"
+    },
+    {
+      "id": "potato",
+      "qty": 160,
+      "unit": "g",
+      "name": "Yukon Gold potatoes"
+    },
+    {
+      "id": "broth",
+      "qty": 690,
+      "unit": "g",
+      "name": "unsalted chicken broth"
+    },
+    {
+      "id": "milk",
+      "qty": 180,
+      "unit": "g",
+      "name": "skim milk"
+    },
+    {
+      "id": "cheddar",
+      "qty": 75,
+      "unit": "g",
+      "name": "sharp cheddar cheese, finely grated"
+    },
+    {
+      "id": "butter",
+      "qty": 12,
+      "unit": "g",
+      "name": "unsalted butter"
+    },
+    {
+      "id": "mustard",
+      "qty": 5,
+      "unit": "g",
+      "name": "Löwensenf Bavarian mustard"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Prepare the ingredients",
+      "text": "Break {caul} into small florets and thinly slice peeled {potato}."
+    },
+    {
+      "title": "Set up the pot",
+      "text": "Use the enamel Dutch oven on a medium burner; adjust the flame to hold a bare simmer."
+    },
+    {
+      "title": "Build the base",
+      "text": "Melt {butter} and sweat the cauliflower for 4 minutes over medium-low heat."
+    },
+    {
+      "title": "Simmer",
+      "text": "Add the potatoes and {broth}. Cover and simmer 18–22 minutes until very soft. Blend carefully to a smooth base."
+    },
+    {
+      "title": "Finish",
+      "text": "Return to gentle heat with {milk}; when hot, remove from heat and whisk in {cheddar} and {mustard}."
+    }
+  ],
+  "notes": "Make ahead: chill in shallow containers within 2 hours and refrigerate for up to 3 days. Freezer-Friendly Verdict: Yes, freeze in meal-size containers for up to 2 months. Fridge reheat: stir over medium-low heat to 165°F, adding a splash of water as needed. Freezer reheat: thaw overnight in the fridge, then reheat to 165°F. Dairy swap: replace each dairy ingredient with unsweetened oat milk or an equivalent dairy-free butter or cheese. Estimated nutrition per serving (1/4 of recipe): 191 kcal, 10.9 g protein, 17.8 g total carbohydrate, 9.4 g fat, 3.4 g fiber, 211 mg sodium.",
+  "source": "Glenn",
+  "preferredMethod": "Enamel Dutch oven",
+  "methods": [
+    {
+      "label": "Ninja Foodi PossibleCooker",
+      "cookMin": 37,
+      "equipment": [
+        "Ninja Foodi PossibleCooker"
+      ],
+      "steps": [
+        {
+          "title": "Prepare the ingredients",
+          "text": "Break {caul} into small florets and thinly slice peeled {potato}."
+        },
+        {
+          "title": "Set up the pot",
+          "text": "Select Sear/Sauté HI to heat the PossibleCooker; switch to LO for the roux or gentle simmer. Leave the lid ajar when simmering and stir down the sides."
+        },
+        {
+          "title": "Build the base",
+          "text": "Melt {butter} and sweat the cauliflower for 4 minutes over medium-low heat."
+        },
+        {
+          "title": "Simmer",
+          "text": "Add the potatoes and {broth}. Cover and simmer 18–22 minutes until very soft. Blend carefully to a smooth base."
+        },
+        {
+          "title": "Finish",
+          "text": "Return to gentle heat with {milk}; when hot, remove from heat and whisk in {cheddar} and {mustard}."
+        }
+      ]
+    }
+  ]
+}

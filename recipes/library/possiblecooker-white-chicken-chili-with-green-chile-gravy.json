@@ -132,5 +132,48 @@
     }
   ],
   "notes": "Make ahead: Puree the beans and pepper a day ahead and refrigerate the base separately from the raw chicken. Option A uses mild green chile. For gentler Option B, use peeled roasted sweet green bell pepper instead and halve the cumin. For dairy-free chili leave out the cream cheese; the bean puree and slurry give the gravy body. Refrigerate promptly in shallow portions and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze the chili without cream cheese for up to 2 months and stir it in after reheating. Fridge reheat: Warm a single portion with its sauce in a covered HexClad skillet over medium-low, adding a splash of water if thick. Stir or turn gently and begin checking after 5 minutes. Heat the chicken to 165°F throughout. Freezer reheat: Thaw overnight in the refrigerator. Use the fridge reheating directions and stir the sauce smooth. Estimated nutrition per serving (1/4 of recipe): 318 kcal, 35.9 g protein, 26.7 g total carbohydrate, 7.2 g fat, 5.9 g fiber, 172 mg sodium. Includes the measured broth and sauce. Sodium varies with your broth.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "Ninja Foodi PossibleCooker",
+  "methods": [
+    {
+      "label": "Enamel Dutch oven",
+      "cookMin": 32,
+      "equipment": [
+        "Enamel Dutch oven",
+        "Thin-tip instant-read thermometer",
+        "Immersion blender and deep heatproof jug",
+        "Silicone spoon"
+      ],
+      "steps": [
+        {
+          "title": "Use the burner",
+          "text": "Set the Dutch oven on a medium burner. Bring liquid up over medium-high, then reduce to low to maintain a bare simmer; stir down the sides more often than in the electric cooker."
+        },
+        {
+          "title": "Blend the bean base",
+          "text": "Blend half of {beans} with {chile} and enough {broth} to make a smooth puree in a deep jug."
+        },
+        {
+          "title": "Heat the chili base",
+          "text": "Pour the puree, remaining {broth}, {garlic}, {cumin} and {oregano} into the Dutch oven. use medium-high burner heat, leave the lid off and stir until the base begins to simmer, about 5–8 minutes."
+        },
+        {
+          "title": "Poach the chicken",
+          "text": "Add {chicken} and the remaining {beans}. Once the liquid returns to a simmer, change to use low burner heat. Cook uncovered at a gentle bubble for 12–18 minutes, stirring occasionally, until the largest chicken pieces reach 175°F."
+        },
+        {
+          "title": "Mix the slurry",
+          "text": "Stir {starch} into {water} in a small cup until smooth."
+        },
+        {
+          "title": "Thicken the chili",
+          "text": "Stir the slurry into the bubbling chili and cook for 1 minute until the white gravy coats the back of a spoon. Use HIGH briefly if needed to restore the simmer, then turn the cooker off."
+        },
+        {
+          "title": "Finish the bowls",
+          "text": "Loosen {cheese} with a spoonful of hot chili and fold back into the pot until smooth. Ladle generous amounts of white gravy over the chicken in each bowl."
+        }
+      ]
+    }
+  ]
 }

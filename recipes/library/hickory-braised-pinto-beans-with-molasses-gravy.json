@@ -140,5 +140,54 @@
     }
   ],
   "notes": "Make ahead: Fully cook the beans ahead if starting from dry. The smoker stage uses already tender beans. Refrigerate the finished beans for up to 3 days. Freezer-Friendly Verdict: Yes. Freeze with enough gravy to cover for up to 2 months. The beans soften further and can be mashed into the sauce. Fridge reheat: Warm a single portion, covered, in the HexClad with a splash of broth or water. Stir or turn gently and heat to 165°F throughout. Freezer reheat: Thaw overnight in the refrigerator. Use the same covered reheating method and heat the center to 165°F. Option A uses smooth tomato and vinegar. For gentler Option B, replace the puree with an equal volume of smooth peeled sweet pepper puree and omit the vinegar. Estimated nutrition per serving (1/4 of recipe): 217 kcal, 12.4 g protein, 40.9 g total carbohydrate, 1.1 g fat, 12.0 g fiber, 14 mg sodium. Includes the measured broth and sauce. Sodium varies with your broth.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "Traeger Silverton 610 pellet smoker",
+  "methods": [
+    {
+      "label": "Samsung conventional oven",
+      "cookMin": 75,
+      "equipment": [
+        "Samsung conventional oven",
+        "Small enamel Dutch oven with lid",
+        "10-inch HexClad skillet",
+        "Potato masher",
+        "Small mixing bowl",
+        "Thin-tip instant-read thermometer"
+      ],
+      "steps": [
+        {
+          "title": "Heat the conventional oven",
+          "text": "Preheat Samsung Bake to 275°F with the rack in the middle. Use an oven-safe pan; keep any braising lid ready."
+        },
+        {
+          "title": "Warm the paprika broth",
+          "text": "Bring {broth} and {paprika} to a simmer in the Dutch oven on the stove. Set the uncovered pot on the oven rack for 20 minutes with the oven door closed."
+        },
+        {
+          "title": "Braise the beans",
+          "text": "Stir {beans} into the broth, fit the pot lid immediately and keep the oven at 275°F. Braise for 25–40 minutes, until the bean centers reach 165°F and crush easily."
+        },
+        {
+          "title": "Rest the beans",
+          "text": "Rest covered for 5 minutes. Ladle most of the hot cooking liquid into the HexClad, leaving a little around the beans."
+        },
+        {
+          "title": "Build the molasses gravy",
+          "text": "Whisk {molasses}, {sugar}, {tomato}, {mustard} and {vinegar} into the cooking liquid in the HexClad. Bring the smooth base to a simmer."
+        },
+        {
+          "title": "Mix the slurry",
+          "text": "Stir {starch} into {water} until completely smooth."
+        },
+        {
+          "title": "Thicken the sauce",
+          "text": "Bring the base to a simmer. Whisk in the freshly stirred slurry and let it bubble for 1 minute, stirring until it coats the back of a spoon."
+        },
+        {
+          "title": "Coat and soften",
+          "text": "Crush about a third of the beans against the side of the pot to break their skins. Fold the soft beans into the gravy in the HexClad and divide them among shallow bowls."
+        }
+      ]
+    }
+  ]
 }

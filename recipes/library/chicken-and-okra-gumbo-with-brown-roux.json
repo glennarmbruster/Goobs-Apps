@@ -1,0 +1,145 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "chicken-and-okra-gumbo-with-brown-roux",
+  "title": "Chicken and Okra Gumbo with Brown Roux",
+  "description": "A slow-toasted roux and sliced okra give this chicken gumbo its body.",
+  "category": "Soup & stew",
+  "tags": [
+    "soup",
+    "stew",
+    "cajun"
+  ],
+  "servings": 4,
+  "servingsLabel": "bowls",
+  "prepMin": 15,
+  "cookMin": 42,
+  "equipment": [
+    "Enamel Dutch oven"
+  ],
+  "ingredients": [
+    {
+      "id": "chicken",
+      "qty": 430,
+      "unit": "g",
+      "name": "boneless skinless chicken thighs"
+    },
+    {
+      "id": "okra",
+      "qty": 140,
+      "unit": "g",
+      "name": "fresh okra"
+    },
+    {
+      "id": "bell",
+      "qty": 100,
+      "unit": "g",
+      "name": "fresh red bell pepper"
+    },
+    {
+      "id": "oil",
+      "qty": 28,
+      "unit": "g",
+      "name": "avocado oil"
+    },
+    {
+      "id": "ap",
+      "qty": 28,
+      "unit": "g",
+      "name": "King Arthur unbleached all-purpose flour"
+    },
+    {
+      "id": "paprika",
+      "qty": 3,
+      "unit": "g",
+      "name": "smoked paprika"
+    },
+    {
+      "id": "thyme",
+      "qty": 1,
+      "unit": "g",
+      "name": "dried thyme"
+    },
+    {
+      "id": "garlic",
+      "qty": 8,
+      "unit": "g",
+      "name": "jarred minced garlic"
+    },
+    {
+      "id": "broth",
+      "qty": 850,
+      "unit": "g",
+      "name": "unsalted chicken broth"
+    },
+    {
+      "id": "rice",
+      "qty": 160,
+      "unit": "g",
+      "name": "plain cooked white rice"
+    },
+    {
+      "id": "salt",
+      "qty": 2,
+      "unit": "g",
+      "name": "fine table salt",
+      "note": "Low-sodium batch: omit."
+    }
+  ],
+  "steps": [
+    {
+      "title": "Prepare the ingredients",
+      "text": "Dice {chicken} into bite-sized pieces, slice {okra} and finely dice {bell}."
+    },
+    {
+      "title": "Set up the pot",
+      "text": "Use the enamel Dutch oven on a medium burner; adjust the flame to hold a bare simmer."
+    },
+    {
+      "title": "Build the base",
+      "text": "Stir {oil} and {ap} constantly over medium-low heat for 15–22 minutes until the color of peanut butter. Add {bell}, {garlic}, {thyme} and {paprika} and stir for 2 minutes."
+    },
+    {
+      "title": "Simmer",
+      "text": "Slowly whisk {broth} into the roux. Add {chicken}, {okra} and {salt}. Cover loosely and simmer 22–28 minutes until the thighs reach 175°F and the okra is tender."
+    },
+    {
+      "title": "Finish",
+      "text": "Fold in {rice} and simmer 5 minutes until steaming and the broth coats a spoon."
+    }
+  ],
+  "notes": "Make ahead: chill in shallow containers within 2 hours and refrigerate for up to 3 days. Freezer-Friendly Verdict: Yes, freeze in meal-size containers for up to 2 months. Fridge reheat: stir over medium-low heat to 165°F, adding a splash of water as needed. Freezer reheat: thaw overnight in the fridge, then reheat to 165°F. Low-sodium option: omit the added table salt, use unenhanced chicken and plain unsalted broth (about 35 mg per cup). Cook rice without salt. For gentler seasoning, halve the paprika. The sodium estimate assumes unsalted broth in both versions. Estimated nutrition per serving (1/4 of recipe): 301 kcal, 26.1 g protein, 22.0 g total carbohydrate, 11.7 g fat, 2.1 g fiber, 334 mg sodium. Low-sodium version per bowl: 301 kcal, 26.1 g protein, 22.0 g total carbohydrate, 11.7 g fat, 2.1 g fiber, 137 mg sodium.",
+  "source": "Glenn",
+  "preferredMethod": "Enamel Dutch oven",
+  "methods": [
+    {
+      "label": "Ninja Foodi PossibleCooker",
+      "cookMin": 47,
+      "equipment": [
+        "Ninja Foodi PossibleCooker"
+      ],
+      "steps": [
+        {
+          "title": "Prepare the ingredients",
+          "text": "Dice {chicken} into bite-sized pieces, slice {okra} and finely dice {bell}."
+        },
+        {
+          "title": "Set up the pot",
+          "text": "Select Sear/Sauté HI to heat the PossibleCooker; switch to LO for the roux or gentle simmer. Leave the lid ajar when simmering and stir down the sides."
+        },
+        {
+          "title": "Build the base",
+          "text": "Stir {oil} and {ap} constantly over medium-low heat for 15–22 minutes until the color of peanut butter. Add {bell}, {garlic}, {thyme} and {paprika} and stir for 2 minutes."
+        },
+        {
+          "title": "Simmer",
+          "text": "Slowly whisk {broth} into the roux. Add {chicken}, {okra} and {salt}. Cover loosely and simmer 22–28 minutes until the thighs reach 175°F and the okra is tender."
+        },
+        {
+          "title": "Finish",
+          "text": "Fold in {rice} and simmer 5 minutes until steaming and the broth coats a spoon."
+        }
+      ]
+    }
+  ]
+}

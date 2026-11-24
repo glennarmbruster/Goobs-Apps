@@ -117,5 +117,56 @@
     }
   ],
   "notes": "Make ahead: Slice the pork a day ahead and refrigerate it covered. Make the roux while the cooked cutlets rest. Option A includes lemon and pepper. For gentler Option B, omit both the juice and zest and leave the pepper for the table. For dairy-free gravy use avocado oil instead of butter. Refrigerate promptly in shallow portions and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze the cutlets in gravy for up to 2 months. Whisk the gravy as it warms to restore the texture. Fridge reheat: Warm a single portion with its sauce in a covered HexClad skillet over medium-low, adding a splash of water if thick. Stir or turn gently and begin checking after 5 minutes. Heat the food to 165°F throughout. Freezer reheat: Thaw overnight in the refrigerator. Use the fridge reheating directions and stir the sauce smooth. Estimated nutrition per serving (1/2 of recipe): 245 kcal, 35.2 g protein, 3.4 g total carbohydrate, 10.2 g fat, 0.2 g fiber, 142 mg sodium. Includes the measured broth and sauce. Sodium varies with your broth.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "10-inch HexClad skillet with lid",
+  "methods": [
+    {
+      "label": "Enamel Dutch oven",
+      "cookMin": 18,
+      "equipment": [
+        "Enamel Dutch oven",
+        "Thin-tip instant-read thermometer",
+        "Small covered bowl",
+        "Heatproof jug"
+      ],
+      "steps": [
+        {
+          "title": "Set up the cooking vessel",
+          "text": "Start the enamel Dutch oven over medium-low heat for 2–3 minutes; use the lid for covered steps. Reduce heat once liquids simmer and stir across the heavy base."
+        },
+        {
+          "title": "Warm the poaching broth",
+          "text": "Heat {broth} to a gentle simmer in the HexClad over medium heat."
+        },
+        {
+          "title": "Poach the cutlets",
+          "text": "Set {pork} in the broth in one layer and cover. Simmer on low for 4–8 minutes, turning once. Check each center from the side and lift each cutlet when it reaches 145°F."
+        },
+        {
+          "title": "Rest in the juices",
+          "text": "Rest the pork in a covered bowl with a little hot broth for at least 3 minutes."
+        },
+        {
+          "title": "Reserve the broth",
+          "text": "Pour the remaining poaching broth into a heatproof jug for the gravy."
+        },
+        {
+          "title": "Make a pale roux",
+          "text": "Melt {butter} over medium-low in the empty HexClad. Whisk in {flour} and cook for 1 minute, stirring continuously."
+        },
+        {
+          "title": "Thicken the gravy",
+          "text": "Whisk the reserved poaching broth slowly into the roux. Bring to a boil and simmer 2–3 minutes until the gravy coats the back of a spoon."
+        },
+        {
+          "title": "Add the lemon pepper",
+          "text": "Off heat, stir in {pepper}, {zest} and {lemon}."
+        },
+        {
+          "title": "Serve in gravy",
+          "text": "Slice the rested pork against the grain, slide it into the gravy and spoon the remaining gravy over the top."
+        }
+      ]
+    }
+  ]
 }

@@ -162,5 +162,72 @@
     }
   ],
   "notes": "Make ahead: Slice the sirloin the night before and keep it covered in the refrigerator. Option A uses cherry and ancho. For gentler Option B, replace the cherry spread with smooth pear puree, leave out the ancho and pass chile separately. Refrigerate promptly in shallow portions and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze individual portions surrounded by sauce for up to 2 months to protect their moisture. Fridge reheat: Warm one portion covered in its sauce in the HexClad over medium-low heat. Turn gently, adding a splash of water if needed. Check after 6 minutes and continue until the food reaches 165°F throughout. Freezer reheat: Thaw overnight in the refrigerator. Follow the fridge reheating directions and stir the sauce smooth. Estimated nutrition per serving (1/2 of recipe): 249 kcal, 33.7 g protein, 17.6 g total carbohydrate, 3.9 g fat, 0.6 g fiber, 117 mg sodium. Includes the measured broth and sauce. Sodium varies with your broth.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "Traeger Silverton 610 pellet smoker",
+  "methods": [
+    {
+      "label": "Samsung conventional oven",
+      "cookMin": 65,
+      "equipment": [
+        "Samsung conventional oven",
+        "Small enamel Dutch oven with tight lid, sized to hold the food snugly",
+        "10-inch HexClad skillet",
+        "Thin-tip instant-read thermometer"
+      ],
+      "steps": [
+        {
+          "title": "Heat the conventional oven",
+          "text": "Preheat Samsung Bake to 275°F with the rack in the middle. Use an oven-safe pan; keep any braising lid ready."
+        },
+        {
+          "title": "Warm the braising liquid",
+          "text": "Bring {broth} with {paprika}, {ancho} and {garlic} just to a simmer in the open Dutch oven on the stove, about 3–6 minutes."
+        },
+        {
+          "title": "Warm the braising liquid",
+          "text": "Move the uncovered pot to the oven rack. Close the oven door and warm the liquid for 15 minutes."
+        },
+        {
+          "title": "Shape the strips",
+          "text": "Slice {pork} across the grain into finger-length strips about 1/2 inch thick."
+        },
+        {
+          "title": "Poach under cover",
+          "text": "Lower the strips into the warm liquid in one layer, adding {topup} to just cover if needed. Fit the lid immediately. The cover replaces a stall wrap from the start."
+        },
+        {
+          "title": "Check the center",
+          "text": "Cook covered at 275°F for about 10–22 minutes. Check early from the side of the thickest strips and remove from heat when each has reached 145°F."
+        },
+        {
+          "title": "Rest in the juices",
+          "text": "Rest the covered pork off heat for 3 minutes."
+        },
+        {
+          "title": "Lift the strips",
+          "text": "Transfer the strips to a covered dish with a spoonful of broth."
+        },
+        {
+          "title": "Measure the sauce base",
+          "text": "Skim excess fat from the braising liquid. Measure 3/4 cup into the HexClad skillet, topping up with {topup} if needed."
+        },
+        {
+          "title": "Melt the cherry spread",
+          "text": "Stir {cherry} and {mustard} into the measured broth over medium heat until smooth."
+        },
+        {
+          "title": "Mix the slurry",
+          "text": "Stir {starch} into {water} until completely smooth."
+        },
+        {
+          "title": "Thicken the sauce",
+          "text": "Bring the skillet liquid to a boil. Whisk in the stirred slurry and simmer for 1 minute, stirring, until the sauce coats the back of a spoon."
+        },
+        {
+          "title": "Glaze the pork",
+          "text": "Turn the strips in the cherry glaze and divide the remaining glaze between both plates."
+        }
+      ]
+    }
+  ]
 }

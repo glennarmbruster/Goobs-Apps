@@ -1,0 +1,131 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "apricot-mustard-lacquered-wings",
+  "title": "Apricot Mustard Lacquered Wings",
+  "description": "A simmer softens the wings before a short air-fryer finish sets the apricot glaze.",
+  "category": "Main dish",
+  "tags": [
+    "ninja-crispi",
+    "air-fryer",
+    "chicken",
+    "wings",
+    "extra-sauce"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 12,
+  "cookMin": 32,
+  "equipment": [
+    "Ninja Crispi, 4-qt glass container and adapter",
+    "10-inch HexClad skillet",
+    "Instant-read thermometer",
+    "Enamel Dutch oven",
+    "Steaming rack"
+  ],
+  "ingredients": [
+    {
+      "id": "wings",
+      "qty": 390,
+      "unit": "g",
+      "name": "bone-in chicken wing sections",
+      "note": "Weigh with bones. Nutrition assumes about 60% edible meat and skin."
+    },
+    {
+      "id": "broth",
+      "qty": 155,
+      "unit": "g",
+      "name": "unsalted chicken broth"
+    },
+    {
+      "id": "apricot",
+      "qty": 32,
+      "unit": "g",
+      "name": "smooth apricot preserves"
+    },
+    {
+      "id": "mustard",
+      "qty": 15,
+      "unit": "g",
+      "name": "Löwensenf Bavarian mustard"
+    },
+    {
+      "id": "thyme",
+      "qty": 0.6,
+      "unit": "g",
+      "name": "dried thyme"
+    },
+    {
+      "id": "starch",
+      "qty": 7,
+      "unit": "g",
+      "name": "cornstarch"
+    },
+    {
+      "id": "cold",
+      "qty": 15,
+      "unit": "g",
+      "name": "cold sodium-free water"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Simmer the sauce",
+      "text": "Whisk {broth}, {apricot}, {mustard}, {thyme} into the HexClad. Simmer gently for 2 minutes until combined."
+    },
+    {
+      "title": "Thicken",
+      "text": "Whisk {starch} with {cold}, then stir into the simmering sauce for 1 minute until it coats a spoon."
+    },
+    {
+      "title": "Steam the wings",
+      "text": "Steam {wings} on a rack in a covered pot over gently boiling water for 16–23 minutes, until the largest piece reaches 165°F away from bone."
+    },
+    {
+      "title": "Set the glaze",
+      "text": "Fit the crisper plate in the room-temperature 4-qt glass container. Fit the adapter and PowerPod. Select Air Fry. Brush the steamed wings with a thin layer of sauce and cook 4–8 minutes, turning once, to 175°F. Reserve clean sauce separately."
+    },
+    {
+      "title": "Serve",
+      "text": "For tender bites, pull meat from bones and strip off any tough skin. Toss in the remaining hot sauce just before serving."
+    }
+  ],
+  "notes": "Make ahead: prepare the sauce a day ahead and refrigerate separately. Freezer-Friendly Verdict: Yes. Freeze cooked portions with sauce, cooled within 2 hours, for up to 2 months. Fridge reheat: cover and warm gently with a spoonful of water to 165°F. Freezer reheat: thaw overnight in the fridge, then reheat covered to 165°F. Option A uses the listed seasonings. For gentler Option B, omit added citrus, vinegar or chile where used. Pass additional heat at the table. Estimated nutrition per serving (1/2 of recipe): 275 kcal, 22.4 g protein, 16.6 g total carbohydrate, 13.5 g fat, 0.4 g fiber, 118 mg sodium.",
+  "source": "Glenn",
+  "preferredMethod": "Ninja Crispi, 4-qt glass container and adapter",
+  "methods": [
+    {
+      "label": "Samsung conventional oven",
+      "cookMin": 36,
+      "equipment": [
+        "Samsung conventional oven",
+        "10-inch HexClad skillet",
+        "Instant-read thermometer",
+        "Enamel Dutch oven",
+        "Steaming rack"
+      ],
+      "steps": [
+        {
+          "title": "Simmer the sauce",
+          "text": "Whisk {broth}, {apricot}, {mustard}, {thyme} into the HexClad. Simmer gently for 2 minutes until combined."
+        },
+        {
+          "title": "Thicken",
+          "text": "Whisk {starch} with {cold}, then stir into the simmering sauce for 1 minute until it coats a spoon."
+        },
+        {
+          "title": "Steam the wings",
+          "text": "Steam {wings} on a rack in a covered pot over gently boiling water for 16–23 minutes, until the largest piece reaches 165°F away from bone."
+        },
+        {
+          "title": "Set the glaze",
+          "text": "Preheat the Samsung oven to 425°F on convection. Lay the wings on a rack over a sheet pan. Brush the steamed wings with a thin layer of sauce and cook 4–8 minutes, turning once, to 175°F. Reserve clean sauce separately."
+        },
+        {
+          "title": "Serve",
+          "text": "For tender bites, pull meat from bones and strip off any tough skin. Toss in the remaining hot sauce just before serving."
+        }
+      ]
+    }
+  ]
+}

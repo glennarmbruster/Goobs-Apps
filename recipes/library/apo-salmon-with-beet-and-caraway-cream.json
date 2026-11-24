@@ -136,5 +136,60 @@
     }
   ],
   "notes": "Sauce yield: About 1 1/2 cups for two. Make ahead: Blend the beet and broth a day ahead and chill. Add the slurry and cream cheese the day you cook the salmon. Refrigerate in shallow portions within 2 hours. Use refrigerated leftovers within 3 days. Freezer-Friendly Verdict: Yes. Freeze up to 1 month with each portion covered in beet sauce. Whisk the sauce smooth as it reheats. Fridge reheat: Place a portion in a covered shallow pan with its sauce. Install the bottom drip pan and set the APO to 325°F, sous vide mode off, 60% steam, rear element on, top and bottom elements off. Set the probe target to 165°F and check from 10 minutes until the coldest center reaches 165°F. Freezer reheat: If frozen, thaw the covered portion in the refrigerator overnight, then follow the fridge method. For dairy-free sauce, use plain unsweetened oat cream in place of the whipped cream cheese. Estimated nutrition per serving (1/2 of recipe): 370 kcal, 31.5 g protein, 9.2 g total carbohydrate, 22.3 g fat, 1.2 g fiber, 180 mg sodium. Includes both the fish and its full share of sauce and any rice or potatoes listed. Sodium varies with the broth.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "Anova Precision Oven Gen 1 with bottom drip pan, wire rack and food probe",
+  "methods": [
+    {
+      "label": "Enamel Dutch oven",
+      "cookMin": 30,
+      "equipment": [
+        "Enamel Dutch oven",
+        "10-inch HexClad skillet",
+        "Instant-read thermometer",
+        "Shallow stainless steel baking pan",
+        "10-inch HexClad skillet with lid",
+        "Thin-tip instant-read thermometer",
+        "Immersion blender and deep heatproof jug",
+        "Flexible fish spatula"
+      ],
+      "steps": [
+        {
+          "title": "Prepare the portions",
+          "text": "Divide {fish} into even portions. Leave fish fillets whole."
+        },
+        {
+          "title": "Start the poach",
+          "text": "Warm enough water to half cover the portions in a snug Dutch oven to 175–185°F. Slide them in, cover and hold below a simmer. Start checking after 4 minutes."
+        },
+        {
+          "title": "Warm the beet base",
+          "text": "Cover {beet}, {caraway} and {broth} in the HexClad over medium-low heat. Simmer for 6–8 minutes until the beet crushes easily."
+        },
+        {
+          "title": "Blend the sauce",
+          "text": "Blend the beet and cooking liquid in a deep heatproof jug until completely smooth. Return to the HexClad."
+        },
+        {
+          "title": "Mix the slurry",
+          "text": "Stir {starch} into {water} until completely smooth."
+        },
+        {
+          "title": "Bind the sauce",
+          "text": "Bring the sauce to a simmer. Whisk in the freshly stirred slurry and let it bubble gently for 1 minute, stirring until it coats the back of a spoon."
+        },
+        {
+          "title": "Enrich the beet cream",
+          "text": "Whisk {cheese} into the beet sauce off heat. Cover and gently rewarm the sauce just before the probe alert."
+        },
+        {
+          "title": "Check the centers",
+          "text": "Check each center every 2 minutes and lift out as soon as it reaches 145°F."
+        },
+        {
+          "title": "Spoon into bowls",
+          "text": "Lift the salmon into two bowls. Spoon the beet cream between the large flakes and scatter {chives} over the sauce."
+        }
+      ]
+    }
+  ]
 }

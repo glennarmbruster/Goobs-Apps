@@ -115,5 +115,48 @@
     }
   ],
   "notes": "Yield: 1 1/2 cups. One serving is 1/4 cup. Make ahead: Reduce the cider with the ginger a day ahead and chill. Add the other liquids and finish with the slurry on serving day. Refrigerate in shallow covered portions within 2 hours and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze in quarter-cup portions for up to 2 months and whisk smooth as it reheats. Fridge reheat: Bring a portion to a boil in a small pan, stirring until it reaches at least 165°F. Loosen with a little water as needed. Freezer reheat: Thaw in the refrigerator overnight and reheat as for a chilled portion. Option A uses ginger and rice vinegar. For gentler Option B, halve the ginger and omit the vinegar. Both versions are dairy-free. Estimated nutrition per serving (1/6 of recipe): 30 kcal, 0.3 g protein, 7.2 g total carbohydrate, 0.0 g fat, 0.1 g fiber, 52 mg sodium. The estimate covers the prepared condiment. Add separately served foods when totaling a meal.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "10-inch HexClad skillet",
+  "methods": [
+    {
+      "label": "Enamel Dutch oven",
+      "cookMin": 16,
+      "equipment": [
+        "Enamel Dutch oven",
+        "Small whisk",
+        "Heatproof liquid measuring cup",
+        "Instant-read thermometer"
+      ],
+      "steps": [
+        {
+          "title": "Set up the cooking vessel",
+          "text": "Start the enamel Dutch oven over medium-low heat for 2–3 minutes; use the lid for covered steps. Reduce heat once liquids simmer and stir across the heavy base."
+        },
+        {
+          "title": "Concentrate the apple",
+          "text": "Simmer {apple}, {ginger} and {sugar} uncovered in the HexClad for 5–7 minutes until reduced by about one third."
+        },
+        {
+          "title": "Balance the base",
+          "text": "Add {broth}, {aminos} and {vinegar}. Return to a gentle simmer for 2 minutes."
+        },
+        {
+          "title": "Stir the slurry",
+          "text": "Stir {starch} into {water} in a small cup until smooth."
+        },
+        {
+          "title": "Thicken the sauce",
+          "text": "Bring the sauce to a simmer. Stir in the freshly mixed slurry and cook for about 1 minute, whisking until it coats the back of a spoon."
+        },
+        {
+          "title": "Check the yield",
+          "text": "Measure the finished sauce in a heatproof cup. Aim for 1 1/2 cups total. If it measures short, whisk in a little hot water. If it measures over, return it to the Enamel Dutch oven and simmer briefly to the mark."
+        },
+        {
+          "title": "Serve",
+          "text": "Spoon warm over bagless steamed salmon or poached chicken and rice. Let the sauce settle between the flakes or slices."
+        }
+      ]
+    }
+  ]
 }

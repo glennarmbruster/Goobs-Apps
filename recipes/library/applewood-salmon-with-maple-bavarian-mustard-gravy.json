@@ -139,5 +139,65 @@
     }
   ],
   "notes": "Sauce yield: About 1 1/4 cups for two. Make ahead: Smoke the broth a day ahead while the Traeger is running. Cool promptly, refrigerate, then return it to a simmer before you add the fish. Refrigerate shallow portions within 2 hours, or within 1 hour outdoors above 90°F. Use refrigerated leftovers within 3 days. Freezer-Friendly Verdict: Yes. Freeze the salmon submerged in its gravy for up to 1 month. A short whisk restores the gravy after thawing. Fridge reheat: Warm a portion covered in its sauce over medium-low heat in the HexClad. Add a little water if it has thickened in storage. Check from 5 minutes and heat to 165°F at the coldest center. Freezer reheat: If frozen, thaw the covered portion in the refrigerator overnight, then follow the fridge method. Option A uses the Bavarian mustard. For gentler Option B, omit it and use a little extra dill with the maple. For dairy-free gravy, omit the finishing butter. Estimated nutrition per serving (1/2 of recipe): 361 kcal, 30.6 g protein, 9.9 g total carbohydrate, 21.2 g fat, 0.2 g fiber, 110 mg sodium. Includes both the fish and its full share of sauce and any rice or potatoes listed. Sodium varies with the broth.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "Traeger Silverton 610 pellet smoker",
+  "methods": [
+    {
+      "label": "Samsung conventional oven",
+      "cookMin": 52,
+      "equipment": [
+        "Samsung conventional oven",
+        "Small lidded enamel Dutch oven",
+        "10-inch HexClad skillet with lid",
+        "Thin-tip instant-read thermometer",
+        "Flexible fish spatula"
+      ],
+      "steps": [
+        {
+          "title": "Heat the conventional oven",
+          "text": "Preheat Samsung Bake to 275°F with the rack in the middle. Use an oven-safe pan; keep any braising lid ready."
+        },
+        {
+          "title": "Warm the broth",
+          "text": "Bring {broth} to a simmer in the small Dutch oven on the stove. Move the uncovered pot to the oven rack. Close the oven door and leave for 12 minutes."
+        },
+        {
+          "title": "Poach under cover",
+          "text": "Slip {fish} into the hot applewood broth and spoon broth over the tops. Cover the Dutch oven as soon as the salmon goes in. This lid is the wrap from the start."
+        },
+        {
+          "title": "Pull at temperature",
+          "text": "Keep the oven at 275°F. Check from 8 minutes and pull each fillet at 145°F in the thickest center, usually after 10–20 minutes."
+        },
+        {
+          "title": "Rest the salmon",
+          "text": "Transfer the fish to a warm plate, cover and rest for 3 minutes. Keep the poaching broth in the pot."
+        },
+        {
+          "title": "Season the smoky liquid",
+          "text": "Pour the hot poaching broth into the HexClad. Whisk in {maple} and {mustard} and bring to a full boil for 1 minute."
+        },
+        {
+          "title": "Mix the slurry",
+          "text": "Stir {starch} into {water} until completely smooth."
+        },
+        {
+          "title": "Bind the sauce",
+          "text": "Bring the sauce to a simmer. Whisk in the freshly stirred slurry and let it bubble gently for 1 minute, stirring until it coats the back of a spoon."
+        },
+        {
+          "title": "Finish with dill",
+          "text": "Take the gravy off heat. Swirl in {butter} and {dill} until glossy."
+        },
+        {
+          "title": "Check carryover and doneness",
+          "text": "After resting, check each thickest center for about 145°F. Open a natural seam with a fork. The center should be opaque and separate easily into flakes. If either cue is unclear or the center is below 145°F, finish covered in hot sauce in the HexClad over low heat to a measured 145°F, checking every minute."
+        },
+        {
+          "title": "Spoon into bowls",
+          "text": "Place the salmon in two shallow bowls and spoon the mustard gravy between the flakes. Divide the rest of the gravy evenly."
+        }
+      ]
+    }
+  ]
 }

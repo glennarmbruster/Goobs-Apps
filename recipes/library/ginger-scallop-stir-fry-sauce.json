@@ -1,0 +1,150 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "ginger-scallop-stir-fry-sauce",
+  "title": "Ginger Scallop Stir-Fry Sauce",
+  "description": "A pale ginger and white wine sauce lets the sweetness of scallops come through.",
+  "category": "Sauce & condiment",
+  "tags": [
+    "cantonese-inspired",
+    "for-shellfish",
+    "low-sodium-option",
+    "stir-fry"
+  ],
+  "servings": 4,
+  "servingsLabel": "1/4-cup portions",
+  "prepMin": 7,
+  "cookMin": 18,
+  "equipment": [
+    "10-inch HexClad skillet",
+    "Whisk"
+  ],
+  "ingredients": [
+    {
+      "id": "oil",
+      "qty": 4,
+      "unit": "g",
+      "name": "avocado oil"
+    },
+    {
+      "id": "ginger",
+      "qty": 9,
+      "unit": "g",
+      "name": "fresh finely grated ginger"
+    },
+    {
+      "id": "garlic",
+      "qty": 3,
+      "unit": "g",
+      "name": "jarred minced garlic"
+    },
+    {
+      "id": "broth",
+      "qty": 162,
+      "unit": "g",
+      "name": "unsalted chicken broth"
+    },
+    {
+      "id": "wine",
+      "qty": 20,
+      "unit": "g",
+      "name": "dry white wine"
+    },
+    {
+      "id": "amino",
+      "qty": 14,
+      "unit": "g",
+      "name": "coconut aminos",
+      "note": "Low-sodium batch: use 3.5 g total."
+    },
+    {
+      "id": "sugar",
+      "qty": 4,
+      "unit": "g",
+      "name": "dark brown sugar"
+    },
+    {
+      "id": "sesame",
+      "qty": 3,
+      "unit": "g",
+      "name": "toasted sesame oil"
+    },
+    {
+      "id": "starch",
+      "qty": 6,
+      "unit": "g",
+      "name": "cornstarch"
+    },
+    {
+      "id": "cold",
+      "qty": 13,
+      "unit": "g",
+      "name": "cold sodium-free water"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Start the sauce",
+      "text": "Warm {oil} in the 10-inch HexClad skillet over medium-low heat."
+    },
+    {
+      "title": "Toast gently",
+      "text": "Stir {ginger}, {garlic} into the oil for 30 seconds, just until fragrant."
+    },
+    {
+      "title": "Simmer the base",
+      "text": "Whisk in {broth}, {wine}, {amino}, {sugar} gradually. Simmer gently for 5–7 minutes until the flavors come together."
+    },
+    {
+      "title": "Make the slurry",
+      "text": "Whisk {starch} into {cold} until smooth."
+    },
+    {
+      "title": "Thicken",
+      "text": "Pour the slurry into the simmering sauce while whisking. Bubble gently for 1 minute until it coats a spoon."
+    },
+    {
+      "title": "Finish the sauce",
+      "text": "Fold in {sesame} off heat. Measure into a heatproof jug; add hot water to reach 1 cup, or simmer excess away before serving."
+    }
+  ],
+  "notes": "Yield: 1 cup. Low-sodium option for the full batch: reduce coconut aminos to 3.5 g and keep the same final yield. Use unsalted broth throughout. Option A uses the listed seasonings. For a gentler Option B, use half the pepper or chile if present and thin each portion with warm water. Make ahead: chill in small jars for up to 3 days. Freezer-Friendly Verdict: Yes, freeze in quarter-cup portions up to 2 months. Fridge reheat: whisk over low heat to 165°F. Freezer reheat: thaw overnight in the fridge, then reheat as above. Estimated nutrition per serving (1/4 of recipe): 37 kcal, 0.4 g protein, 4.1 g total carbohydrate, 1.8 g fat, 0.1 g fiber, 70 mg sodium. Low-sodium version per 1/4 cup: 35 kcal, 0.4 g protein, 3.4 g total carbohydrate, 1.8 g fat, 0.1 g fiber, 23 mg sodium.",
+  "source": "Glenn",
+  "preferredMethod": "10-inch HexClad skillet",
+  "methods": [
+    {
+      "label": "HexClad lidded wok",
+      "cookMin": 18,
+      "equipment": [
+        "HexClad lidded wok",
+        "Whisk"
+      ],
+      "steps": [
+        {
+          "title": "Start the sauce",
+          "text": "Warm {oil} in the HexClad lidded wok over medium-low heat."
+        },
+        {
+          "title": "Toast gently",
+          "text": "Stir {ginger}, {garlic} into the oil for 30 seconds, just until fragrant."
+        },
+        {
+          "title": "Simmer the base",
+          "text": "Whisk in {broth}, {wine}, {amino}, {sugar} gradually. Simmer gently for 5–7 minutes until the flavors come together."
+        },
+        {
+          "title": "Make the slurry",
+          "text": "Whisk {starch} into {cold} until smooth."
+        },
+        {
+          "title": "Thicken",
+          "text": "Pour the slurry into the simmering sauce while whisking. Bubble gently for 1 minute until it coats a spoon."
+        },
+        {
+          "title": "Finish the sauce",
+          "text": "Fold in {sesame} off heat. Measure into a heatproof jug; add hot water to reach 1 cup, or simmer excess away before serving."
+        }
+      ]
+    }
+  ]
+}

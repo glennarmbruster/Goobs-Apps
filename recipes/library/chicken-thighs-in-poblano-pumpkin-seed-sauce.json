@@ -136,5 +136,58 @@
     }
   ],
   "notes": "Sauce yield: About 1 1/2 cups for two. Make ahead: Portion the pepper and trim the thighs a day ahead. Refrigerate them separately and blend in the cilantro on the day of serving. Option A uses seeded mild poblano. For gentler Option B, use plain peeled sweet green bell pepper and leave out the cumin. Pass hot honey separately if someone wants heat. Chill leftovers promptly in shallow portions and refrigerate for up to 3 days. Freezer-Friendly Verdict: Yes. Freeze the chicken in its sauce for up to 6 weeks. The color will dull slightly but the pumpkin seed paste keeps the texture smooth. Fridge reheat: Warm one portion covered in its sauce in a HexClad skillet over medium-low, loosening with a splash of water if needed. Stir or turn the chicken gently, checking from 6 minutes, until it reaches 165°F throughout. Freezer reheat: Thaw overnight in the refrigerator, then follow the fridge reheating directions and stir the sauce smooth. Estimated nutrition per serving (1/2 of recipe): 272 kcal, 33.3 g protein, 7.9 g total carbohydrate, 11.8 g fat, 1.2 g fiber, 164 mg sodium. Includes the measured broth and sauce. Sodium varies with your broth.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "Ninja Crispi PowerPod with US Bake preset and 6-cup glass container",
+  "methods": [
+    {
+      "label": "Samsung conventional oven",
+      "cookMin": 43,
+      "equipment": [
+        "Samsung conventional oven",
+        "10-inch HexClad skillet with lid",
+        "Thin-tip instant-read thermometer",
+        "Immersion blender and deep heatproof jug",
+        "Fine-mesh sieve",
+        "Silicone tongs"
+      ],
+      "steps": [
+        {
+          "title": "Allow for oven timing",
+          "text": "Use the first time given as a check. A covered metal dish may need 3–10 minutes longer; check tenderness or the center temperature every 2–3 minutes."
+        },
+        {
+          "title": "Heat the covered baking dish",
+          "text": "Preheat Samsung Bake to 350°F. Use a small metal baking dish and a fitted cover or foil to retain moisture."
+        },
+        {
+          "title": "Nestle chicken into broth",
+          "text": "Cut {chicken} into pieces about 3/4 inch thick. In the metal baking dish, stir {poblano}, {garlic}, {cumin} and {broth} together. Lay the chicken flat under the liquid."
+        },
+        {
+          "title": "Poach on Bake",
+          "text": "Cover the dish and bake at 350°F. Check after 12 minutes, turn the chicken with silicone tongs and check every 2–3 minutes after that. Pull pieces at 175°F in their thickest centers, typically 18–30 minutes total. Keep the chicken covered in a little liquid."
+        },
+        {
+          "title": "Blend the green sauce",
+          "text": "Ladle the cooked pepper and poaching liquid into a deep heatproof jug. Add {cilantro} and {pepita}, then blend until silky."
+        },
+        {
+          "title": "Refine the base",
+          "text": "Press the blended sauce through a fine sieve into the HexClad. Bring it to a full boil, stirring, and reduce to about 3/4 cup per serving if needed."
+        },
+        {
+          "title": "Mix the slurry",
+          "text": "Stir {starch} into {water} until completely smooth."
+        },
+        {
+          "title": "Bind the sauce",
+          "text": "Bring the sauce to a simmer. Whisk in the freshly stirred slurry and let it bubble gently for 1 minute, stirring until it coats the back of a spoon."
+        },
+        {
+          "title": "Coat and plate",
+          "text": "Turn the warm thigh pieces in the pumpkin seed sauce off heat. Divide the chicken between shallow bowls and ladle all the remaining green sauce around it."
+        }
+      ]
+    }
+  ]
 }

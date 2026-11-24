@@ -134,5 +134,47 @@
     }
   ],
   "notes": "Sauce yield: About 1 1/2 cups for two. Make ahead: Wilt and blend the spinach base a day ahead and chill it. Make the roux just before cooking. Refrigerate in shallow portions within 2 hours. Use refrigerated leftovers within 3 days. Freezer-Friendly Verdict: No. Thin tilapia flakes easily and the spinach cream can weep after thawing. If already frozen, reheat one covered portion slowly and stir the sauce smooth. Fridge reheat: Warm a portion covered in its sauce over medium-low heat in the HexClad. Add a little water if it has thickened in storage. Check from 5 minutes and heat to 165°F at the coldest center. Freezer reheat: If frozen, thaw the covered portion in the refrigerator overnight, then follow the fridge method. For dairy-free sauce, use avocado oil, plain unsweetened oat milk and a little extra nutmeg in place of butter, milk and Parmesan. Estimated nutrition per serving (1/2 of recipe): 237 kcal, 34.2 g protein, 8.8 g total carbohydrate, 7.3 g fat, 0.6 g fiber, 200 mg sodium. Includes both the fish and its full share of sauce and any rice or potatoes listed. Sodium varies with the broth.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "Two small oval cast iron pans with foil or fitted lids",
+  "methods": [
+    {
+      "label": "Enamel Dutch oven",
+      "cookMin": 25,
+      "equipment": [
+        "Enamel Dutch oven",
+        "10-inch HexClad skillet",
+        "Instant-read thermometer"
+      ],
+      "steps": [
+        {
+          "title": "Wilt the spinach",
+          "text": "Cook {spinach} with {broth} in the covered HexClad over medium-low heat for 2–3 minutes until tender."
+        },
+        {
+          "title": "Blend the spinach milk",
+          "text": "Blend the spinach and cooking broth with {milk} until smooth and uniformly green."
+        },
+        {
+          "title": "Make a pale roux",
+          "text": "Melt {butter} in the empty skillet over low heat. Whisk in {flour} for 1–2 minutes until smooth."
+        },
+        {
+          "title": "Thicken the Florentine sauce",
+          "text": "Gradually add the spinach milk to the roux, whisking over medium-low heat for 2–3 minutes until the sauce coats the back of a spoon."
+        },
+        {
+          "title": "Start the covered poach",
+          "text": "Stir {parmesan} and {nutmeg} into the sauce off heat. Transfer half to a Dutch oven and keep half warm in the HexClad."
+        },
+        {
+          "title": "Cook in a single layer",
+          "text": "Nestle {fish} in the Dutch oven, spoon sauce over the fillets, cover and cook over low heat. Check after 4 minutes and every minute thereafter to 145°F."
+        },
+        {
+          "title": "Serve",
+          "text": "Lift the fillets out. Bring the poaching sauce to a simmer for 1 minute, then serve it with the fish and the reserved spinach cream."
+        }
+      ]
+    }
+  ]
 }

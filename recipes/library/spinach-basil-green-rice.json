@@ -84,5 +84,46 @@
     }
   ],
   "notes": "Make ahead: Blend the spinach broth a day ahead and chill it. Chill any leftover cooked rice promptly in a shallow container. Refrigerate in shallow portions within 2 hours and use within 3 days. Freezer-Friendly Verdict: Yes. The moist grains reheat well in small portions for up to 1 month. Fridge reheat: Sprinkle a little water over one portion, cover, and warm over medium-low heat for 4–7 minutes, stirring once, until it reaches 165°F throughout. Freezer reheat: Thaw in the refrigerator overnight, then follow the fridge reheat instructions. For a dairy-free finish, use avocado oil in place of butter. Estimated nutrition per serving (1/2 of recipe): 197 kcal, 4.3 g protein, 34.6 g total carbohydrate, 4.2 g fat, 0.8 g fiber, 32 mg sodium.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "Small saucepan with lid",
+  "methods": [
+    {
+      "label": "HexClad lidded wok",
+      "cookMin": 27,
+      "equipment": [
+        "HexClad lidded wok",
+        "Vitamix or immersion blender and tall jug"
+      ],
+      "steps": [
+        {
+          "title": "Set up the cooking vessel",
+          "text": "Use the lidded HexClad wok with a low flame. Stir around the sloping sides and keep the ingredients pooled in the center."
+        },
+        {
+          "title": "Rinse the rice",
+          "text": "Rinse {rice} in a fine sieve under cool running water until the water is nearly clear, then drain well for 1 minute."
+        },
+        {
+          "title": "Blend the green broth",
+          "text": "Blend {spinach} with {broth} until completely smooth, about 30 seconds."
+        },
+        {
+          "title": "Start the rice",
+          "text": "Combine the green broth and drained rice in the HexClad lidded wok with a snug lid and bring to a gentle simmer over medium heat."
+        },
+        {
+          "title": "Simmer until tender",
+          "text": "Cover and cook on the lowest heat for 13–16 minutes until the grains are tender and have absorbed the broth. If the pan dries early, add a splash of hot water."
+        },
+        {
+          "title": "Rest the grains",
+          "text": "Remove the pan from the heat and leave covered for 7 minutes."
+        },
+        {
+          "title": "Finish with basil",
+          "text": "Fold {basil} and {butter} gently through the hot rice with a fork and serve immediately."
+        }
+      ]
+    }
+  ]
 }

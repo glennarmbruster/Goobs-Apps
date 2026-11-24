@@ -1,0 +1,162 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "marbled-cocoa-rye-tin-loaf",
+  "title": "Marbled Cocoa Rye Tin Loaf",
+  "description": "Marbled Cocoa Rye Tin Loaf made from a small batch of scratch dough.",
+  "category": "Baking",
+  "tags": [
+    "bread",
+    "from-scratch",
+    "marble",
+    "king-arthur"
+  ],
+  "servings": 8,
+  "servingsLabel": "slices",
+  "prepMin": 25,
+  "cookMin": 38,
+  "equipment": [
+    "Samsung conventional oven",
+    "Digital kitchen scale"
+  ],
+  "ingredients": [
+    {
+      "id": "bf",
+      "qty": 190,
+      "unit": "g",
+      "name": "King Arthur unbleached bread flour"
+    },
+    {
+      "id": "rye",
+      "qty": 85,
+      "unit": "g",
+      "name": "King Arthur medium rye flour"
+    },
+    {
+      "id": "water",
+      "qty": 186,
+      "unit": "g",
+      "name": "sodium-free water"
+    },
+    {
+      "id": "cocoa",
+      "qty": 5,
+      "unit": "g",
+      "name": "unsweetened cocoa powder"
+    },
+    {
+      "id": "molasses",
+      "qty": 18,
+      "unit": "g",
+      "name": "blackstrap molasses"
+    },
+    {
+      "id": "oil",
+      "qty": 10,
+      "unit": "g",
+      "name": "avocado oil"
+    },
+    {
+      "id": "yeast",
+      "qty": 3,
+      "unit": "g",
+      "name": "instant yeast"
+    },
+    {
+      "id": "salt",
+      "qty": 4,
+      "unit": "g",
+      "name": "fine table salt"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Mix the dough",
+      "text": "Combine {bf}, {rye}, {water}, {molasses}, {oil}, {yeast}, {salt}. Use room-temperature liquids and softened fat. Mix until no dry flour remains."
+    },
+    {
+      "title": "Develop the dough",
+      "text": "Knead 6–8 minutes until smooth. For wet dough, fold in the bowl with damp hands."
+    },
+    {
+      "title": "Tint the swirl",
+      "text": "Divide the dough in half. Knead {cocoa} into one half with damp fingers; keep both pieces covered."
+    },
+    {
+      "title": "Let rise",
+      "text": "Cover and let rise 45–75 minutes at room temperature until about doubled."
+    },
+    {
+      "title": "Shape",
+      "text": "Pat the two dough colors into matching rectangles. Stack, roll tightly and place seam down in an 8-by-4-inch loaf pan."
+    },
+    {
+      "title": "Proof",
+      "text": "Cover and proof 30–50 minutes until puffy; a light fingertip dent should return slowly."
+    },
+    {
+      "title": "Heat the oven",
+      "text": "Preheat the Samsung oven to 375°F on conventional Bake."
+    },
+    {
+      "title": "Bake",
+      "text": "Bake until set through the center; cool completely for clean swirls. Allow 36–41 minutes; verify 200°F at the center."
+    },
+    {
+      "title": "Cool",
+      "text": "Cool on a rack for 60 minutes before slicing."
+    }
+  ],
+  "notes": "Make ahead: weigh the dry ingredients the evening before. Freezer-Friendly Verdict: Yes. Cool completely and freeze sliced or individually wrapped for up to 2 months. Fridge reheat: wrap a serving in a damp towel and microwave for 15–25 seconds. Freezer reheat: thaw wrapped, then warm the same way. Serve with soup or gravy for a softer bite. Allow about 1–2 hours for rising and proofing in addition to mixing and baking. Estimated nutrition per serving (1/8 of recipe): 144 kcal, 4.6 g protein, 27.6 g total carbohydrate, 1.5 g fat, 2.4 g fiber, 198 mg sodium.",
+  "source": "Glenn",
+  "preferredMethod": "Samsung conventional oven",
+  "methods": [
+    {
+      "label": "Anova Precision Oven Gen 1",
+      "cookMin": 38,
+      "equipment": [
+        "Anova Precision Oven Gen 1",
+        "Digital kitchen scale"
+      ],
+      "steps": [
+        {
+          "title": "Mix the dough",
+          "text": "Combine {bf}, {rye}, {water}, {molasses}, {oil}, {yeast}, {salt}. Use room-temperature liquids and softened fat. Mix until no dry flour remains."
+        },
+        {
+          "title": "Develop the dough",
+          "text": "Knead 6–8 minutes until smooth. For wet dough, fold in the bowl with damp hands."
+        },
+        {
+          "title": "Tint the swirl",
+          "text": "Divide the dough in half. Knead {cocoa} into one half with damp fingers; keep both pieces covered."
+        },
+        {
+          "title": "Let rise",
+          "text": "Cover and let rise 45–75 minutes at room temperature until about doubled."
+        },
+        {
+          "title": "Shape",
+          "text": "Pat the two dough colors into matching rectangles. Stack, roll tightly and place seam down in an 8-by-4-inch loaf pan."
+        },
+        {
+          "title": "Proof",
+          "text": "Cover and proof 30–50 minutes until puffy; a light fingertip dent should return slowly."
+        },
+        {
+          "title": "Heat the oven",
+          "text": "Install the bottom drip pan. Set APO to convection, Sous Vide OFF, 355°F, 0% steam, rear element only, probe off."
+        },
+        {
+          "title": "Bake",
+          "text": "Bake until set through the center; cool completely for clean swirls. Allow 34–39 minutes; verify 200°F at the center."
+        },
+        {
+          "title": "Cool",
+          "text": "Cool on a rack for 60 minutes before slicing."
+        }
+      ]
+    }
+  ],
+  "totalMin": 173
+}

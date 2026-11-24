@@ -5,32 +5,159 @@
   "title": "Long John Silver's Style Coleslaw",
   "description": "A sweet, tangy fast-food-style coleslaw dressing blended smooth with an immersion blender and tossed with cabbage mix.",
   "category": "Salad",
-  "tags": ["make-ahead", "no-cook"],
+  "tags": [
+    "make-ahead",
+    "no-cook"
+  ],
   "servings": 10,
   "servingsLabel": "servings",
   "prepMin": 15,
   "cookMin": 0,
-  "equipment": ["Immersion blender", "Tall container"],
+  "equipment": [
+    "Immersion blender",
+    "Tall container"
+  ],
   "ingredients": [
-    { "id": "cabbage", "qty": 9.33, "unit": "cup", "name": "coleslaw cabbage mix", "note": "about 2 1/3 quarts", "group": "Slaw" },
-    { "id": "mayo", "qty": 0.75, "unit": "cup", "name": "mayonnaise", "group": "Dressing" },
-    { "id": "sugar", "qty": 0.5, "unit": "cup", "name": "sugar", "group": "Dressing" },
-    { "id": "milk", "qty": 0.33, "unit": "cup", "name": "milk", "group": "Dressing" },
-    { "id": "buttermilk", "qty": 0.33, "unit": "cup", "name": "buttermilk", "note": "or 1/3 cup milk plus 1 1/2 tsp vinegar", "group": "Dressing" },
-    { "id": "lemon", "qty": 3, "unit": "tbsp", "name": "lemon juice", "group": "Dressing" },
-    { "id": "vinegar", "qty": 1.5, "unit": "tbsp", "name": "white vinegar", "group": "Dressing" },
-    { "id": "onion", "qty": 1.5, "unit": "tbsp", "name": "dried minced onion", "group": "Dressing" },
-    { "id": "salt", "qty": 0.75, "unit": "tsp", "name": "salt", "group": "Dressing" },
-    { "id": "pepper", "qty": 0.25, "unit": "tsp", "name": "black pepper", "group": "Dressing" }
+    {
+      "id": "cabbage",
+      "qty": 9.33,
+      "unit": "cup",
+      "name": "coleslaw cabbage mix",
+      "note": "about 2 1/3 quarts",
+      "group": "Slaw"
+    },
+    {
+      "id": "mayo",
+      "qty": 0.75,
+      "unit": "cup",
+      "name": "mayonnaise",
+      "group": "Dressing"
+    },
+    {
+      "id": "sugar",
+      "qty": 0.5,
+      "unit": "cup",
+      "name": "sugar",
+      "group": "Dressing"
+    },
+    {
+      "id": "milk",
+      "qty": 0.33,
+      "unit": "cup",
+      "name": "milk",
+      "group": "Dressing"
+    },
+    {
+      "id": "buttermilk",
+      "qty": 0.33,
+      "unit": "cup",
+      "name": "buttermilk",
+      "note": "or 1/3 cup milk plus 1 1/2 tsp vinegar",
+      "group": "Dressing"
+    },
+    {
+      "id": "lemon",
+      "qty": 3,
+      "unit": "tbsp",
+      "name": "lemon juice",
+      "group": "Dressing"
+    },
+    {
+      "id": "vinegar",
+      "qty": 1.5,
+      "unit": "tbsp",
+      "name": "white vinegar",
+      "group": "Dressing"
+    },
+    {
+      "id": "onion",
+      "qty": 1.5,
+      "unit": "tbsp",
+      "name": "dried minced onion",
+      "group": "Dressing"
+    },
+    {
+      "id": "salt",
+      "qty": 0.75,
+      "unit": "tsp",
+      "name": "salt",
+      "group": "Dressing"
+    },
+    {
+      "id": "pepper",
+      "qty": 0.25,
+      "unit": "tsp",
+      "name": "black pepper",
+      "group": "Dressing"
+    }
   ],
   "steps": [
-    { "title": "Add dressing ingredients", "text": "Add {mayo}, {sugar}, {milk}, {buttermilk}, {lemon}, {vinegar}, {onion}, {salt} and {pepper} to a tall container." },
-    { "title": "Blend", "text": "Blend with an immersion blender until completely smooth and slightly thickened. This hydrates the dried minced onion instantly and gives a silky, fast-food-style dressing." },
-    { "title": "Dress", "text": "Pour about 80 percent of the dressing over {cabbage}." },
-    { "title": "Toss", "text": "Toss thoroughly and let sit for 10 minutes." },
-    { "title": "Adjust", "text": "Add the remaining dressing until it reaches your perfect creaminess." },
-    { "title": "Chill", "text": "Chill for at least 1 hour. Overnight is best." }
+    {
+      "title": "Add dressing ingredients",
+      "text": "Add {mayo}, {sugar}, {milk}, {buttermilk}, {lemon}, {vinegar}, {onion}, {salt} and {pepper} to a tall container."
+    },
+    {
+      "title": "Blend",
+      "text": "Blend with an immersion blender until completely smooth and slightly thickened. This hydrates the dried minced onion instantly and gives a silky, fast-food-style dressing."
+    },
+    {
+      "title": "Dress",
+      "text": "Pour about 80 percent of the dressing over {cabbage}."
+    },
+    {
+      "title": "Toss",
+      "text": "Toss thoroughly and let sit for 10 minutes."
+    },
+    {
+      "title": "Adjust",
+      "text": "Add the remaining dressing until it reaches your perfect creaminess."
+    },
+    {
+      "title": "Chill",
+      "text": "Chill for at least 1 hour. Overnight is best."
+    }
   ],
-  "notes": "Dressing for 2 1/3 quarts of cabbage mix. It makes a slightly generous amount, which is intentional.",
-  "source": "Glenn"
+  "notes": "Dressing for 2 1/3 quarts of cabbage mix. It makes a slightly generous amount, which is intentional. Estimated nutrition per serving (1/10 of recipe): 179 kcal, 1.6 g protein, 15.7 g total carbohydrate, 12.7 g fat, 1.7 g fiber, 310 mg sodium. Based on the measured ingredients; brands and optional additions can change these values.",
+  "source": "Glenn",
+  "preferredMethod": "Immersion blender",
+  "methods": [
+    {
+      "label": "Balloon whisk",
+      "cookMin": 15,
+      "equipment": [
+        "Balloon whisk",
+        "Tall container"
+      ],
+      "steps": [
+        {
+          "title": "Whisk the dressing",
+          "text": "Use a broad bowl. Beat the dressing briskly for 60–90 seconds; fold solid ingredients in by hand."
+        },
+        {
+          "title": "Add dressing ingredients",
+          "text": "Add {mayo}, {sugar}, {milk}, {buttermilk}, {lemon}, {vinegar}, {onion}, {salt} and {pepper} to a tall container."
+        },
+        {
+          "title": "Blend",
+          "text": "Blend with a whisk until completely smooth and slightly thickened. This hydrates the dried minced onion instantly and gives a silky, fast-food-style dressing."
+        },
+        {
+          "title": "Dress",
+          "text": "Pour about 80 percent of the dressing over {cabbage}."
+        },
+        {
+          "title": "Toss",
+          "text": "Toss thoroughly and let sit for 10 minutes."
+        },
+        {
+          "title": "Adjust",
+          "text": "Add the remaining dressing until it reaches your perfect creaminess."
+        },
+        {
+          "title": "Chill",
+          "text": "Chill for at least 1 hour. Overnight is best."
+        }
+      ]
+    }
+  ]
 }

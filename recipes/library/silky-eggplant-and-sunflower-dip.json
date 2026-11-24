@@ -94,5 +94,43 @@
     }
   ],
   "notes": "Yield: About 1 1/2 cups. One serving is 1/4 cup. Make ahead: Braise the eggplant a day ahead. Keep the cooking juices for blending. Refrigerate within 2 hours and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze for up to 2 months and blend briefly after thawing to redistribute the seed oil. Fridge reheat: Serve chilled. Stir until smooth just before portioning. Freezer reheat: If already frozen, thaw covered in the refrigerator, then whisk or blend briefly and serve cold. Option A includes vinegar and garlic. For gentler Option B, omit the vinegar and halve the garlic. The dip is dairy-free. Estimated nutrition per serving (1/6 of recipe): 51 kcal, 1.9 g protein, 4.4 g total carbohydrate, 3.4 g fat, 2.1 g fiber, 3 mg sodium. The estimate covers the prepared condiment. Add separately served foods when totaling a meal.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "10-inch HexClad skillet",
+  "methods": [
+    {
+      "label": "Enamel Dutch oven",
+      "cookMin": 21,
+      "equipment": [
+        "Enamel Dutch oven",
+        "Immersion blender and tall heatproof jug",
+        "Heatproof liquid measuring cup"
+      ],
+      "steps": [
+        {
+          "title": "Set up the cooking vessel",
+          "text": "Start the enamel Dutch oven over medium-low heat for 2–3 minutes; use the lid for covered steps. Reduce heat once liquids simmer and stir across the heavy base."
+        },
+        {
+          "title": "Braise the eggplant",
+          "text": "Combine {eggplant}, {broth}, {garlic} and {paprika} in the HexClad. Cover and simmer for 12–16 minutes, stirring twice, until the eggplant collapses under a spoon."
+        },
+        {
+          "title": "Concentrate the base",
+          "text": "Uncover and stir over medium heat for 2–4 minutes until the eggplant is very soft and the remaining liquid lightly coats the pan."
+        },
+        {
+          "title": "Blend the sunflower dip",
+          "text": "Blend the eggplant and all its juices with {sunflower} and {vinegar} until soft and spoonable."
+        },
+        {
+          "title": "Adjust the consistency",
+          "text": "Scrape all of the mixture into the measuring cup. Add cold water a teaspoon at a time if needed to reach about 1 1/2 cups, maintaining a smooth spoonable texture."
+        },
+        {
+          "title": "Serve",
+          "text": "Cool in a shallow covered container, then serve chilled with soft vegetables or swirl a spoonful through warm rice."
+        }
+      ]
+    }
+  ]
 }

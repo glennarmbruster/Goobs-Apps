@@ -130,5 +130,52 @@
     }
   ],
   "notes": "Sauce yield: About 1 1/4 cups for two. Make ahead: Peel and pit the plums ahead; refrigerate covered, or freeze them if fresh plums are especially good. Option A uses plum and a short star anise infusion. For gentler Option B, use ripe peeled pear, omit the ginger and skip the star anise. Chill leftovers promptly in shallow portions and refrigerate for up to 3 days. Freezer-Friendly Verdict: Yes. The fruit glaze keeps thigh pieces coated for up to 2 months in the freezer. Fridge reheat: Warm one portion covered in its sauce in a HexClad skillet over medium-low, loosening with a splash of water if needed. Stir or turn the chicken gently, checking from 6 minutes, until it reaches 165°F throughout. Freezer reheat: Thaw overnight in the refrigerator, then follow the fridge reheating directions and stir the sauce smooth. Estimated nutrition per serving (1/2 of recipe): 230 kcal, 29.3 g protein, 13.4 g total carbohydrate, 6.0 g fat, 0.8 g fiber, 198 mg sodium. Includes the measured broth and sauce. Sodium varies with your broth.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "HexClad wok with lid",
+  "methods": [
+    {
+      "label": "Enamel Dutch oven",
+      "cookMin": 28,
+      "equipment": [
+        "Enamel Dutch oven",
+        "Thin-tip instant-read thermometer",
+        "Immersion blender and deep heatproof jug",
+        "Fine-mesh sieve"
+      ],
+      "steps": [
+        {
+          "title": "Set up the cooking vessel",
+          "text": "Start the enamel Dutch oven over medium-low heat for 2–3 minutes; use the lid for covered steps. Reduce heat once liquids simmer and stir across the heavy base."
+        },
+        {
+          "title": "Poach the plums",
+          "text": "Simmer {plum}, {broth} and {anise} in the Enamel Dutch oven, covered, over medium-low. Remove and discard the whole pod after 2 minutes; let the fruit soften for another 3 minutes."
+        },
+        {
+          "title": "Braise the thighs",
+          "text": "Cut {chicken} across the grain into 1-inch pieces and nestle into the liquid at the base of the Enamel Dutch oven. Cover and simmer gently for 10–17 minutes, turning halfway. Pull each piece at 175°F and keep it covered with a spoonful of juice."
+        },
+        {
+          "title": "Puree the plum glaze",
+          "text": "Blend the cooked plums and braising liquid in a deep heatproof jug, then strain back into the Enamel Dutch oven and bring to a boil."
+        },
+        {
+          "title": "Balance the glaze",
+          "text": "Stir {aminos}, {ginger} and {maple} into the boiled base. Reduce to about 5/8 cup of sauce per serving."
+        },
+        {
+          "title": "Mix the slurry",
+          "text": "Stir {starch} into {water} until completely smooth."
+        },
+        {
+          "title": "Bind the sauce",
+          "text": "Bring the sauce to a simmer. Whisk in the freshly stirred slurry and let it bubble gently for 1 minute, stirring until it coats the back of a spoon."
+        },
+        {
+          "title": "Glaze the chicken",
+          "text": "Off heat, fold the thigh pieces and their resting juices into the glaze. Spoon the extra glaze over each portion."
+        }
+      ]
+    }
+  ]
 }

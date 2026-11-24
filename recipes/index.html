@@ -317,6 +317,7 @@ main.wrap.sm-page{max-width:1040px;margin-inline:auto}.sm-book{min-width:0;paddi
 @media(prefers-color-scheme:dark){.sm-page{--sm-paper:#25251f;--sm-ink:#f5eee0;--sm-muted:#c4bbab;--sm-green:#aed1af;--sm-line:#514e3f;--sm-tint:#34392d;--sm-edge:#89836d}.sm-entry{background:#29362c;color:#d8ecd5;border-color:#728e73}.sm-entry small{color:#c1d2c0}.sm-entry:hover,.sm-entry:focus-visible{background:#354635}}
 
 .sm-sr{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.device-choice,.method-edit{margin:12px 0;padding:12px;border:1px solid var(--line);border-radius:9px}.device-choice label,.method-edit label{font-weight:600}.device-choice select,.method-edit input,.method-edit textarea{display:block;width:100%;margin:4px 0 10px;font:inherit}.device-choice select{min-height:44px}.browse-summary{display:flex;align-items:center;justify-content:space-between;gap:12px}.browse-summary small{color:var(--sm-muted);text-align:right}.method-edit textarea{min-height:3.5em}.method-edit .tall{min-height:12em}
 </style>
 </head>
 <body>
@@ -680,14 +681,17 @@ const FR = [[0, ''], [1 / 8, '⅛'], [1 / 4, '¼'], [1 / 3, '⅓'], [3 / 8, '⅜
 const METRIC = new Set(['g', 'ml', 'kg', 'l']);
 function fmtNum(x, unit) {
   if (x == null || !Number.isFinite(x) || x < 0) return '';
-  if (METRIC.has(unit)) {
-    if (unit === 'kg' || unit === 'l') return String(+x.toFixed(2));
-    return x >= 10 ? String(Math.round(x)) : String(+x.toFixed(1));
+  if (METRIC.has(unit)) return String(Number(x.toFixed(4)));
+  if (x > 0 && x < 0.125) {
+    for (const denominator of [16, 32, 64]) {
+      const numerator = Math.round(x * denominator);
+      if (numerator && Math.abs(x * denominator - numerator) < 0.000001) return numerator + '/' + denominator;
+    }
+    return String(Number(x.toFixed(6)));
   }
-  if (x >= 100) return String(Math.round(x));
   let whole = Math.floor(x + 1e-9), frac = x - whole, best = FR[0], err = Infinity;
   for (const c of FR) { const e = Math.abs(frac - c[0]); if (e < err - 1e-12) { err = e; best = c; } }
-  if (err > 0.035) return String(+x.toFixed(x >= 10 ? 1 : 2));
+  if (err > 0.001) return String(Number(x.toFixed(5)));
   if (best[0] === 1) { whole += 1; best = FR[0]; }
   if (!whole && !best[1]) return x > 0 ? '⅛' : '0';
   return (whole ? String(whole) : '') + (whole && best[1] ? ' ' : '') + best[1];
@@ -812,6 +816,16 @@ function parseServings(v) {
   const label = flat(m[2], 30).toLowerCase();
   return { n, label: /^servings?$/.test(label) ? '' : label };
 }
+function normMethods(raw) {
+  const labels=new Set();
+  return arr(raw).slice(0,16).flatMap(m=>{
+    if(!m || typeof m!=='object')return [];
+    const label=flat(m.label,100),steps=arr(m.steps).map(normStep).filter(Boolean).slice(0,MAX_STEPS);
+    if(!label||labels.has(label)||!steps.length)return [];
+    labels.add(label);
+    return [{label,cookMin:minutesOf(m.cookMin),equipment:arr(m.equipment).map(x=>flat(x,120)).filter(Boolean).slice(0,20),steps}];
+  });
+}
 function normRecipe(raw, { id } = {}) {
   if (!raw || typeof raw !== 'object') return null;
   const title = flat(raw.title !== undefined ? raw.title : raw.name, 120);
@@ -835,7 +849,7 @@ function normRecipe(raw, { id } = {}) {
   const equipment = arr(typeof raw.equipment === 'string' ? raw.equipment.split('\n') : raw.equipment).map(t => flat(t, 80)).filter(Boolean).slice(0, 20);
   const category = flat(raw.category, 30) || 'Other';
   const rid = id || cleanId(raw.id) || slug(title, 48) || uid();
-  return { id: rid, title, description: block(raw.description, 600), category: CAT_ALIAS[category.toLowerCase()] || CATS.find(c => c.toLowerCase() === category.toLowerCase()) || category, tags,
+  return { id: rid, title, preferredMethod:flat(raw.preferredMethod,100), methods:normMethods(raw.methods), inheritMethods:raw.inheritMethods ?? !Array.isArray(raw.methods), description: block(raw.description, 600), category: CAT_ALIAS[category.toLowerCase()] || CATS.find(c => c.toLowerCase() === category.toLowerCase()) || category, tags,
     servings: sv0.n || 4, servingsLabel: label, prepMin: prep, cookMin: cook, totalMin: total, source: flat(raw.source, 200), sourceUrl: safeUrl(raw.sourceUrl !== undefined ? raw.sourceUrl : raw.url).slice(0, 500),
     ingredients: ings, steps, equipment, notes: block(raw.notes, 4000), updated: isNum(raw.updated) ? raw.updated : Date.now() };
 }
@@ -885,19 +899,37 @@ const unknownTokens = r => { const bad = new Set(); for (const s of r.steps) { T
 const ingLine = (g, f = 1) => [amountText(g, f), g.name].filter(Boolean).join(' ') + (g.note ? ', ' + g.note : '');
 function ingredientsToText(r) {
   let last = '', out = [];
-  for (const g of r.ingredients) { if (g.group !== last) { if (g.group) out.push('# ' + g.group); last = g.group; } out.push(ingLine(g)); }
+  for (const g of r.ingredients) { if (g.group !== last) { out.push(g.group ? '# ' + g.group : '#'); last = g.group; } out.push(ingLine(g)); }
   return out.join('\n');
 }
 function textToIngredients(text, old = []) {
-  const out = []; let group = '';
+  const out = [], free = old.slice();
+  let group = '';
   for (const raw of sv(text).replace(/\r\n?/g, '\n').split('\n')) {
-    const line = raw.trim(); if (!line) continue;
+    const line = raw.trim();
+    if (!line) continue;
+    if (line === '#') { group = ''; continue; }
     const h = /^#{1,3}\s*(.+?)\s*:?$/.exec(line) || (/^[^\d¼½¾⅓⅔⅛]{2,40}:$/.test(line) ? [0, line.replace(/:$/, '')] : null);
     if (h) { group = flat(h[1], 60); continue; }
-    const g = normIngredient(line); if (!g) continue; g.group = group; out.push(g);
+    let index = free.findIndex(o => ingLine(o) === line && o.group === group);
+    if (index < 0) index = free.findIndex(o => ingLine(o) === line);
+    if (index >= 0) { out.push({...free.splice(index, 1)[0], group}); continue; }
+    const g = normIngredient(line);
+    if (!g) continue;
+    // A comma can belong to the ingredient name. Retain that name when just its amount changes.
+    const suffix = o => o.name + (o.note ? ', ' + o.note : '');
+    index = free.findIndex(o => line === suffix(o) || line.endsWith(' ' + suffix(o)));
+    if (index >= 0) {
+      const o = free.splice(index, 1)[0];
+      out.push({...o, group, qty:g.qty, qtyMax:g.qtyMax, unit:g.unit});
+      continue;
+    }
+    index = free.findIndex(o => o.name.toLowerCase() === g.name.toLowerCase());
+    if (index >= 0) {
+      const o = free.splice(index, 1)[0]; g.id = o.id; if (o.as) g.as = o.as;
+    }
+    g.group = group; out.push(g);
   }
-  const free = old.slice();
-  for (const g of out) { const i = free.findIndex(o => o.name.toLowerCase() === g.name.toLowerCase()); if (i >= 0) { g.id = free[i].id; if (free[i].as) g.as = free[i].as; free.splice(i, 1); } }
   return uniqueIds(out);
 }
 const stepsToText = r => r.steps.map(s => (s.title ? '## ' + s.title + '\n' : '') + s.text.replace(/\n/g, ' ')).join('\n');
@@ -929,9 +961,12 @@ function recipeJSON(r) {
   if (r.description) o.description = r.description;
   o.category = r.category; if (r.tags.length) o.tags = r.tags;
   o.servings = r.servings; if (r.servingsLabel) o.servingsLabel = r.servingsLabel;
+  if(r.totalMin!=null && r.totalMin!==(r.prepMin||0)+(r.cookMin||0))o.totalMin=r.totalMin;
   if (r.prepMin != null) o.prepMin = r.prepMin; if (r.cookMin != null) o.cookMin = r.cookMin;
   if (r.source) o.source = r.source; if (r.sourceUrl) o.sourceUrl = r.sourceUrl;
   if (r.equipment.length) o.equipment = r.equipment;
+  if (r.preferredMethod) o.preferredMethod=r.preferredMethod;
+  if (r.methods?.length || r.inheritMethods===false) o.methods=r.methods.map(m=>({...m,steps:m.steps.map(s=>({title:s.title,text:s.text,...(s.timer?{timer:s.timer}:{})}))}));
   o.ingredients = r.ingredients.map(g => { const x = { id: g.id }; if (g.group) x.group = g.group; if (g.qty != null) x.qty = g.qty; if (g.qtyMax != null) x.qtyMax = g.qtyMax; if (g.unit) x.unit = g.unit; x.name = g.name; if (g.note) x.note = g.note; if (g.as) x.as = g.as; return x; });
   o.steps = r.steps.map(s => { const x = {}; if (s.title) x.title = s.title; x.text = s.text; if (s.timer) x.timer = s.timer; return x; });
   if (r.notes) o.notes = r.notes;
@@ -941,7 +976,7 @@ function recipeJSON(r) {
 /* ---------- nutrition (estimates) ----------
    recipes/nutrition.json maps ingredient names to USDA foods (Calorie Lookup's data) or a product's own label.
    Raw ingredient weights are added up and divided by the recipe's servings. */
-const NFILEV = '6c174afa6b17';
+const NFILEV = 'df092ae9c738';
 let NUTR = null, nutrState = 'idle';
 const NDV = { fat: 78, sat: 20, chol: 300, na: 2300, carb: 275, fib: 28, pro: 50, k: 4700, ca: 1300, fe: 18 };
 const SALT_TSP = { morton: 4.95, diamond: 2.89 };   /* labels: Morton 480 mg per 1/4 tsp, Diamond Crystal 280 mg per 1/4 tsp */
@@ -1013,10 +1048,10 @@ const perServing = (r, key) => { const n = recipeNutrition(r); return n ? nVal(n
 function normMark(m) {
   m = m && typeof m === 'object' ? m : {};
   const ints = a => [...new Set(arr(a).filter(n => Number.isInteger(n) && n >= 0 && n < 500))];
-  return { fav: m.fav === true, hidden: m.hidden === true, note: block(m.note, 4000), made: arr(m.made).filter(isISO).slice(-200),
+  return { method: flat(m.method,100), fav: m.fav === true, hidden: m.hidden === true, note: block(m.note, 4000), made: arr(m.made).filter(isISO).slice(-200),
     servings: isNum(m.servings) && m.servings > 0 && m.servings <= 1000 ? m.servings : null, cat: typeof m.cat === 'string' ? flat(m.cat, 30) : '', prog: { i: ints(m.prog && m.prog.i), s: ints(m.prog && m.prog.s) } };
 }
-const markEmpty = m => !m.fav && !m.hidden && !m.cat && !m.note && !m.made.length && m.servings == null && !m.prog.i.length && !m.prog.s.length;
+const markEmpty = m => !m.method && !m.fav && !m.hidden && !m.cat && !m.note && !m.made.length && m.servings == null && !m.prog.i.length && !m.prog.s.length;
 function normalizeData(raw) {
   raw = raw && typeof raw === 'object' ? raw : {};
   let dropped = 0; const recipes = [], ids = new Set();
@@ -1067,20 +1102,26 @@ function repoInfo() {
 }
 const asLibShape = j => (Array.isArray(j) ? { recipes: j } : j && Array.isArray(j.recipes) ? j : { recipes: [j] });
 async function fetchLibFolder() {
-  const info = repoInfo(); if (!info) return null;
+  const info = repoInfo();
   let cache = {};
   if (db) { try { const c = await idbGet(db, 'libfiles'); if (c) cache = JSON.parse(c) || {}; } catch { cache = {}; } }
-  const res = await fetch(`https://api.github.com/repos/${info.owner}/${info.repo}/contents/recipes/library`, { cache: 'no-store' });
-  if (res.status === 404) { if (db) idbPut(db, 'libfiles', '{}').catch(() => {}); return {}; }
-  if (!res.ok) throw new Error('HTTP ' + res.status);
-  const list = (await res.json());
+  let list;
+  if(info) try {
+    const remote=await fetch('https://api.github.com/repos/'+info.owner+'/'+info.repo+'/contents/recipes/library',{cache:'no-store'});
+    if(remote.ok) list=await remote.json();
+  } catch {}
+  if(!Array.isArray(list)){
+    const local=await fetch('library-files.json',{cache:'no-store'});
+    if(!local.ok)throw Error('Recipe listing unavailable');
+    list=await local.json();
+  }
   if (!Array.isArray(list)) throw new Error('bad listing');
   const files = list.filter(f => f && f.type === 'file' && /\.json$/i.test(f.name || '')).slice(0, 500), next = {};
   const one = async f => {
     const old = cache[f.name];
     if (old && old.sha === f.sha) { next[f.name] = old; return; }
     try {
-      let r = await fetch('library/' + encodeURIComponent(f.name), { cache: 'no-store' });
+      let r = await fetch('library/' + encodeURIComponent(f.name)+(f.sha?'?v='+encodeURIComponent(f.sha):''), { cache: 'no-store' });
       if (!r.ok && f.download_url) r = await fetch(f.download_url, { cache: 'no-store' });
       if (!r.ok) throw new Error('HTTP ' + r.status);
       const txt = await r.text();
@@ -1140,12 +1181,20 @@ function setCategory(r, src, cat) {
   if (src === 'mine') { const i = state.recipes.findIndex(x => x.id === r.id); if (i >= 0) { state.recipes[i] = { ...state.recipes[i], category: cat, updated: Date.now() }; } setMark(r.id, { cat: '' }); }
   else { const base = LIB.recipes.find(x => x.id === r.id); setMark(r.id, { cat: base && base.category === cat ? '' : cat }); }
 }
+function personalMethods(r) {
+  if(!r.inheritMethods || r.methods?.length)return r;
+  const shared=LIB.recipes.find(c=>c.id===r.id);
+  if(!shared?.methods?.length)return r;
+  const ids=new Set(r.ingredients.map(g=>g.id));
+  const ms=shared.methods.filter(m=>m.steps.every(s=>[...s.text.matchAll(/\{([\w-]+)\}/g)].every(x=>ids.has(x[1]))));
+  return ms.length?{...r,preferredMethod:r.preferredMethod||shared.preferredMethod,methods:ms}:r;
+}
 function allRecipes({ withHidden = false } = {}) {
   const mine = myIds();
-  const out = state.recipes.map(r => ({ r, src: 'mine' })).concat(LIB.recipes.filter(r => !mine.has(r.id)).map(r => ({ r: libCat(r), src: 'lib' })));
+  const out = state.recipes.map(r => ({ r:personalMethods(r), src: 'mine' })).concat(LIB.recipes.filter(r => !mine.has(r.id)).map(r => ({ r: libCat(r), src: 'lib' })));
   return withHidden ? out : out.filter(x => !mark(x.r.id).hidden);
 }
-const findRecipe = id => { const m = state.recipes.find(r => r.id === id); if (m) return { r: m, src: 'mine', shadows: LIB.recipes.some(x => x.id === id) }; const l = LIB.recipes.find(r => r.id === id); return l ? { r: libCat(l), src: 'lib', shadows: false } : null; };
+const findRecipe = id => { const m = state.recipes.find(r => r.id === id); if (m) return { r: personalMethods(m), src: 'mine', shadows: LIB.recipes.some(x => x.id === id) }; const l = LIB.recipes.find(r => r.id === id); return l ? { r: libCat(l), src: 'lib', shadows: false } : null; };
 const freeId = base => { const used = new Set([...state.recipes.map(r => r.id), ...LIB.recipes.map(r => r.id)]); let id = base || uid(), n = 2; while (used.has(id)) id = (base || 'recipe') + '-' + n++; return id; };
 
 /* ---------- the meal: a few recipes picked together (a main, some sides) ---------- */
@@ -1579,7 +1628,7 @@ function recipeSearchIndex(r) {
   const substantive = ing.filter(s => !/\b(?:broth|stock|bouillon|base|seasoning|drippings|flavoring|flavored|gelatin|fat|rub|sauce|spice blend)\b/.test(s) &&
     !/\b(?:mock|meatless|vegan|vegetarian|imitation|plant based|chicken style)\b/.test(s));
   const proteins = proteinWords(substantive);
-  const equipment = searchText((r.equipment || []).join(' '));
+  const equipment = searchText([...(r.equipment || []), ...(r.methods || []).flatMap(m => [m.label, ...(m.equipment || [])])].join(' '));
   const words = [r.title, r.description, r.category, ...ing, equipment,
     ...tags.filter(t => !t.startsWith('for-') && !['high-protein','freezer-friendly','for-two'].includes(t))];
   if (category === 'main dish' || category === 'soup stew') words.push('dinner entree supper');
@@ -1693,7 +1742,7 @@ const sauceGroups = [
   ['Thai', /^thai/], ['Filipino', /^filipino/], ['Caribbean & Hawaiian', /^(jamaican|caribbean|hawaiian)/],
   ['Mexican & Peruvian', /^(mexican|peruvian)/], ['Spanish & Lebanese', /^(spanish|catalan|lebanese)/],
   ['Southern American', /^(southern|louisiana|cajun|carolina-gold)$/], ['French & Swedish', /^(french|swedish)/],
-  ['Asian-inspired', /^asian-inspired$/], ['Aiolis & dips', /^(aioli|dip|dipping-sauce)$/],
+  ['Taiwanese', /^taiwanese/], ['Stir-fry sauces', /^(?:stir-fry|wok)$/], ['Asian-inspired', /^asian-inspired$/], ['Aiolis & dips', /^(aioli|dip|dipping-sauce)$/],
   ['Marinades & dressings', /^(marinade|dressing)$/], ['Finishing butters', /^(compound-butter|finishing-butter)$/],
   ['Rubs & seasonings', /^(bbq-rub|dry-rub|wet-rub|seasoning-paste)$/],
   ['Barbecue sauces & glazes', /^(barbecue-sauce|barbecue-glaze|bbq-sauce|glaze)$/],
@@ -1747,7 +1796,7 @@ function sauceBody(r) {
     const note = (g.note || '').replace(/\s*Low-sodium batch:\s*(?:use .+? total|omit)\./ig, '').trim();
     return '<li><strong>'+esc(sauceAmount(g, low))+'</strong> '+esc(g.name)+(note?'<small>'+esc(note)+'</small>':'')+'</li>';
   }).join('');
-  const steps = r.steps.map(st => {
+  const steps = selectedRecipe(r).steps.map(st => {
     const plain = st.text.replace(TOKEN_RE,(token,id) => r.ingredients.find(g=>g.id===id)?.name || token);
     return '<li>'+(st.title?'<strong>'+esc(st.title)+'.</strong> ':'')+esc(plain)+'</li>';
   }).join('');
@@ -1755,7 +1804,7 @@ function sauceBody(r) {
   const totals = low ? stats.lower : stats.standard;
   const label = low ? 'Lower-sodium amounts' : 'Standard amounts';
   return '<div class="sm-detail">'+(r.description?'<p class="sm-deck">'+esc(r.description)+'</p>':'')+
-    '<p class="sm-batch">'+label+' · Full recipe · '+esc(fmtNum(r.servings))+' '+esc(r.servingsLabel || 'servings')+'</p>'+
+    methodsHTML(r)+'<p class="sm-batch">'+label+' · Full recipe · '+esc(fmtNum(r.servings))+' '+esc(r.servingsLabel || 'servings')+'</p>'+
     '<div class="sm-columns"><div><h3>Ingredients</h3><ul>'+ingredients+'</ul></div><div><h3>Directions</h3><ol>'+steps+'</ol></div></div>'+
     (totals?'<p><strong>Estimated per '+esc(portion)+'</strong><br>'+esc(totals)+'</p>':'')+
     (note?'<details class="sm-notes"><summary>Recipe notes</summary><p>'+esc(note)+'</p></details>':'')+
@@ -1806,6 +1855,73 @@ function refreshSauceRows() {
 }
 
 
+const menuCategories = ['All','Main dish','Sides','Baking','Soup & stew','Salad'];
+const menuMemory = new Map();
+let lastMenu = null;
+const menuPath = cat => '#/menu/'+encodeURIComponent(cat);
+function menuState(cat) {
+  if(!menuMemory.has(cat)) menuMemory.set(cat,{q:'',group:'',open:new Set()});
+  return menuMemory.get(cat);
+}
+function menuBucket(r,cat) {
+  if(cat==='All') return r.category;
+  const s = (r.title+' '+r.tags.join(' ')).toLowerCase();
+  if (cat==='Main dish') {
+    const names = recipeSearchIndex(r).substantive;
+    for (const name of names) {
+      const protein = proteinWords([name]);
+      if (protein.has('seafood')) return 'Fish & seafood';
+      if (protein.has('chicken')) return 'Chicken';
+      if (protein.has('beef')) return 'Beef & steak';
+      if (protein.has('pork')) return 'Pork';
+      if (protein.has('turkey') || protein.has('duck')) return 'Other poultry';
+      if (protein.has('lamb')) return 'Lamb';
+    }
+    return 'Other mains';
+  }
+  const groups = cat==='Baking' ? [['Sourdough',/sourdough/],['Rolls, buns & pretzels',/rolls?|buns?|pretzel|knots|muffins/],['Flatbreads & breadsticks',/pita|focaccia|tortilla|breadsticks/],['Loaves',/loaf|loaves|bread|bâtards/]] :
+   cat==='Sides' ? [['Potatoes & roots',/potato|root|parsnip/],['Rice, pasta & grains',/\b(?:rice|orzo|barley|polenta|grits|rotini|pasta)\b/],['Vegetables',/broccoli|asparagus|corn|squash|zucchini|fennel|mushroom|portobello|green/]] :
+   cat==='Soup & stew' ? [['Chicken & seafood',/chicken|shrimp|seafood/],['Beans & lentils',/bean|lentil/],['Creamy soups',/bisque|chowder|potato/]] : [];
+  return groups.find(([,pattern])=>pattern.test(s))?.[0] || (cat==='Salad'?'Salads':'Other '+(cat==='Baking'?'baking':cat==='Soup & stew'?'soups & stews':cat==='Sides'?'sides':'mains'));
+}
+function selectedRecipe(r) {
+  const method=(r.methods||[]).find(x=>x.label===mark(r.id).method);
+  if(!method) return r;
+  return {...r,steps:method.steps,equipment:method.equipment,cookMin:method.cookMin,totalMin:method.cookMin==null?r.totalMin:Math.max(0,(r.totalMin??((r.prepMin||0)+(r.cookMin||0)))-(r.cookMin||0))+method.cookMin};
+}
+function methodsHTML(r) {
+  const selected=mark(r.id).method || '';
+  return '<div class="device-choice"><label>Cooking method <select data-method="'+esc(r.id)+'"><option value="">'+esc(r.preferredMethod||r.equipment[0]||'Original instructions')+' (preferred)</option>'+
+   (r.methods||[]).map(x=>'<option value="'+esc(x.label)+'"'+(x.label===selected?' selected':'')+'>'+esc(x.label)+'</option>').join('')+'</select></label> <a class="btn small" href="#/edit/'+esc(r.id)+'">Edit recipe &amp; methods</a></div>';
+}
+function browseList(cat) { return allRecipes().map(x=>x.r).filter(r=>cat==='All'||r.category===cat); }
+function browseRows(cat) {
+  const m=menuState(cat),q=m.q.trim()?compileRecipeQuery(m.q):null,groups=new Map();
+  for(const r of browseList(cat)) {
+    const g=menuBucket(r,cat);
+    if((m.group && g!==m.group)||(q&&!testRecipeQuery(r,q)))continue;
+    if(!groups.has(g))groups.set(g,[]); groups.get(g).push(r);
+  }
+  if(!groups.size)return '<p class="sm-empty">No recipes match.</p>';
+  return [...groups.keys()].sort().map(g=>'<section class="sm-section"><h2>'+esc(g)+'</h2>'+groups.get(g).sort((a,b)=>a.title.localeCompare(b.title)).map(r=>{
+    const a=selectedRecipe(r),cal=perServing(r,'kcal'),open=m.open.has(r.id);
+    return '<details class="sm-row" data-browse-id="'+esc(r.id)+'"'+(open?' open':'')+'><summary class="browse-summary"><span class="sm-title">'+esc(r.title)+'</span><small>'+esc([fmtMin(a.totalMin),cal>0?Math.round(cal)+' cal/serving':''].filter(Boolean).join(' · '))+'</small></summary><div class="browse-detail">'+(open?browseDetail(r,cat):'')+'</div></details>';
+  }).join('')+'</section>').join('');
+}
+function browseDetail(r,cat){
+  const a=selectedRecipe(r);
+  return '<div class="sm-detail"><p>'+esc(r.description)+'</p>'+methodsHTML(r)+'<div class="sm-columns"><div><h3>Ingredients</h3><ul>'+r.ingredients.map(g=>'<li>'+esc(ingLine(g,1))+'</li>').join('')+'</ul></div><div><h3>Directions</h3><ol>'+a.steps.map(s=>'<li>'+(s.title?'<strong>'+esc(s.title)+'.</strong> ':'')+esc(stepPlain(s.text,r,1))+'</li>').join('')+'</ol></div></div><a class="btn small" data-category-origin="'+esc(cat)+'" href="#/r/'+esc(r.id)+'">Open full recipe</a></div>';
+}
+function browseScreen(cat) {
+ ui.cat=cat;const m=menuState(cat),list=browseList(cat);
+ const groups=[...new Set(list.map(r=>menuBucket(r,cat)))].sort();if(list.length&&!groups.includes(m.group))m.group='';
+ return headerHTML({back:'#/',backLabel:cat==='All'?'All recipes':cat,title:cat==='All'?'All Recipes Menu':cat+' Menu',sub:plural(list.length,'recipe')})+'<main class="wrap sm-page"><div class="sm-book"><h1>'+esc(cat==='All'?'All Recipes':cat)+'</h1><div class="sm-controls"><label>Find a recipe<input type="search" id="browse-q" value="'+esc(m.q)+'" placeholder="Search recipes"></label><label>Group<select id="browse-group"><option value="">All groups</option>'+groups.map(g=>'<option'+(g===m.group?' selected':'')+'>'+esc(g)+'</option>').join('')+'</select></label></div><div id="browse-list">'+browseRows(cat)+'</div></div></main>';
+}
+function methodEditor(m={label:'',cookMin:null,equipment:[],steps:[]}) {
+ return '<fieldset class="method-edit"><legend>Alternative method</legend><label>Tool name<input class="met-name" maxlength="100" value="'+esc(m.label)+'"></label><label>Cook time (minutes)<input class="met-time" type="number" min="0" value="'+esc(m.cookMin??'')+'"></label><label>Equipment, one per line<textarea class="met-eq">'+esc(m.equipment.join('\n'))+'</textarea></label><label>Directions, one step per line<textarea class="met-steps tall">'+esc(stepsToText(m))+'</textarea></label><button type="button" class="btn small" data-action="remove-method">Remove method</button></fieldset>';
+}
+
+
 function cardsHTML() {
   const query = ui.q.trim() ? compileRecipeQuery(ui.q) : null;
   const list = allRecipes().filter(x => matches(x, query, ui.cat)).sort((a, b) => a.r.title.localeCompare(b.r.title, undefined, { sensitivity: 'base' }));
@@ -1827,7 +1943,7 @@ function homeScreen() {
   return headerHTML({ title: '🍳 Recipes', sub: LIB.loading && !all.length ? 'Loading…' : plural(all.length, 'recipe'), right: '<button type="button" class="btn small primary" data-action="add">+ Add</button><a class="btn small" href="#/backup">Backup</a>' })
     + `<main class="wrap">${storageBannerHTML()}${LIB.error && !LIB.loading ? `<div class="banner">${esc(LIB.error)}</div>` : ''}
     ${all.length ? `<input class="search" type="search" id="q" placeholder="Search fish, chicken thighs, air fryer…" value="${esc(ui.q)}" aria-label="Search recipes" autocomplete="off" autocapitalize="none" enterkeyhint="search">` : ''}${chips}
-    ${ui.cat === SAUCE_CATEGORY ? '<a class="sm-entry" href="#/sauce-menu"><strong>Menu</strong><small>Browse all sauces &amp; condiments</small><span class="sm-arrow" aria-hidden="true">›</span></a>' : ''}
+    ${ui.cat === SAUCE_CATEGORY ? '<a class="sm-entry" href="#/sauce-menu"><strong>Menu</strong><small>Browse all sauces &amp; condiments</small><span class="sm-arrow" aria-hidden="true">›</span></a>' : menuCategories.includes(ui.cat) ? '<a class="sm-entry" href="'+menuPath(ui.cat)+'"><strong>Menu</strong><small>'+esc(ui.cat==='All'?'Browse all recipes':'Browse '+ui.cat.toLowerCase()+' recipes')+'</small><span class="sm-arrow" aria-hidden="true">›</span></a>' : ''}
     <div id="rlist">${cardsHTML()}</div>${empty}</main>`;
 }
 const TABS = [['ingredients', 'Ingredients', '🧂'], ['steps', 'Steps', '👩‍🍳'], ['nutrition', 'Nutrition', '🥗'], ['notes', 'Notes', '📝']];
@@ -1916,7 +2032,7 @@ function cookScreen(r) {
     <div class="cookbar"><div class="wrap"><button type="button" class="btn" data-action="cook-prev"${i === 0 ? ' disabled' : ''}>‹ Back</button><button type="button" class="btn" data-action="cook-ing">Ingredients</button>${i < n - 1 ? '<button type="button" class="btn primary" data-action="cook-next">Next ›</button>' : '<button type="button" class="btn primary" data-action="cook-done">Finish</button>'}</div></div>`;
 }
 function recipeScreen(rt) {
-  const { r, tab } = rt, m = mark(r.id);
+  const tab=rt.tab, r=selectedRecipe(rt.r), m=mark(r.id);
   if (tab === 'cook') return cookScreen(r);
   if (tab === 'nutrition') loadNutrition();
   /* desktop: ingredients and steps side by side, so you can cook from a laptop without switching tabs */
@@ -1924,8 +2040,8 @@ function recipeScreen(rt) {
   const body = tab === 'steps' ? stepsTab(r) : tab === 'notes' ? notesTab(r) : tab === 'nutrition' ? nutritionTab(r)
     : both ? `<div class="rx2"><div>${ingredientsTab(r)}</div><div><div class="grp rx2h">Steps</div>${stepsTab(r).replace(/^<button[^>]*data-action="cook"[^>]*>Start cooking<\/button>/, '')}</div></div>` : ingredientsTab(r);
   const nav = `<nav class="tabs" aria-label="Recipe sections"><div class="wrap">${TABS.map(([k, l, ic]) => `<a href="#/r/${esc(r.id)}/${k}"${k === tab ? ' aria-current="page"' : ''}><span class="ico">${ic}</span>${l}</a>`).join('')}</div></nav>`;
-  return headerHTML({ back: sauceMenu.fromRecipe === r.id ? '#/sauce-menu' : '#/', backLabel: sauceMenu.fromRecipe === r.id ? 'Sauce Menu' : 'Recipes', title: r.title, sub: metaLine(r), right: `<button type="button" class="btn small" data-action="fav" aria-pressed="${m.fav}" aria-label="${m.fav ? 'Remove from favourites' : 'Add to favourites'}">${m.fav ? '★' : '☆'}</button><button type="button" class="btn small" data-action="more">More</button>` })
-    + `<main class="wrap">${storageBannerHTML()}${body}</main>${nav}`;
+  return headerHTML({ back: lastMenu?.id===r.id ? menuPath(lastMenu.cat) : sauceMenu.fromRecipe === r.id ? '#/sauce-menu' : '#/', backLabel: lastMenu?.id===r.id ? lastMenu.cat+' Menu' : sauceMenu.fromRecipe === r.id ? 'Sauce Menu' : 'Recipes', title: r.title, sub: metaLine(r), right: `<button type="button" class="btn small" data-action="fav" aria-pressed="${m.fav}" aria-label="${m.fav ? 'Remove from favourites' : 'Add to favourites'}">${m.fav ? '★' : '☆'}</button><button type="button" class="btn small" data-action="more">More</button>` })
+    + `<main class="wrap">${storageBannerHTML()}${methodsHTML(rt.r)}${body}</main>${nav}`;
 }
 function editScreen(rt) {
   const old = rt.r, d = ui.draft && ui.draft.id === (old ? old.id : '') ? ui.draft : null;
@@ -1950,6 +2066,7 @@ function editScreen(rt) {
       <div class="field"><label for="e_src">Source</label><input id="e_src" value="${esc(v.source)}"></div></div>
     <div class="field"><label for="e_url">Source link</label><input id="e_url" inputmode="url" value="${esc(v.url)}" autocapitalize="none"></div>
     <div class="field"><label for="e_eq">Equipment (one per line)</label><textarea id="e_eq" style="min-height:70px">${esc(v.equipment)}</textarea></div>
+    <div class="field"><label for="e_preferred">Preferred cooking method</label><input id="e_preferred" value="${esc(old?.preferredMethod||old?.equipment?.[0]||'')}"></div><div id="method-rows">${(old?.methods||[]).map(methodEditor).join('')}</div><button type="button" class="btn" data-action="add-method">Add cooking method</button>
     <div class="field"><label for="e_notes">Notes</label><textarea id="e_notes">${esc(v.notes)}</textarea></div>
     <div class="dlg-err" id="editErr" role="alert"></div>
     <div class="dlg-actions"><button type="submit" class="btn primary">Save recipe</button><a class="btn" href="${old ? '#/r/' + esc(old.id) : '#/'}">Cancel</a></div></form></main>`;
@@ -1994,6 +2111,7 @@ function route() {
   if (a === 'edit' && b) { const f = findRecipe(b); if (f) return { name: 'edit', r: f.r }; }
   if (a === 'new') return { name: 'edit', r: null };
   if (a === 'backup') return { name: 'backup' };
+  if(a==='menu') { const cat=menuCategories.find(c=>encodeURIComponent(c)===b); if(cat)return {name:'category-menu',cat}; }
   if (a === 'sauce-menu') return { name: 'sauce-menu' };
   if (a === 'meal') return { name: 'meal' };
   return { name: 'home' };
@@ -2002,13 +2120,13 @@ let wakeLock = null, lastKey = '', printing = false;
 async function wakeOn() { try { if ('wakeLock' in navigator && !wakeLock) { wakeLock = await navigator.wakeLock.request('screen'); wakeLock.addEventListener('release', () => { wakeLock = null; }); } } catch { wakeLock = null; } }
 function wakeOff() { try { if (wakeLock) wakeLock.release(); } catch { /* ignore */ } wakeLock = null; }
 function render() {
-  const r = route(), key = r.name + (r.r ? r.r.id : '') + (r.tab || ''), y = window.scrollY;
-  if (r.name === 'home') sauceMenu.fromRecipe = '';
-  const focused = r.name === 'sauce-menu' && key === lastKey ? document.activeElement : null;
-  const control = ['sm-query','sm-group','sm-version'].includes(focused?.id) ? focused.id : '';
-  const selection = control === 'sm-query' ? [focused.selectionStart, focused.selectionEnd] : null;
-  app.innerHTML = r.name === 'sauce-menu' ? sauceMenuScreen() : r.name === 'recipe' ? recipeScreen(r) : r.name === 'edit' ? editScreen(r) : r.name === 'backup' ? backupScreen() : r.name === 'meal' ? mealScreen() : homeScreen() + mealBarHTML();
-  document.title = r.name === 'sauce-menu' ? 'Sauce Menu' : r.name === 'recipe' ? r.r.title : r.name === 'edit' ? (r.r ? 'Edit recipe' : 'New recipe') : r.name === 'backup' ? 'Backup & library' : r.name === 'meal' ? 'Meal' : 'Recipes';
+  const r = route(), key = r.name + (r.cat || '') + (r.r ? r.r.id : '') + (r.tab || ''), y = window.scrollY;
+  if (r.name === 'home') {sauceMenu.fromRecipe = '';lastMenu=null;}
+  const focused = ['sauce-menu','category-menu'].includes(r.name) && key === lastKey ? document.activeElement : null;
+  const control = ['sm-query','sm-group','sm-version','browse-q','browse-group'].includes(focused?.id) ? focused.id : '';
+  const selection = ['sm-query','browse-q'].includes(control) ? [focused.selectionStart, focused.selectionEnd] : null;
+  app.innerHTML = r.name === 'category-menu' ? browseScreen(r.cat) : r.name === 'sauce-menu' ? sauceMenuScreen() : r.name === 'recipe' ? recipeScreen(r) : r.name === 'edit' ? editScreen(r) : r.name === 'backup' ? backupScreen() : r.name === 'meal' ? mealScreen() : homeScreen() + mealBarHTML();
+  document.title = r.name === 'category-menu' ? r.cat+' Menu' : r.name === 'sauce-menu' ? 'Sauce Menu' : r.name === 'recipe' ? r.r.title : r.name === 'edit' ? (r.r ? 'Edit recipe' : 'New recipe') : r.name === 'backup' ? 'Backup & library' : r.name === 'meal' ? 'Meal' : 'Recipes';
   if (control) {
     const el = document.getElementById(control);
     el?.focus({preventScroll:true});
@@ -2110,8 +2228,8 @@ async function moreMenu(r, src) {
     toast(`Moved to ${pick}${src === 'lib' ? ' on this phone' : ''}`, { label: 'Undo', fn: () => { setCategory(r, src, was); commit(); } });
   }
   else if (c === 'edit') { ui.draft = null; location.hash = '#/edit/' + r.id; }
-  else if (c === 'print') printRecipe(r);
-  else if (c === 'share') { const text = recipeText(r, factorOf(r)); try { if (navigator.share) { await navigator.share({ title: r.title, text }); return; } } catch (e) { if (e && e.name === 'AbortError') return; } copyText(text, 'Recipe copied as text'); }
+  else if (c === 'print') printRecipe(selectedRecipe(r));
+  else if (c === 'share') { const text = recipeText(selectedRecipe(r), factorOf(r)); try { if (navigator.share) { await navigator.share({ title: r.title, text }); return; } } catch (e) { if (e && e.name === 'AbortError') return; } copyText(text, 'Recipe copied as text'); }
   else if (c === 'copyjson') copyText(JSON.stringify(recipeJSON(r), null, 2), 'Copied. Open Recipes on the other phone and tap Add, then Paste.');
   else if (c === 'file') { const res = await deliverFile(`${slug(r.title) || 'recipe'}.recipe.json`, JSON.stringify(recipeJSON(r), null, 2), 'application/json'); if (res !== 'cancelled') toast(res === 'shared' ? 'Recipe shared' : 'Recipe saved to your downloads'); }
   else if (c === 'dup') {
@@ -2144,6 +2262,36 @@ function printRecipe(r) {
 }
 
 /* ===================== editor ===================== */
+function refreshEditedNutrition(r, old) {
+  const comparable = list => JSON.stringify(list.map(({id,name,as,qty,qtyMax,unit,note}) => [id,name,as,qty,qtyMax,unit,note]));
+  if (!old || (old.servings === r.servings && comparable(old.ingredients) === comparable(r.ingredients))) return;
+  const standard = /Estimated nutrition per serving[^:]{0,100}:\s*[\d.,]+\s*kcal[\s\S]{0,220}?\b[\d,.]+\s*mg sodium\.?/i;
+  const lower = /Low.sodium version per [^:]{1,45}:\s*[\d.,]+\s*kcal[\s\S]{0,220}?\b[\d,.]+\s*mg sodium\.?/i;
+  if (!standard.test(r.notes) && !lower.test(r.notes)) return;
+  const hadLower = lower.test(r.notes);
+  r.notes = r.notes.replace(standard, '').replace(lower, '').replace(/ {2,}/g, ' ').trim();
+  const describe = card => {
+    const n = recipeNutrition(card), keys = ['kcal','pro','carb','fat','fib','na'];
+    if (!n || !n.counted || n.unmatched.length || keys.some(k => !n.keys.includes(k) || n.gaps.has(k))) return '';
+    const v = k => nVal(n,k,card.servings);
+    return Math.round(v('kcal'))+' kcal, '+v('pro').toFixed(1)+' g protein, '+v('carb').toFixed(1)+' g total carbohydrate, '+v('fat').toFixed(1)+' g fat, '+v('fib').toFixed(1)+' g fiber, '+Math.round(v('na'))+' mg sodium.';
+  };
+  const per = '1/'+r.servings+' of recipe', totals = describe(r);
+  if (totals) r.notes += ' Estimated nutrition per serving ('+per+'): '+totals;
+  if (!hadLower) return;
+  let changed = false, supported = true;
+  const low = r.ingredients.map(g => {
+    const m = (g.note || '').match(/Low-sodium batch:\s*(?:use (.+?) total|(omit))\./i);
+    if (!m) return g;
+    changed = true;
+    if (m[2]) return {...g,qty:0,qtyMax:null};
+    const q = parseIngredientLine(m[1]+' ingredient');
+    if (q.qty == null || q.name !== 'ingredient' || q.qtyMax != null) { supported=false; return g; }
+    return {...g,qty:q.qty,qtyMax:null,unit:q.unit};
+  });
+  const lowTotals = changed && supported && describe({...r,id:r.id+'-low-sodium-preview',ingredients:low});
+  if (lowTotals) r.notes += ' Low-sodium version per '+per+': '+lowTotals;
+}
 function saveEdit() {
   const rt = route(), old = rt.r, g = id => ($('#e_' + id) || {}).value || '', err = $('#editErr');
   const fail = m => { err.textContent = m; err.scrollIntoView && err.scrollIntoView({ block: 'center' }); };
@@ -2155,8 +2303,21 @@ function saveEdit() {
   const id = old ? old.id : freeId(slug(title, 48));
   const r = normRecipe({ id, title, category: g('cat'), servings: srv, servingsLabel: g('label'), prepMin: g('prep'), cookMin: g('cook'), description: g('desc'), tags: g('tags'), equipment: g('eq'), notes: g('notes'), source: g('src'), sourceUrl: url, ingredients: [], steps: [] }, { id });
   r.ingredients = ingredients; r.steps = steps; r.updated = Date.now();
+  r.preferredMethod=flat(g('preferred'),100); r.methods=[]; r.inheritMethods=false;
+  if(old?.totalMin!=null)r.totalMin=(r.prepMin||0)+(r.cookMin||0)+Math.max(0,old.totalMin-(old.prepMin||0)-(old.cookMin||0));
+  for(const row of $$('.method-edit')){
+    const val=sel=>row.querySelector(sel).value.trim(), label=flat(val('.met-name'),100);
+    const original=(old?.methods||[]).find(x=>x.label===label);
+    const ms=textToSteps(val('.met-steps'),original?.steps||[]);
+    if(!label || !ms.length)return fail('Each alternative needs a tool name and directions, or remove the unused method.');
+    if(r.methods.some(x=>x.label.toLowerCase()===label.toLowerCase())||label.toLowerCase()===r.preferredMethod.toLowerCase())return fail('Give each cooking method a distinct name.');
+    if(r.methods.length>=16)return fail('Use up to 16 alternative methods.');
+    const missing=unknownTokens({...r,steps:ms});if(missing.length)return fail(label+' references missing ingredients: '+missing.join(', '));
+    r.methods.push({label,steps:ms,cookMin:val('.met-time')===''?r.cookMin:minutesOf(val('.met-time')),equipment:val('.met-eq').split('\n').map(x=>flat(x,120)).filter(Boolean)});
+  }
   const bad = unknownTokens(r);
   if (bad.length && !ui.tokOk) { ui.tokOk = true; return fail(`These aren’t in your ingredient list: ${bad.join(' ')}. Fix them, or tap Save again to keep them as they are.`); }
+  refreshEditedNutrition(r, old);
   ui.tokOk = false; ui.draft = null;
   const i = state.recipes.findIndex(x => x.id === id);
   if (i >= 0) state.recipes[i] = r; else state.recipes.push(r);
@@ -2232,6 +2393,8 @@ async function doWipe() {
 function handleAction(a, el) {
   const rt = route(), r = rt.r, id = r && r.id;
   switch (a) {
+    case 'add-method': $('#method-rows').insertAdjacentHTML('beforeend',methodEditor());$('#method-rows').lastElementChild.querySelector('input').focus();return;
+    case 'remove-method': el.closest('fieldset').remove();return;
     case 'add': return addMenu();
     case 'cat': ui.cat = el.dataset.cat; return render();
     case 'export': return doExport();
@@ -2271,7 +2434,7 @@ function handleAction(a, el) {
     case 'made': { const t = todayISO(); setMark(id, { made: [...m.made, t] }); commit(); return toast('Logged. Enjoy!'); }
     case 'made-undo': setMark(id, { made: m.made.slice(0, -1) }); return commit();
     case 'cook': ui.cook = { id, i: 0 }; location.hash = `#/r/${id}/cook`; return;
-    case 'cook-next': ui.cook.i = Math.min(r.steps.length - 1, ui.cook.i + 1); return render();
+    case 'cook-next': ui.cook.i = Math.min(selectedRecipe(r).steps.length - 1, ui.cook.i + 1); return render();
     case 'cook-prev': ui.cook.i = Math.max(0, ui.cook.i - 1); return render();
     case 'cook-ing': { const f = factorOf(r); return askDialog({ title: `Ingredients · ${fmtNum(servingsOf(r))} ${r.servingsLabel || 'servings'}`, body: `<ul style="list-style:none;padding:0;margin:0">${r.ingredients.map(g => `<li style="padding:5px 0;border-top:1px solid var(--line)"><b>${esc(amountText(g, f))}</b> ${esc(g.name)}${g.note ? `<span class="muted">, ${esc(g.note)}</span>` : ''}</li>`).join('')}</ul>`, buttons: [{ label: 'Close', value: true, kind: 'primary' }] }); }
     case 'cook-done': return (async () => {
@@ -2284,7 +2447,8 @@ function handleAction(a, el) {
 app.addEventListener('click', e => {
   const anchor = e.target.closest('a');
   if (anchor) {
-    if (anchor.hasAttribute('data-sauce-recipe')) sauceMenu.fromRecipe = anchor.dataset.sauceRecipe;
+    if (anchor.hasAttribute('data-sauce-recipe')) {sauceMenu.fromRecipe = anchor.dataset.sauceRecipe;lastMenu=null;}
+    if(anchor.hasAttribute('data-category-origin')) {lastMenu={id:anchor.hash.split('/')[2],cat:anchor.dataset.categoryOrigin};sauceMenu.fromRecipe='';}
     return;
   }
   const el = e.target.closest('[data-action]'); if (!el || el.matches('input[type=checkbox]')) return;
@@ -2293,6 +2457,12 @@ app.addEventListener('click', e => {
 $('#timerbar').addEventListener('click', e => { const el = e.target.closest('[data-action]'); if (el) handleAction(el.dataset.action, el); });
 app.addEventListener('toggle', e => {
   const row = e.target;
+  if(row.matches?.('[data-browse-id]') && row.isConnected) {
+    const rt=route();if(rt.name!=='category-menu')return;
+    const id=row.dataset.browseId,m=menuState(rt.cat);
+    if(row.open){m.open.add(id);const b=row.querySelector('.browse-detail'),f=findRecipe(id);if(f&&!b.hasChildNodes())b.innerHTML=browseDetail(f.r,rt.cat);}
+    else m.open.delete(id);return;
+  }
   if (!row.matches?.('details[data-sauce-id]') || !row.isConnected) return;
   const id = row.dataset.sauceId;
   if (row.open) {
@@ -2302,12 +2472,18 @@ app.addEventListener('toggle', e => {
   } else sauceMenu.open.delete(id);
 }, true);
 app.addEventListener('change', e => {
+  if(e.target.matches('select[data-method]')) {
+    const id=e.target.dataset.method, m=mark(id);
+    setMark(id,{method:e.target.value,prog:{i:m.prog.i,s:[]}}); ui.cook={id:'',i:0}; persist(); render();document.querySelector('select[data-method="'+CSS.escape(id)+'"]')?.focus({preventScroll:true});return;
+  }
+  if(e.target.id==='browse-group'){const rt=route();menuState(rt.cat).group=e.target.value;$('#browse-list').innerHTML=browseRows(rt.cat);return;}
   if (e.target.id === 'sm-group') { sauceMenu.group = e.target.value; return refreshSauceRows(); }
   if (e.target.id === 'sm-version') { sauceMenu.low = e.target.value === 'low'; return refreshSauceRows(); }
   if (e.target.matches('input[type=checkbox][data-action]')) return handleAction(e.target.dataset.action, e.target);
   if (e.target.matches('textarea[data-note]')) { setMark(e.target.dataset.note, { note: e.target.value }); persist(); }
 });
 app.addEventListener('input', e => {
+  if(e.target.id==='browse-q'){const rt=route();menuState(rt.cat).q=e.target.value;$('#browse-list').innerHTML=browseRows(rt.cat);return;}
   if (e.target.id === 'sm-query') { sauceMenu.query = e.target.value; return refreshSauceRows(); }
   if (e.target.id === 'q') { ui.q = e.target.value; const l = $('#rlist'); if (l) l.innerHTML = cardsHTML(); }
   else if (e.target.id === 'e_ing') updateTokHint();

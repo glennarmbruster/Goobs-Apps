@@ -1,0 +1,156 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "filipino-calamansi-style-pan-sauce",
+  "title": "Filipino Calamansi-Style Pan Sauce",
+  "description": "Orange and lime lend a calamansi-like brightness to a garlic pan sauce.",
+  "category": "Sauce & condiment",
+  "tags": [
+    "filipino-inspired",
+    "for-chicken",
+    "low-sodium-option",
+    "pan-sauce"
+  ],
+  "servings": 4,
+  "servingsLabel": "1/4-cup portions",
+  "prepMin": 7,
+  "cookMin": 18,
+  "equipment": [
+    "10-inch HexClad skillet",
+    "Whisk"
+  ],
+  "ingredients": [
+    {
+      "id": "oil",
+      "qty": 4,
+      "unit": "g",
+      "name": "avocado oil"
+    },
+    {
+      "id": "garlic",
+      "qty": 6,
+      "unit": "g",
+      "name": "jarred minced garlic"
+    },
+    {
+      "id": "blackpep",
+      "qty": 0.5,
+      "unit": "g",
+      "name": "ground black pepper"
+    },
+    {
+      "id": "broth",
+      "qty": 143,
+      "unit": "g",
+      "name": "unsalted chicken broth"
+    },
+    {
+      "id": "orange",
+      "qty": 34,
+      "unit": "g",
+      "name": "strained sweet orange juice"
+    },
+    {
+      "id": "lime",
+      "qty": 10,
+      "unit": "g",
+      "name": "strained lime juice"
+    },
+    {
+      "id": "amino",
+      "qty": 17,
+      "unit": "g",
+      "name": "coconut aminos",
+      "note": "Low-sodium batch: use 4.2 g total."
+    },
+    {
+      "id": "honey",
+      "qty": 7,
+      "unit": "g",
+      "name": "honey"
+    },
+    {
+      "id": "butter",
+      "qty": 5,
+      "unit": "g",
+      "name": "unsalted butter"
+    },
+    {
+      "id": "starch",
+      "qty": 6,
+      "unit": "g",
+      "name": "cornstarch"
+    },
+    {
+      "id": "cold",
+      "qty": 13,
+      "unit": "g",
+      "name": "cold sodium-free water"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Start the sauce",
+      "text": "Warm {oil} in the 10-inch HexClad skillet over medium-low heat."
+    },
+    {
+      "title": "Toast gently",
+      "text": "Stir {garlic}, {blackpep} into the oil for 30 seconds, just until fragrant."
+    },
+    {
+      "title": "Simmer the base",
+      "text": "Whisk in {broth}, {orange}, {lime}, {amino}, {honey} gradually. Simmer gently for 5–7 minutes until the flavors come together."
+    },
+    {
+      "title": "Make the slurry",
+      "text": "Whisk {starch} into {cold} until smooth."
+    },
+    {
+      "title": "Thicken",
+      "text": "Pour the slurry into the simmering sauce while whisking. Bubble gently for 1 minute until it coats a spoon."
+    },
+    {
+      "title": "Finish the sauce",
+      "text": "Fold in {butter} off heat. Measure into a heatproof jug; add hot water to reach 1 cup, or simmer excess away before serving."
+    }
+  ],
+  "notes": "Yield: 1 cup. Low-sodium option for the full batch: reduce coconut aminos to 4.2 g and keep the same final yield. Use unsalted broth throughout. Option A uses the listed seasonings. For a gentler Option B, omit citrus or vinegar and replace its weight with water. Make ahead: chill in small jars for up to 3 days. Freezer-Friendly Verdict: Yes, freeze in quarter-cup portions up to 2 months. Fridge reheat: whisk over low heat to 165°F. Freezer reheat: thaw overnight in the fridge, then reheat as above. Dairy swap: use avocado oil for butter, unsweetened oat milk for milk, and plain dairy-free cream cheese where needed. Estimated nutrition per serving (1/4 of recipe): 41 kcal, 0.5 g protein, 5.6 g total carbohydrate, 2.0 g fat, 0.1 g fiber, 82 mg sodium. Low-sodium version per 1/4 cup: 38 kcal, 0.5 g protein, 4.8 g total carbohydrate, 2.0 g fat, 0.1 g fiber, 25 mg sodium.",
+  "source": "Glenn",
+  "preferredMethod": "10-inch HexClad skillet",
+  "methods": [
+    {
+      "label": "HexClad lidded wok",
+      "cookMin": 18,
+      "equipment": [
+        "HexClad lidded wok",
+        "Whisk"
+      ],
+      "steps": [
+        {
+          "title": "Start the sauce",
+          "text": "Warm {oil} in the HexClad lidded wok over medium-low heat."
+        },
+        {
+          "title": "Toast gently",
+          "text": "Stir {garlic}, {blackpep} into the oil for 30 seconds, just until fragrant."
+        },
+        {
+          "title": "Simmer the base",
+          "text": "Whisk in {broth}, {orange}, {lime}, {amino}, {honey} gradually. Simmer gently for 5–7 minutes until the flavors come together."
+        },
+        {
+          "title": "Make the slurry",
+          "text": "Whisk {starch} into {cold} until smooth."
+        },
+        {
+          "title": "Thicken",
+          "text": "Pour the slurry into the simmering sauce while whisking. Bubble gently for 1 minute until it coats a spoon."
+        },
+        {
+          "title": "Finish the sauce",
+          "text": "Fold in {butter} off heat. Measure into a heatproof jug; add hot water to reach 1 cup, or simmer excess away before serving."
+        }
+      ]
+    }
+  ]
+}

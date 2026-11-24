@@ -133,5 +133,56 @@
     }
   ],
   "notes": "Sauce yield: About 1 1/4 cups for two. Make ahead: Flatten the cutlets the night before and keep them covered in the refrigerator. Bloom the saffron while the oven is running. The almond paste provides the creamy texture without dairy. Chill leftovers promptly in shallow portions and refrigerate for up to 3 days. Freezer-Friendly Verdict: Yes. Freeze portions in their sauce for up to 6 weeks; whisk the almond sauce smooth after thawing. Fridge reheat: Transfer one portion with its gravy to a shallow covered oven-safe dish. Install the bottom drip pan and preheat the APO to 325°F with sous vide mode off, 60% steam, rear element on, top and bottom off. Set the food probe to 165°F at the coldest center. Check after 12 minutes and heat to 165°F throughout. Freezer reheat: Thaw overnight in the refrigerator, then follow the fridge reheating directions and stir the sauce smooth. Estimated nutrition per serving (1/2 of recipe): 263 kcal, 35.8 g protein, 6.2 g total carbohydrate, 10.0 g fat, 1.3 g fiber, 89 mg sodium. Includes the measured broth and sauce. Sodium varies with your broth.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "Anova Precision Oven Gen 1 with bottom drip pan, wire rack and food probe",
+  "methods": [
+    {
+      "label": "Enamel Dutch oven",
+      "cookMin": 30,
+      "equipment": [
+        "Enamel Dutch oven",
+        "10-inch HexClad skillet",
+        "Instant-read thermometer",
+        "Shallow stainless steel baking pan",
+        "10-inch HexClad skillet with lid",
+        "Thin-tip instant-read thermometer",
+        "Meat mallet and parchment",
+        "Fine-mesh sieve"
+      ],
+      "steps": [
+        {
+          "title": "Prepare the portions",
+          "text": "Divide {chicken} into even portions. Tenderize poultry cutlets to ½ inch."
+        },
+        {
+          "title": "Start the poach",
+          "text": "Warm enough water to half cover the portions in a snug Dutch oven to 175–185°F. Slide them in, cover and hold below a simmer. Start checking after 8 minutes."
+        },
+        {
+          "title": "Bloom the saffron",
+          "text": "bring {broth} to a simmer in the HexClad. Take off the heat, add {saffron} and {parsley}, then cover and steep for 7 minutes."
+        },
+        {
+          "title": "Smooth the almond base",
+          "text": "Strain the infusion back into the pan. Loosen {almond} with a spoonful of warm infusion and whisk it into the rest with {garlic}."
+        },
+        {
+          "title": "Mix the slurry",
+          "text": "Stir {starch} into {water} until completely smooth."
+        },
+        {
+          "title": "Bind the sauce",
+          "text": "Bring the sauce to a simmer. Whisk in the freshly stirred slurry and let it bubble gently for 1 minute, stirring until it coats the back of a spoon."
+        },
+        {
+          "title": "Check the centers",
+          "text": "Check each center every 2 minutes and lift out as soon as it reaches 165°F."
+        },
+        {
+          "title": "Ladle over the chicken",
+          "text": "Slice the chicken thinly across the grain. Put half the sauce on the plates, nestle the chicken into it and spoon the rest over the cut faces."
+        }
+      ]
+    }
+  ]
 }

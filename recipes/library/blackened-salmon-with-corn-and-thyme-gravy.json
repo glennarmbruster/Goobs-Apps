@@ -1,0 +1,161 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "blackened-salmon-with-corn-and-thyme-gravy",
+  "title": "Blackened Salmon with Corn and Thyme Gravy",
+  "description": "A dark spice crust and a soft corn gravy bring contrasting textures to salmon.",
+  "category": "Main dish",
+  "tags": [
+    "ninja-crispi",
+    "air-fryer",
+    "fish",
+    "salmon",
+    "blackened"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 12,
+  "cookMin": 19,
+  "equipment": [
+    "Ninja Crispi, 4-qt glass container and adapter",
+    "10-inch HexClad skillet",
+    "Instant-read thermometer",
+    "Immersion blender"
+  ],
+  "ingredients": [
+    {
+      "id": "salmon",
+      "qty": 250,
+      "unit": "g",
+      "name": "boneless skinless salmon fillets"
+    },
+    {
+      "id": "corn",
+      "qty": 62,
+      "unit": "g",
+      "name": "sweet corn kernels"
+    },
+    {
+      "id": "broth",
+      "qty": 115,
+      "unit": "g",
+      "name": "unsalted chicken broth"
+    },
+    {
+      "id": "milk",
+      "qty": 35,
+      "unit": "g",
+      "name": "skim milk"
+    },
+    {
+      "id": "thyme",
+      "qty": 1,
+      "unit": "g",
+      "name": "dried thyme"
+    },
+    {
+      "id": "starch",
+      "qty": 7,
+      "unit": "g",
+      "name": "cornstarch"
+    },
+    {
+      "id": "cold",
+      "qty": 15,
+      "unit": "g",
+      "name": "cold sodium-free water"
+    },
+    {
+      "id": "paprika",
+      "qty": 3,
+      "unit": "g",
+      "name": "smoked paprika"
+    },
+    {
+      "id": "gpow",
+      "qty": 1,
+      "unit": "g",
+      "name": "granulated garlic"
+    },
+    {
+      "id": "cayenne",
+      "qty": 0.15,
+      "unit": "g",
+      "name": "ground cayenne pepper",
+      "note": "Spicy serving only, at the table. Mild portions omit it."
+    },
+    {
+      "id": "oil",
+      "qty": 4,
+      "unit": "g",
+      "name": "avocado oil"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Simmer the sauce",
+      "text": "Whisk {corn}, {broth}, {milk}, {thyme} into the HexClad. Simmer gently for 5 minutes and blend smooth with an immersion blender."
+    },
+    {
+      "title": "Thicken",
+      "text": "Whisk {starch} with {cold}, then stir into the simmering sauce for 1 minute until it coats a spoon."
+    },
+    {
+      "title": "Prepare the dish",
+      "text": "Start with the room-temperature 4-qt glass container, no crisper plate. Let sauce cool to lukewarm before adding to the glass. Spread the sauce over the base."
+    },
+    {
+      "title": "Season for two heat levels",
+      "text": "Mix {paprika}, {gpow} and {oil}. Rub the top of {salmon} with the paste. Keep the shared rub mild; reserve {cayenne} for the spicy serving."
+    },
+    {
+      "title": "Cook in sauce",
+      "text": "Nestle the pieces in the sauce in a single layer. Fit the 4-qt adapter and PowerPod and select Bake. Cook for 10–15 minutes, checking the thickest piece early. For the blackened finish, switch to Air Fry for the last 1–2 minutes as the surface darkens. Finish at 145°F in the center."
+    },
+    {
+      "title": "Serve generously",
+      "text": "Spoon hot sauce over each serving. For the spicy plate only, stir the reserved cayenne into its own spoonful of sauce."
+    }
+  ],
+  "notes": "Make ahead: prepare the sauce a day ahead and refrigerate separately. Freezer-Friendly Verdict: Yes. Freeze cooked portions with sauce, cooled within 2 hours, for up to 2 months. Flaky fish is best freshly cooked; thaw slowly and keep covered. Fridge reheat: cover and warm gently with a spoonful of water to 165°F. Freezer reheat: thaw overnight in the fridge, then reheat covered to 165°F. Option A uses the listed seasonings. For gentler Option B, omit added citrus, vinegar or chile where used. Pass additional heat at the table. Dairy swap: use unsweetened oat milk and equivalent plain dairy-free cheese if needed. Estimated nutrition per serving (1/2 of recipe): 334 kcal, 28.0 g protein, 11.5 g total carbohydrate, 19.5 g fat, 1.4 g fiber, 96 mg sodium.",
+  "source": "Glenn",
+  "preferredMethod": "Ninja Crispi, 4-qt glass container and adapter",
+  "methods": [
+    {
+      "label": "Samsung conventional oven",
+      "cookMin": 23,
+      "equipment": [
+        "Samsung conventional oven",
+        "10-inch HexClad skillet",
+        "Instant-read thermometer",
+        "Immersion blender"
+      ],
+      "steps": [
+        {
+          "title": "Simmer the sauce",
+          "text": "Whisk {corn}, {broth}, {milk}, {thyme} into the HexClad. Simmer gently for 5 minutes and blend smooth with an immersion blender."
+        },
+        {
+          "title": "Thicken",
+          "text": "Whisk {starch} with {cold}, then stir into the simmering sauce for 1 minute until it coats a spoon."
+        },
+        {
+          "title": "Prepare the dish",
+          "text": "Preheat the Samsung oven to 365°F on Bake. Choose a shallow baking dish. Spread the sauce over the base."
+        },
+        {
+          "title": "Season for two heat levels",
+          "text": "Mix {paprika}, {gpow} and {oil}. Rub the top of {salmon} with the paste. Keep the shared rub mild; reserve {cayenne} for the spicy serving."
+        },
+        {
+          "title": "Cook in sauce",
+          "text": "Nestle the pieces in the sauce in a single layer. Place the baking dish on the middle rack. Cook for 12–18 minutes, checking the thickest piece early. For the blackened finish, switch to high broil, using a broiler-safe metal dish for the last 1–2 minutes as the surface darkens. Finish at 145°F in the center."
+        },
+        {
+          "title": "Serve generously",
+          "text": "Spoon hot sauce over each serving. For the spicy plate only, stir the reserved cayenne into its own spoonful of sauce."
+        }
+      ]
+    }
+  ]
+}

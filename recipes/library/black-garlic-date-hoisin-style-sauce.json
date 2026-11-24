@@ -111,5 +111,44 @@
     }
   ],
   "notes": "Yield: 1 cup, or four 1/4-cup portions. Low-sodium option for the full batch: Use 1 tsp coconut aminos in place of 4 tsp. Use 1/2 tsp mild white miso in place of 1 tsp. Use the same final 1-cup yield and 1/4-cup serving. Make ahead: Make the sauce the day before and portion it before chilling. Refrigerate in shallow covered portions within 2 hours and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze flat in 1/4-cup portions for up to 2 months. Whisk again after thawing to restore the texture. Fridge reheat: Reheat a portion in a small pan, stirring to a brief boil and at least 165°F. Loosen with a splash of water if it tightens. Freezer reheat: Thaw overnight in the refrigerator, then use the fridge reheat method. Option A uses the listed seasonings. For a gentler Option B, halve the black garlic and use only 1 teaspoon rice vinegar. Estimated nutrition per serving (1/4 of recipe): 75 kcal, 2.7 g protein, 11.9 g total carbohydrate, 2.2 g fat, 1.9 g fiber, 151 mg sodium. Low-sodium version per 1/4 cup: 70 kcal, 2.7 g protein, 10.7 g total carbohydrate, 2.1 g fat, 1.8 g fiber, 57 mg sodium. Figures cover the sauce alone. Sodium varies with brands.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "10-inch HexClad skillet",
+  "methods": [
+    {
+      "label": "Enamel Dutch oven",
+      "cookMin": 11,
+      "equipment": [
+        "Enamel Dutch oven",
+        "Small whisk",
+        "Heatproof measuring cup",
+        "Vitamix or immersion blender with tall heatproof jug"
+      ],
+      "steps": [
+        {
+          "title": "Set up the cooking vessel",
+          "text": "Start the enamel Dutch oven over medium-low heat for 2–3 minutes; use the lid for covered steps. Reduce heat once liquids simmer and stir across the heavy base."
+        },
+        {
+          "title": "Plump the dates",
+          "text": "Simmer {da} in {mu} with {ani} for 4 minutes until the date pieces soften."
+        },
+        {
+          "title": "Blend the bean base",
+          "text": "Add {be2}, {gar}, {mis}, {a}, {rv} and {tah}. Take the pan off the heat and blend until glossy and completely smooth."
+        },
+        {
+          "title": "Set the texture",
+          "text": "Return to low heat for 2–3 minutes, stirring. The sauce should hold a soft line when a spoon is drawn through it."
+        },
+        {
+          "title": "Check the yield",
+          "text": "Measure the sauce in a heatproof cup. Aim for 1 cup. If short, loosen with a little hot sodium-free water. If over, return it to the pan and simmer briefly to the mark."
+        },
+        {
+          "title": "Serve the sauce",
+          "text": "Serve as a dip for tender pork or duck, or loosen a spoonful in warm cooking juices for a finishing glaze."
+        }
+      ]
+    }
+  ]
 }

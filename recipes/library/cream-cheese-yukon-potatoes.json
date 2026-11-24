@@ -5,28 +5,107 @@
   "title": "Cream Cheese Yukon Potatoes",
   "description": "Yukon Gold potatoes cooked in a vacuum bag with cream cheese and butter in the Anova Precision Oven, then mashed right in the bag.",
   "category": "Sides",
-  "tags": ["make-ahead", "sous-vide"],
+  "tags": [
+    "make-ahead",
+    "sous-vide"
+  ],
   "servings": 6,
   "servingsLabel": "servings",
   "prepMin": 15,
   "cookMin": 210,
-  "equipment": ["Anova Precision Oven", "VacMaster VP220 chamber sealer", "Vacuum bag"],
+  "equipment": [
+    "Anova Precision Oven",
+    "VacMaster VP220 chamber sealer",
+    "Vacuum bag"
+  ],
   "ingredients": [
-    { "id": "potatoes", "qty": 3, "unit": "lb", "name": "Yukon Gold potatoes", "note": "peeled and chunked" },
-    { "id": "creamcheese", "qty": 6, "unit": "oz", "name": "cream cheese" },
-    { "id": "butter", "qty": 4, "unit": "tbsp", "name": "unsalted butter" },
-    { "id": "salt", "qty": 1, "unit": "tsp", "name": "kosher salt" },
-    { "id": "milk", "name": "milk", "note": "only if needed, a splash" }
+    {
+      "id": "potatoes",
+      "qty": 3,
+      "unit": "lb",
+      "name": "Yukon Gold potatoes",
+      "note": "peeled and chunked"
+    },
+    {
+      "id": "creamcheese",
+      "qty": 6,
+      "unit": "oz",
+      "name": "cream cheese"
+    },
+    {
+      "id": "butter",
+      "qty": 4,
+      "unit": "tbsp",
+      "name": "unsalted butter"
+    },
+    {
+      "id": "salt",
+      "qty": 1,
+      "unit": "tsp",
+      "name": "kosher salt"
+    },
+    {
+      "id": "milk",
+      "name": "milk",
+      "note": "only if needed, a splash"
+    }
   ],
   "steps": [
-    { "title": "Bag", "text": "Place {potatoes}, {creamcheese}, {butter} and {salt} in a vacuum bag." },
-    { "title": "Seal", "text": "Vacuum seal the bag." },
-    { "title": "Cook", "text": "Cook in the Anova Precision Oven with Sous Vide Mode on at 194°F, 100% steam, for 3 to 4 hours." },
-    { "title": "Hold", "text": "When done, reduce the oven to 150 to 160°F and hold until serving time." },
-    { "title": "Mash", "text": "Remove the bag and mash the potatoes directly in the bag with your hands or a rolling pin." },
-    { "title": "Transfer", "text": "Open the bag and transfer the potatoes to a serving bowl. Stir briefly until smooth." },
-    { "title": "Adjust", "text": "Stir in {milk} only if needed." }
+    {
+      "title": "Bag",
+      "text": "Place {potatoes}, {creamcheese}, {butter} and {salt} in a vacuum bag."
+    },
+    {
+      "title": "Seal",
+      "text": "Vacuum seal the bag."
+    },
+    {
+      "title": "Cook",
+      "text": "Cook in the Anova Precision Oven with Sous Vide Mode on at 194°F, 100% steam, for 3 to 4 hours."
+    },
+    {
+      "title": "Hold",
+      "text": "When done, reduce the oven to 150 to 160°F and hold until serving time."
+    },
+    {
+      "title": "Mash",
+      "text": "Remove the bag and mash the potatoes directly in the bag with your hands or a rolling pin."
+    },
+    {
+      "title": "Transfer",
+      "text": "Open the bag and transfer the potatoes to a serving bowl. Stir briefly until smooth."
+    },
+    {
+      "title": "Adjust",
+      "text": "Stir in {milk} only if needed."
+    }
   ],
-  "notes": "Start at 1:00 PM for a 5:30 PM dinner. Mashing in the bag keeps every bit of the buttery cream cheese liquid in the potatoes. Pairs with Chicken Piccata.",
-  "source": "Glenn"
+  "notes": "Start at 1:00 PM for a 5:30 PM dinner. Mashing in the bag keeps every bit of the buttery cream cheese liquid in the potatoes. Pairs with Chicken Piccata. Estimated nutrition per serving (1/6 of recipe): 344 kcal, 6.5 g protein, 42.4 g total carbohydrate, 17.4 g fat, 2.9 g fiber, 436 mg sodium. Based on the measured ingredients; brands and optional additions can change these values.",
+  "source": "Glenn",
+  "preferredMethod": "Anova Precision Oven",
+  "methods": [
+    {
+      "label": "Enamel Dutch oven",
+      "cookMin": 25,
+      "equipment": [
+        "Enamel Dutch oven",
+        "VacMaster VP220 chamber sealer",
+        "Vacuum bag"
+      ],
+      "steps": [
+        {
+          "title": "Simmer the potatoes",
+          "text": "Cut {potatoes} into 1-inch pieces. Cover with water and simmer for 15–22 minutes until fork-tender."
+        },
+        {
+          "title": "Mash while hot",
+          "text": "Drain and return to the warm pot for 1 minute. Mash with {creamcheese}, {butter} and {salt}."
+        },
+        {
+          "title": "Adjust the texture",
+          "text": "Fold in {milk} until soft enough to spoon."
+        }
+      ]
+    }
+  ]
 }

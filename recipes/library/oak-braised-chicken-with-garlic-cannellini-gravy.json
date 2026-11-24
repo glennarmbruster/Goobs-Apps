@@ -137,5 +137,62 @@
     }
   ],
   "notes": "Sauce yield: About 1 1/2 cups for two. Make ahead: Cook the beans ahead or refrigerate rinsed no-salt-added canned beans for the next day. Refrigerate shallow portions within 2 hours, or within 1 hour outdoors above 90°F. Use refrigerated leftovers within 3 days. Freezer-Friendly Verdict: Yes. The bean puree protects the meat and comes back together when whisked after thawing. Freeze in individual portions for up to 2 months. Fridge reheat: Warm the chicken in its bean gravy covered in the HexClad over medium-low with a splash of water. Stir or turn occasionally and check from 6 minutes, until the center reaches 165°F. Freezer reheat: Thaw overnight in the refrigerator, then follow the fridge reheating directions. For a milder garlic flavor, use half the cloves. The white beans provide the creamy texture without dairy. Estimated nutrition per serving (1/2 of recipe): 243 kcal, 33.0 g protein, 12.7 g total carbohydrate, 5.9 g fat, 2.3 g fiber, 162 mg sodium. Includes all the chicken and sauce in the listed recipe. Sodium varies with the broth. Fiber is estimated before straining.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "Traeger Silverton 610 pellet smoker",
+  "methods": [
+    {
+      "label": "Samsung conventional oven",
+      "cookMin": 80,
+      "equipment": [
+        "Samsung conventional oven",
+        "Lidded enamel Dutch oven",
+        "10-inch HexClad skillet with lid",
+        "Thin-tip instant-read thermometer",
+        "Immersion blender and deep heatproof jug",
+        "Fine-mesh sieve"
+      ],
+      "steps": [
+        {
+          "title": "Heat the conventional oven",
+          "text": "Preheat Samsung Bake to 300°F with the rack in the middle. Use an oven-safe pan; keep any braising lid ready."
+        },
+        {
+          "title": "Start the garlic",
+          "text": "Bring {garlic}, {thyme} and {broth} to a simmer in the Dutch oven on the stovetop. Simmer gently for 6 minutes."
+        },
+        {
+          "title": "Warm the bean broth",
+          "text": "Stir {beans} into the broth and set the uncovered Dutch oven on the oven rack. Close the oven door for 12 minutes so the broth picks up the oak smoke."
+        },
+        {
+          "title": "Braise under the lid",
+          "text": "Nestle {chicken} flat in the hot bean broth. Cover the Dutch oven now as the wrap point. Braise at 300°F for 25–45 minutes until each thigh reaches 175°F in its thickest part."
+        },
+        {
+          "title": "Rest in the braising liquid",
+          "text": "Transfer the chicken and a ladle of its liquid to a warm bowl. Cover and rest for 5 minutes while finishing the sauce."
+        },
+        {
+          "title": "Puree the gravy base",
+          "text": "Blend the garlic, beans and braising liquid in the deep jug. Press through a sieve into the HexClad to remove bean skins."
+        },
+        {
+          "title": "Mix the slurry",
+          "text": "Stir {starch} into {water} until completely smooth."
+        },
+        {
+          "title": "Bind the sauce",
+          "text": "Bring the sauce to a simmer. Whisk in the freshly stirred slurry and let it bubble gently for 1 minute, stirring until it coats the back of a spoon."
+        },
+        {
+          "title": "Finish with chives",
+          "text": "Stir {chives} through the gravy off heat."
+        },
+        {
+          "title": "Sauce and serve",
+          "text": "Cut the rested thighs into short, thin slices and divide between bowls. Add their resting juices and ladle the white bean gravy over each portion."
+        }
+      ]
+    }
+  ]
 }

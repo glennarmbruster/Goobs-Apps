@@ -148,5 +148,67 @@
     }
   ],
   "notes": "Make ahead: Set the slab in the refrigerator the night before. The 72-minute preparation estimate includes 60 minutes for cooling and chilling. Keep finished portions refrigerated for up to 3 days. Freezer-Friendly Verdict: Yes. Freeze individual portions with sauce for up to 1 month. The grits may soften into spoonfuls on reheating. Fridge reheat: Warm a single portion, covered, in the HexClad with a splash of broth or water. Stir or turn gently and heat to 165°F throughout. Freezer reheat: Thaw overnight in the refrigerator. Use the same covered reheating method and heat the center to 165°F. For dairy-free grits, use plain unsweetened oat milk in both stages, a mild dairy-free cheddar that melts and unsalted plant-based butter. Finely minced parsley may replace chives. Estimated nutrition per serving (1/2 of recipe): 322 kcal, 10.4 g protein, 33.7 g total carbohydrate, 16.0 g fat, 1.5 g fiber, 164 mg sodium.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "Ninja Crispi PowerPod with US Bake preset and 6-cup glass container",
+  "methods": [
+    {
+      "label": "Samsung conventional oven",
+      "cookMin": 37,
+      "equipment": [
+        "Samsung conventional oven",
+        "Saucepan",
+        "Small shallow 4-by-6-inch dish",
+        "10-inch HexClad skillet",
+        "Silicone spatula",
+        "Thin-tip instant-read thermometer",
+        "Small mixing bowl"
+      ],
+      "steps": [
+        {
+          "title": "Allow for oven timing",
+          "text": "Use the first time given as a check. A covered metal dish may need 3–10 minutes longer; check tenderness or the center temperature every 2–3 minutes."
+        },
+        {
+          "title": "Cook the grits",
+          "text": "Bring {water_grits} and {milk_grits} to a simmer in a saucepan. Gradually whisk in {grits}, reduce the heat to low and stir for 5–8 minutes, until the grains are tender and the mixture holds a mound."
+        },
+        {
+          "title": "Set the cheese base",
+          "text": "Use a little {butter} to grease a small shallow dish. Fold {cheddar} and half the remaining butter into the hot grits until smooth and spread the grits in the dish."
+        },
+        {
+          "title": "Chill until sliceable",
+          "text": "Let steam escape for 5 minutes, then refrigerate the shallow slab for at least 55 minutes, until it is firm enough to slice cleanly."
+        },
+        {
+          "title": "Heat the covered baking dish",
+          "text": "Preheat Samsung Bake to 350°F. Use a small metal baking dish and a fitted cover or foil to retain moisture."
+        },
+        {
+          "title": "Braise the squares in milk",
+          "text": "Cut the cold grits into two squares per serving and lay them in the metal baking dish with {milk_sauce}. Spoon milk over the tops. Cover the dish and bake at 350°F."
+        },
+        {
+          "title": "Check the center",
+          "text": "After 8 minutes, baste the squares with warm milk using a silicone spoon. Continue for another 5–12 minutes, until the coldest center reaches 165°F. Lift gently into warm shallow bowls."
+        },
+        {
+          "title": "Infuse the sauce",
+          "text": "Ladle the hot cooking milk into the HexClad with {chives} and {paprika} and bring to a gentle simmer for 1 minute."
+        },
+        {
+          "title": "Mix the slurry",
+          "text": "Stir {starch} into {water} until completely smooth."
+        },
+        {
+          "title": "Thicken the sauce",
+          "text": "Bring the base to a simmer. Whisk in the freshly stirred slurry and let it bubble for 1 minute, stirring until it coats the back of a spoon."
+        },
+        {
+          "title": "Finish with butter",
+          "text": "Swirl in the remaining reserved butter off heat. Pour the sauce over and around the soft squares."
+        }
+      ]
+    }
+  ]
 }

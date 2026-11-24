@@ -144,5 +144,51 @@
     }
   ],
   "notes": "Make ahead: Mix the fennel-spiced pork and refrigerate covered up to a day ahead. Cut the squash small so it softens at the same rate as the lentils. Option A uses mild fennel and paprika. For gentler Option B, halve the fennel and omit the paprika. Pass extra heat at the table. Refrigerate promptly in shallow portions and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze in individual portions for up to 2 months. Lentils continue to absorb liquid, so loosen the stew as it reheats. Fridge reheat: Warm a single portion with its sauce in a covered HexClad skillet over medium-low, adding a splash of water if thick. Stir or turn gently and begin checking after 5 minutes. Heat the pork to 165°F throughout. Freezer reheat: Thaw overnight in the refrigerator. Use the fridge reheating directions and stir the sauce smooth. Estimated nutrition per serving (1/4 of recipe): 369 kcal, 36.8 g protein, 30.5 g total carbohydrate, 11.8 g fat, 5.1 g fiber, 135 mg sodium. Includes the measured broth and sauce. Sodium varies with your broth. Ground pork is estimated at the midpoint of the specified leanness range.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "Ninja Foodi PossibleCooker",
+  "methods": [
+    {
+      "label": "Enamel Dutch oven",
+      "cookMin": 37,
+      "equipment": [
+        "Enamel Dutch oven",
+        "Thin-tip instant-read thermometer",
+        "Silicone spoon"
+      ],
+      "steps": [
+        {
+          "title": "Use the burner",
+          "text": "Set the Dutch oven on a medium burner. Bring liquid up over medium-high, then reduce to low to maintain a bare simmer; stir down the sides more often than in the electric cooker."
+        },
+        {
+          "title": "Season the pork",
+          "text": "Gently combine {pork} with {fennel}, {garlic} and {paprika}. Pinch off small, loosely formed pieces about 3/4 inch across."
+        },
+        {
+          "title": "Start the lentils",
+          "text": "Place {squash}, {lentils} and {broth} in the Dutch oven. use medium-high burner heat with the lid off to bring the liquid to a simmer, about 5–8 minutes."
+        },
+        {
+          "title": "Poach the pork",
+          "text": "Lower the pork pieces into the simmering broth and return to a simmer on HIGH. use low burner heat and simmer uncovered for 16–22 minutes, stirring gently. The lentils should break down, the squash should mash easily, and several large pork centers must measure at least 160°F."
+        },
+        {
+          "title": "Soften the spinach",
+          "text": "Fold {spinach} into the hot stew and simmer for 2 minutes until tender."
+        },
+        {
+          "title": "Mix the slurry",
+          "text": "Stir {starch} into {water} in a small cup until smooth."
+        },
+        {
+          "title": "Bind the lentil gravy",
+          "text": "Stir the slurry into the stew at a gentle bubble for 1 minute until the gravy coats the back of a spoon. Add a little {topup} if the lentils have thickened it beyond a spoonable consistency."
+        },
+        {
+          "title": "Serve the stew",
+          "text": "Turn off the cooker and break up any larger pork pieces with the silicone spoon. Divide the stew and gravy evenly among the bowls."
+        }
+      ]
+    }
+  ]
 }

@@ -1,0 +1,94 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "creamy-barley-with-roasted-pepper",
+  "title": "Creamy Barley with Roasted Pepper",
+  "description": "Quick pearl barley absorbs roasted pepper and a little cream cheese.",
+  "category": "Sides",
+  "tags": [
+    "side-dish",
+    "stovetop",
+    "barley"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 8,
+  "cookMin": 23,
+  "equipment": [
+    "HexClad lidded wok"
+  ],
+  "ingredients": [
+    {
+      "id": "barley",
+      "qty": 92,
+      "unit": "g",
+      "name": "quick-cooking pearl barley"
+    },
+    {
+      "id": "broth",
+      "qty": 300,
+      "unit": "g",
+      "name": "unsalted chicken broth"
+    },
+    {
+      "id": "roastpep",
+      "qty": 65,
+      "unit": "g",
+      "name": "peeled unsalted roasted red bell pepper, pureed"
+    },
+    {
+      "id": "creamcheese",
+      "qty": 20,
+      "unit": "g",
+      "name": "plain whipped cream cheese"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Set the heat",
+      "text": "Use the lidded HexClad wok on a medium burner."
+    },
+    {
+      "title": "Build flavor",
+      "text": "Warm {barley} in the dry pan for 1 minute until nutty."
+    },
+    {
+      "title": "Cook gently",
+      "text": "Add {broth}. Cover and simmer 12–16 minutes until tender, adding a splash of water if needed."
+    },
+    {
+      "title": "Finish",
+      "text": "Fold in {roastpep} and {creamcheese} and stir for 2 minutes until glossy."
+    }
+  ],
+  "notes": "Make ahead: chill in shallow containers and refrigerate up to 3 days. Freezer-Friendly Verdict: Yes. Freeze up to 1 month; grains and vegetables soften slightly. Fridge reheat: stir with a spoonful of water over low heat until 165°F. Freezer reheat: thaw in the fridge and warm by the same method. Dairy swap: use unsalted plant butter or dairy-free cheese as applicable. Estimated nutrition per serving (1/2 of recipe): 212 kcal, 6.7 g protein, 38.7 g total carbohydrate, 4.0 g fat, 7.6 g fiber, 63 mg sodium.",
+  "source": "Glenn",
+  "preferredMethod": "HexClad lidded wok",
+  "methods": [
+    {
+      "label": "Enamel Dutch oven",
+      "cookMin": 25,
+      "equipment": [
+        "Enamel Dutch oven"
+      ],
+      "steps": [
+        {
+          "title": "Set the heat",
+          "text": "Use a heavy enamel Dutch oven. Start on medium-low; its base retains heat, so reduce to low as soon as the liquid simmers."
+        },
+        {
+          "title": "Build flavor",
+          "text": "Warm {barley} in the dry pan for 1 minute until nutty."
+        },
+        {
+          "title": "Cook gently",
+          "text": "Add {broth}. Cover and simmer 12–16 minutes until tender, adding a splash of water if needed."
+        },
+        {
+          "title": "Finish",
+          "text": "Fold in {roastpep} and {creamcheese} and stir for 2 minutes until glossy."
+        }
+      ]
+    }
+  ]
+}

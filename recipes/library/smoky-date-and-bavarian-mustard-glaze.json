@@ -110,5 +110,50 @@
     }
   ],
   "notes": "Yield: 1 cup. One serving is 2 tablespoons. Make ahead: Pit and chop the dates a day ahead. Keep them covered and refrigerated until needed. Refrigerate in shallow covered portions within 2 hours and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze for up to 2 months in small portions. The smooth date base thickens again as it reheats. Fridge reheat: Bring a portion to a boil in a small pan, stirring until it reaches at least 165°F. Loosen with a little water as needed. Freezer reheat: Thaw in the refrigerator overnight and reheat as for a chilled portion. Option A uses sweet mustard and smoked paprika. For gentler Option B, halve the mustard, leave out the paprika and finish with a little finely minced parsley. Both versions are dairy-free. Estimated nutrition per serving (1/8 of recipe): 24 kcal, 0.5 g protein, 5.5 g total carbohydrate, 0.2 g fat, 0.5 g fiber, 5 mg sodium. The estimate covers the prepared condiment. Add separately served foods when totaling a meal. Fiber is estimated before straining.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "10-inch HexClad skillet",
+  "methods": [
+    {
+      "label": "Enamel Dutch oven",
+      "cookMin": 17,
+      "equipment": [
+        "Enamel Dutch oven",
+        "Immersion blender and tall heatproof jug",
+        "Fine-mesh sieve",
+        "Small whisk",
+        "Heatproof liquid measuring cup",
+        "Instant-read thermometer"
+      ],
+      "steps": [
+        {
+          "title": "Set up the cooking vessel",
+          "text": "Start the enamel Dutch oven over medium-low heat for 2–3 minutes; use the lid for covered steps. Reduce heat once liquids simmer and stir across the heavy base."
+        },
+        {
+          "title": "Poach the dates",
+          "text": "Simmer {dates}, {broth} and {garlic} in the covered HexClad for 6–9 minutes until the dates can be mashed with a spoon."
+        },
+        {
+          "title": "Blend the mustard glaze",
+          "text": "Blend the dates and their broth with {mustard} and {smoke}. Press the puree through a fine sieve into the Enamel Dutch oven to remove date skins and coarse mustard seeds."
+        },
+        {
+          "title": "Stir the slurry",
+          "text": "Stir {starch} into {water} in a small cup until smooth."
+        },
+        {
+          "title": "Thicken the sauce",
+          "text": "Bring the sauce to a simmer. Stir in the freshly mixed slurry and cook for about 1 minute, whisking until it coats the back of a spoon."
+        },
+        {
+          "title": "Check the yield",
+          "text": "Measure the finished sauce in a heatproof cup. Aim for 1 cup total. If it measures short, whisk in a little hot water. If it measures over, return it to the Enamel Dutch oven and simmer briefly to the mark."
+        },
+        {
+          "title": "Serve",
+          "text": "Brush the warm glaze over pulled pork already moistened with gravy, or stir a spoonful into a serving of chicken braising sauce."
+        }
+      ]
+    }
+  ]
 }

@@ -147,5 +147,71 @@
     }
   ],
   "notes": "Make ahead: Cut the cabbage and tortilla ribbons ahead. Keep the ribbons dry until cooking and poach the fish just before serving. Option A uses lime and mild ancho. For gentler Option B, omit both and add finely minced parsley to the gravy. For dairy-free sauce omit the cream cheese. Refrigerate promptly in shallow portions and use within 3 days. Freezer-Friendly Verdict: No. The softened tortillas lose their shape when frozen and the thin cod flakes can firm up after reheating. Fridge reheat: Warm a single portion with its sauce in a covered HexClad skillet over medium-low, adding a splash of water if thick. Stir or turn gently and begin checking after 5 minutes. Heat the cod to 165°F throughout. Freezer reheat: If already frozen, thaw overnight in the refrigerator and follow the fridge reheating directions. Estimated nutrition per serving (1/2 of recipe): 206 kcal, 26.7 g protein, 16.6 g total carbohydrate, 3.3 g fat, 2.1 g fiber, 137 mg sodium. Includes the measured broth and sauce. Sodium varies with your broth.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "Ninja Crispi PowerPod with US Bake preset",
+  "methods": [
+    {
+      "label": "Samsung conventional oven",
+      "cookMin": 37,
+      "equipment": [
+        "Samsung conventional oven",
+        "Ninja Crispi 6-cup glass container",
+        "10-inch HexClad skillet with lid",
+        "Thin-tip instant-read thermometer",
+        "Silicone spoon",
+        "Fine sieve",
+        "Butter knife or fork for checking fish"
+      ],
+      "steps": [
+        {
+          "title": "Allow for oven timing",
+          "text": "Use the first time given as a check. A covered metal dish may need 3–10 minutes longer; check tenderness or the center temperature every 2–3 minutes."
+        },
+        {
+          "title": "Heat the covered baking dish",
+          "text": "Preheat Samsung Bake to 350°F. Use a small metal baking dish and a fitted cover or foil to retain moisture."
+        },
+        {
+          "title": "Moisten the tortilla base",
+          "text": "Toss {tortillas}, {cabbage} and {ancho} with one quarter of {broth} in the metal baking dish. Press the ribbons down into the liquid."
+        },
+        {
+          "title": "Braise the cabbage",
+          "text": "Cover the dish and bake at 350°F for 10 minutes. Fold the top ribbons into the moist center with a silicone spoon. Cook in 2–3 minute intervals until the cabbage crushes easily and the tortillas are softened, about 12–20 minutes total."
+        },
+        {
+          "title": "Set the poaching temperature",
+          "text": "Meanwhile heat the remaining {broth} in the HexClad to 140°F, checking the liquid with a thermometer. Adjust the burner to maintain the poaching liquid at 139–140°F."
+        },
+        {
+          "title": "Poach the cod",
+          "text": "Lay {cod} in the broth in one layer. Keep the pan covered between thermometer checks and maintain the liquid at 139–140°F, checking every few minutes. Allow about 12–25 minutes for the thickest centers to reach 138–140°F."
+        },
+        {
+          "title": "Check the flake",
+          "text": "Check each thickest center: it must be opaque throughout and flake easily with a fork. If it is still translucent or sticks together, continue in the 139–140°F liquid, rechecking every 2 minutes. Transfer cooked portions to warm plates with a spoonful of broth."
+        },
+        {
+          "title": "Measure the gravy",
+          "text": "Strain the poaching broth and return about 1/2 cup per serving to the HexClad. Bring it to a full boil."
+        },
+        {
+          "title": "Mix the slurry",
+          "text": "Stir {starch} into {water} in a small cup until smooth."
+        },
+        {
+          "title": "Thicken the sauce",
+          "text": "Whisk the freshly stirred slurry into the simmering sauce and stir for 1 minute, until it coats the back of a spoon."
+        },
+        {
+          "title": "Finish the lime gravy",
+          "text": "Whisk {crema} and {lime} into the gravy off heat until smooth."
+        },
+        {
+          "title": "Assemble the bowls",
+          "text": "Divide the soft tortilla mixture between two bowls. Place the cod on top in moist flakes and coat generously with gravy."
+        }
+      ]
+    }
+  ]
 }

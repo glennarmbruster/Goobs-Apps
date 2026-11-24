@@ -144,5 +144,59 @@
     }
   ],
   "notes": "Sauce yield: About 1 1/4 cups of sauce for two after the noodles cook. Make ahead: Mince the mushrooms and flatten the cutlets a day ahead. Refrigerate in separate containers. Refrigerate shallow portions within 2 hours. Use refrigerated leftovers within 3 days. Freezer-Friendly Verdict: No. Fully cooked egg noodles soften and sour cream can separate after thawing. Freeze the chicken in the mushroom broth for up to 2 months if preparing components ahead. Fridge reheat: Warm the noodles and chicken together in their sauce covered in the HexClad over medium-low with a splash of water. Stir or turn occasionally and check from 6 minutes, until the center reaches 165°F. Freezer reheat: Thaw overnight in the refrigerator, then follow the fridge reheating directions. Option A includes mustard and sour cream. For gentler Option B, omit the mustard and use whipped cream cheese loosened with warm broth in place of the sour cream. Plain unsweetened oat cream works for a dairy-free finish. Estimated nutrition per serving (1/2 of recipe): 441 kcal, 42.5 g protein, 38.3 g total carbohydrate, 12.3 g fat, 1.9 g fiber, 137 mg sodium. Includes all the chicken and sauce in the listed recipe. Sodium varies with the broth.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "12-inch HexClad skillet with lid",
+  "methods": [
+    {
+      "label": "Enamel Dutch oven",
+      "cookMin": 30,
+      "equipment": [
+        "Enamel Dutch oven",
+        "Meat mallet and parchment",
+        "Thin-tip instant-read thermometer"
+      ],
+      "steps": [
+        {
+          "title": "Set up the cooking vessel",
+          "text": "Start the enamel Dutch oven over medium-low heat for 2–3 minutes; use the lid for covered steps. Reduce heat once liquids simmer and stir across the heavy base."
+        },
+        {
+          "title": "Even the cutlets",
+          "text": "Butterfly {chicken} into cutlets. Between two sheets of parchment, gently tap the thick ends with the flat face of a meat mallet to an even 3/8 inch."
+        },
+        {
+          "title": "Sweat the mushrooms",
+          "text": "Melt {butter} in the HexClad over medium-low. Cook {mushrooms} covered for 5–7 minutes until tender and juicy, stirring twice."
+        },
+        {
+          "title": "Start the sauce and noodles",
+          "text": "Pour {broth} into the Enamel Dutch oven and whisk in {mustard}. Bring to a simmer and submerge {noodles} in the mushroom broth. Cover for 3 minutes, then loosen the noodles with tongs."
+        },
+        {
+          "title": "Poach the cutlets",
+          "text": "Lay the cutlets among the noodles and spoon broth over them. Cover and simmer for 4–8 minutes, turning once. Transfer each cutlet to a covered plate with a spoonful of sauce once it reaches 165°F."
+        },
+        {
+          "title": "Finish the noodles",
+          "text": "Simmer the noodles in the same sauce for another 1–4 minutes as needed, stirring frequently until tender. Add a splash of water if the sauce stops flowing around them."
+        },
+        {
+          "title": "Mix the slurry",
+          "text": "Stir {starch} into {water} until completely smooth."
+        },
+        {
+          "title": "Bind the mushroom sauce",
+          "text": "Stir the slurry through the simmering noodles and cook for 1 minute, until the sauce coats the back of a spoon."
+        },
+        {
+          "title": "Fold in the sour cream",
+          "text": "Temper {cream} with a little hot sauce. Fold it and {parsley} into the noodles off heat."
+        },
+        {
+          "title": "Sauce and serve",
+          "text": "Slice the cutlets into short ribbons and fold them and the plate juices into the stroganoff. Divide the noodles, chicken and mushroom sauce evenly."
+        }
+      ]
+    }
+  ]
 }

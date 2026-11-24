@@ -153,5 +153,72 @@
     }
   ],
   "notes": "Make ahead: Chill the beef in its juices and slice it cold for neater, thinner slices. For milder gravy, leave the black pepper for the table. Refrigerate promptly in shallow portions and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze individual portions surrounded by sauce for up to 2 months to protect their moisture. Fridge reheat: Place one portion with its sauce in a covered shallow dish. Install the bottom drip pan in the APO and preheat to 325°F, sous vide mode off, rear heat on, top and bottom off, 60% steam. Set the probe to 165°F in the center. Start checking after 12 minutes and heat until 165°F throughout. Freezer reheat: Thaw overnight in the refrigerator. Follow the fridge reheating directions and stir the sauce smooth. Estimated nutrition per serving (1/4 of recipe): 209 kcal, 32.8 g protein, 3.9 g total carbohydrate, 5.5 g fat, 0.3 g fiber, 138 mg sodium. Includes the measured broth and sauce. Sodium varies with your broth.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "Traeger Silverton 610 pellet smoker",
+  "methods": [
+    {
+      "label": "Samsung conventional oven",
+      "cookMin": 190,
+      "equipment": [
+        "Samsung conventional oven",
+        "Small enamel Dutch oven with tight lid, sized to hold the food snugly",
+        "10-inch HexClad skillet",
+        "Thin-tip instant-read thermometer"
+      ],
+      "steps": [
+        {
+          "title": "Heat the conventional oven",
+          "text": "Preheat Samsung Bake to 300°F with the rack in the middle. Use an oven-safe pan; keep any braising lid ready."
+        },
+        {
+          "title": "Warm the braising liquid",
+          "text": "Bring {broth} with {coriander}, {garlic} and {pepper} just to a simmer in the open Dutch oven on the stove, about 3–6 minutes."
+        },
+        {
+          "title": "Warm the braising liquid",
+          "text": "Move the uncovered pot to the oven rack. Close the oven door and warm the liquid for 20 minutes."
+        },
+        {
+          "title": "Cut across the grain",
+          "text": "Cut {brisket} across the grain into slabs about 3/4 inch thick so the finished slices have short fibers."
+        },
+        {
+          "title": "Cover before braising",
+          "text": "Nestle the slabs in the hot broth in a snug single layer. Add {topup} if needed to come halfway up the meat and fit the lid now."
+        },
+        {
+          "title": "Braise until yielding",
+          "text": "Cook covered at 300°F for 1 3/4 to 2 3/4 hours. Begin testing near 195°F. Continue until a fork slides into the lean center and turns easily, checking every 15 minutes. Keep the meat halfway submerged by adding {topup} if needed."
+        },
+        {
+          "title": "Rest in the juices",
+          "text": "Rest the covered brisket off heat for 10 minutes."
+        },
+        {
+          "title": "Keep the meat moist",
+          "text": "Lift the slabs into a covered bowl with a little cooking liquid."
+        },
+        {
+          "title": "Measure the sauce base",
+          "text": "Skim excess fat from the braising liquid. Measure 1 1/2 cups into the HexClad skillet, topping up with {topup} if needed."
+        },
+        {
+          "title": "Season the gravy",
+          "text": "Whisk {mustard} into the measured juices."
+        },
+        {
+          "title": "Mix the slurry",
+          "text": "Stir {starch} into {water} until completely smooth."
+        },
+        {
+          "title": "Thicken the sauce",
+          "text": "Bring the skillet liquid to a boil. Whisk in the stirred slurry and simmer for 1 minute, stirring, until the sauce coats the back of a spoon."
+        },
+        {
+          "title": "Slice and sauce",
+          "text": "Slice through the slabs into thin, short pieces. Return them to the gravy and spoon the remaining gravy over the portions."
+        }
+      ]
+    }
+  ]
 }

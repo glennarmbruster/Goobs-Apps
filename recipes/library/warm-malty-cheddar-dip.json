@@ -95,5 +95,44 @@
     }
   ],
   "notes": "Yield: 1 1/2 cups. One serving is 1/4 cup. Make ahead: Reduce the lager a day ahead. Grate the cheddar shortly before making the dip. Refrigerate in shallow covered portions within 2 hours and use within 3 days. Freezer-Friendly Verdict: No. Cheddar can separate when the finished dip freezes. For freezer prep, freeze the thickened milk base for up to 1 month and add the cheese after reheating. Fridge reheat: Bring a portion to a boil in a small pan, stirring until it reaches at least 165°F. Loosen with a little water as needed. Freezer reheat: Thaw in the refrigerator overnight and reheat as for a chilled portion. Option A uses lager and mustard. For gentler Option B, replace the lager with low-sodium chicken broth and omit the mustard. For dairy-free dip, use avocado oil, unsweetened oat milk and a mild melting dairy-free cheddar. Calories include all of the measured beer before simmering. Estimated nutrition per serving (1/6 of recipe): 87 kcal, 4.4 g protein, 4.0 g total carbohydrate, 5.4 g fat, 0.0 g fiber, 95 mg sodium. The estimate covers the prepared condiment. Add separately served foods when totaling a meal.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "10-inch HexClad skillet",
+  "methods": [
+    {
+      "label": "Enamel Dutch oven",
+      "cookMin": 14,
+      "equipment": [
+        "Enamel Dutch oven",
+        "Small whisk",
+        "Heatproof liquid measuring cup",
+        "Instant-read thermometer"
+      ],
+      "steps": [
+        {
+          "title": "Set up the cooking vessel",
+          "text": "Start the enamel Dutch oven over medium-low heat for 2–3 minutes; use the lid for covered steps. Reduce heat once liquids simmer and stir across the heavy base."
+        },
+        {
+          "title": "Reduce the lager",
+          "text": "Simmer {beer} in the HexClad for 4–6 minutes until reduced to about half its starting volume. Pour into the heatproof cup."
+        },
+        {
+          "title": "Cook the mustard roux",
+          "text": "Melt {butter} in the emptied pan. Whisk in {flour} and {mustard} over low heat for 1–2 minutes."
+        },
+        {
+          "title": "Thicken the milk base",
+          "text": "Whisk {milk} and the reduced lager into the roux in stages. Simmer for 2–3 minutes until it coats the back of a spoon."
+        },
+        {
+          "title": "Melt the cheddar",
+          "text": "Remove the Enamel Dutch oven from the heat and whisk in {cheese} gradually until smooth."
+        },
+        {
+          "title": "Serve",
+          "text": "Measure about 1 1/2 cups, loosening with warm water as needed. Spoon warm over potatoes or serve in small dipping bowls beside sauced chicken."
+        }
+      ]
+    }
+  ]
 }

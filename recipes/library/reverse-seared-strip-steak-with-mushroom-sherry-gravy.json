@@ -1,0 +1,148 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "reverse-seared-strip-steak-with-mushroom-sherry-gravy",
+  "title": "Reverse-Seared Strip Steak with Mushroom Sherry Gravy",
+  "description": "Trimmed strip steak gets a slow warm-through and a spoon-coating mushroom gravy.",
+  "category": "Main dish",
+  "tags": [
+    "steak",
+    "beef",
+    "reverse-sear",
+    "apo",
+    "extra-sauce"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 10,
+  "cookMin": 40,
+  "equipment": [
+    "Samsung conventional oven",
+    "12-inch cast iron skillet",
+    "10-inch HexClad skillet",
+    "Food thermometer"
+  ],
+  "ingredients": [
+    {
+      "id": "strip",
+      "qty": 290,
+      "unit": "g",
+      "name": "trimmed New York strip steaks"
+    },
+    {
+      "id": "beefbroth",
+      "qty": 157,
+      "unit": "g",
+      "name": "unsalted beef broth"
+    },
+    {
+      "id": "mush",
+      "qty": 55,
+      "unit": "g",
+      "name": "fresh cremini mushrooms"
+    },
+    {
+      "id": "sherry",
+      "qty": 20,
+      "unit": "g",
+      "name": "unsalted dry sherry"
+    },
+    {
+      "id": "butter",
+      "qty": 8,
+      "unit": "g",
+      "name": "unsalted butter"
+    },
+    {
+      "id": "blackpep",
+      "qty": 0.5,
+      "unit": "g",
+      "name": "ground black pepper"
+    },
+    {
+      "id": "starch",
+      "qty": 7,
+      "unit": "g",
+      "name": "cornstarch"
+    },
+    {
+      "id": "cold",
+      "qty": 15,
+      "unit": "g",
+      "name": "cold sodium-free water"
+    },
+    {
+      "id": "oil",
+      "qty": 4,
+      "unit": "g",
+      "name": "avocado oil"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Prepare the steak",
+      "text": "Use two intact {strip} portions about 1½ inches thick; trim exterior fat. Place on a rack over a shallow pan."
+    },
+    {
+      "title": "Warm gently",
+      "text": "Preheat the Samsung oven on Bake to 225°F. Insert an oven-safe probe from the side. Heat for 20–38 minutes, checking from 15 minutes, until the center reaches 125°F before searing."
+    },
+    {
+      "title": "Build the gravy",
+      "text": "Soften finely chopped {mush} in {butter} for 5 minutes. Add {beefbroth}, {sherry}, {blackpep}; simmer 3 minutes."
+    },
+    {
+      "title": "Thicken the gravy",
+      "text": "Whisk {starch} into {cold}. Stir into the simmering gravy for 1 minute until it coats a spoon."
+    },
+    {
+      "title": "Sear and rest",
+      "text": "Heat {oil} in cast iron over medium-high. Sear both broad faces for 45–75 seconds each. Lower the heat and turn every 30 seconds until each center reaches 145°F. Rest 3 minutes in a warm dish."
+    },
+    {
+      "title": "Serve",
+      "text": "Slice thinly across the grain and spoon the warm gravy over the steak."
+    }
+  ],
+  "notes": "Make ahead: prepare the sauce a day ahead and refrigerate separately. Freezer-Friendly Verdict: Yes. Freeze cooked portions with sauce, cooled within 2 hours, for up to 2 months. Fridge reheat: cover and warm gently with a spoonful of water to 165°F. Freezer reheat: thaw overnight in the fridge, then reheat covered to 165°F. The first probe reading is a staging temperature for searing. Use unsalted plant butter for dairy-free gravy. Estimated nutrition per serving (1/2 of recipe): 297 kcal, 35.7 g protein, 5.8 g total carbohydrate, 13.6 g fat, 0.4 g fiber, 89 mg sodium.",
+  "source": "Glenn",
+  "preferredMethod": "Samsung conventional oven",
+  "methods": [
+    {
+      "label": "Anova Precision Oven Gen 1",
+      "cookMin": 38,
+      "equipment": [
+        "Anova Precision Oven Gen 1",
+        "12-inch cast iron skillet",
+        "10-inch HexClad skillet",
+        "Food probe"
+      ],
+      "steps": [
+        {
+          "title": "Prepare the steak",
+          "text": "Use two intact {strip} portions about 1½ inches thick; trim exterior fat. Place on a rack over a shallow pan."
+        },
+        {
+          "title": "Warm gently",
+          "text": "Install the APO drip pan. Set convection, Sous Vide OFF, 220°F, 30% steam, rear element only. Insert the probe sideways into the center, target 125°F. Heat for 20–38 minutes, checking from 15 minutes, until the center reaches 125°F before searing."
+        },
+        {
+          "title": "Build the gravy",
+          "text": "Soften finely chopped {mush} in {butter} for 5 minutes. Add {beefbroth}, {sherry}, {blackpep}; simmer 3 minutes."
+        },
+        {
+          "title": "Thicken the gravy",
+          "text": "Whisk {starch} into {cold}. Stir into the simmering gravy for 1 minute until it coats a spoon."
+        },
+        {
+          "title": "Sear and rest",
+          "text": "Heat {oil} in cast iron over medium-high. Sear both broad faces for 45–75 seconds each. Lower the heat and turn every 30 seconds until each center reaches 145°F. Rest 3 minutes in a warm dish."
+        },
+        {
+          "title": "Serve",
+          "text": "Slice thinly across the grain and spoon the warm gravy over the steak."
+        }
+      ]
+    }
+  ]
+}

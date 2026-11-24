@@ -90,5 +90,46 @@
     }
   ],
   "notes": "Make ahead: Peel and slice the sweet potatoes up to a day ahead and chill submerged in water. Drain well before braising. Refrigerate in shallow portions within 2 hours and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze the tender coins in a single layer with their glaze for up to 1 month. They will be a little softer after thawing. Fridge reheat: Warm covered with a splash of water over medium-low heat for 5–8 minutes until the center of the thickest slice reaches 165°F. Freezer reheat: Thaw in the refrigerator overnight, then follow the fridge reheat instructions. For dairy-free glaze, use avocado oil in place of butter. Option A uses cider. For gentler Option B, replace the cider with water and keep the grated apple. Estimated nutrition per serving (1/2 of recipe): 191 kcal, 2.5 g protein, 37.6 g total carbohydrate, 4.1 g fat, 5.0 g fiber, 81 mg sodium.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "10-inch HexClad skillet with lid",
+  "methods": [
+    {
+      "label": "Enamel Dutch oven",
+      "cookMin": 28,
+      "equipment": [
+        "Enamel Dutch oven",
+        "Box grater"
+      ],
+      "steps": [
+        {
+          "title": "Set up the cooking vessel",
+          "text": "Start the enamel Dutch oven over medium-low heat for 2–3 minutes; use the lid for covered steps. Reduce heat once liquids simmer and stir across the heavy base."
+        },
+        {
+          "title": "Build the braise",
+          "text": "Spread {apple} in the Enamel Dutch oven and stir in {cider}, {water} and {coriander}."
+        },
+        {
+          "title": "Arrange the coins",
+          "text": "Nestle {potato} in overlapping rows in the apple mixture and bring to a gentle simmer over medium heat."
+        },
+        {
+          "title": "Cook until tender",
+          "text": "Cover and braise over medium-low heat for 15–20 minutes, gently turning the slices halfway through, until a fork slips through without breaking them."
+        },
+        {
+          "title": "Reduce the glaze",
+          "text": "Lift the coins onto a warm plate and simmer the apple juices uncovered for 2–4 minutes until thick enough to leave a trail behind a spoon."
+        },
+        {
+          "title": "Finish the apples",
+          "text": "Take the Enamel Dutch oven off the heat and swirl {butter} into the reduced fruit."
+        },
+        {
+          "title": "Dress the coins",
+          "text": "Return the sweet potatoes to the Enamel Dutch oven and tilt it to coat the coins with the apple glaze."
+        }
+      ]
+    }
+  ]
 }

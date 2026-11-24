@@ -122,5 +122,57 @@
     }
   ],
   "notes": "Yield: 1 1/2 cups. One serving is 1/4 cup. Make ahead: Make the ginger broth up to 2 days ahead and chill. Add the egg white during the final few minutes on serving day. Refrigerate in shallow covered portions within 2 hours and use within 3 days. Freezer-Friendly Verdict: No. Egg ribbons can become spongy after freezing. For freezer prep, freeze the broth for up to 2 months and add freshly cooked ribbons after thawing. Fridge reheat: Bring a portion to a boil in a small pan, stirring until it reaches at least 165°F. Loosen with a little water as needed. Freezer reheat: Thaw in the refrigerator overnight and reheat as for a chilled portion. Option A uses ginger and white pepper. For gentler Option B, halve the ginger and omit the pepper. The sauce is dairy-free. Estimated nutrition per serving (1/6 of recipe): 16 kcal, 1.1 g protein, 2.0 g total carbohydrate, 0.4 g fat, 0.0 g fiber, 40 mg sodium. The estimate covers the prepared condiment. Add separately served foods when totaling a meal.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "10-inch HexClad skillet",
+  "methods": [
+    {
+      "label": "Enamel Dutch oven",
+      "cookMin": 10,
+      "equipment": [
+        "Enamel Dutch oven",
+        "Small whisk",
+        "Heatproof liquid measuring cup",
+        "Instant-read thermometer",
+        "Small bowl and fork"
+      ],
+      "steps": [
+        {
+          "title": "Set up the cooking vessel",
+          "text": "Start the enamel Dutch oven over medium-low heat for 2–3 minutes; use the lid for covered steps. Reduce heat once liquids simmer and stir across the heavy base."
+        },
+        {
+          "title": "Season the broth",
+          "text": "Simmer {broth}, {aminos}, {ginger} and {pepper} in the HexClad for 3 minutes."
+        },
+        {
+          "title": "Loosen the egg white",
+          "text": "Beat {white} with a fork in a small bowl just until fluid."
+        },
+        {
+          "title": "Stir the slurry",
+          "text": "Stir {starch} into {water} in a small cup until smooth."
+        },
+        {
+          "title": "Thicken the sauce",
+          "text": "Bring the sauce to a simmer. Stir in the freshly mixed slurry and cook for about 1 minute, whisking until it coats the back of a spoon."
+        },
+        {
+          "title": "Set the egg ribbons",
+          "text": "Bring the thickened base back to a gentle simmer. Stir slowly in one direction while drizzling in the egg white. Let the ribbons set for 30 seconds."
+        },
+        {
+          "title": "Shorten the ribbons",
+          "text": "Stir for 1–2 minutes until the ribbons are opaque and the sauce reaches 160°F throughout. Break long strands into short soft flecks with the whisk."
+        },
+        {
+          "title": "Finish with sesame",
+          "text": "Swirl in {sesame} off heat. Measure about 1 1/2 cups and add a little hot water if needed."
+        },
+        {
+          "title": "Serve",
+          "text": "Spoon over fully cooked steamed fish and soft rice. Ladle the sauce around the fish as well as over the top."
+        }
+      ]
+    }
+  ]
 }

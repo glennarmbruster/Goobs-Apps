@@ -130,5 +130,61 @@
     }
   ],
   "notes": "Sauce yield: About 1 1/2 cups of sauce for two, in addition to the rice. Make ahead: Use promptly chilled rice from the previous day or cook it fresh. Make the egg sauce just before serving. Refrigerate shallow portions within 2 hours. Use refrigerated leftovers within 3 days. Freezer-Friendly Verdict: No. The egg-enriched sauce can separate after freezing. For freezer prep, freeze the chicken in its plain thickened broth for up to 2 months and add fresh yolk and lemon after reheating. Fridge reheat: Warm the rice and chicken in the sauce over low heat, covered, stirring often and adding a splash of water if needed. Check from 6 minutes until rice, chicken and sauce reach 165°F. Freezer reheat: Thaw overnight in the refrigerator, then follow the fridge reheating directions. Option A uses the measured lemon juice. For gentler Option B, start with a few drops in the yolk and add more dill. The sauce contains no dairy. Estimated nutrition per serving (1/2 of recipe): 298 kcal, 36.5 g protein, 21.1 g total carbohydrate, 6.1 g fat, 0.3 g fiber, 98 mg sodium. Includes all the chicken and sauce in the listed recipe. Sodium varies with the broth.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "10-inch HexClad skillet with lid",
+  "methods": [
+    {
+      "label": "Enamel Dutch oven",
+      "cookMin": 24,
+      "equipment": [
+        "Enamel Dutch oven",
+        "Small saucepan with lid",
+        "Meat mallet and parchment",
+        "Thin-tip instant-read thermometer",
+        "Small bowl and whisk"
+      ],
+      "steps": [
+        {
+          "title": "Set up the cooking vessel",
+          "text": "Start the enamel Dutch oven over medium-low heat for 2–3 minutes; use the lid for covered steps. Reduce heat once liquids simmer and stir across the heavy base."
+        },
+        {
+          "title": "Even the cutlets",
+          "text": "Butterfly {chicken} into cutlets. Between two sheets of parchment, gently tap the thick ends with the flat face of a meat mallet to an even 3/8 inch."
+        },
+        {
+          "title": "Warm the rice",
+          "text": "Put {rice} in the Enamel Dutch oven with a splash of {broth}. Cover over low heat for 4–7 minutes, stirring once, until steaming hot and 165°F throughout. Keep covered."
+        },
+        {
+          "title": "Poach the chicken",
+          "text": "Heat the remaining broth in the HexClad to a bare simmer. Submerge the cutlets and cover. Poach for 4–8 minutes, turning once until each thickest center reaches 165°F. Hold covered in a little broth."
+        },
+        {
+          "title": "Prepare the egg base",
+          "text": "Whisk {yolk} with {lemon} in a heatproof bowl until smooth."
+        },
+        {
+          "title": "Mix the slurry",
+          "text": "Stir {starch} into {water} until completely smooth."
+        },
+        {
+          "title": "Thicken the poaching broth",
+          "text": "Boil the poaching broth for 1 minute. Stir in the freshly mixed slurry and simmer for 1 minute, until it coats the back of a spoon."
+        },
+        {
+          "title": "Temper the yolk",
+          "text": "Gradually whisk several spoonfuls of hot thickened broth into the yolk mixture until warm and fluid."
+        },
+        {
+          "title": "Finish the lemon sauce",
+          "text": "Whisk the tempered yolk into the Enamel Dutch oven over low heat. Stir constantly for 1–3 minutes, until the sauce reaches 160°F and flows evenly off the spoon. Take off heat and stir in {dill}."
+        },
+        {
+          "title": "Sauce and serve",
+          "text": "Divide the hot rice between two bowls. Thinly slice the cutlets and lay them on the rice, then ladle the warm lemon sauce generously over both."
+        }
+      ]
+    }
+  ]
 }

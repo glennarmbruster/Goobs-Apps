@@ -126,5 +126,57 @@
     }
   ],
   "notes": "Make ahead: The sage broth can be infused and chilled a day ahead. Stir the pistachio paste well before measuring. For dairy-free gravy, leave out the finishing butter. Keep the nut garnish entirely smooth. Refrigerate promptly in shallow portions and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze the filet submerged in gravy for up to 6 weeks; whisk the sauce smooth after thawing. Fridge reheat: Place one portion and its sauce in a shallow covered dish. Install the APO bottom drip pan and preheat to 325°F, sous vide mode off, 60% steam, rear element on, top and bottom off. Insert the probe in the coldest center and set it to 165°F. Start checking after 12 minutes and heat to 165°F throughout. Freezer reheat: Thaw a single portion in the refrigerator overnight, then use the fridge reheating method. Stir the sauce until smooth. Estimated nutrition per serving (1/2 of recipe): 279 kcal, 34.4 g protein, 4.8 g total carbohydrate, 13.6 g fat, 0.9 g fiber, 89 mg sodium. Includes the measured broth and sauce. Sodium varies with your broth.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "Anova Precision Oven Gen 1 with food probe, bottom drip pan and middle wire rack",
+  "methods": [
+    {
+      "label": "Enamel Dutch oven",
+      "cookMin": 30,
+      "equipment": [
+        "Enamel Dutch oven",
+        "10-inch HexClad skillet",
+        "Instant-read thermometer",
+        "Shallow stainless steel baking pan",
+        "Thin-tip instant-read thermometer"
+      ],
+      "steps": [
+        {
+          "title": "Prepare the portions",
+          "text": "Divide {filet} into even portions. Cut across the grain to pieces no thicker than 1 inch."
+        },
+        {
+          "title": "Start the poach",
+          "text": "Warm enough water to half cover the portions in a snug Dutch oven to 175–185°F. Slide them in, cover and hold below a simmer. Start checking after 8 minutes."
+        },
+        {
+          "title": "Infuse the sage",
+          "text": "Meanwhile bring {sage} and {broth} to a gentle simmer in the HexClad over medium-low. Cover for 5 minutes, then lift out the leaves."
+        },
+        {
+          "title": "Blend the pistachio base",
+          "text": "Loosen {paste} with a spoonful of the warm sage broth until smooth, then whisk it back into the skillet."
+        },
+        {
+          "title": "Make the slurry",
+          "text": "Stir {starch} into {water} in a small cup until smooth."
+        },
+        {
+          "title": "Thicken the sauce",
+          "text": "Bring the sauce base to a simmer. Whisk in the freshly stirred slurry and keep it bubbling gently for 1 minute, until it coats the back of a spoon."
+        },
+        {
+          "title": "Finish with butter",
+          "text": "Swirl {butter} into the gravy off heat."
+        },
+        {
+          "title": "Check the centers",
+          "text": "Check each center every 2 minutes and lift out as soon as it reaches 145°F. Rest for 3 minutes before slicing."
+        },
+        {
+          "title": "Serve in ribbons",
+          "text": "Thinly slice the rested filet and fan it in shallow bowls. Ladle the pistachio gravy over the meat and between the slices."
+        }
+      ]
+    }
+  ]
 }

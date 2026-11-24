@@ -1,0 +1,132 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "chicken-and-mushroom-wild-rice-soup",
+  "title": "Chicken and Mushroom Wild Rice Soup",
+  "description": "Nutty wild rice and tender chicken thighs meet in a sage-scented mushroom broth.",
+  "category": "Soup & stew",
+  "tags": [
+    "soup",
+    "soup-for-four",
+    "chicken"
+  ],
+  "servings": 4,
+  "servingsLabel": "bowls",
+  "prepMin": 15,
+  "cookMin": 33,
+  "equipment": [
+    "Enamel Dutch oven"
+  ],
+  "ingredients": [
+    {
+      "id": "chicken",
+      "qty": 430,
+      "unit": "g",
+      "name": "boneless skinless chicken thighs"
+    },
+    {
+      "id": "mush",
+      "qty": 220,
+      "unit": "g",
+      "name": "fresh cremini mushrooms"
+    },
+    {
+      "id": "wild",
+      "qty": 210,
+      "unit": "g",
+      "name": "plain cooked wild rice"
+    },
+    {
+      "id": "broth",
+      "qty": 760,
+      "unit": "g",
+      "name": "unsalted chicken broth"
+    },
+    {
+      "id": "milk",
+      "qty": 160,
+      "unit": "g",
+      "name": "skim milk"
+    },
+    {
+      "id": "butter",
+      "qty": 14,
+      "unit": "g",
+      "name": "unsalted butter"
+    },
+    {
+      "id": "ap",
+      "qty": 20,
+      "unit": "g",
+      "name": "King Arthur unbleached all-purpose flour"
+    },
+    {
+      "id": "sage",
+      "qty": 1,
+      "unit": "g",
+      "name": "rubbed sage"
+    },
+    {
+      "id": "garlic",
+      "qty": 7,
+      "unit": "g",
+      "name": "jarred minced garlic"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Prepare the ingredients",
+      "text": "Slice {mush} and cut {chicken} into ¾-inch pieces."
+    },
+    {
+      "title": "Set up the pot",
+      "text": "Use the enamel Dutch oven on a medium burner; adjust the flame to hold a bare simmer."
+    },
+    {
+      "title": "Build the base",
+      "text": "Cook the mushrooms in {butter} for 6 minutes. Add {sage}, {garlic} and {ap}; stir for 1 minute."
+    },
+    {
+      "title": "Simmer",
+      "text": "Pour in {broth} gradually. Add the chicken and simmer gently for 15–20 minutes until 175°F at the center of the largest piece."
+    },
+    {
+      "title": "Finish",
+      "text": "Stir in {wild} and {milk}. Gently heat 5 minutes, stirring to keep the rice suspended."
+    }
+  ],
+  "notes": "Make ahead: chill in shallow containers within 2 hours and refrigerate for up to 3 days. Freezer-Friendly Verdict: Yes, freeze in meal-size containers for up to 2 months. Fridge reheat: stir over medium-low heat to 165°F, adding a splash of water as needed. Freezer reheat: thaw overnight in the fridge, then reheat to 165°F. Dairy swap: replace each dairy ingredient with unsweetened oat milk or an equivalent dairy-free butter or cheese. Estimated nutrition per serving (1/4 of recipe): 263 kcal, 28.8 g protein, 19.9 g total carbohydrate, 7.6 g fat, 1.8 g fiber, 152 mg sodium.",
+  "source": "Glenn",
+  "preferredMethod": "Enamel Dutch oven",
+  "methods": [
+    {
+      "label": "Ninja Foodi PossibleCooker",
+      "cookMin": 38,
+      "equipment": [
+        "Ninja Foodi PossibleCooker"
+      ],
+      "steps": [
+        {
+          "title": "Prepare the ingredients",
+          "text": "Slice {mush} and cut {chicken} into ¾-inch pieces."
+        },
+        {
+          "title": "Set up the pot",
+          "text": "Select Sear/Sauté HI to heat the PossibleCooker; switch to LO for the roux or gentle simmer. Leave the lid ajar when simmering and stir down the sides."
+        },
+        {
+          "title": "Build the base",
+          "text": "Cook the mushrooms in {butter} for 6 minutes. Add {sage}, {garlic} and {ap}; stir for 1 minute."
+        },
+        {
+          "title": "Simmer",
+          "text": "Pour in {broth} gradually. Add the chicken and simmer gently for 15–20 minutes until 175°F at the center of the largest piece."
+        },
+        {
+          "title": "Finish",
+          "text": "Stir in {wild} and {milk}. Gently heat 5 minutes, stirring to keep the rice suspended."
+        }
+      ]
+    }
+  ]
+}

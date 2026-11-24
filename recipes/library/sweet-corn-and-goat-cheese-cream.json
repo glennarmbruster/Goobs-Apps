@@ -114,5 +114,54 @@
     }
   ],
   "notes": "Yield: 1 1/2 cups. One serving is 1/4 cup. Make ahead: The strained corn base can be refrigerated a day ahead. Warm it before adding the slurry and goat cheese. Refrigerate in shallow covered portions within 2 hours and use within 3 days. Freezer-Friendly Verdict: Yes. For the smoothest finish, freeze the corn base for up to 2 months and add the goat cheese after reheating. Whisk any already-finished thawed portion thoroughly. Fridge reheat: Reheat a portion over medium-low heat, whisking to a brief boil and at least 165°F. Whisk off heat until smooth. Freezer reheat: Thaw in the refrigerator overnight and reheat as for a chilled portion. Option A uses fresh goat cheese. For gentler Option B, use mild part-skim ricotta and briefly blend the finished sauce. For dairy-free sauce, use plain unsweetened oat milk and whipped dairy-free cream cheese. Estimated nutrition per serving (1/6 of recipe): 40 kcal, 2.5 g protein, 5.3 g total carbohydrate, 1.2 g fat, 0.3 g fiber, 39 mg sodium. The estimate covers the prepared condiment. Add separately served foods when totaling a meal. Fiber is estimated before straining.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "10-inch HexClad skillet",
+  "methods": [
+    {
+      "label": "Enamel Dutch oven",
+      "cookMin": 18,
+      "equipment": [
+        "Enamel Dutch oven",
+        "Immersion blender and tall heatproof jug",
+        "Fine-mesh sieve",
+        "Small whisk",
+        "Heatproof liquid measuring cup",
+        "Instant-read thermometer"
+      ],
+      "steps": [
+        {
+          "title": "Set up the cooking vessel",
+          "text": "Start the enamel Dutch oven over medium-low heat for 2–3 minutes; use the lid for covered steps. Reduce heat once liquids simmer and stir across the heavy base."
+        },
+        {
+          "title": "Simmer the corn",
+          "text": "Combine {corn}, {broth} and {nutmeg} in the HexClad. Cover and simmer for 6–8 minutes until a kernel crushes easily."
+        },
+        {
+          "title": "Blend the corn cream",
+          "text": "Puree the hot corn mixture with {milk}. Press through a fine sieve into the Enamel Dutch oven to catch the kernel skins."
+        },
+        {
+          "title": "Stir the slurry",
+          "text": "Stir {starch} into {water} in a small cup until smooth."
+        },
+        {
+          "title": "Thicken the sauce",
+          "text": "Bring the sauce to a simmer. Stir in the freshly mixed slurry and cook for about 1 minute, whisking until it coats the back of a spoon."
+        },
+        {
+          "title": "Set the reduction",
+          "text": "Measure the base and return it to the Enamel Dutch oven. Aim for about 1 3/8 cups. If needed, simmer briefly to reduce or add a splash of water to reach the mark."
+        },
+        {
+          "title": "Melt the goat cheese",
+          "text": "Take the Enamel Dutch oven off heat and gradually whisk in {cheese} until the sauce is smooth and glossy."
+        },
+        {
+          "title": "Serve",
+          "text": "Spoon under salmon or around sliced chicken. Ladle more over each portion as desired."
+        }
+      ]
+    }
+  ]
 }

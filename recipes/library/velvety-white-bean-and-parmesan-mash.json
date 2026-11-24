@@ -1,0 +1,100 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "velvety-white-bean-and-parmesan-mash",
+  "title": "Velvety White Bean and Parmesan Mash",
+  "description": "Warm beans mash into a soft garlicky side with Parmesan.",
+  "category": "Sides",
+  "tags": [
+    "side-dish",
+    "stovetop",
+    "beans"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 8,
+  "cookMin": 23,
+  "equipment": [
+    "HexClad lidded wok"
+  ],
+  "ingredients": [
+    {
+      "id": "beans",
+      "qty": 260,
+      "unit": "g",
+      "name": "cooked unsalted cannellini beans"
+    },
+    {
+      "id": "broth",
+      "qty": 70,
+      "unit": "g",
+      "name": "unsalted chicken broth"
+    },
+    {
+      "id": "parm",
+      "qty": 17,
+      "unit": "g",
+      "name": "finely grated Parmesan cheese"
+    },
+    {
+      "id": "garlic",
+      "qty": 4,
+      "unit": "g",
+      "name": "jarred minced garlic"
+    },
+    {
+      "id": "oil",
+      "qty": 7,
+      "unit": "g",
+      "name": "avocado oil"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Set the heat",
+      "text": "Use the lidded HexClad wok on a medium burner."
+    },
+    {
+      "title": "Build flavor",
+      "text": "Warm {garlic} in {oil} for 45 seconds without browning."
+    },
+    {
+      "title": "Cook gently",
+      "text": "Add {beans} and {broth}, cover and simmer 8 minutes until soft."
+    },
+    {
+      "title": "Finish",
+      "text": "Mash to a creamy consistency, adding warm water if necessary. Fold in {parm} off heat."
+    }
+  ],
+  "notes": "Make ahead: chill in shallow containers and refrigerate up to 3 days. Freezer-Friendly Verdict: Yes. Freeze up to 1 month; grains and vegetables soften slightly. Fridge reheat: stir with a spoonful of water over low heat until 165°F. Freezer reheat: thaw in the fridge and warm by the same method. Dairy swap: use unsalted plant butter or dairy-free cheese as applicable. Estimated nutrition per serving (1/2 of recipe): 252 kcal, 15.4 g protein, 34.4 g total carbohydrate, 6.3 g fat, 8.2 g fiber, 167 mg sodium.",
+  "source": "Glenn",
+  "preferredMethod": "HexClad lidded wok",
+  "methods": [
+    {
+      "label": "Enamel Dutch oven",
+      "cookMin": 25,
+      "equipment": [
+        "Enamel Dutch oven"
+      ],
+      "steps": [
+        {
+          "title": "Set the heat",
+          "text": "Use a heavy enamel Dutch oven. Start on medium-low; its base retains heat, so reduce to low as soon as the liquid simmers."
+        },
+        {
+          "title": "Build flavor",
+          "text": "Warm {garlic} in {oil} for 45 seconds without browning."
+        },
+        {
+          "title": "Cook gently",
+          "text": "Add {beans} and {broth}, cover and simmer 8 minutes until soft."
+        },
+        {
+          "title": "Finish",
+          "text": "Mash to a creamy consistency, adding warm water if necessary. Fold in {parm} off heat."
+        }
+      ]
+    }
+  ]
+}

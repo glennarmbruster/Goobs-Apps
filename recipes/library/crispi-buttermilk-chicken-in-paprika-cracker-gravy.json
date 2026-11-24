@@ -131,5 +131,62 @@
     }
   ],
   "notes": "Make ahead: Flatten the chicken the night before and refrigerate covered. Grind the crackers and keep dry until making the gravy. Option A uses tangy buttermilk. For gentler Option B, replace it with plain milk. Unsweetened oat milk also works as a dairy-free replacement. Refrigerate promptly in shallow portions and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze the chicken in the paprika gravy for up to 2 months; add buttermilk after reheating to reduce separation. Fridge reheat: Transfer a single portion with its sauce to a shallow covered oven-safe dish separate from the Crispi glass. Install the APO Gen 1 bottom drip pan. Preheat to 325°F, sous vide mode off, 60% steam, rear element on, top and bottom off. Set the probe to 165°F at the coldest center. Start checking at 12 minutes and heat to 165°F throughout. Freezer reheat: Thaw overnight in the refrigerator. Use the fridge reheating directions and stir the sauce smooth. Estimated nutrition per serving (1/2 of recipe): 209 kcal, 34.0 g protein, 6.4 g total carbohydrate, 4.2 g fat, 0.3 g fiber, 135 mg sodium. Includes the measured broth and sauce. Sodium varies with your broth.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "Ninja Crispi PowerPod with US Bake preset",
+  "methods": [
+    {
+      "label": "Samsung conventional oven",
+      "cookMin": 40,
+      "equipment": [
+        "Samsung conventional oven",
+        "Ninja Crispi 6-cup glass container",
+        "10-inch HexClad skillet with lid",
+        "Thin-tip instant-read thermometer",
+        "Meat mallet and parchment",
+        "Fine sieve"
+      ],
+      "steps": [
+        {
+          "title": "Allow for oven timing",
+          "text": "Use the first time given as a check. A covered metal dish may need 3–10 minutes longer; check tenderness or the center temperature every 2–3 minutes."
+        },
+        {
+          "title": "Heat the covered baking dish",
+          "text": "Preheat Samsung Bake to 350°F. Use a small metal baking dish and a fitted cover or foil to retain moisture."
+        },
+        {
+          "title": "Thin the cutlets",
+          "text": "Place {chicken} between sheets of parchment and tap the thick ends with a mallet until evenly 1/3 inch thick. Cut into smaller pieces if needed so the meat fits the dish in a shallow layer."
+        },
+        {
+          "title": "Cover with seasoned broth",
+          "text": "Mix {broth}, {paprika} and {garlic} directly in the metal baking dish. Slip the cutlets under the liquid and spread them out so broth can circulate."
+        },
+        {
+          "title": "Poach on Bake",
+          "text": "Cover the dish and bake at 350°F. Start checking the thickest centers sideways at 12 minutes. Turn with silicone tongs and continue in 2–3 minute intervals until each reaches 165°F, usually 15–28 minutes total. Lift each cooked piece to a covered bowl with some broth."
+        },
+        {
+          "title": "Soften the cracker crumbs",
+          "text": "Transfer the remaining cooking broth to the HexClad, whisk in {crumbs} and bring to a full boil. Reduce to a simmer for 2 minutes. Press through a sieve and return the smooth base to the skillet."
+        },
+        {
+          "title": "Mix the slurry",
+          "text": "Stir {starch} into {water} in a small cup until smooth."
+        },
+        {
+          "title": "Thicken the sauce",
+          "text": "Whisk the freshly stirred slurry into the simmering sauce and stir for 1 minute, until it coats the back of a spoon."
+        },
+        {
+          "title": "Temper the buttermilk",
+          "text": "Remove the skillet from the heat. Whisk a little warm gravy into {buttermilk}, then gently stir the mixture back into the pan."
+        },
+        {
+          "title": "Give each cutlet extra gravy",
+          "text": "Slice the chicken across the grain. Set the slices into a pool of gravy and spoon a second layer over the cut faces."
+        }
+      ]
+    }
+  ]
 }

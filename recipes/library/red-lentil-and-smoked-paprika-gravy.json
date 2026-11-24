@@ -112,5 +112,53 @@
     }
   ],
   "notes": "Yield: 1 1/2 cups. One serving is 1/4 cup. Make ahead: Cook and blend the lentils a day ahead and refrigerate the covered puree. Refrigerate in shallow covered portions within 2 hours and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze for up to 2 months. Stir in water to loosen the lentils when reheating. Fridge reheat: Bring a portion to a boil in a small pan, stirring until it reaches at least 165°F. Loosen with a little water as needed. Freezer reheat: Thaw in the refrigerator overnight and reheat as for a chilled portion. Option A uses sweet smoked paprika and garlic. For gentler Option B, halve the paprika, use sweet unsmoked paprika and leave out the garlic. The gravy is dairy-free. Estimated nutrition per serving (1/6 of recipe): 29 kcal, 1.3 g protein, 3.8 g total carbohydrate, 0.9 g fat, 0.5 g fiber, 5 mg sodium. The estimate covers the prepared condiment. Add separately served foods when totaling a meal.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "10-inch HexClad skillet",
+  "methods": [
+    {
+      "label": "Enamel Dutch oven",
+      "cookMin": 24,
+      "equipment": [
+        "Enamel Dutch oven",
+        "Immersion blender and tall heatproof jug",
+        "Small whisk",
+        "Heatproof liquid measuring cup",
+        "Instant-read thermometer"
+      ],
+      "steps": [
+        {
+          "title": "Set up the cooking vessel",
+          "text": "Start the enamel Dutch oven over medium-low heat for 2–3 minutes; use the lid for covered steps. Reduce heat once liquids simmer and stir across the heavy base."
+        },
+        {
+          "title": "Warm the paprika",
+          "text": "Warm {oil} in the HexClad over low heat. Stir in {paprika} and {garlic} for 15 seconds until fragrant."
+        },
+        {
+          "title": "Soften the lentils",
+          "text": "Add {lentils} and {broth}. Cover and simmer gently for 12–17 minutes, until the lentils crush without a firm center."
+        },
+        {
+          "title": "Blend the base",
+          "text": "Puree the lentils and their broth until smooth, then return to the HexClad."
+        },
+        {
+          "title": "Stir the slurry",
+          "text": "Stir {starch} into {water} in a small cup until smooth."
+        },
+        {
+          "title": "Thicken the sauce",
+          "text": "Bring the sauce to a simmer. Stir in the freshly mixed slurry and cook for about 1 minute, whisking until it coats the back of a spoon."
+        },
+        {
+          "title": "Check the yield",
+          "text": "Measure the finished sauce in a heatproof cup. Aim for 1 1/2 cups total. If it measures short, whisk in a little hot water. If it measures over, return it to the Enamel Dutch oven and simmer briefly to the mark."
+        },
+        {
+          "title": "Serve",
+          "text": "Spoon around thin slices of pork or braised chicken. A little extra gravy stirred through rice keeps the whole bowl moist."
+        }
+      ]
+    }
+  ]
 }

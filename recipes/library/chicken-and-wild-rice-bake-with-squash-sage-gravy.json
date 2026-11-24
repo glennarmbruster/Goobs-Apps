@@ -127,5 +127,57 @@
     }
   ],
   "notes": "Sauce yield: About 3 cups of gravy for four before baking. The cooked rice takes up some liquid and leaves roughly 1/2 cup of gravy per portion. Make ahead: Cook the wild rice until tender the day before and chill promptly. Bring the squash gravy to a simmer before assembling the casserole. Refrigerate shallow portions within 2 hours. Use refrigerated leftovers within 3 days. Freezer-Friendly Verdict: Yes. The cooked rice and puree reheat well when frozen under the gravy for up to 2 months. Fridge reheat: Spoon one portion and its sauce into a small covered oven-safe dish. Warm at 325°F on conventional Bake, checking after 15 minutes, until the coldest center reaches 165°F. Freezer reheat: Thaw overnight in the refrigerator, then follow the fridge reheating directions. For dairy-free gravy, use avocado oil for the butter and unsweetened oat milk for the skim milk. Estimated nutrition per serving (1/4 of recipe): 341 kcal, 33.7 g protein, 24.6 g total carbohydrate, 11.9 g fat, 2.4 g fiber, 174 mg sodium. Includes all the chicken and sauce in the listed recipe. Sodium varies with the broth.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "Samsung oven with conventional Bake",
+  "methods": [
+    {
+      "label": "Anova Precision Oven Gen 1",
+      "cookMin": 50,
+      "equipment": [
+        "Anova Precision Oven Gen 1",
+        "2-quart oven-safe casserole with lid",
+        "12-inch HexClad skillet with lid",
+        "Thin-tip instant-read thermometer",
+        "Immersion blender and deep heatproof jug"
+      ],
+      "steps": [
+        {
+          "title": "Set the APO",
+          "text": "Install the bottom drip pan. Preheat to 350°F on convection, Sous Vide OFF, rear element only, 0% steam, probe off. Use the same size pan as the preferred recipe. Start checking 3–5 minutes before the listed oven time."
+        },
+        {
+          "title": "Heat the oven",
+          "text": "Preheat the APO to 350°F on convection with the rack in the middle."
+        },
+        {
+          "title": "Soften the squash",
+          "text": "Simmer {squash} and {sage} in {broth} in the covered HexClad for 10–15 minutes until the squash crushes easily with a spoon."
+        },
+        {
+          "title": "Puree the squash",
+          "text": "Blend the squash and all its cooking liquid in a deep heatproof jug until smooth."
+        },
+        {
+          "title": "Make a pale roux",
+          "text": "Melt {butter} in the emptied HexClad over medium-low heat. Whisk in {flour} for 2 minutes until the paste smells lightly toasted."
+        },
+        {
+          "title": "Whisk the gravy",
+          "text": "Gradually whisk the squash puree and {milk} into the roux. Simmer for 2–3 minutes until it coats the back of a spoon."
+        },
+        {
+          "title": "Assemble the casserole",
+          "text": "Spread {rice} in the casserole and stir in half the hot gravy. Cut {chicken} into 3/4-inch pieces and arrange over the rice. Cover with the remaining gravy and fit the lid."
+        },
+        {
+          "title": "Bake covered",
+          "text": "Bake for 20–32 minutes, checking from 18 minutes, until the thickest chicken pieces reach 175°F and the rice at the center reaches at least 165°F."
+        },
+        {
+          "title": "Sauce and serve",
+          "text": "Rest covered for 3 minutes. Spoon the chicken and wild rice into shallow bowls and ladle gravy from the dish over each serving."
+        }
+      ]
+    }
+  ]
 }

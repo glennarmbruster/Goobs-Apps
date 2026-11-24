@@ -141,5 +141,47 @@
     }
   ],
   "notes": "Sauce yield: About 1 1/4 cups for two. Make ahead: Mix the paprika, thyme and garlic the day before and refrigerate covered. Stir the pecan paste smooth before cooking. Refrigerate in shallow portions within 2 hours. Use refrigerated leftovers within 3 days. Freezer-Friendly Verdict: Yes. Freeze the fish submerged in the gravy for up to 1 month. Whisk the gravy after reheating to disperse the nut oil. Fridge reheat: Warm a portion covered in its sauce over medium-low heat in the HexClad. Add a little water if it has thickened in storage. Check from 5 minutes and heat to 165°F at the coldest center. Freezer reheat: If frozen, thaw the covered portion in the refrigerator overnight, then follow the fridge method. Option A uses smoked paprika and garlic. For gentler Option B, use half as much sweet unsmoked paprika and omit the garlic. Avocado oil can replace the butter for a dairy-free dish. Estimated nutrition per serving (1/2 of recipe): 253 kcal, 31.5 g protein, 5.6 g total carbohydrate, 11.3 g fat, 1.2 g fiber, 116 mg sodium. Includes both the fish and its full share of sauce and any rice or potatoes listed. Sodium varies with the broth.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "Two small oval cast iron pans with foil or fitted lids",
+  "methods": [
+    {
+      "label": "Enamel Dutch oven",
+      "cookMin": 25,
+      "equipment": [
+        "Enamel Dutch oven",
+        "10-inch HexClad skillet",
+        "Instant-read thermometer"
+      ],
+      "steps": [
+        {
+          "title": "Warm the spices",
+          "text": "Melt {butter} in the HexClad over low heat. Add {paprika}, {thyme} and {garlic} and stir for 20 seconds, just until fragrant."
+        },
+        {
+          "title": "Loosen the pecan paste",
+          "text": "Whisk {pecan} with a little {broth} until smooth. Whisk it into the skillet with the remaining broth and bring to a gentle simmer."
+        },
+        {
+          "title": "Heat the poach",
+          "text": "Ladle enough of the warm pecan broth into a snug Dutch oven to cover the bottom. Nestle {fish} inside, cover and hold over low heat. Check after 4 minutes and every minute thereafter until 145°F."
+        },
+        {
+          "title": "Hold the fish",
+          "text": "Lift out the fillets and cover on a warm plate. Pour the cooking liquid back into the HexClad and boil for 1 minute."
+        },
+        {
+          "title": "Mix the slurry",
+          "text": "Stir {starch} into {water} until completely smooth."
+        },
+        {
+          "title": "Bind the sauce",
+          "text": "Bring the sauce to a simmer. Whisk in the freshly stirred slurry and let it bubble gently for 1 minute, stirring until it coats the back of a spoon."
+        },
+        {
+          "title": "Spoon into bowls",
+          "text": "Set each portion in a shallow bowl. Spoon the glossy pecan gravy under and over the flakes."
+        }
+      ]
+    }
+  ]
 }

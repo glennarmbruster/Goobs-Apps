@@ -115,5 +115,48 @@
     }
   ],
   "notes": "Yield: 1 cup. One serving is 2 tablespoons. Make ahead: Mix the mandarin and tamarind up to a day ahead and refrigerate. Thicken the sauce just before serving. Refrigerate in shallow covered portions within 2 hours and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze in small portions for up to 2 months. Stir while reheating to recover the sheen. Fridge reheat: Bring a portion to a boil in a small pan, stirring until it reaches at least 165°F. Loosen with a little water as needed. Freezer reheat: Thaw in the refrigerator overnight and reheat as for a chilled portion. Option A uses both tamarind and mandarin. For gentler Option B, omit the tamarind and use unsweetened pear juice in place of mandarin. Both versions are dairy-free. Estimated nutrition per serving (1/8 of recipe): 17 kcal, 0.3 g protein, 4.0 g total carbohydrate, 0.0 g fat, 0.1 g fiber, 27 mg sodium. The estimate covers the prepared condiment. Add separately served foods when totaling a meal.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "HexClad wok with lid",
+  "methods": [
+    {
+      "label": "Enamel Dutch oven",
+      "cookMin": 13,
+      "equipment": [
+        "Enamel Dutch oven",
+        "Small whisk",
+        "Heatproof liquid measuring cup",
+        "Instant-read thermometer"
+      ],
+      "steps": [
+        {
+          "title": "Set up the cooking vessel",
+          "text": "Start the enamel Dutch oven over medium-low heat for 2–3 minutes; use the lid for covered steps. Reduce heat once liquids simmer and stir across the heavy base."
+        },
+        {
+          "title": "Dissolve the tamarind",
+          "text": "Whisk {tamarind} into {mandarin} in the cool the Enamel Dutch oven until smooth."
+        },
+        {
+          "title": "Reduce the glaze base",
+          "text": "Add {broth}, {aminos}, {sugar} and {garlic}. Simmer uncovered for 5–8 minutes, stirring, until the liquid measures just under 1 cup."
+        },
+        {
+          "title": "Stir the slurry",
+          "text": "Stir {starch} into {water} in a small cup until smooth."
+        },
+        {
+          "title": "Thicken the sauce",
+          "text": "Bring the sauce to a simmer. Stir in the freshly mixed slurry and cook for about 1 minute, whisking until it coats the back of a spoon."
+        },
+        {
+          "title": "Check the yield",
+          "text": "Measure the glaze in a heatproof cup and add a little hot water, if needed, to reach 1 cup."
+        },
+        {
+          "title": "Serve",
+          "text": "Turn fully cooked poached chicken or fish gently in the glaze off heat. Spoon the remaining glaze over the plated portions."
+        }
+      ]
+    }
+  ]
 }

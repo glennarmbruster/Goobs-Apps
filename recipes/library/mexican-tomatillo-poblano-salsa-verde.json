@@ -99,5 +99,44 @@
     }
   ],
   "notes": "Yield: 1 cup, or four 1/4-cup portions. Low-sodium option for the full batch: Use 1/16 tsp table salt in place of 1/4 tsp. Use the same final 1-cup yield and 1/4-cup serving. Make ahead: Make the sauce the day before and portion it before chilling. Refrigerate in shallow covered portions within 2 hours and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze flat in 1/4-cup portions for up to 2 months. Whisk again after thawing to restore the texture. Fridge reheat: Reheat a portion in a small pan, stirring to a brief boil and at least 165°F. Loosen with a splash of water if it tightens. Freezer reheat: Thaw overnight in the refrigerator, then use the fridge reheat method. Option A uses the listed seasonings. For a gentler Option B, omit the lime and replace half the tomatillos by weight with cooked peeled zucchini. Estimated nutrition per serving (1/4 of recipe): 19 kcal, 0.7 g protein, 3.7 g total carbohydrate, 0.4 g fat, 1.0 g fiber, 149 mg sodium. Low-sodium version per 1/4 cup: 19 kcal, 0.7 g protein, 3.7 g total carbohydrate, 0.4 g fat, 1.0 g fiber, 38 mg sodium. Figures cover the sauce alone. Sodium varies with brands.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "10-inch HexClad skillet",
+  "methods": [
+    {
+      "label": "Enamel Dutch oven",
+      "cookMin": 15,
+      "equipment": [
+        "Enamel Dutch oven",
+        "Small whisk",
+        "Heatproof measuring cup",
+        "Vitamix or immersion blender with tall heatproof jug"
+      ],
+      "steps": [
+        {
+          "title": "Set up the cooking vessel",
+          "text": "Start the enamel Dutch oven over medium-low heat for 2–3 minutes; use the lid for covered steps. Reduce heat once liquids simmer and stir across the heavy base."
+        },
+        {
+          "title": "Soften the tomatillos",
+          "text": "Simmer {tom}, {ga} and {w} under a lid for 7–9 minutes until the tomatillos lose their bright green color and break under a spoon."
+        },
+        {
+          "title": "Blend the salsa",
+          "text": "Take off the heat and blend the cooked base with {pob}, {cil}, {lj} and {salt} until smooth."
+        },
+        {
+          "title": "Set the body",
+          "text": "Return the salsa to low heat and cook uncovered for 2–4 minutes until it coats a spoon without a watery rim."
+        },
+        {
+          "title": "Check the yield",
+          "text": "Measure the sauce in a heatproof cup. Aim for 1 cup. If short, loosen with a little hot sodium-free water. If over, return it to the pan and simmer briefly to the mark."
+        },
+        {
+          "title": "Serve the sauce",
+          "text": "Serve warm over soft chicken enchiladas or eggs, or cool and use as a table sauce."
+        }
+      ]
+    }
+  ]
 }

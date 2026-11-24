@@ -5,26 +5,108 @@
   "title": "Garlic-Lemon Aioli",
   "description": "A quick mayo-based aioli with grated garlic, lemon and Dijon, made in one bowl.",
   "category": "Sauce & condiment",
-  "tags": ["no-cook", "quick"],
+  "tags": [
+    "no-cook",
+    "quick"
+  ],
   "servings": 2,
   "servingsLabel": "servings",
   "prepMin": 5,
   "cookMin": 0,
-  "equipment": ["Small bowl"],
+  "equipment": [
+    "Small bowl"
+  ],
   "ingredients": [
-    { "id": "mayo", "qty": 0.5, "unit": "cup", "name": "mayonnaise" },
-    { "id": "garlic", "qty": 1, "unit": "clove", "name": "fresh garlic", "note": "small, finely grated, or 1/4 tsp garlic powder" },
-    { "id": "lemon", "qty": 1, "unit": "tsp", "name": "lemon juice", "note": "fresh is best" },
-    { "id": "dijon", "qty": 0.5, "unit": "tsp", "name": "Dijon mustard" },
-    { "id": "salt", "qty": 0.125, "unit": "tsp", "name": "salt" },
-    { "id": "sugar", "qty": 0.125, "unit": "tsp", "name": "sugar", "note": "optional, a tiny pinch to round the acidity" }
+    {
+      "id": "mayo",
+      "qty": 0.5,
+      "unit": "cup",
+      "name": "mayonnaise"
+    },
+    {
+      "id": "garlic",
+      "qty": 1,
+      "unit": "clove",
+      "name": "fresh garlic",
+      "note": "small, finely grated, or 1/4 tsp garlic powder"
+    },
+    {
+      "id": "lemon",
+      "qty": 1,
+      "unit": "tsp",
+      "name": "lemon juice",
+      "note": "fresh is best"
+    },
+    {
+      "id": "dijon",
+      "qty": 0.5,
+      "unit": "tsp",
+      "name": "Dijon mustard"
+    },
+    {
+      "id": "salt",
+      "qty": 0.125,
+      "unit": "tsp",
+      "name": "salt"
+    },
+    {
+      "id": "sugar",
+      "qty": 0.125,
+      "unit": "tsp",
+      "name": "sugar",
+      "note": "optional, a tiny pinch to round the acidity"
+    }
   ],
   "steps": [
-    { "title": "Combine", "text": "Add {mayo}, {garlic}, {lemon}, {dijon}, {salt} and optional {sugar} to a small bowl." },
-    { "title": "Stir", "text": "Stir until smooth and fully combined." },
-    { "title": "Adjust", "text": "Taste and adjust: more lemon for brighter, more salt if needed." },
-    { "title": "Chill", "text": "Refrigerate for 10 to 20 minutes until serving so it thickens slightly." }
+    {
+      "title": "Combine",
+      "text": "Add {mayo}, {garlic}, {lemon}, {dijon}, {salt} and optional {sugar} to a small bowl."
+    },
+    {
+      "title": "Stir",
+      "text": "Stir until smooth and fully combined."
+    },
+    {
+      "title": "Adjust",
+      "text": "Taste and adjust: more lemon for brighter, more salt if needed."
+    },
+    {
+      "title": "Chill",
+      "text": "Refrigerate for 10 to 20 minutes until serving so it thickens slightly."
+    }
   ],
-  "notes": "Serves two generously. Pairs with Chicken Smash Patties.",
-  "source": "Glenn"
+  "notes": "Serves two generously. Pairs with Chicken Smash Patties. Estimated nutrition per serving (1/2 of recipe): 377 kcal, 0.7 g protein, 1.0 g total carbohydrate, 41.2 g fat, 0.1 g fiber, 509 mg sodium. Based on the measured ingredients; brands and optional additions can change these values.",
+  "source": "Glenn",
+  "preferredMethod": "Small bowl",
+  "methods": [
+    {
+      "label": "Mini food processor",
+      "cookMin": 15,
+      "equipment": [
+        "Mini food processor"
+      ],
+      "steps": [
+        {
+          "title": "Fit the blade",
+          "text": "Use short pulses in a mini food processor for the mixing step. Scrape down twice. For butter, start softened; for mayonnaise, pulse just until combined."
+        },
+        {
+          "title": "Combine",
+          "text": "Add {mayo}, {garlic}, {lemon}, {dijon}, {salt} and optional {sugar} to a small bowl."
+        },
+        {
+          "title": "Stir",
+          "text": "Stir until smooth and fully combined."
+        },
+        {
+          "title": "Adjust",
+          "text": "Taste and adjust: more lemon for brighter, more salt if needed."
+        },
+        {
+          "title": "Chill",
+          "text": "Refrigerate for 10 to 20 minutes until serving so it thickens slightly."
+        }
+      ]
+    }
+  ]
 }

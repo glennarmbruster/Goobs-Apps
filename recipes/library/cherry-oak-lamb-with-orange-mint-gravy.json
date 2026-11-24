@@ -161,5 +161,72 @@
     }
   ],
   "notes": "Make ahead: Slice the lamb while well chilled and keep covered in the refrigerator. Option A uses orange and mint. For gentler Option B, replace the orange juice with broth, omit the peel and substitute parsley for mint. Refrigerate promptly in shallow portions and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze individual portions surrounded by sauce for up to 2 months to protect their moisture. Fridge reheat: Warm one portion covered in its sauce in the HexClad over medium-low heat. Turn gently, adding a splash of water if needed. Check after 6 minutes and continue until the food reaches 165°F throughout. Freezer reheat: Thaw overnight in the refrigerator. Follow the fridge reheating directions and stir the sauce smooth. Estimated nutrition per serving (1/2 of recipe): 200 kcal, 30.3 g protein, 3.5 g total carbohydrate, 6.5 g fat, 0.2 g fiber, 109 mg sodium. Includes the measured broth and sauce. Sodium varies with your broth.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "Traeger Silverton 610 pellet smoker",
+  "methods": [
+    {
+      "label": "Samsung conventional oven",
+      "cookMin": 65,
+      "equipment": [
+        "Samsung conventional oven",
+        "Small enamel Dutch oven with tight lid, sized to hold the food snugly",
+        "10-inch HexClad skillet",
+        "Thin-tip instant-read thermometer"
+      ],
+      "steps": [
+        {
+          "title": "Heat the conventional oven",
+          "text": "Preheat Samsung Bake to 275°F with the rack in the middle. Use an oven-safe pan; keep any braising lid ready."
+        },
+        {
+          "title": "Warm the braising liquid",
+          "text": "Bring {broth} with {peel}, {cumin} and {coriander} just to a simmer in the open Dutch oven on the stove, about 3–6 minutes."
+        },
+        {
+          "title": "Warm the braising liquid",
+          "text": "Move the uncovered pot to the oven rack. Close the oven door and warm the liquid for 20 minutes."
+        },
+        {
+          "title": "Slice the lamb",
+          "text": "Find the grain in {lamb} and cut across it into 1/3-inch slices."
+        },
+        {
+          "title": "Cover to poach",
+          "text": "Nestle the lamb in the hot liquid in a single layer. Add {topup} to just cover if needed, and fit the lid immediately."
+        },
+        {
+          "title": "Check the lamb",
+          "text": "Poach covered at 275°F for 7–18 minutes, checking each thick center sideways from 7 minutes. Transfer portions at 145°F to a covered bowl with a spoonful of broth."
+        },
+        {
+          "title": "Rest in the juices",
+          "text": "Rest the covered lamb off heat for 3 minutes."
+        },
+        {
+          "title": "Remove the peel",
+          "text": "Lift the strip of peel out of the broth and discard it."
+        },
+        {
+          "title": "Measure the sauce base",
+          "text": "Skim excess fat from the braising liquid. Measure 3/4 cup into the HexClad skillet, topping up with {topup} if needed."
+        },
+        {
+          "title": "Add the orange",
+          "text": "Whisk {orange} into the juices over medium heat."
+        },
+        {
+          "title": "Mix the slurry",
+          "text": "Stir {starch} into {water} until completely smooth."
+        },
+        {
+          "title": "Thicken the sauce",
+          "text": "Bring the skillet liquid to a boil. Whisk in the stirred slurry and simmer for 1 minute, stirring, until the sauce coats the back of a spoon."
+        },
+        {
+          "title": "Finish with mint",
+          "text": "Stir {mint} into the gravy off heat. Divide the lamb between warm bowls and cover it with the mint gravy."
+        }
+      ]
+    }
+  ]
 }

@@ -1,0 +1,100 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "sweet-corn-and-poblano-rice",
+  "title": "Sweet Corn and Poblano Rice",
+  "description": "Jasmine rice steams with sweet corn and mild roasted poblano.",
+  "category": "Sides",
+  "tags": [
+    "side-dish",
+    "stovetop",
+    "ricefl"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 8,
+  "cookMin": 23,
+  "equipment": [
+    "HexClad lidded wok"
+  ],
+  "ingredients": [
+    {
+      "id": "ricefl",
+      "qty": 95,
+      "unit": "g",
+      "name": "dry jasmine rice"
+    },
+    {
+      "id": "corn",
+      "qty": 75,
+      "unit": "g",
+      "name": "sweet corn kernels"
+    },
+    {
+      "id": "poblano",
+      "qty": 55,
+      "unit": "g",
+      "name": "peeled cooked mild poblano pepper"
+    },
+    {
+      "id": "broth",
+      "qty": 175,
+      "unit": "g",
+      "name": "unsalted chicken broth"
+    },
+    {
+      "id": "oil",
+      "qty": 6,
+      "unit": "g",
+      "name": "avocado oil"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Set the heat",
+      "text": "Use the lidded HexClad wok on a medium burner."
+    },
+    {
+      "title": "Build flavor",
+      "text": "Warm {oil}; stir in {ricefl} and {poblano} for 2 minutes."
+    },
+    {
+      "title": "Cook gently",
+      "text": "Add {broth} and {corn}, bring to a simmer, cover and cook over low heat for 15 minutes."
+    },
+    {
+      "title": "Finish",
+      "text": "Rest off heat for 10 minutes with the lid closed, then fluff."
+    }
+  ],
+  "notes": "Make ahead: chill in shallow containers and refrigerate up to 3 days. Freezer-Friendly Verdict: Yes. Freeze up to 1 month; grains and vegetables soften slightly. Fridge reheat: stir with a spoonful of water over low heat until 165°F. Freezer reheat: thaw in the fridge and warm by the same method. Dairy swap: use unsalted plant butter or dairy-free cheese as applicable. Estimated nutrition per serving (1/2 of recipe): 247 kcal, 5.9 g protein, 47.8 g total carbohydrate, 3.9 g fat, 1.8 g fiber, 23 mg sodium.",
+  "source": "Glenn",
+  "preferredMethod": "HexClad lidded wok",
+  "methods": [
+    {
+      "label": "Enamel Dutch oven",
+      "cookMin": 25,
+      "equipment": [
+        "Enamel Dutch oven"
+      ],
+      "steps": [
+        {
+          "title": "Set the heat",
+          "text": "Use a heavy enamel Dutch oven. Start on medium-low; its base retains heat, so reduce to low as soon as the liquid simmers."
+        },
+        {
+          "title": "Build flavor",
+          "text": "Warm {oil}; stir in {ricefl} and {poblano} for 2 minutes."
+        },
+        {
+          "title": "Cook gently",
+          "text": "Add {broth} and {corn}, bring to a simmer, cover and cook over low heat for 15 minutes."
+        },
+        {
+          "title": "Finish",
+          "text": "Rest off heat for 10 minutes with the lid closed, then fluff."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,151 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "thai-coconut-lemongrass-pan-sauce",
+  "title": "Thai Coconut Lemongrass Pan Sauce",
+  "description": "Bruised lemongrass infuses coconut milk for a fragrant fish sauce pairing.",
+  "category": "Sauce & condiment",
+  "tags": [
+    "thai-inspired",
+    "for-fish",
+    "low-sodium-option",
+    "stir-fry"
+  ],
+  "servings": 4,
+  "servingsLabel": "1/4-cup portions",
+  "prepMin": 7,
+  "cookMin": 18,
+  "equipment": [
+    "10-inch HexClad skillet",
+    "Whisk"
+  ],
+  "ingredients": [
+    {
+      "id": "oil",
+      "qty": 4,
+      "unit": "g",
+      "name": "avocado oil"
+    },
+    {
+      "id": "lemongrass",
+      "qty": 8,
+      "unit": "g",
+      "name": "bruised fresh lemongrass",
+      "note": "Lift out before finishing."
+    },
+    {
+      "id": "ginger",
+      "qty": 5,
+      "unit": "g",
+      "name": "fresh finely grated ginger"
+    },
+    {
+      "id": "coconut",
+      "qty": 135,
+      "unit": "g",
+      "name": "plain light coconut milk"
+    },
+    {
+      "id": "broth",
+      "qty": 65,
+      "unit": "g",
+      "name": "unsalted chicken broth"
+    },
+    {
+      "id": "amino",
+      "qty": 12,
+      "unit": "g",
+      "name": "coconut aminos",
+      "note": "Low-sodium batch: use 3 g total."
+    },
+    {
+      "id": "honey",
+      "qty": 5,
+      "unit": "g",
+      "name": "honey"
+    },
+    {
+      "id": "lime",
+      "qty": 5,
+      "unit": "g",
+      "name": "strained lime juice"
+    },
+    {
+      "id": "starch",
+      "qty": 6,
+      "unit": "g",
+      "name": "cornstarch"
+    },
+    {
+      "id": "cold",
+      "qty": 13,
+      "unit": "g",
+      "name": "cold sodium-free water"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Start the sauce",
+      "text": "Warm {oil} in the 10-inch HexClad skillet over medium-low heat."
+    },
+    {
+      "title": "Release the aromatics",
+      "text": "Gently crush the herbs. Warm {lemongrass}, {ginger} in the oil for 30 seconds without browning."
+    },
+    {
+      "title": "Simmer the base",
+      "text": "Whisk in {coconut}, {broth}, {amino}, {honey} gradually. Simmer gently for 8 minutes, then lift out the whole herb."
+    },
+    {
+      "title": "Make the slurry",
+      "text": "Whisk {starch} into {cold} until smooth."
+    },
+    {
+      "title": "Thicken",
+      "text": "Pour the slurry into the simmering sauce while whisking. Bubble gently for 1 minute until it coats a spoon."
+    },
+    {
+      "title": "Finish the sauce",
+      "text": "Fold in {lime} off heat. Measure into a heatproof jug; add hot water to reach 1 cup, or simmer excess away before serving."
+    }
+  ],
+  "notes": "Yield: 1 cup. Low-sodium option for the full batch: reduce coconut aminos to 3 g and keep the same final yield. Use unsalted broth throughout. Option A uses the listed seasonings. For a gentler Option B, omit citrus or vinegar and replace its weight with water. Make ahead: chill in small jars for up to 3 days. Freezer-Friendly Verdict: Yes, freeze in quarter-cup portions up to 2 months. Fridge reheat: whisk over low heat to 165°F. Freezer reheat: thaw overnight in the fridge, then reheat as above. Estimated nutrition per serving (1/4 of recipe): 46 kcal, 0.2 g protein, 4.3 g total carbohydrate, 3.1 g fat, 0.1 g fiber, 65 mg sodium. Low-sodium version per 1/4 cup: 44 kcal, 0.2 g protein, 3.7 g total carbohydrate, 3.1 g fat, 0.1 g fiber, 25 mg sodium.",
+  "source": "Glenn",
+  "preferredMethod": "10-inch HexClad skillet",
+  "methods": [
+    {
+      "label": "Enamel Dutch oven",
+      "cookMin": 18,
+      "equipment": [
+        "Enamel Dutch oven",
+        "Whisk"
+      ],
+      "steps": [
+        {
+          "title": "Start the sauce",
+          "text": "Warm {oil} in the Enamel Dutch oven over medium-low heat."
+        },
+        {
+          "title": "Release the aromatics",
+          "text": "Gently crush the herbs. Warm {lemongrass}, {ginger} in the oil for 30 seconds without browning."
+        },
+        {
+          "title": "Simmer the base",
+          "text": "Whisk in {coconut}, {broth}, {amino}, {honey} gradually. Simmer gently for 8 minutes, then lift out the whole herb."
+        },
+        {
+          "title": "Make the slurry",
+          "text": "Whisk {starch} into {cold} until smooth."
+        },
+        {
+          "title": "Thicken",
+          "text": "Pour the slurry into the simmering sauce while whisking. Bubble gently for 1 minute until it coats a spoon."
+        },
+        {
+          "title": "Finish the sauce",
+          "text": "Fold in {lime} off heat. Measure into a heatproof jug; add hot water to reach 1 cup, or simmer excess away before serving."
+        }
+      ]
+    }
+  ]
+}

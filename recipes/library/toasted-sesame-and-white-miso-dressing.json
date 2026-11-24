@@ -99,5 +99,39 @@
     }
   ],
   "notes": "Yield: About 1 cup. One serving is 2 tablespoons. Make ahead: Whisk a day ahead for a mellower flavor. Chilling thickens the tahini, so stir it before measuring a serving. Refrigerate within 2 hours and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze untouched portions for up to 1 month. Rewhisk after thawing to disperse the sesame oil. Fridge reheat: Serve chilled. Stir until smooth just before portioning. Freezer reheat: If already frozen, thaw covered in the refrigerator, then whisk or blend briefly and serve cold. Option A uses rice vinegar. For gentler Option B, replace it with the same amount of water and halve the miso for a milder flavor. The dressing is dairy-free. Estimated nutrition per serving (1/8 of recipe): 54 kcal, 1.5 g protein, 3.0 g total carbohydrate, 4.4 g fat, 0.8 g fiber, 74 mg sodium. The estimate covers the prepared condiment. Add separately served foods when totaling a meal.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "Mixing bowl and flexible spatula",
+  "methods": [
+    {
+      "label": "Mini food processor",
+      "cookMin": 15,
+      "equipment": [
+        "Mini food processor",
+        "Small whisk",
+        "Heatproof liquid measuring cup"
+      ],
+      "steps": [
+        {
+          "title": "Fit the blade",
+          "text": "Use short pulses in a mini food processor for the mixing step. Scrape down twice. For butter, start softened; for mayonnaise, pulse just until combined."
+        },
+        {
+          "title": "Loosen the miso",
+          "text": "In the processor, pulse {miso}, {aminos}, {maple} and {vinegar} with a small splash of {water} until smooth."
+        },
+        {
+          "title": "Make the sesame base",
+          "text": "Whisk {tahini} into the miso mixture. Gradually whisk in the remaining water. If the sesame paste tightens initially, continue whisking until it flows."
+        },
+        {
+          "title": "Finish the dressing",
+          "text": "Stir in {sesame}. Measure and whisk in extra water a teaspoon at a time to reach 1 cup of spoonable dressing."
+        },
+        {
+          "title": "Serve",
+          "text": "Chill covered for 15 minutes, stir, then spoon over tender asparagus, warm rice or poached fish."
+        }
+      ]
+    }
+  ]
 }

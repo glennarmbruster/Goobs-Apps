@@ -1,0 +1,103 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "crispi-stuffed-cremini-caps",
+  "title": "Crispi Stuffed Cremini Caps",
+  "description": "Ricotta mushroom caps sized for two and finished just before serving.",
+  "category": "Sides",
+  "tags": [
+    "side-dish",
+    "ninja-crispi",
+    "air-fryer",
+    "mush"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 12,
+  "cookMin": 25,
+  "equipment": [
+    "Ninja Crispi, 4-qt glass container and adapter",
+    "Small saucepan"
+  ],
+  "ingredients": [
+    {
+      "id": "mush",
+      "qty": 245,
+      "unit": "g",
+      "name": "fresh cremini mushrooms"
+    },
+    {
+      "id": "ricotta",
+      "qty": 70,
+      "unit": "g",
+      "name": "part-skim ricotta"
+    },
+    {
+      "id": "parm",
+      "qty": 12,
+      "unit": "g",
+      "name": "finely grated Parmesan cheese"
+    },
+    {
+      "id": "parsley",
+      "qty": 4,
+      "unit": "g",
+      "name": "fresh flat-leaf parsley, finely chopped"
+    },
+    {
+      "id": "oil",
+      "qty": 5,
+      "unit": "g",
+      "name": "avocado oil"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Prepare the vegetables",
+      "text": "Remove the stems from large cremini mushrooms and finely chop them. Use {mush}."
+    },
+    {
+      "title": "Prepare the center",
+      "text": "Cook the chopped stems in a dry skillet for 4 minutes until the liquid evaporates."
+    },
+    {
+      "title": "Stuff the caps",
+      "text": "Mix the cooked stems with {ricotta}, {parm} and {parsley}. Spoon into the caps and flatten the tops."
+    },
+    {
+      "title": "Roast the vegetables",
+      "text": "Brush with {oil}. Place in one layer on the crisper plate in the 4-qt glass container. Fit the adapter and PowerPod and select Air Fry. Cook 11–16 minutes in the Crispi until soft inside and lightly browned on top."
+    }
+  ],
+  "notes": "Make ahead: prepare the topping a day ahead. Freezer-Friendly Verdict: No. The high-water vegetables soften after thawing. Freeze only if texture is secondary. Fridge reheat: warm covered to 165°F; add the topping last. Freezer reheat: thaw in the fridge before warming covered. Use unsalted plant butter or dairy-free cheese where needed. Estimated nutrition per serving (1/2 of recipe): 123 kcal, 9.6 g protein, 6.8 g total carbohydrate, 7.3 g fat, 1.3 g fiber, 150 mg sodium.",
+  "source": "Glenn",
+  "preferredMethod": "Ninja Crispi, 4-qt glass container and adapter",
+  "methods": [
+    {
+      "label": "Samsung conventional oven",
+      "cookMin": 30,
+      "equipment": [
+        "Samsung conventional oven",
+        "Small saucepan"
+      ],
+      "steps": [
+        {
+          "title": "Prepare the vegetables",
+          "text": "Remove the stems from large cremini mushrooms and finely chop them. Use {mush}."
+        },
+        {
+          "title": "Prepare the center",
+          "text": "Cook the chopped stems in a dry skillet for 4 minutes until the liquid evaporates."
+        },
+        {
+          "title": "Stuff the caps",
+          "text": "Mix the cooked stems with {ricotta}, {parm} and {parsley}. Spoon into the caps and flatten the tops."
+        },
+        {
+          "title": "Roast the vegetables",
+          "text": "Brush with {oil}. Heat the Samsung oven to 410°F convection and arrange on a shallow metal sheet. Cook 11–16 minutes, checking every 2 minutes afterward if needed until soft inside and lightly browned on top."
+        }
+      ]
+    }
+  ]
+}

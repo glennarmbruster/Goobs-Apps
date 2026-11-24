@@ -92,5 +92,42 @@
     }
   ],
   "notes": "Make ahead: Cut the florets and whisk the sauce base up to a day ahead. Store separately and stir the sauce well before cooking. Refrigerate in shallow portions within 2 hours and use within 3 days. Freezer-Friendly Verdict: No. Frozen and reheated florets lose their crisp-tender texture. Fridge reheat: Warm covered in the wok with a splash of water for 3–5 minutes, folding once, until the center reaches 165°F. Freezer reheat: Thaw in the refrigerator overnight, then follow the fridge reheat instructions. Option A uses the measured ginger juice. Option B omits the ginger for a milder sesame sauce. Estimated nutrition per serving (1/2 of recipe): 80 kcal, 3.6 g protein, 11.5 g total carbohydrate, 2.1 g fat, 3.1 g fiber, 118 mg sodium.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "HexClad lidded wok",
+  "methods": [
+    {
+      "label": "Enamel Dutch oven",
+      "cookMin": 11,
+      "equipment": [
+        "Enamel Dutch oven",
+        "Small bowl and whisk"
+      ],
+      "steps": [
+        {
+          "title": "Set up the cooking vessel",
+          "text": "Start the enamel Dutch oven over medium-low heat for 2–3 minutes; use the lid for covered steps. Reduce heat once liquids simmer and stir across the heavy base."
+        },
+        {
+          "title": "Whisk the sauce",
+          "text": "Whisk {broth}, {ginger}, {aminos} and {starch} together in a bowl until the starch disperses."
+        },
+        {
+          "title": "Steam the broccoli",
+          "text": "Bring {water} to a boil in the Enamel Dutch oven. Add {broccoli}, cover, and steam for 3–5 minutes until bright green and crisp-tender at the stem."
+        },
+        {
+          "title": "Lift out the florets",
+          "text": "Transfer the broccoli to a warm bowl with a slotted spoon and pour off any remaining steaming water."
+        },
+        {
+          "title": "Thicken the ginger sauce",
+          "text": "Whisk the sauce mixture again, pour it into the Enamel Dutch oven, and simmer over medium heat for 1 minute until it coats the back of a spoon."
+        },
+        {
+          "title": "Coat the florets",
+          "text": "Turn off the heat and fold the broccoli and {oil} into the sauce. Serve immediately while the stems retain their bite."
+        }
+      ]
+    }
+  ]
 }

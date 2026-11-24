@@ -1,0 +1,150 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "korean-tteokbokki-style-rice-cake-sauce",
+  "title": "Korean Tteokbokki-Style Rice Cake Sauce",
+  "description": "A brick-red, mildly spicy coating for tender rice cakes gets its color from tomato and gochugaru.",
+  "category": "Sauce & condiment",
+  "tags": [
+    "korean-inspired",
+    "for-rice",
+    "low-sodium-option",
+    "stir-fry"
+  ],
+  "servings": 4,
+  "servingsLabel": "1/4-cup portions",
+  "prepMin": 7,
+  "cookMin": 18,
+  "equipment": [
+    "10-inch HexClad skillet",
+    "Whisk"
+  ],
+  "ingredients": [
+    {
+      "id": "oil",
+      "qty": 4,
+      "unit": "g",
+      "name": "avocado oil"
+    },
+    {
+      "id": "garlic",
+      "qty": 4,
+      "unit": "g",
+      "name": "jarred minced garlic"
+    },
+    {
+      "id": "chile",
+      "qty": 2,
+      "unit": "g",
+      "name": "mild ground gochugaru"
+    },
+    {
+      "id": "broth",
+      "qty": 160,
+      "unit": "g",
+      "name": "unsalted chicken broth"
+    },
+    {
+      "id": "paste",
+      "qty": 26,
+      "unit": "g",
+      "name": "smooth no-salt-added tomato paste"
+    },
+    {
+      "id": "miso",
+      "qty": 11,
+      "unit": "g",
+      "name": "mild white miso",
+      "note": "Low-sodium batch: use 2.8 g total."
+    },
+    {
+      "id": "honey",
+      "qty": 14,
+      "unit": "g",
+      "name": "honey"
+    },
+    {
+      "id": "sesame",
+      "qty": 2,
+      "unit": "g",
+      "name": "toasted sesame oil"
+    },
+    {
+      "id": "starch",
+      "qty": 6,
+      "unit": "g",
+      "name": "cornstarch"
+    },
+    {
+      "id": "cold",
+      "qty": 13,
+      "unit": "g",
+      "name": "cold sodium-free water"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Start the sauce",
+      "text": "Warm {oil} in the 10-inch HexClad skillet over medium-low heat."
+    },
+    {
+      "title": "Toast gently",
+      "text": "Stir {garlic}, {chile} into the oil for 30 seconds, just until fragrant."
+    },
+    {
+      "title": "Simmer the base",
+      "text": "Whisk in {broth}, {paste}, {miso}, {honey} gradually. Simmer gently for 5–7 minutes until the flavors come together."
+    },
+    {
+      "title": "Make the slurry",
+      "text": "Whisk {starch} into {cold} until smooth."
+    },
+    {
+      "title": "Thicken",
+      "text": "Pour the slurry into the simmering sauce while whisking. Bubble gently for 1 minute until it coats a spoon."
+    },
+    {
+      "title": "Finish the sauce",
+      "text": "Fold in {sesame} off heat. Measure into a heatproof jug; add hot water to reach 1 cup, or simmer excess away before serving."
+    }
+  ],
+  "notes": "Yield: 1 cup. Low-sodium option for the full batch: reduce mild white miso to 2.8 g and keep the same final yield. Use unsalted broth throughout. Option A uses the listed seasonings. For a gentler Option B, use half the pepper or chile if present and thin each portion with warm water. Make ahead: chill in small jars for up to 3 days. Freezer-Friendly Verdict: Yes, freeze in quarter-cup portions up to 2 months. Fridge reheat: whisk over low heat to 165°F. Freezer reheat: thaw overnight in the fridge, then reheat as above. Estimated nutrition per serving (1/4 of recipe): 45 kcal, 1.1 g protein, 6.8 g total carbohydrate, 1.8 g fat, 0.6 g fiber, 113 mg sodium. Low-sodium version per 1/4 cup: 41 kcal, 0.8 g protein, 6.3 g total carbohydrate, 1.7 g fat, 0.5 g fiber, 36 mg sodium.",
+  "source": "Glenn",
+  "preferredMethod": "10-inch HexClad skillet",
+  "methods": [
+    {
+      "label": "HexClad lidded wok",
+      "cookMin": 18,
+      "equipment": [
+        "HexClad lidded wok",
+        "Whisk"
+      ],
+      "steps": [
+        {
+          "title": "Start the sauce",
+          "text": "Warm {oil} in the HexClad lidded wok over medium-low heat."
+        },
+        {
+          "title": "Toast gently",
+          "text": "Stir {garlic}, {chile} into the oil for 30 seconds, just until fragrant."
+        },
+        {
+          "title": "Simmer the base",
+          "text": "Whisk in {broth}, {paste}, {miso}, {honey} gradually. Simmer gently for 5–7 minutes until the flavors come together."
+        },
+        {
+          "title": "Make the slurry",
+          "text": "Whisk {starch} into {cold} until smooth."
+        },
+        {
+          "title": "Thicken",
+          "text": "Pour the slurry into the simmering sauce while whisking. Bubble gently for 1 minute until it coats a spoon."
+        },
+        {
+          "title": "Finish the sauce",
+          "text": "Fold in {sesame} off heat. Measure into a heatproof jug; add hot water to reach 1 cup, or simmer excess away before serving."
+        }
+      ]
+    }
+  ]
+}

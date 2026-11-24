@@ -97,5 +97,44 @@
     }
   ],
   "notes": "Yield: 1 cup, or four 1/4-cup portions. Low-sodium option for the full batch: Use 1/2 tbsp plain full-fat mayonnaise in place of 2 tbsp. Use 5 1/2 tbsp no-salt-added low-fat cottage cheese in place of 4 tbsp. Use the same final 1-cup yield and 1/4-cup serving. Make ahead: Make the sauce the day before and portion it before chilling. Refrigerate in shallow covered portions within 2 hours and use within 3 days. Freezer-Friendly Verdict: No. The chilled emulsion can separate after freezing. Fridge reheat: Serve chilled. Stir well straight from the refrigerator. Freezer reheat: If frozen, thaw overnight in the refrigerator and whisk or blend until smooth. Serve cold. Option A uses the listed seasonings. For a gentler Option B, omit the lime and use half as much granulated garlic. For dairy-free sauce, use plain unsweetened dairy-free sour cream and unsalted white bean puree for the cottage cheese. Brand changes affect sodium. Estimated nutrition per serving (1/4 of recipe): 86 kcal, 2.9 g protein, 2.9 g total carbohydrate, 7.2 g fat, 0.3 g fiber, 65 mg sodium. Low-sodium version per 1/4 cup: 55 kcal, 3.6 g protein, 3.1 g total carbohydrate, 3.4 g fat, 0.3 g fiber, 34 mg sodium. Figures cover the sauce alone. Sodium varies with brands.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "Mixing bowl",
+  "methods": [
+    {
+      "label": "Mini food processor",
+      "cookMin": 15,
+      "equipment": [
+        "Mini food processor",
+        "Flexible spatula",
+        "Measuring cup",
+        "Vitamix or immersion blender with tall heatproof jug"
+      ],
+      "steps": [
+        {
+          "title": "Fit the blade",
+          "text": "Use short pulses in a mini food processor for the mixing step. Scrape down twice. For butter, start softened; for mayonnaise, pulse just until combined."
+        },
+        {
+          "title": "Smooth the dairy",
+          "text": "Blend {cot}, {sc} and {may} for 30–45 seconds until the curds disappear."
+        },
+        {
+          "title": "Blend the greens",
+          "text": "Add {pob}, {cil}, {lj} and {dryga}. Pulse until smooth and vivid green, scraping the jug once."
+        },
+        {
+          "title": "Chill the sauce",
+          "text": "Transfer to a covered bowl and refrigerate for 20 minutes so the garlic and cilantro can season the dairy."
+        },
+        {
+          "title": "Set the yield",
+          "text": "Transfer to a measuring cup. Adjust to 1 cup, adding sodium-free water a teaspoon at a time if short. The finished sauce should cling to a spoon."
+        },
+        {
+          "title": "Serve the sauce",
+          "text": "Serve cold over warm potatoes or beside tender chicken. Keep the serving bowl chilled until the dish is ready."
+        }
+      ]
+    }
+  ]
 }

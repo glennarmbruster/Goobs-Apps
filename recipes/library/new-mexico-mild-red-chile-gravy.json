@@ -1,0 +1,136 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "new-mexico-mild-red-chile-gravy",
+  "title": "New Mexico Mild Red Chile Gravy",
+  "description": "A toasted roux and sweet ancho make an earthy red chile gravy for beef.",
+  "category": "Sauce & condiment",
+  "tags": [
+    "mexican-inspired",
+    "for-beef",
+    "low-sodium-option",
+    "pan-sauce"
+  ],
+  "servings": 4,
+  "servingsLabel": "1/4-cup portions",
+  "prepMin": 7,
+  "cookMin": 18,
+  "equipment": [
+    "10-inch HexClad skillet",
+    "Whisk"
+  ],
+  "ingredients": [
+    {
+      "id": "oil",
+      "qty": 10,
+      "unit": "g",
+      "name": "avocado oil"
+    },
+    {
+      "id": "ap",
+      "qty": 10,
+      "unit": "g",
+      "name": "King Arthur unbleached all-purpose flour"
+    },
+    {
+      "id": "ancho",
+      "qty": 4,
+      "unit": "g",
+      "name": "ground mild ancho chile"
+    },
+    {
+      "id": "cumin",
+      "qty": 1,
+      "unit": "g",
+      "name": "ground cumin"
+    },
+    {
+      "id": "garlic",
+      "qty": 4,
+      "unit": "g",
+      "name": "jarred minced garlic"
+    },
+    {
+      "id": "broth",
+      "qty": 195,
+      "unit": "g",
+      "name": "unsalted chicken broth"
+    },
+    {
+      "id": "puree",
+      "qty": 25,
+      "unit": "g",
+      "name": "smooth no-salt-added tomato puree"
+    },
+    {
+      "id": "salt",
+      "qty": 1,
+      "unit": "g",
+      "name": "fine table salt",
+      "note": "Low-sodium batch: use 0.2 g total."
+    },
+    {
+      "id": "oregano",
+      "qty": 0.5,
+      "unit": "g",
+      "name": "dried oregano"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Start the sauce",
+      "text": "Warm {oil} in the 10-inch HexClad skillet over low heat."
+    },
+    {
+      "title": "Toast the roux",
+      "text": "Stir {ap} into the oil for 6–9 minutes to an even copper color."
+    },
+    {
+      "title": "Soften the aromatics",
+      "text": "Stir in {ancho}, {cumin}, {garlic} for 2 minutes until fragrant."
+    },
+    {
+      "title": "Simmer the base",
+      "text": "Whisk in {broth}, {puree}, {salt} gradually. Simmer gently for 5–7 minutes until the flavors come together."
+    },
+    {
+      "title": "Finish the sauce",
+      "text": "Fold in {oregano} off heat. Measure into a heatproof jug; add hot water to reach 1 cup, or simmer excess away before serving."
+    }
+  ],
+  "notes": "Yield: 1 cup. Low-sodium option for the full batch: reduce fine table salt to 0.2 g and keep the same final yield. Use unsalted broth throughout. Option A uses the listed seasonings. For a gentler Option B, use half the pepper or chile if present and thin each portion with warm water. Make ahead: chill in small jars for up to 3 days. Freezer-Friendly Verdict: Yes, freeze in quarter-cup portions up to 2 months. Fridge reheat: whisk over low heat to 165°F. Freezer reheat: thaw overnight in the fridge, then reheat as above. Estimated nutrition per serving (1/4 of recipe): 41 kcal, 1.1 g protein, 3.6 g total carbohydrate, 2.7 g fat, 0.7 g fiber, 108 mg sodium. Low-sodium version per 1/4 cup: 41 kcal, 1.1 g protein, 3.6 g total carbohydrate, 2.7 g fat, 0.7 g fiber, 30 mg sodium.",
+  "source": "Glenn",
+  "preferredMethod": "10-inch HexClad skillet",
+  "methods": [
+    {
+      "label": "HexClad lidded wok",
+      "cookMin": 18,
+      "equipment": [
+        "HexClad lidded wok",
+        "Whisk"
+      ],
+      "steps": [
+        {
+          "title": "Start the sauce",
+          "text": "Warm {oil} in the HexClad lidded wok over low heat."
+        },
+        {
+          "title": "Toast the roux",
+          "text": "Stir {ap} into the oil for 6–9 minutes to an even copper color."
+        },
+        {
+          "title": "Soften the aromatics",
+          "text": "Stir in {ancho}, {cumin}, {garlic} for 2 minutes until fragrant."
+        },
+        {
+          "title": "Simmer the base",
+          "text": "Whisk in {broth}, {puree}, {salt} gradually. Simmer gently for 5–7 minutes until the flavors come together."
+        },
+        {
+          "title": "Finish the sauce",
+          "text": "Fold in {oregano} off heat. Measure into a heatproof jug; add hot water to reach 1 cup, or simmer excess away before serving."
+        }
+      ]
+    }
+  ]
+}

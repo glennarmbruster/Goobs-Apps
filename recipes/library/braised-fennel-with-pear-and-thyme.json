@@ -1,0 +1,100 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "braised-fennel-with-pear-and-thyme",
+  "title": "Braised Fennel with Pear and Thyme",
+  "description": "Soft fennel wedges are glazed in pear and thyme.",
+  "category": "Sides",
+  "tags": [
+    "side-dish",
+    "stovetop",
+    "fennel"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 8,
+  "cookMin": 23,
+  "equipment": [
+    "HexClad lidded wok"
+  ],
+  "ingredients": [
+    {
+      "id": "fennel",
+      "qty": 240,
+      "unit": "g",
+      "name": "fresh trimmed fennel bulb"
+    },
+    {
+      "id": "pear",
+      "qty": 65,
+      "unit": "g",
+      "name": "smooth Asian pear puree"
+    },
+    {
+      "id": "broth",
+      "qty": 80,
+      "unit": "g",
+      "name": "unsalted chicken broth"
+    },
+    {
+      "id": "butter",
+      "qty": 8,
+      "unit": "g",
+      "name": "unsalted butter"
+    },
+    {
+      "id": "thyme",
+      "qty": 0.5,
+      "unit": "g",
+      "name": "dried thyme"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Set the heat",
+      "text": "Use the lidded HexClad wok on a medium burner."
+    },
+    {
+      "title": "Build flavor",
+      "text": "Slice {fennel} into narrow wedges and soften in {butter} for 4 minutes."
+    },
+    {
+      "title": "Cook gently",
+      "text": "Add {pear}, {broth} and {thyme}. Cover and simmer for 16–20 minutes until tender."
+    },
+    {
+      "title": "Finish",
+      "text": "Uncover for 3 minutes and turn the wedges in the reduced juices."
+    }
+  ],
+  "notes": "Make ahead: chill in shallow containers and refrigerate up to 3 days. Freezer-Friendly Verdict: Yes. Freeze up to 1 month; grains and vegetables soften slightly. Fridge reheat: stir with a spoonful of water over low heat until 165°F. Freezer reheat: thaw in the fridge and warm by the same method. Dairy swap: use unsalted plant butter or dairy-free cheese as applicable. Estimated nutrition per serving (1/2 of recipe): 82 kcal, 2.0 g protein, 12.5 g total carbohydrate, 3.6 g fat, 5.0 g fiber, 69 mg sodium.",
+  "source": "Glenn",
+  "preferredMethod": "HexClad lidded wok",
+  "methods": [
+    {
+      "label": "Enamel Dutch oven",
+      "cookMin": 25,
+      "equipment": [
+        "Enamel Dutch oven"
+      ],
+      "steps": [
+        {
+          "title": "Set the heat",
+          "text": "Use a heavy enamel Dutch oven. Start on medium-low; its base retains heat, so reduce to low as soon as the liquid simmers."
+        },
+        {
+          "title": "Build flavor",
+          "text": "Slice {fennel} into narrow wedges and soften in {butter} for 4 minutes."
+        },
+        {
+          "title": "Cook gently",
+          "text": "Add {pear}, {broth} and {thyme}. Cover and simmer for 16–20 minutes until tender."
+        },
+        {
+          "title": "Finish",
+          "text": "Uncover for 3 minutes and turn the wedges in the reduced juices."
+        }
+      ]
+    }
+  ]
+}

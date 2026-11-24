@@ -113,5 +113,47 @@
     }
   ],
   "notes": "Yield: 1 cup, or four 1/4-cup portions. Low-sodium option for the full batch: Use 1 tsp coconut aminos in place of 5 tsp. Use the same final 1-cup yield and 1/4-cup serving. Make ahead: Make the sauce the day before and portion it before chilling. Refrigerate in shallow covered portions within 2 hours and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze flat in 1/4-cup portions for up to 2 months. Whisk again after thawing to restore the texture. Fridge reheat: Reheat a portion in a small pan, stirring to a brief boil and at least 165°F. Loosen with a splash of water if it tightens. Freezer reheat: Thaw overnight in the refrigerator, then use the fridge reheat method. Option A uses the listed seasonings. For a gentler Option B, replace the lemon juice and vinegar with water and keep the mandarin juice and lemon zest. Nutrition counts the full mirin before simmering. Estimated nutrition per serving (1/4 of recipe): 32 kcal, 0.2 g protein, 7.3 g total carbohydrate, 0.0 g fat, 0.1 g fiber, 115 mg sodium. Low-sodium version per 1/4 cup: 27 kcal, 0.2 g protein, 6.0 g total carbohydrate, 0.0 g fat, 0.1 g fiber, 25 mg sodium. Figures cover the sauce alone. Sodium varies with brands.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "10-inch HexClad skillet",
+  "methods": [
+    {
+      "label": "Enamel Dutch oven",
+      "cookMin": 8,
+      "equipment": [
+        "Enamel Dutch oven",
+        "Small whisk",
+        "Heatproof measuring cup"
+      ],
+      "steps": [
+        {
+          "title": "Set up the cooking vessel",
+          "text": "Start the enamel Dutch oven over medium-low heat for 2–3 minutes; use the lid for covered steps. Reduce heat once liquids simmer and stir across the heavy base."
+        },
+        {
+          "title": "Set aside the fresh citrus",
+          "text": "Combine {mand}, {le}, {lz} and {rv} in a heatproof cup to preserve their fragrance."
+        },
+        {
+          "title": "Start the glaze",
+          "text": "Simmer {mu}, {mi} and {a} for 3 minutes. Stir in the citrus mixture and bring just back to a simmer."
+        },
+        {
+          "title": "Mix the slurry",
+          "text": "Stir {sl} into {cw} in a small cup until smooth."
+        },
+        {
+          "title": "Thicken the sauce",
+          "text": "Whisk the slurry into the gently simmering base. Cook for 60–90 seconds, stirring, until the sauce coats the back of a spoon."
+        },
+        {
+          "title": "Check the yield",
+          "text": "Measure the sauce in a heatproof cup. Aim for 1 cup. If short, loosen with a little hot sodium-free water. If over, return it to the pan and simmer briefly to the mark."
+        },
+        {
+          "title": "Serve the sauce",
+          "text": "Use as a warm dipping glaze for poached fish and asparagus, or spoon it over a mild seafood bowl."
+        }
+      ]
+    }
+  ]
 }

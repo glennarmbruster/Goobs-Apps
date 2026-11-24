@@ -1,0 +1,103 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "crispi-zucchini-boats-with-soft-cornmeal-filling",
+  "title": "Crispi Zucchini Boats with Soft Cornmeal Filling",
+  "description": "Polenta-stuffed zucchini sized for two and finished just before serving.",
+  "category": "Sides",
+  "tags": [
+    "side-dish",
+    "ninja-crispi",
+    "air-fryer",
+    "zuc"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 12,
+  "cookMin": 25,
+  "equipment": [
+    "Ninja Crispi, 4-qt glass container and adapter",
+    "Small saucepan"
+  ],
+  "ingredients": [
+    {
+      "id": "zuc",
+      "qty": 260,
+      "unit": "g",
+      "name": "fresh zucchini"
+    },
+    {
+      "id": "cornmeal",
+      "qty": 25,
+      "unit": "g",
+      "name": "fine yellow cornmeal"
+    },
+    {
+      "id": "milk",
+      "qty": 130,
+      "unit": "g",
+      "name": "skim milk"
+    },
+    {
+      "id": "cheddar",
+      "qty": 16,
+      "unit": "g",
+      "name": "sharp cheddar cheese, finely grated"
+    },
+    {
+      "id": "oil",
+      "qty": 5,
+      "unit": "g",
+      "name": "avocado oil"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Prepare the vegetables",
+      "text": "Halve the zucchini lengthwise. Scoop out a shallow channel and mince the scooped flesh. Use {zuc}."
+    },
+    {
+      "title": "Prepare the center",
+      "text": "Steam the shells for 2 minutes. Cook the minced flesh into the filling."
+    },
+    {
+      "title": "Cook the filling",
+      "text": "Whisk {cornmeal} into {milk} in a small pan. Add the chopped zucchini flesh and simmer for 8–15 minutes, until the fine cornmeal is tender, stirring, until soft. Stir in {cheddar}. Spoon into the shells."
+    },
+    {
+      "title": "Roast the vegetables",
+      "text": "Brush with {oil}. Place in one layer on the crisper plate in the 4-qt glass container. Fit the adapter and PowerPod and select Air Fry. Cook 10–14 minutes in the Crispi until soft inside and lightly browned on top."
+    }
+  ],
+  "notes": "Make ahead: prepare the topping a day ahead. Freezer-Friendly Verdict: No. The high-water vegetables soften after thawing. Freeze only if texture is secondary. Fridge reheat: warm covered to 165°F; add the topping last. Freezer reheat: thaw in the fridge before warming covered. Use unsalted plant butter or dairy-free cheese where needed. Estimated nutrition per serving (1/2 of recipe): 144 kcal, 6.6 g protein, 17.1 g total carbohydrate, 6.1 g fat, 2.2 g fiber, 94 mg sodium.",
+  "source": "Glenn",
+  "preferredMethod": "Ninja Crispi, 4-qt glass container and adapter",
+  "methods": [
+    {
+      "label": "Samsung conventional oven",
+      "cookMin": 30,
+      "equipment": [
+        "Samsung conventional oven",
+        "Small saucepan"
+      ],
+      "steps": [
+        {
+          "title": "Prepare the vegetables",
+          "text": "Halve the zucchini lengthwise. Scoop out a shallow channel and mince the scooped flesh. Use {zuc}."
+        },
+        {
+          "title": "Prepare the center",
+          "text": "Steam the shells for 2 minutes. Cook the minced flesh into the filling."
+        },
+        {
+          "title": "Cook the filling",
+          "text": "Whisk {cornmeal} into {milk} in a small pan. Add the chopped zucchini flesh and simmer for 8–15 minutes, until the fine cornmeal is tender, stirring, until soft. Stir in {cheddar}. Spoon into the shells."
+        },
+        {
+          "title": "Roast the vegetables",
+          "text": "Brush with {oil}. Heat the Samsung oven to 410°F convection and arrange on a shallow metal sheet. Cook 10–14 minutes, checking every 2 minutes afterward if needed until soft inside and lightly browned on top."
+        }
+      ]
+    }
+  ]
+}

@@ -124,5 +124,58 @@
     }
   ],
   "notes": "Yield: 1 1/2 cups before use. One serving is 1/4 cup of prepared sauce. Make ahead: Cook the garlic and oregano base the day before and refrigerate. Add the oil and lemon when finishing the chilled batch. Refrigerate within 2 hours and use untouched sauce within 3 days. Freezer-Friendly Verdict: Yes. Freeze only untouched portions for up to 1 month. Rewhisk after thawing because the oil may rise to the top. Fridge reheat: Bring only the clean reserved sauce to a boil in a small pan, stirring until it reaches at least 165°F. Thin with a little water if needed. Freezer reheat: Thaw unused sauce in the refrigerator overnight and follow the fridge directions. Nutrition is per measured portion. Count the clean sauce you eat. Marinade left on the protein varies, and the portion thrown away is excluded from the plated meal. Option A uses lemon juice. For gentler Option B, halve the lemon and replace the missing volume with broth. The marinade is dairy-free. Estimated nutrition per serving (1/6 of recipe): 51 kcal, 0.5 g protein, 1.9 g total carbohydrate, 4.7 g fat, 0.1 g fiber, 8 mg sodium. The estimate covers the prepared condiment. Add separately served foods when totaling a meal.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "10-inch HexClad skillet",
+  "methods": [
+    {
+      "label": "Enamel Dutch oven",
+      "cookMin": 10,
+      "equipment": [
+        "Enamel Dutch oven",
+        "Immersion blender and tall heatproof jug",
+        "Small whisk",
+        "Heatproof liquid measuring cup",
+        "Instant-read thermometer",
+        "Two food-safe lidded containers"
+      ],
+      "steps": [
+        {
+          "title": "Set up the cooking vessel",
+          "text": "Start the enamel Dutch oven over medium-low heat for 2–3 minutes; use the lid for covered steps. Reduce heat once liquids simmer and stir across the heavy base."
+        },
+        {
+          "title": "Soften the garlic",
+          "text": "Bring {garlic}, {oregano} and {broth} to a covered simmer in the HexClad for 5–7 minutes until the garlic slices mash easily."
+        },
+        {
+          "title": "Smooth the base",
+          "text": "Blend the garlic and herb broth with {parsley} until smooth. Return to the pan."
+        },
+        {
+          "title": "Stir the slurry",
+          "text": "Stir {starch} into {water} in a small cup until smooth."
+        },
+        {
+          "title": "Thicken the sauce",
+          "text": "Bring the sauce to a simmer. Stir in the freshly mixed slurry and cook for about 1 minute, whisking until it coats the back of a spoon."
+        },
+        {
+          "title": "Emulsify the marinade",
+          "text": "Take the pan off heat. Whisk in {lemon} and gradually drizzle in {oil}. Measure about 1 1/2 cups and add water if needed to reach the mark."
+        },
+        {
+          "title": "Separate the clean sauce",
+          "text": "With clean utensils, put 1 cup in a covered serving container before any contact with raw food. Put the remaining 1/2 cup in a separate marinating container. Chill both to 40°F or below before adding raw protein."
+        },
+        {
+          "title": "Marinate under refrigeration",
+          "text": "Coat up to 12 ounces of skinless cod or snapper fillets in the marinating container, cover and refrigerate for 15–20 minutes. Keep the serving container separate."
+        },
+        {
+          "title": "Use the clean portion",
+          "text": "Lift the protein out for moist cooking and discard the used marinade. Steam or poach the fish until cooked through. Warm the clean sauce in the HexClad and spoon it over the flakes."
+        }
+      ]
+    }
+  ]
 }

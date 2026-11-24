@@ -122,5 +122,56 @@
     }
   ],
   "notes": "Make ahead: Slice the squash up to two days ahead and keep it covered in the refrigerator. Refrigerate the finished dish for up to 3 days. Freezer-Friendly Verdict: Yes. Freeze in the glaze for up to 6 weeks. The half-moons soften after thawing and can be served as a spoonable mash. Fridge reheat: Warm a single portion, covered, in the HexClad with a splash of broth or water. Stir or turn gently and heat to 165°F throughout. Freezer reheat: Thaw overnight in the refrigerator. Use the same covered reheating method and heat the center to 165°F. Option A uses orange and sumac. For gentler Option B, replace the juice with smooth pear puree and leave out the sumac; the honey and seed paste carry the glaze. Estimated nutrition per serving (1/2 of recipe): 119 kcal, 3.4 g protein, 22.9 g total carbohydrate, 2.8 g fat, 3.3 g fiber, 13 mg sodium. Includes the measured broth and sauce. Sodium varies with your broth.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "Ninja Crispi PowerPod with US Bake preset and 6-cup glass container",
+  "methods": [
+    {
+      "label": "Samsung conventional oven",
+      "cookMin": 33,
+      "equipment": [
+        "Samsung conventional oven",
+        "10-inch HexClad skillet",
+        "Silicone slotted spoon",
+        "Small mixing bowl"
+      ],
+      "steps": [
+        {
+          "title": "Allow for oven timing",
+          "text": "Use the first time given as a check. A covered metal dish may need 3–10 minutes longer; check tenderness or the center temperature every 2–3 minutes."
+        },
+        {
+          "title": "Heat the covered baking dish",
+          "text": "Preheat Samsung Bake to 350°F. Use a small metal baking dish and a fitted cover or foil to retain moisture."
+        },
+        {
+          "title": "Moisten the squash",
+          "text": "Toss {squash} with {broth} in the metal baking dish. Nestle the half-moons into the liquid in a shallow layer."
+        },
+        {
+          "title": "Braise on Bake",
+          "text": "Cover the dish and bake at 350°F. After 8 minutes, turn the top pieces into the broth. Cook another 6–12 minutes until the thickest half-moon is tender enough to split with a spoon."
+        },
+        {
+          "title": "Make the orange base",
+          "text": "Transfer the squash to a covered serving bowl. Ladle the warm cooking liquid into the HexClad and whisk in {orange}, {sumac} and {honey}."
+        },
+        {
+          "title": "Smooth the seed paste",
+          "text": "Whisk {seed_paste} with a spoonful of warm sauce base in a small bowl until smooth, then return it to the pan."
+        },
+        {
+          "title": "Mix the slurry",
+          "text": "Stir {starch} into {water} until completely smooth."
+        },
+        {
+          "title": "Thicken the sauce",
+          "text": "Bring the base to a simmer. Whisk in the freshly stirred slurry and let it bubble for 1 minute, stirring until it coats the back of a spoon."
+        },
+        {
+          "title": "Glaze the half-moons",
+          "text": "Turn the warm half-moons gently in the glaze and divide between two bowls, spooning the rest of the glaze over them."
+        }
+      ]
+    }
+  ]
 }

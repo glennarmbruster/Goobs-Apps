@@ -129,5 +129,54 @@
     }
   ],
   "notes": "Make ahead: Caramelize the shallot a day ahead and refrigerate. Warm it in the stock while the steaks cook. Option A uses sherry vinegar. For gentler Option B, omit it and round out the gravy with a little more broth. For dairy-free gravy use avocado oil instead of butter. Refrigerate promptly in shallow portions and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze thin slices in gravy for up to 6 weeks; some pink color will be lost during reheating. Fridge reheat: Place one portion and its sauce in a shallow covered dish. Install the APO bottom drip pan and preheat to 325°F, sous vide mode off, 60% steam, rear element on, top and bottom off. Insert the probe in the coldest center and set it to 165°F. Start checking after 12 minutes and heat to 165°F throughout. Freezer reheat: Thaw a single portion in the refrigerator overnight, then use the fridge reheating method. Stir the sauce until smooth. Estimated nutrition per serving (1/2 of recipe): 250 kcal, 34.8 g protein, 5.1 g total carbohydrate, 10.0 g fat, 0.4 g fiber, 94 mg sodium. Includes the measured broth and sauce. Sodium varies with your broth.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "Anova Precision Oven Gen 1 with food probe, bottom drip pan and middle wire rack",
+  "methods": [
+    {
+      "label": "Enamel Dutch oven",
+      "cookMin": 30,
+      "equipment": [
+        "Enamel Dutch oven",
+        "10-inch HexClad skillet",
+        "Instant-read thermometer",
+        "Shallow stainless steel baking pan",
+        "Thin-tip instant-read thermometer",
+        "Fine sieve"
+      ],
+      "steps": [
+        {
+          "title": "Prepare the portions",
+          "text": "Divide {beef} into even portions. Cut across the grain to pieces no thicker than 1 inch."
+        },
+        {
+          "title": "Start the poach",
+          "text": "Warm enough water to half cover the portions in a snug Dutch oven to 175–185°F. Slide them in, cover and hold below a simmer. Start checking after 8 minutes."
+        },
+        {
+          "title": "Caramelize the shallot",
+          "text": "While the steaks cook, soften {shallot} in {butter} in the HexClad over medium-low for 20–25 minutes. Stir often, using a splash of {broth} if the pan catches, until the shallot is uniformly soft and golden brown."
+        },
+        {
+          "title": "Deglaze the skillet",
+          "text": "Stir {vinegar}, {pepper} and the remaining {broth} into the shallots and simmer for 2 minutes. Press the liquid and soft shallots through a fine sieve and return the smooth base to the skillet."
+        },
+        {
+          "title": "Make the slurry",
+          "text": "Stir {starch} into {water} in a small cup until smooth."
+        },
+        {
+          "title": "Thicken the sauce",
+          "text": "Bring the sauce base to a simmer. Whisk in the freshly stirred slurry and keep it bubbling gently for 1 minute, until it coats the back of a spoon."
+        },
+        {
+          "title": "Check the centers",
+          "text": "Check each center every 2 minutes and lift out as soon as it reaches 145°F. Rest for 3 minutes before slicing."
+        },
+        {
+          "title": "Slice into the gravy",
+          "text": "Slice the rested steaks thinly across the grain. Lay them in the gravy and divide all the sauce between the plates."
+        }
+      ]
+    }
+  ]
 }

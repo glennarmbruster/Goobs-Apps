@@ -137,5 +137,53 @@
     }
   ],
   "notes": "Make ahead: Puree the artichokes and refrigerate the base a day ahead; cook the orzo in it right before dinner. Option A uses lemon zest. For gentler Option B, replace it with finely chopped parsley. For dairy-free orzo leave out the Parmesan. Refrigerate promptly in shallow portions and use within 3 days. Freezer-Friendly Verdict: No. The orzo continues absorbing sauce after freezing and reheating. Freeze the artichoke broth on its own instead. Fridge reheat: Warm a single portion with its sauce in a covered HexClad skillet over medium-low, adding a splash of water if thick. Stir or turn gently and begin checking after 5 minutes. Heat the chicken to 165°F throughout. Freezer reheat: If already frozen, thaw overnight in the refrigerator and follow the fridge reheating directions. Estimated nutrition per serving (1/2 of recipe): 416 kcal, 36.7 g protein, 50.0 g total carbohydrate, 6.9 g fat, 4.3 g fiber, 237 mg sodium. Includes the measured broth and sauce. Sodium varies with your broth.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "Ninja Foodi PossibleCooker",
+  "methods": [
+    {
+      "label": "Enamel Dutch oven",
+      "cookMin": 30,
+      "equipment": [
+        "Enamel Dutch oven",
+        "Thin-tip instant-read thermometer",
+        "Immersion blender and deep jug",
+        "Silicone spoon",
+        "Fine sieve"
+      ],
+      "steps": [
+        {
+          "title": "Use the burner",
+          "text": "Set the Dutch oven on a medium burner. Bring liquid up over medium-high, then reduce to low to maintain a bare simmer; stir down the sides more often than in the electric cooker."
+        },
+        {
+          "title": "Puree the artichokes",
+          "text": "Blend {artichoke} with enough {broth} to make a pourable puree, then push through a sieve to remove remaining fibers."
+        },
+        {
+          "title": "Bring the sauce to a simmer",
+          "text": "Add the puree, remaining {broth} and {garlic} to the Dutch oven. use medium-high burner heat with the lid off and bring to a gentle simmer, about 5–7 minutes."
+        },
+        {
+          "title": "Start the chicken",
+          "text": "Slip {chicken} into the sauce, let the simmer return and cook for 3 minutes."
+        },
+        {
+          "title": "Cook the orzo in the sauce",
+          "text": "Stir {orzo} straight into the chicken sauce. use low burner heat and simmer uncovered for 9–14 minutes, stirring the bottom frequently with a silicone spoon. Verify the orzo is tender and the largest chicken piece reaches at least 165°F. Add {topup} a splash at a time if the pasta absorbs the liquid early."
+        },
+        {
+          "title": "Mix the slurry",
+          "text": "Stir {starch} into {water} in a small cup until smooth."
+        },
+        {
+          "title": "Bind the sauce",
+          "text": "Fold the slurry into the bubbling sauce and stir gently for 1 minute, until it coats the back of a spoon and the orzo still moves freely."
+        },
+        {
+          "title": "Finish the orzo",
+          "text": "Turn the cooker off and fold in {parmesan} and {zest}. Serve immediately with the sauce pooled around the pasta."
+        }
+      ]
+    }
+  ]
 }

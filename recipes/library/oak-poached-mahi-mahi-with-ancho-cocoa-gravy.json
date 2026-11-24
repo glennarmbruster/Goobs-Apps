@@ -146,5 +146,65 @@
     }
   ],
   "notes": "Sauce yield: About 1 1/2 cups for two. Make ahead: Blend the cocoa, pumpkin seed paste, maple and ancho together a day ahead and refrigerate. Loosen with warm broth when ready to cook. Refrigerate shallow portions within 2 hours, or within 1 hour outdoors above 90°F. Use refrigerated leftovers within 3 days. Freezer-Friendly Verdict: Yes. The pumpkin seed paste helps the reheated sauce cling to the fish. Freeze covered portions for up to 1 month. Fridge reheat: Warm a portion covered in its sauce over medium-low heat in the HexClad. Add a little water if it has thickened in storage. Check from 5 minutes and heat to 165°F at the coldest center. Freezer reheat: If frozen, thaw the covered portion in the refrigerator overnight, then follow the fridge method. Option A uses a small amount of mild ancho and cocoa. For gentler Option B, leave out both and use sweet paprika with a little extra pumpkin seed paste. Both versions are dairy-free. Estimated nutrition per serving (1/2 of recipe): 199 kcal, 30.3 g protein, 7.8 g total carbohydrate, 5.0 g fat, 0.9 g fiber, 154 mg sodium. Includes both the fish and its full share of sauce and any rice or potatoes listed. Sodium varies with the broth.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "Traeger Silverton 610 pellet smoker",
+  "methods": [
+    {
+      "label": "Samsung conventional oven",
+      "cookMin": 54,
+      "equipment": [
+        "Samsung conventional oven",
+        "Small lidded enamel Dutch oven",
+        "10-inch HexClad skillet with lid",
+        "Thin-tip instant-read thermometer",
+        "Flexible fish spatula"
+      ],
+      "steps": [
+        {
+          "title": "Heat the conventional oven",
+          "text": "Preheat Samsung Bake to 300°F with the rack in the middle. Use an oven-safe pan; keep any braising lid ready."
+        },
+        {
+          "title": "Infuse the poaching broth",
+          "text": "Bring {broth} and {garlic} to a simmer in the small Dutch oven on the stovetop. Place the pot uncovered on the oven rack under the closed oven door for 10–12 minutes."
+        },
+        {
+          "title": "Make the cocoa paste",
+          "text": "In the cool HexClad, whisk {ancho}, {cocoa}, {pepita} and {maple} with a splash of the smoky broth until the paste is smooth. Keep it on the stovetop for finishing."
+        },
+        {
+          "title": "Cover the mahi-mahi",
+          "text": "Lay {fish} in the remaining hot broth on the oven rack and spoon some broth over the tops. Fit the pot lid immediately as the wrap from the start."
+        },
+        {
+          "title": "Poach to the pull point",
+          "text": "Cook at 300°F and check from 7 minutes. Pull each portion at 145°F in its thickest center, typically after 9–18 minutes."
+        },
+        {
+          "title": "Rest under cover",
+          "text": "Transfer the fish to a warm plate. Cover and rest for 3 minutes while finishing the gravy."
+        },
+        {
+          "title": "Build the ancho gravy",
+          "text": "Whisk the poaching broth into the cocoa paste in stages. Bring the sauce to a full boil for 1 minute, scraping the sides of the pan."
+        },
+        {
+          "title": "Mix the slurry",
+          "text": "Stir {starch} into {water} until completely smooth."
+        },
+        {
+          "title": "Bind the sauce",
+          "text": "Bring the sauce to a simmer. Whisk in the freshly stirred slurry and let it bubble gently for 1 minute, stirring until it coats the back of a spoon."
+        },
+        {
+          "title": "Check carryover and doneness",
+          "text": "After resting, check each thickest center for about 145°F. Open a natural seam with a fork. The center should be opaque and separate easily into flakes. If either cue is unclear or the center is below 145°F, finish covered in hot sauce in the HexClad over low heat to a measured 145°F, checking every minute."
+        },
+        {
+          "title": "Spoon into bowls",
+          "text": "Lay a piece of fish in each bowl. Spoon the ancho gravy over the surface and between the flakes. Serve with the rest of the gravy around the fish."
+        }
+      ]
+    }
+  ]
 }

@@ -132,5 +132,59 @@
     }
   ],
   "notes": "Sauce yield: About 1 1/4 cups for two. Make ahead: The filtered porcini broth can be made a day ahead and chilled. Whisk in the black garlic when you cook the chicken. For dairy-free gravy, omit the finishing butter. Chill leftovers promptly in shallow portions and refrigerate for up to 3 days. Freezer-Friendly Verdict: Yes. Freeze thin slices submerged in their gravy for up to 2 months; the mushroom base holds its flavor. Fridge reheat: Transfer one portion with its gravy to a shallow covered oven-safe dish. Install the bottom drip pan and preheat the APO to 325°F with sous vide mode off, 60% steam, rear element on, top and bottom off. Set the food probe to 165°F at the coldest center. Check after 12 minutes and heat to 165°F throughout. Freezer reheat: Thaw overnight in the refrigerator, then follow the fridge reheating directions and stir the sauce smooth. Estimated nutrition per serving (1/2 of recipe): 221 kcal, 29.9 g protein, 5.9 g total carbohydrate, 7.8 g fat, 0.2 g fiber, 165 mg sodium. Includes the measured broth and sauce. Sodium varies with your broth.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "Anova Precision Oven Gen 1 with bottom drip pan, wire rack and food probe",
+  "methods": [
+    {
+      "label": "Enamel Dutch oven",
+      "cookMin": 30,
+      "equipment": [
+        "Enamel Dutch oven",
+        "10-inch HexClad skillet",
+        "Instant-read thermometer",
+        "Shallow stainless steel baking pan",
+        "10-inch HexClad skillet with lid",
+        "Thin-tip instant-read thermometer",
+        "Heatproof measuring jug and coffee filter"
+      ],
+      "steps": [
+        {
+          "title": "Prepare the portions",
+          "text": "Divide {chicken} into even portions. Cut across the grain to pieces no thicker than 1 inch."
+        },
+        {
+          "title": "Start the poach",
+          "text": "Warm enough water to half cover the portions in a snug Dutch oven to 175–185°F. Slide them in, cover and hold below a simmer. Start checking after 8 minutes."
+        },
+        {
+          "title": "Steep the porcini",
+          "text": "While the thighs cook, bring {broth} just to a boil in the HexClad. Pour it over {porcini} in a heatproof jug, cover and steep for 12 minutes."
+        },
+        {
+          "title": "Filter the mushroom liquor",
+          "text": "Lift out the softened mushrooms and reserve them for another use. Pour the soaking liquid through a damp coffee filter into the skillet, leaving the gritty sediment in the jug."
+        },
+        {
+          "title": "Infuse the gravy",
+          "text": "Whisk {garlic} into the mushroom liquor. Add {thyme} and simmer for 4–6 minutes until the liquid measures about 5/8 cup per serving. Remove the thyme."
+        },
+        {
+          "title": "Mix the slurry",
+          "text": "Stir {starch} into {water} until completely smooth."
+        },
+        {
+          "title": "Bind the sauce",
+          "text": "Bring the sauce to a simmer. Whisk in the freshly stirred slurry and let it bubble gently for 1 minute, stirring until it coats the back of a spoon."
+        },
+        {
+          "title": "Check the centers",
+          "text": "Check each center every 2 minutes and lift out as soon as it reaches 175°F."
+        },
+        {
+          "title": "Coat the slices",
+          "text": "Swirl {butter} into the gravy off heat. Slice the thighs across the grain and turn the slices through the gravy, spooning the rest around each serving."
+        }
+      ]
+    }
+  ]
 }

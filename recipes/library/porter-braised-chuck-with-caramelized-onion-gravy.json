@@ -158,5 +158,77 @@
     }
   ],
   "notes": "Make ahead: Caramelize the onions a day in advance. Option A uses porter. For an alcohol-free or gentler Option B, replace the beer with an equal volume of plain low-sodium beef broth. Refrigerate promptly in shallow portions and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze individual portions surrounded by sauce for up to 2 months to protect their moisture. Fridge reheat: Warm one portion covered in its sauce in the HexClad over medium-low heat. Turn gently, adding a splash of water if needed. Check after 6 minutes and continue until the food reaches 165°F throughout. Freezer reheat: Thaw overnight in the refrigerator. Follow the fridge reheating directions and stir the sauce smooth. Estimated nutrition per serving (1/4 of recipe): 245 kcal, 32.2 g protein, 5.4 g total carbohydrate, 9.9 g fat, 0.3 g fiber, 148 mg sodium. Includes the measured broth and sauce. Sodium varies with your broth. Calories include all the measured alcohol before simmering.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "Traeger Silverton 610 pellet smoker",
+  "methods": [
+    {
+      "label": "Samsung conventional oven",
+      "cookMin": 195,
+      "equipment": [
+        "Samsung conventional oven",
+        "Small enamel Dutch oven with tight lid, sized to hold the food snugly",
+        "10-inch HexClad skillet",
+        "Thin-tip instant-read thermometer",
+        "Immersion blender and deep heatproof jug"
+      ],
+      "steps": [
+        {
+          "title": "Heat the conventional oven",
+          "text": "Preheat Samsung Bake to 300°F with the rack in the middle. Use an oven-safe pan; keep any braising lid ready."
+        },
+        {
+          "title": "Warm the braising liquid",
+          "text": "Bring {broth} with {mustard} just to a simmer in the open Dutch oven on the stove, about 3–6 minutes."
+        },
+        {
+          "title": "Warm the braising liquid",
+          "text": "Move the uncovered pot to the oven rack. Close the oven door and warm the liquid for 20 minutes."
+        },
+        {
+          "title": "Portion the chuck",
+          "text": "Cut {beef} across the grain into 1-inch pieces, removing any seams of fat you uncover."
+        },
+        {
+          "title": "Seal the pot",
+          "text": "Tuck the pieces into the broth. Keep them at least halfway submerged, adding {topup} if necessary. Fit the lid immediately."
+        },
+        {
+          "title": "Braise until tender",
+          "text": "Cook covered at 300°F for 1 3/4 to 2 3/4 hours. Start testing at about 195°F and continue until a fork turns easily in several pieces."
+        },
+        {
+          "title": "Caramelize the onion",
+          "text": "While the beef cooks, soften {onion} in {oil} in the HexClad over medium-low for 25–35 minutes, stirring and adding splashes of {topup} as needed, until completely soft and deep gold."
+        },
+        {
+          "title": "Reduce the porter",
+          "text": "Pour {porter} into the caramelized onion and simmer for 3–5 minutes until a thin syrup clings to the pan."
+        },
+        {
+          "title": "Rest in the juices",
+          "text": "Rest the covered chuck off heat for 10 minutes."
+        },
+        {
+          "title": "Keep the beef moist",
+          "text": "Move the beef to a covered bowl with a little braising liquid."
+        },
+        {
+          "title": "Puree the onions",
+          "text": "Add 1 1/2 cups skimmed braising liquid to the onions, topping up with {topup} if needed. Blend in a deep heatproof jug with an immersion blender until smooth and return the gravy to the HexClad."
+        },
+        {
+          "title": "Mix the slurry",
+          "text": "Stir {starch} into {water} until completely smooth."
+        },
+        {
+          "title": "Thicken the sauce",
+          "text": "Bring the skillet liquid to a boil. Whisk in the stirred slurry and simmer for 1 minute, stirring, until the sauce coats the back of a spoon."
+        },
+        {
+          "title": "Finish the beef",
+          "text": "Break the chuck into short, tender pieces with a fork and fold them into the onion gravy."
+        }
+      ]
+    }
+  ]
 }

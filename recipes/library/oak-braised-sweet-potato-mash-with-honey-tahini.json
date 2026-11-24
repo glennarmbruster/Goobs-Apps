@@ -99,5 +99,49 @@
     }
   ],
   "notes": "Make ahead: Peel and cube the potatoes the day before, cover with water and refrigerate; drain before cooking. Refrigerate the finished mash for up to 3 days. Freezer-Friendly Verdict: Yes. Freeze the mash and tahini drizzle separately for up to 2 months. Stir both smooth after thawing. Fridge reheat: Warm a single portion, covered, in the HexClad with a splash of broth or water. Stir or turn gently and heat to 165°F throughout. Freezer reheat: Thaw both components overnight in the refrigerator. Reheat the mash covered to 165°F and stir the drizzle back together before serving. Option A uses a touch of lemon. For gentler Option B, leave it out and loosen the tahini with a little extra warm braising liquid. Estimated nutrition per serving (1/2 of recipe): 238 kcal, 5.1 g protein, 42.6 g total carbohydrate, 6.2 g fat, 6.2 g fiber, 113 mg sodium. Includes the measured broth and sauce. Sodium varies with your broth.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "Traeger Silverton 610 pellet smoker",
+  "methods": [
+    {
+      "label": "Samsung conventional oven",
+      "cookMin": 70,
+      "equipment": [
+        "Samsung conventional oven",
+        "Small enamel Dutch oven with lid",
+        "Potato masher",
+        "Small mixing bowl",
+        "Heatproof measuring cup"
+      ],
+      "steps": [
+        {
+          "title": "Heat the conventional oven",
+          "text": "Preheat Samsung Bake to 300°F with the rack in the middle. Use an oven-safe pan; keep any braising lid ready."
+        },
+        {
+          "title": "Infuse the broth",
+          "text": "Bring {broth} to a simmer in the Dutch oven on the stove. Set the uncovered pot on the oven rack and warm the liquid for 15 minutes with the oven door shut."
+        },
+        {
+          "title": "Cover the potatoes",
+          "text": "Nestle {potatoes} into the warm broth in a snug pot and turn to wet every piece. Fit the pot lid at the start of the braise;"
+        },
+        {
+          "title": "Braise until soft",
+          "text": "Cook covered at 300°F for 25–40 minutes, stirring halfway. Stop when a fork passes cleanly through the thickest cubes and a cube crushes without a firm center."
+        },
+        {
+          "title": "Rest in the liquid",
+          "text": "Rest the pot covered off heat for 5 minutes. Pour the braising liquid into a heatproof cup and reserve it."
+        },
+        {
+          "title": "Make the drizzle",
+          "text": "Whisk {tahini}, {honey} and {lemon} in a small bowl. Beat in the warm cooking liquid a little at a time until the drizzle falls from the spoon in a thick ribbon."
+        },
+        {
+          "title": "Mash and serve",
+          "text": "Mash the potatoes with enough of the remaining cooking liquid to make them moist and smooth. Spoon into bowls and swirl the honey tahini over both portions."
+        }
+      ]
+    }
+  ]
 }

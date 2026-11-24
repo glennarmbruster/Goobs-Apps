@@ -117,5 +117,58 @@
     }
   ],
   "notes": "Yield: 1 1/2 cups. One serving is 1/4 cup. Make ahead: The fig and sherry base can be cooked and strained one day ahead. Thicken it shortly before dinner. Refrigerate in shallow covered portions within 2 hours and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze in quarter-cup portions for up to 2 months. The fruit puree helps the gravy come together again. Fridge reheat: Bring a portion to a boil in a small pan, stirring until it reaches at least 165°F. Loosen with a little water as needed. Freezer reheat: Thaw in the refrigerator overnight and reheat as for a chilled portion. Option A uses dry sherry and black pepper. For gentler Option B, replace the sherry with additional beef broth and omit the pepper. Use avocado oil in place of butter for a dairy-free sauce. Nutrition counts the full measured wine before reduction. Evaporation can lower the calories in the finished sauce. Estimated nutrition per serving (1/6 of recipe): 49 kcal, 1.3 g protein, 7.0 g total carbohydrate, 0.7 g fat, 0.7 g fiber, 17 mg sodium. The estimate covers the prepared condiment. Add separately served foods when totaling a meal. Fiber is estimated before straining.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "10-inch HexClad skillet",
+  "methods": [
+    {
+      "label": "Enamel Dutch oven",
+      "cookMin": 20,
+      "equipment": [
+        "Enamel Dutch oven",
+        "Immersion blender and tall heatproof jug",
+        "Fine-mesh sieve",
+        "Small whisk",
+        "Heatproof liquid measuring cup",
+        "Instant-read thermometer"
+      ],
+      "steps": [
+        {
+          "title": "Set up the cooking vessel",
+          "text": "Start the enamel Dutch oven over medium-low heat for 2–3 minutes; use the lid for covered steps. Reduce heat once liquids simmer and stir across the heavy base."
+        },
+        {
+          "title": "Soften the figs",
+          "text": "Melt {butter} in the HexClad over medium-low heat. Stir in {figs} for 2 minutes until glossy and fragrant."
+        },
+        {
+          "title": "Deglaze the Enamel Dutch oven",
+          "text": "Pour in {sherry} off heat. Return to medium and scrape up the browned fig sugars while the sherry bubbles for 1–2 minutes."
+        },
+        {
+          "title": "Simmer until tender",
+          "text": "Add {broth} and {pepper}. Cover and simmer for 8–10 minutes until the fig pieces crush easily."
+        },
+        {
+          "title": "Smooth the reduction",
+          "text": "Puree the figs and cooking liquid in the deep jug. Press through a fine sieve into the Enamel Dutch oven to catch the seeds."
+        },
+        {
+          "title": "Stir the slurry",
+          "text": "Stir {starch} into {water} in a small cup until smooth."
+        },
+        {
+          "title": "Thicken the sauce",
+          "text": "Bring the sauce to a simmer. Stir in the freshly mixed slurry and cook for about 1 minute, whisking until it coats the back of a spoon."
+        },
+        {
+          "title": "Check the yield",
+          "text": "Measure the finished sauce in a heatproof cup. Aim for 1 1/2 cups total. If it measures short, whisk in a little hot water. If it measures over, return it to the Enamel Dutch oven and simmer briefly to the mark."
+        },
+        {
+          "title": "Serve",
+          "text": "Spoon a warm pool under thinly sliced filet or pork, then ladle more between the slices."
+        }
+      ]
+    }
+  ]
 }

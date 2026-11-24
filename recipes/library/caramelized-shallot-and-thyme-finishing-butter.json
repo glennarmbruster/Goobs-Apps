@@ -83,5 +83,43 @@
     }
   ],
   "notes": "Make ahead: Prepare up to 3 days ahead and keep the portions covered and refrigerated. Allow about 10 minutes of cooling in addition to cooking time. Freezer-Friendly Verdict: Yes. Freeze the two portions separately for up to 1 month; the cooked shallot blends readily into hot gravy. Fridge reheat: Add the chilled butter to hot, freshly made gravy off heat and stir until melted. For leftover gravy, bring the gravy to a boil before adding butter. Freezer reheat: Thaw a portion covered in the refrigerator and use exactly as for chilled butter. For a dairy-free version, use an unsalted plant-based butter that is firm when cold. Estimated nutrition per serving of the prepared condiment (1/2 of recipe): 109 kcal, 0.4 g protein, 1.7 g total carbohydrate, 11.5 g fat, 0.3 g fiber, 3 mg sodium.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "10-inch HexClad skillet",
+  "methods": [
+    {
+      "label": "Enamel Dutch oven",
+      "cookMin": 18,
+      "equipment": [
+        "Enamel Dutch oven",
+        "Small mixing bowl",
+        "Fine-mesh sieve"
+      ],
+      "steps": [
+        {
+          "title": "Set up the cooking vessel",
+          "text": "Start the enamel Dutch oven over medium-low heat for 2–3 minutes; use the lid for covered steps. Reduce heat once liquids simmer and stir across the heavy base."
+        },
+        {
+          "title": "Caramelize the shallot",
+          "text": "Use a quarter of {butter} to soften {shallot} in the HexClad over medium-low heat for 12–17 minutes. Stir frequently, adding {water} a little at a time until the shallot is uniformly soft and deep gold."
+        },
+        {
+          "title": "Soften the thyme",
+          "text": "Stir {thyme} into the shallot during the last 30 seconds. Cook until any visible water has evaporated."
+        },
+        {
+          "title": "Cool the shallot paste",
+          "text": "Press the warm mixture through a fine sieve and scrape the soft paste into a shallow bowl. Let it cool for about 10 minutes so it will not melt the remaining butter."
+        },
+        {
+          "title": "Blend the butter",
+          "text": "Mash the cooled shallot paste into the remaining {butter} until evenly flecked. Divide in two and refrigerate covered until needed."
+        },
+        {
+          "title": "Finish at the table",
+          "text": "Swirl a portion into hot, thickened gravy off heat and spoon the gravy over tender beef."
+        }
+      ]
+    }
+  ]
 }

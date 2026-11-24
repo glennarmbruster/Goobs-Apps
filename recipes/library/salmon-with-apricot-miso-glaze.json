@@ -1,0 +1,134 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "salmon-with-apricot-miso-glaze",
+  "title": "Salmon with Apricot Miso Glaze",
+  "description": "Apricot and white miso glaze salmon while it bakes in its own shallow sauce.",
+  "category": "Main dish",
+  "tags": [
+    "ninja-crispi",
+    "air-fryer",
+    "fish",
+    "salmon",
+    "extra-sauce"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 12,
+  "cookMin": 19,
+  "equipment": [
+    "Ninja Crispi, 4-qt glass container and adapter",
+    "10-inch HexClad skillet",
+    "Instant-read thermometer"
+  ],
+  "ingredients": [
+    {
+      "id": "salmon",
+      "qty": 250,
+      "unit": "g",
+      "name": "boneless skinless salmon fillets"
+    },
+    {
+      "id": "broth",
+      "qty": 140,
+      "unit": "g",
+      "name": "unsalted chicken broth"
+    },
+    {
+      "id": "apricot",
+      "qty": 30,
+      "unit": "g",
+      "name": "smooth apricot preserves"
+    },
+    {
+      "id": "miso",
+      "qty": 12,
+      "unit": "g",
+      "name": "mild white miso"
+    },
+    {
+      "id": "ginger",
+      "qty": 4,
+      "unit": "g",
+      "name": "fresh finely grated ginger"
+    },
+    {
+      "id": "starch",
+      "qty": 7,
+      "unit": "g",
+      "name": "cornstarch"
+    },
+    {
+      "id": "cold",
+      "qty": 15,
+      "unit": "g",
+      "name": "cold sodium-free water"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Simmer the sauce",
+      "text": "Whisk {broth}, {apricot}, {miso}, {ginger} into the HexClad. Simmer gently for 2 minutes until combined."
+    },
+    {
+      "title": "Thicken",
+      "text": "Whisk {starch} with {cold}, then stir into the simmering sauce for 1 minute until it coats a spoon."
+    },
+    {
+      "title": "Prepare the dish",
+      "text": "Start with the room-temperature 4-qt glass container, no crisper plate. Let sauce cool to lukewarm before adding to the glass. Spread the sauce over the base."
+    },
+    {
+      "title": "Portion the fish",
+      "text": "Arrange {salmon} in two even pieces about ¾ inch thick."
+    },
+    {
+      "title": "Cook in sauce",
+      "text": "Nestle the pieces in the sauce in a single layer. Fit the 4-qt adapter and PowerPod and select Bake. Cook for 10–15 minutes, checking the thickest piece early. Finish at 145°F in the center."
+    },
+    {
+      "title": "Serve generously",
+      "text": "Spoon hot sauce over each serving."
+    }
+  ],
+  "notes": "Make ahead: prepare the sauce a day ahead and refrigerate separately. Freezer-Friendly Verdict: Yes. Freeze cooked portions with sauce, cooled within 2 hours, for up to 2 months. Flaky fish is best freshly cooked; thaw slowly and keep covered. Fridge reheat: cover and warm gently with a spoonful of water to 165°F. Freezer reheat: thaw overnight in the fridge, then reheat covered to 165°F. Option A uses the listed seasonings. For gentler Option B, omit added citrus, vinegar or chile where used. Pass additional heat at the table. Estimated nutrition per serving (1/2 of recipe): 326 kcal, 27.0 g protein, 14.9 g total carbohydrate, 17.2 g fat, 0.4 g fiber, 314 mg sodium.",
+  "source": "Glenn",
+  "preferredMethod": "Ninja Crispi, 4-qt glass container and adapter",
+  "methods": [
+    {
+      "label": "Samsung conventional oven",
+      "cookMin": 23,
+      "equipment": [
+        "Samsung conventional oven",
+        "10-inch HexClad skillet",
+        "Instant-read thermometer"
+      ],
+      "steps": [
+        {
+          "title": "Simmer the sauce",
+          "text": "Whisk {broth}, {apricot}, {miso}, {ginger} into the HexClad. Simmer gently for 2 minutes until combined."
+        },
+        {
+          "title": "Thicken",
+          "text": "Whisk {starch} with {cold}, then stir into the simmering sauce for 1 minute until it coats a spoon."
+        },
+        {
+          "title": "Prepare the dish",
+          "text": "Preheat the Samsung oven to 365°F on Bake. Choose a shallow baking dish. Spread the sauce over the base."
+        },
+        {
+          "title": "Portion the fish",
+          "text": "Arrange {salmon} in two even pieces about ¾ inch thick."
+        },
+        {
+          "title": "Cook in sauce",
+          "text": "Nestle the pieces in the sauce in a single layer. Place the baking dish on the middle rack. Cook for 12–18 minutes, checking the thickest piece early. Finish at 145°F in the center."
+        },
+        {
+          "title": "Serve generously",
+          "text": "Spoon hot sauce over each serving."
+        }
+      ]
+    }
+  ]
+}

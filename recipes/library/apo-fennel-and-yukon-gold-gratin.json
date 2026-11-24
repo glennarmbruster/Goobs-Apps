@@ -103,5 +103,48 @@
     }
   ],
   "notes": "Make ahead: Slice the fennel a day ahead and keep it covered in the refrigerator. Slice the potatoes just before assembly. Refrigerate in shallow portions within 2 hours and use within 3 days. Freezer-Friendly Verdict: No. The thin potato slices can turn grainy and the milk sauce can separate. Fridge reheat: Set the APO with the drip pan installed to 325°F, sous vide mode off, 60% steam, rear element on, top and bottom off. Put a portion in a covered shallow dish with a splash of milk and start checking after 12 minutes. Check for 165°F in the center with the food probe or an instant-read thermometer. Freezer reheat: Thaw in the refrigerator overnight, then follow the fridge reheat instructions. For dairy-free gratin, use plain unsweetened oat milk and neutral oil in the sauce and omit the Gruyère. Estimated nutrition per serving (1/2 of recipe): 233 kcal, 9.8 g protein, 32.9 g total carbohydrate, 7.6 g fat, 3.1 g fiber, 144 mg sodium.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "Anova Precision Oven Gen 1 with food probe and bottom drip pan",
+  "methods": [
+    {
+      "label": "Samsung conventional oven",
+      "cookMin": 65,
+      "equipment": [
+        "Samsung conventional oven",
+        "Small saucepan with lid",
+        "Small 1-quart ovenproof baking dish",
+        "Whisk"
+      ],
+      "steps": [
+        {
+          "title": "Heat the oven",
+          "text": "Preheat the Samsung oven to 335°F on conventional Bake. Use a covered baking dish to retain moisture. Check at the first time specified and continue to the stated center temperature or texture."
+        },
+        {
+          "title": "Start the roux",
+          "text": "Whisk {butter} and {flour} together in a small saucepan over medium-low heat for 1 minute."
+        },
+        {
+          "title": "Make the milk sauce",
+          "text": "Gradually whisk {milk} and {nutmeg} into the roux and simmer for 2 minutes, until the sauce coats a spoon."
+        },
+        {
+          "title": "Layer the vegetables",
+          "text": "Alternate overlapping layers of {potatoes} and {fennel} in the dish, spooning sauce between the layers and over the top."
+        },
+        {
+          "title": "Add the cheese",
+          "text": "Scatter {cheese} evenly over the sauced surface."
+        },
+        {
+          "title": "covered bake the gratin",
+          "text": "Insert the probe at an angle into the middle layers, clear of the dish, and set its target to 200°F. Bake for 40–55 minutes until the target is reached and a thin knife slides through the potatoes. If still firm, keep baking in 3-minute intervals."
+        },
+        {
+          "title": "Let the sauce settle",
+          "text": "Rest for 5 minutes before spooning the gratin and its sauce onto two plates."
+        }
+      ]
+    }
+  ]
 }

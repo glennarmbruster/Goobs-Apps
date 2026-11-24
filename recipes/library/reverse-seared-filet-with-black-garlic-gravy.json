@@ -1,0 +1,142 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "reverse-seared-filet-with-black-garlic-gravy",
+  "title": "Reverse-Seared Filet with Black Garlic Gravy",
+  "description": "Filet warms slowly before a brief cast iron sear and a generous black garlic gravy.",
+  "category": "Main dish",
+  "tags": [
+    "steak",
+    "beef",
+    "reverse-sear",
+    "apo",
+    "extra-sauce"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 10,
+  "cookMin": 40,
+  "equipment": [
+    "Samsung conventional oven",
+    "12-inch cast iron skillet",
+    "10-inch HexClad skillet",
+    "Food thermometer"
+  ],
+  "ingredients": [
+    {
+      "id": "steak",
+      "qty": 290,
+      "unit": "g",
+      "name": "center-cut beef filet steaks"
+    },
+    {
+      "id": "beefbroth",
+      "qty": 180,
+      "unit": "g",
+      "name": "unsalted beef broth"
+    },
+    {
+      "id": "blackgarlic",
+      "qty": 9,
+      "unit": "g",
+      "name": "black garlic puree"
+    },
+    {
+      "id": "butter",
+      "qty": 8,
+      "unit": "g",
+      "name": "unsalted butter"
+    },
+    {
+      "id": "thyme",
+      "qty": 1,
+      "unit": "g",
+      "name": "dried thyme"
+    },
+    {
+      "id": "starch",
+      "qty": 7,
+      "unit": "g",
+      "name": "cornstarch"
+    },
+    {
+      "id": "cold",
+      "qty": 15,
+      "unit": "g",
+      "name": "cold sodium-free water"
+    },
+    {
+      "id": "oil",
+      "qty": 4,
+      "unit": "g",
+      "name": "avocado oil"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Prepare the steak",
+      "text": "Use two intact {steak} portions about 1½ inches thick; trim exterior fat. Place on a rack over a shallow pan."
+    },
+    {
+      "title": "Warm gently",
+      "text": "Preheat the Samsung oven on Bake to 225°F. Insert an oven-safe probe from the side. Heat for 20–38 minutes, checking from 15 minutes, until the center reaches 125°F before searing."
+    },
+    {
+      "title": "Build the gravy",
+      "text": "Warm {butter} in the HexClad. Add {beefbroth}, {blackgarlic}, {thyme}; simmer 3 minutes."
+    },
+    {
+      "title": "Thicken the gravy",
+      "text": "Whisk {starch} into {cold}. Stir into the simmering gravy for 1 minute until it coats a spoon."
+    },
+    {
+      "title": "Sear and rest",
+      "text": "Heat {oil} in cast iron over medium-high. Sear both broad faces for 45–75 seconds each. Lower the heat and turn every 30 seconds until each center reaches 145°F. Rest 3 minutes in a warm dish."
+    },
+    {
+      "title": "Serve",
+      "text": "Slice thinly across the grain and spoon the warm gravy over the steak."
+    }
+  ],
+  "notes": "Make ahead: prepare the sauce a day ahead and refrigerate separately. Freezer-Friendly Verdict: Yes. Freeze cooked portions with sauce, cooled within 2 hours, for up to 2 months. Fridge reheat: cover and warm gently with a spoonful of water to 165°F. Freezer reheat: thaw overnight in the fridge, then reheat covered to 165°F. The first probe reading is a staging temperature for searing. Use unsalted plant butter for dairy-free gravy. Estimated nutrition per serving (1/2 of recipe): 278 kcal, 33.6 g protein, 5.2 g total carbohydrate, 13.6 g fat, 0.3 g fiber, 88 mg sodium.",
+  "source": "Glenn",
+  "preferredMethod": "Samsung conventional oven",
+  "methods": [
+    {
+      "label": "Anova Precision Oven Gen 1",
+      "cookMin": 38,
+      "equipment": [
+        "Anova Precision Oven Gen 1",
+        "12-inch cast iron skillet",
+        "10-inch HexClad skillet",
+        "Food probe"
+      ],
+      "steps": [
+        {
+          "title": "Prepare the steak",
+          "text": "Use two intact {steak} portions about 1½ inches thick; trim exterior fat. Place on a rack over a shallow pan."
+        },
+        {
+          "title": "Warm gently",
+          "text": "Install the APO drip pan. Set convection, Sous Vide OFF, 220°F, 30% steam, rear element only. Insert the probe sideways into the center, target 125°F. Heat for 20–38 minutes, checking from 15 minutes, until the center reaches 125°F before searing."
+        },
+        {
+          "title": "Build the gravy",
+          "text": "Warm {butter} in the HexClad. Add {beefbroth}, {blackgarlic}, {thyme}; simmer 3 minutes."
+        },
+        {
+          "title": "Thicken the gravy",
+          "text": "Whisk {starch} into {cold}. Stir into the simmering gravy for 1 minute until it coats a spoon."
+        },
+        {
+          "title": "Sear and rest",
+          "text": "Heat {oil} in cast iron over medium-high. Sear both broad faces for 45–75 seconds each. Lower the heat and turn every 30 seconds until each center reaches 145°F. Rest 3 minutes in a warm dish."
+        },
+        {
+          "title": "Serve",
+          "text": "Slice thinly across the grain and spoon the warm gravy over the steak."
+        }
+      ]
+    }
+  ]
+}

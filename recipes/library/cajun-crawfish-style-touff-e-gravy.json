@@ -1,0 +1,152 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "cajun-crawfish-style-touff-e-gravy",
+  "title": "Cajun Crawfish-Style Étouffée Gravy",
+  "description": "A copper-colored roux makes a peppery Louisiana gravy for spooning over shrimp or rice.",
+  "category": "Sauce & condiment",
+  "tags": [
+    "cajun",
+    "for-shrimp",
+    "low-sodium-option",
+    "pan-sauce"
+  ],
+  "servings": 4,
+  "servingsLabel": "1/4-cup portions",
+  "prepMin": 7,
+  "cookMin": 18,
+  "equipment": [
+    "10-inch HexClad skillet",
+    "Whisk",
+    "Immersion blender"
+  ],
+  "ingredients": [
+    {
+      "id": "oil",
+      "qty": 10,
+      "unit": "g",
+      "name": "avocado oil"
+    },
+    {
+      "id": "ap",
+      "qty": 10,
+      "unit": "g",
+      "name": "King Arthur unbleached all-purpose flour"
+    },
+    {
+      "id": "bell",
+      "qty": 35,
+      "unit": "g",
+      "name": "fresh red bell pepper"
+    },
+    {
+      "id": "garlic",
+      "qty": 5,
+      "unit": "g",
+      "name": "jarred minced garlic"
+    },
+    {
+      "id": "paprika",
+      "qty": 2,
+      "unit": "g",
+      "name": "smoked paprika"
+    },
+    {
+      "id": "thyme",
+      "qty": 0.5,
+      "unit": "g",
+      "name": "dried thyme"
+    },
+    {
+      "id": "broth",
+      "qty": 182,
+      "unit": "g",
+      "name": "unsalted chicken broth"
+    },
+    {
+      "id": "paste",
+      "qty": 9,
+      "unit": "g",
+      "name": "smooth no-salt-added tomato paste"
+    },
+    {
+      "id": "salt",
+      "qty": 1,
+      "unit": "g",
+      "name": "fine table salt",
+      "note": "Low-sodium batch: use 0.2 g total."
+    },
+    {
+      "id": "parsley",
+      "qty": 3,
+      "unit": "g",
+      "name": "fresh flat-leaf parsley, finely chopped"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Start the sauce",
+      "text": "Warm {oil} in the 10-inch HexClad skillet over low heat."
+    },
+    {
+      "title": "Toast the roux",
+      "text": "Stir {ap} into the oil for 6–9 minutes to an even copper color."
+    },
+    {
+      "title": "Soften the aromatics",
+      "text": "Stir in {bell}, {garlic}, {paprika}, {thyme} for 2 minutes until fragrant."
+    },
+    {
+      "title": "Simmer the base",
+      "text": "Whisk in {broth}, {paste}, {salt} gradually. Simmer gently for 5–7 minutes until the flavors come together."
+    },
+    {
+      "title": "Smooth the base",
+      "text": "Cool just off the boil. Tilt the pan and blend with a submerged immersion blender until smooth."
+    },
+    {
+      "title": "Finish the sauce",
+      "text": "Fold in {parsley} off heat. Measure into a heatproof jug; add hot water to reach 1 cup, or simmer excess away before serving."
+    }
+  ],
+  "notes": "Yield: 1 cup. Low-sodium option for the full batch: reduce fine table salt to 0.2 g and keep the same final yield. Use unsalted broth throughout. Option A uses the listed seasonings. For a gentler Option B, use half the pepper or chile if present and thin each portion with warm water. Make ahead: chill in small jars for up to 3 days. Freezer-Friendly Verdict: Yes, freeze in quarter-cup portions up to 2 months. Fridge reheat: whisk over low heat to 165°F. Freezer reheat: thaw overnight in the fridge, then reheat as above. Estimated nutrition per serving (1/4 of recipe): 41 kcal, 1.1 g protein, 3.6 g total carbohydrate, 2.6 g fat, 0.5 g fiber, 107 mg sodium. Low-sodium version per 1/4 cup: 41 kcal, 1.1 g protein, 3.6 g total carbohydrate, 2.6 g fat, 0.5 g fiber, 29 mg sodium.",
+  "source": "Glenn",
+  "preferredMethod": "10-inch HexClad skillet",
+  "methods": [
+    {
+      "label": "HexClad lidded wok",
+      "cookMin": 18,
+      "equipment": [
+        "HexClad lidded wok",
+        "Whisk",
+        "Immersion blender"
+      ],
+      "steps": [
+        {
+          "title": "Start the sauce",
+          "text": "Warm {oil} in the HexClad lidded wok over low heat."
+        },
+        {
+          "title": "Toast the roux",
+          "text": "Stir {ap} into the oil for 6–9 minutes to an even copper color."
+        },
+        {
+          "title": "Soften the aromatics",
+          "text": "Stir in {bell}, {garlic}, {paprika}, {thyme} for 2 minutes until fragrant."
+        },
+        {
+          "title": "Simmer the base",
+          "text": "Whisk in {broth}, {paste}, {salt} gradually. Simmer gently for 5–7 minutes until the flavors come together."
+        },
+        {
+          "title": "Smooth the base",
+          "text": "Cool just off the boil. Tilt the pan and blend with a submerged immersion blender until smooth."
+        },
+        {
+          "title": "Finish the sauce",
+          "text": "Fold in {parsley} off heat. Measure into a heatproof jug; add hot water to reach 1 cup, or simmer excess away before serving."
+        }
+      ]
+    }
+  ]
+}

@@ -96,5 +96,43 @@
     }
   ],
   "notes": "Make ahead: Make the butter up to 3 days ahead and refrigerate in a small covered dish. Freezer-Friendly Verdict: Yes. Freeze individual portions for up to 1 month; the small amount of infusion mixes back in as the butter melts. Fridge reheat: Stir one chilled portion into hot, freshly cooked mash or gravy until melted. If using leftovers, reheat the dish to 165°F first. Freezer reheat: Thaw the covered butter in the refrigerator and use it in a hot dish as for chilled butter. Option A uses lime and mild ancho. For gentler Option B, use smooth pear puree in place of the juice, omit the zest and ancho, and use sweet unsmoked paprika. An unsalted plant-based butter works for dairy-free portions. Estimated nutrition per serving of the prepared condiment (1/2 of recipe): 108 kcal, 0.2 g protein, 1.8 g total carbohydrate, 11.6 g fat, 0.1 g fiber, 2 mg sodium.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "10-inch HexClad skillet",
+  "methods": [
+    {
+      "label": "Enamel Dutch oven",
+      "cookMin": 2,
+      "equipment": [
+        "Enamel Dutch oven",
+        "Small mixing bowl",
+        "Fine-mesh sieve"
+      ],
+      "steps": [
+        {
+          "title": "Set up the cooking vessel",
+          "text": "Start the enamel Dutch oven over medium-low heat for 2–3 minutes; use the lid for covered steps. Reduce heat once liquids simmer and stir across the heavy base."
+        },
+        {
+          "title": "Warm the lime and honey",
+          "text": "Combine {juice}, {zest} and {honey} in the HexClad. Stir over low heat for 45–60 seconds until fluid and fragrant."
+        },
+        {
+          "title": "Strain the infusion",
+          "text": "Press the mixture through a fine sieve into a small bowl. Let it cool for about 5 minutes."
+        },
+        {
+          "title": "Blend the spices",
+          "text": "Mash {ancho} and {paprika} into {butter} until no spice clumps remain."
+        },
+        {
+          "title": "Whip in the lime",
+          "text": "Beat the cooled infusion into the seasoned butter a little at a time until smooth. Divide into two portions and chill covered."
+        },
+        {
+          "title": "Melt into a moist side",
+          "text": "Stir a portion into warm sweet potato mash or fold it into hot corn gravy just before serving."
+        }
+      ]
+    }
+  ]
 }

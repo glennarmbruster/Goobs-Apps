@@ -101,5 +101,38 @@
     }
   ],
   "notes": "Make ahead: Mince the mushrooms up to a day ahead. Use quick-cooking barley for the stated timing. For dairy-free pilaf, skip the browning step and soften the mushrooms in avocado oil and broth; the hazelnut paste provides the nutty finish. Refrigerate promptly in shallow portions and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze the soft pilaf in small portions for up to 6 weeks. Barley firms up in the freezer, so add a splash of broth on reheating. Fridge reheat: Warm a single portion with its sauce in a covered HexClad skillet over medium-low, adding a splash of water if thick. Stir or turn gently and begin checking after 5 minutes. Heat the barley to 165°F throughout. Freezer reheat: Thaw overnight in the refrigerator. Use the fridge reheating directions and stir the sauce smooth. Estimated nutrition per serving (1/2 of recipe): 272 kcal, 7.7 g protein, 41.0 g total carbohydrate, 9.6 g fat, 8.4 g fiber, 22 mg sodium. Includes the measured broth and sauce. Sodium varies with your broth.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "Ninja Foodi PossibleCooker",
+  "methods": [
+    {
+      "label": "Enamel Dutch oven",
+      "cookMin": 24,
+      "equipment": [
+        "Enamel Dutch oven",
+        "Silicone spoon"
+      ],
+      "steps": [
+        {
+          "title": "Use the burner",
+          "text": "Set the Dutch oven on a medium burner. Bring liquid up over medium-high, then reduce to low to maintain a bare simmer; stir down the sides more often than in the electric cooker."
+        },
+        {
+          "title": "Brown the butter",
+          "text": "Set the Dutch oven to use low burner heat with the lid off. Add {butter} and stir for 2–4 minutes until the milk solids are golden and smell nutty."
+        },
+        {
+          "title": "Soften the mushrooms",
+          "text": "Add {mushrooms} with a splash of {broth} and stir for 3–5 minutes until soft and juicy."
+        },
+        {
+          "title": "Simmer the barley",
+          "text": "Add {barley}, {thyme} and the remaining {broth}. Bring to a simmer on use medium-high burner heat, then switch to LOW. Simmer uncovered for 10–15 minutes, stirring occasionally, until the barley is tender and there is still a little creamy liquid. Add a splash of {topup} if the pot grows dry."
+        },
+        {
+          "title": "Finish with hazelnut",
+          "text": "Turn the cooker off. Loosen {hazelnut} with a spoonful of the cooking liquid and stir back through the barley. Let stand 2 minutes, then spoon the moist pilaf alongside a sauced main."
+        }
+      ]
+    }
+  ]
 }

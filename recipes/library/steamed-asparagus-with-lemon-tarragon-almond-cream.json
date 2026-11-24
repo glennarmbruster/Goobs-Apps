@@ -88,5 +88,42 @@
     }
   ],
   "notes": "Make ahead: Make the almond cream a day ahead, chilling it separately. Steam the asparagus close to serving time. Refrigerate in shallow portions within 2 hours and use within 3 days. Freezer-Friendly Verdict: No. Frozen asparagus softens substantially, though the almond sauce alone freezes well for a month. Fridge reheat: Heat covered in the skillet with a splash of water for 3–5 minutes until the vegetables and sauce reach 165°F. Freezer reheat: Thaw in the refrigerator overnight, then follow the fridge reheat instructions. Option A uses lemon zest for fragrance. Option B leaves it out and adds a little more tarragon for a gentler finish. Estimated nutrition per serving (1/2 of recipe): 96 kcal, 5.5 g protein, 6.8 g total carbohydrate, 6.4 g fat, 3.6 g fiber, 12 mg sodium.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "10-inch HexClad skillet with lid",
+  "methods": [
+    {
+      "label": "Enamel Dutch oven",
+      "cookMin": 12,
+      "equipment": [
+        "Enamel Dutch oven",
+        "Small saucepan and whisk"
+      ],
+      "steps": [
+        {
+          "title": "Set up the cooking vessel",
+          "text": "Start the enamel Dutch oven over medium-low heat for 2–3 minutes; use the lid for covered steps. Reduce heat once liquids simmer and stir across the heavy base."
+        },
+        {
+          "title": "Make the almond cream",
+          "text": "Whisk {almond}, {broth} and {tarragon} in the Enamel Dutch oven over medium-low heat for 3–4 minutes until smooth and thick enough to ribbon from the whisk."
+        },
+        {
+          "title": "Steam the stems",
+          "text": "Bring {water} to a simmer in the Enamel Dutch oven. Add the stem pieces of {asparagus}, cover, and steam for 2 minutes."
+        },
+        {
+          "title": "Add the tips",
+          "text": "Add the reserved tips, cover again, and steam for 1–3 minutes until crisp-tender and bright green."
+        },
+        {
+          "title": "Perfume the sauce",
+          "text": "Take the almond cream off the heat and fold in {zest}."
+        },
+        {
+          "title": "Dress the asparagus",
+          "text": "Lift the pieces out with a slotted spoon and spoon warm almond cream generously over both portions."
+        }
+      ]
+    }
+  ]
 }

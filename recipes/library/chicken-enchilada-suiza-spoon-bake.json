@@ -151,5 +151,66 @@
     }
   ],
   "notes": "Sauce yield: About 3 cups of sauce before layering. The tortillas soften in it and the finished bake stays spoonable. Make ahead: Cook and strain the tomatillo base a day ahead. Bring it to a simmer before thickening and assembling the casserole. Refrigerate shallow portions within 2 hours. Use refrigerated leftovers within 3 days. Freezer-Friendly Verdict: Yes. The tortillas are meant to be soft and the sauce protects the chicken. Freeze covered portions for up to 6 weeks. Fridge reheat: Spoon one portion and its sauce into a small covered oven-safe dish. Warm at 325°F on conventional Bake, checking after 15 minutes, until the coldest center reaches 165°F. Freezer reheat: Thaw overnight in the refrigerator, then follow the fridge reheating directions. Option A uses tomatillos and mild poblano. For gentler Option B, substitute cooked peeled zucchini for the tomatillos by weight and peeled sweet bell pepper for the poblano by volume. For a dairy-free bake, replace the cream cheese with unsweetened oat cream and omit the Jack. Estimated nutrition per serving (1/4 of recipe): 327 kcal, 33.4 g protein, 21.1 g total carbohydrate, 11.9 g fat, 3.0 g fiber, 240 mg sodium. Includes all the chicken and sauce in the listed recipe. Sodium varies with the broth. Fiber is estimated before straining.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "Samsung oven with conventional Bake",
+  "methods": [
+    {
+      "label": "Anova Precision Oven Gen 1",
+      "cookMin": 48,
+      "equipment": [
+        "Anova Precision Oven Gen 1",
+        "2-quart oven-safe casserole with lid",
+        "12-inch HexClad skillet with lid",
+        "Thin-tip instant-read thermometer",
+        "Immersion blender and deep heatproof jug",
+        "Fine-mesh sieve"
+      ],
+      "steps": [
+        {
+          "title": "Set the APO",
+          "text": "Install the bottom drip pan. Preheat to 350°F on convection, Sous Vide OFF, rear element only, 0% steam, probe off. Use the same size pan as the preferred recipe. Start checking 3–5 minutes before the listed oven time."
+        },
+        {
+          "title": "Heat the oven",
+          "text": "Preheat the APO to 350°F on convection with the middle rack in place."
+        },
+        {
+          "title": "Simmer the tomatillos",
+          "text": "In the lidded HexClad, simmer {tomatillos}, {pepper}, {cumin} and {broth} for 8–12 minutes until the tomatillos are soft and dull green."
+        },
+        {
+          "title": "Smooth the green sauce",
+          "text": "Blend the hot vegetables and liquid in a deep heatproof jug. Pass through a fine sieve back into the HexClad to catch skin and seeds."
+        },
+        {
+          "title": "Mix the slurry",
+          "text": "Stir {starch} into {water} until completely smooth."
+        },
+        {
+          "title": "Bind the sauce",
+          "text": "Bring the sauce to a simmer. Whisk in the freshly stirred slurry and let it bubble gently for 1 minute, stirring until it coats the back of a spoon."
+        },
+        {
+          "title": "Enrich the sauce",
+          "text": "Off heat, whisk {cream} into the warm green sauce until completely smooth."
+        },
+        {
+          "title": "Layer the spoon bake",
+          "text": "Spread a thin layer of sauce in the casserole. Cut {chicken} into short 1/2-inch pieces. Layer the chicken and {tortillas} loosely in the dish, coating each layer with sauce and finishing with a generous layer of sauce."
+        },
+        {
+          "title": "Bake until tender",
+          "text": "Cover and bake for 20–30 minutes, checking from 18 minutes. Probe several of the thickest chicken pieces for 175°F and check the center of the bake for at least 165°F."
+        },
+        {
+          "title": "Melt the Jack",
+          "text": "Scatter {jack} over the steaming sauce and replace the lid for 3 minutes until the cheese melts."
+        },
+        {
+          "title": "Sauce and serve",
+          "text": "Spoon into four shallow bowls while the tortillas are soft, drawing sauce from the edges over each portion."
+        }
+      ]
+    }
+  ]
 }

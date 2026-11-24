@@ -1,0 +1,156 @@
+{
+  "id": "chocolate-chip-cookies",
+  "title": "Chocolate Chip Cookies",
+  "description": "Classic soft-centered cookies with crisp edges.",
+  "category": "Baking",
+  "tags": [
+    "cookies",
+    "kid-friendly"
+  ],
+  "servings": 24,
+  "servingsLabel": "cookies",
+  "prepMin": 15,
+  "cookMin": 11,
+  "equipment": [
+    "Baking sheets",
+    "Parchment paper",
+    "Stand or hand mixer"
+  ],
+  "ingredients": [
+    {
+      "id": "flour",
+      "qty": 270,
+      "unit": "g",
+      "name": "King Arthur unbleached all-purpose flour"
+    },
+    {
+      "id": "baking-soda",
+      "qty": 1,
+      "unit": "tsp",
+      "name": "baking soda"
+    },
+    {
+      "id": "salt",
+      "qty": 1,
+      "unit": "tsp",
+      "name": "fine table salt"
+    },
+    {
+      "id": "butter",
+      "qty": 1,
+      "unit": "cup",
+      "name": "unsalted butter",
+      "note": "softened"
+    },
+    {
+      "id": "brown-sugar",
+      "qty": 0.75,
+      "unit": "cup",
+      "name": "brown sugar",
+      "note": "packed"
+    },
+    {
+      "id": "sugar",
+      "qty": 0.75,
+      "unit": "cup",
+      "name": "granulated sugar"
+    },
+    {
+      "id": "eggs",
+      "qty": 2,
+      "name": "large eggs"
+    },
+    {
+      "id": "vanilla",
+      "qty": 2,
+      "unit": "tsp",
+      "name": "vanilla extract"
+    },
+    {
+      "id": "chips",
+      "qty": 12,
+      "unit": "oz",
+      "name": "semi-sweet chocolate chips"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Prep",
+      "text": "Heat the oven to 375°F. Line two baking sheets with parchment."
+    },
+    {
+      "text": "Whisk {flour}, {baking-soda} and {salt} in a bowl.",
+      "title": "Whisk the dry ingredients"
+    },
+    {
+      "text": "Beat {butter}, {brown-sugar} and {sugar} until light and fluffy, about 3 minutes.",
+      "title": "Cream the butter and sugars"
+    },
+    {
+      "text": "Beat in {eggs} one at a time, then {vanilla}.",
+      "title": "Beat in the eggs"
+    },
+    {
+      "text": "Stir in the flour mixture until just combined, then fold in {chips}.",
+      "title": "Fold in the chocolate"
+    },
+    {
+      "title": "Bake",
+      "text": "Scoop rounded tablespoons onto the sheets, 2 inches apart. Bake 9-11 minutes until the edges are golden."
+    },
+    {
+      "text": "Cool on the sheet for 5 minutes, then move to a rack.",
+      "title": "Cool on a rack"
+    }
+  ],
+  "notes": "Make ahead: Chill the dough for 30 minutes for thicker cookies. Freezer-Friendly Verdict: Yes, freeze baked cookies in an airtight container for up to 2 months. Refrigerated cookies can come to room temperature before serving. From frozen, thaw covered at room temperature, or warm in the oven at 300°F for 4–6 minutes. Estimated nutrition per serving (1/24 of recipe): 236 kcal, 3.1 g protein, 30.4 g total carbohydrate, 12.1 g fat, 1.4 g fiber, 158 mg sodium. Based on the measured ingredients; brands and optional additions can change these values.",
+  "preferredMethod": "Samsung conventional oven",
+  "methods": [
+    {
+      "label": "Anova Precision Oven Gen 1",
+      "cookMin": 11,
+      "equipment": [
+        "Anova Precision Oven Gen 1",
+        "Parchment paper",
+        "Stand or hand mixer"
+      ],
+      "steps": [
+        {
+          "title": "Set the APO",
+          "text": "Install the bottom drip pan. Preheat to 375°F on convection, Sous Vide OFF, rear element only, 0% steam, probe off. Use the same size pan as the preferred recipe. Start checking 3–5 minutes before the listed oven time."
+        },
+        {
+          "title": "Prep",
+          "text": "Heat the oven to 375°F. Line two baking sheets with parchment."
+        },
+        {
+          "text": "Whisk {flour}, {baking-soda} and {salt} in a bowl.",
+          "title": "Whisk the dry ingredients"
+        },
+        {
+          "text": "Beat {butter}, {brown-sugar} and {sugar} until light and fluffy, about 3 minutes.",
+          "title": "Cream the butter and sugars"
+        },
+        {
+          "text": "Beat in {eggs} one at a time, then {vanilla}.",
+          "title": "Beat in the eggs"
+        },
+        {
+          "text": "Stir in the flour mixture until just combined, then fold in {chips}.",
+          "title": "Fold in the chocolate"
+        },
+        {
+          "title": "Bake",
+          "text": "Scoop rounded tablespoons onto the sheets, 2 inches apart. Bake 9-11 minutes until the edges are golden."
+        },
+        {
+          "text": "Cool on the sheet for 5 minutes, then move to a rack.",
+          "title": "Cool on a rack"
+        }
+      ]
+    }
+  ],
+  "format": "goobs-recipe",
+  "version": 1,
+  "source": "Glenn"
+}

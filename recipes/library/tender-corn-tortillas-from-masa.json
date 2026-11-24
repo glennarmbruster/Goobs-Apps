@@ -1,0 +1,107 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "tender-corn-tortillas-from-masa",
+  "title": "Tender Corn Tortillas from Masa",
+  "description": "Tender Corn Tortillas from Masa made from a small batch of scratch dough.",
+  "category": "Baking",
+  "tags": [
+    "bread",
+    "from-scratch",
+    "tortilla",
+    "masa"
+  ],
+  "servings": 4,
+  "servingsLabel": "portions",
+  "prepMin": 25,
+  "cookMin": 16,
+  "equipment": [
+    "12-inch cast iron skillet",
+    "Digital kitchen scale"
+  ],
+  "ingredients": [
+    {
+      "id": "masa",
+      "qty": 150,
+      "unit": "g",
+      "name": "masa harina"
+    },
+    {
+      "id": "water",
+      "qty": 185,
+      "unit": "g",
+      "name": "sodium-free water"
+    },
+    {
+      "id": "salt",
+      "qty": 1.5,
+      "unit": "g",
+      "name": "fine table salt"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Hydrate the masa",
+      "text": "Knead {masa}, warm {water} and {salt} for 2 minutes until smooth."
+    },
+    {
+      "title": "Rest the dough",
+      "text": "Cover and rest 20 minutes; the edges should press smooth."
+    },
+    {
+      "title": "Press the tortillas",
+      "text": "Press eight balls between reusable food-safe sheets into thin 5-inch rounds."
+    },
+    {
+      "title": "Heat the surface",
+      "text": "Preheat the 12-inch cast iron skillet over medium-high for 4 minutes."
+    },
+    {
+      "title": "Cook in batches",
+      "text": "Cook each tortilla in a dry warm skillet for 30 seconds, flip for 45 seconds, then flip again until small brown spots appear."
+    },
+    {
+      "title": "Steam the stack",
+      "text": "Wrap the hot rounds in a clean towel for 5 minutes to soften."
+    }
+  ],
+  "notes": "Make ahead: weigh the dry ingredients the evening before. Freezer-Friendly Verdict: Yes. Cool completely and freeze sliced or individually wrapped for up to 2 months. Fridge reheat: wrap a serving in a damp towel and microwave for 15–25 seconds. Freezer reheat: thaw wrapped, then warm the same way. Serve with soup or gravy for a softer bite. Estimated nutrition per serving (1/4 of recipe): 137 kcal, 3.2 g protein, 28.9 g total carbohydrate, 1.4 g fat, 2.7 g fiber, 149 mg sodium.",
+  "source": "Glenn",
+  "preferredMethod": "12-inch cast iron skillet",
+  "methods": [
+    {
+      "label": "Blackstone 36-inch griddle",
+      "cookMin": 16,
+      "equipment": [
+        "Blackstone 36-inch griddle",
+        "Digital kitchen scale"
+      ],
+      "steps": [
+        {
+          "title": "Hydrate the masa",
+          "text": "Knead {masa}, warm {water} and {salt} for 2 minutes until smooth."
+        },
+        {
+          "title": "Rest the dough",
+          "text": "Cover and rest 20 minutes; the edges should press smooth."
+        },
+        {
+          "title": "Press the tortillas",
+          "text": "Press eight balls between reusable food-safe sheets into thin 5-inch rounds."
+        },
+        {
+          "title": "Heat the surface",
+          "text": "Heat the Blackstone griddle to 410°F for 6 minutes; use a dry zone."
+        },
+        {
+          "title": "Cook in batches",
+          "text": "Cook each tortilla in a dry warm skillet for 30 seconds, flip for 45 seconds, then flip again until small brown spots appear."
+        },
+        {
+          "title": "Steam the stack",
+          "text": "Wrap the hot rounds in a clean towel for 5 minutes to soften."
+        }
+      ]
+    }
+  ]
+}

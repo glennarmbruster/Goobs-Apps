@@ -137,5 +137,61 @@
     }
   ],
   "notes": "Sauce yield: About 1 1/4 cups for two. Make ahead: Mince the herbs the same day. Refrigerate them wrapped until the buttermilk goes in. Refrigerate shallow portions within 2 hours, or within 1 hour outdoors above 90°F. Use refrigerated leftovers within 3 days. Freezer-Friendly Verdict: No. Cultured buttermilk gravy can turn grainy after freezing. For freezer meal prep, freeze chicken in the starch-thickened base for up to 2 months and add the buttermilk and herbs after reheating. Fridge reheat: Warm the cutlets in their gravy, stirring gently to keep it smooth covered in the HexClad over medium-low with a splash of water. Stir or turn occasionally and check from 6 minutes, until the center reaches 165°F. Freezer reheat: Thaw overnight in the refrigerator, then follow the fridge reheating directions. Option A uses tangy buttermilk. For gentler Option B, use skim milk and keep the herbs. Unsweetened plain oat milk works for a dairy-free gravy. Estimated nutrition per serving (1/2 of recipe): 211 kcal, 34.5 g protein, 6.6 g total carbohydrate, 4.1 g fat, 0.1 g fiber, 170 mg sodium. Includes all the chicken and sauce in the listed recipe. Sodium varies with the broth.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "Blackstone 36-inch griddle",
+  "methods": [
+    {
+      "label": "12-inch cast iron skillet",
+      "cookMin": 30,
+      "equipment": [
+        "12-inch cast iron skillet",
+        "10-inch cast iron skillet with fitted lid",
+        "10-inch HexClad skillet with lid",
+        "Meat mallet and parchment",
+        "Thin-tip instant-read thermometer"
+      ],
+      "steps": [
+        {
+          "title": "Work in batches",
+          "text": "Preheat the skillet on medium for 3–4 minutes and use the original griddle surface temperature as a guide. Cook a single layer at a time and keep finished portions in the sauce."
+        },
+        {
+          "title": "Even the cutlets",
+          "text": "Butterfly {chicken} into cutlets. Between two sheets of parchment, gently tap the thick ends with the flat face of a meat mallet to an even 3/8 inch."
+        },
+        {
+          "title": "Heat the broth on the cast iron skillet",
+          "text": "Set the cast iron skillet on the cast iron skillet over one medium burner. Add {broth}, {onion} and {garlic} and cover for 5–8 minutes until the broth simmers."
+        },
+        {
+          "title": "Poach the cutlets",
+          "text": "Nestle the cutlets into the broth, cover and lower the burner to medium-low. Maintain a bare simmer for 4–8 minutes, turning once and removing each cutlet at 165°F. Hold covered with a little broth."
+        },
+        {
+          "title": "Boil the broth",
+          "text": "Transfer the poaching broth to the HexClad and boil on the stovetop for 1 minute."
+        },
+        {
+          "title": "Mix the slurry",
+          "text": "Stir {starch} into {water} until completely smooth."
+        },
+        {
+          "title": "Bind the sauce",
+          "text": "Bring the sauce to a simmer. Whisk in the freshly stirred slurry and let it bubble gently for 1 minute, stirring until it coats the back of a spoon."
+        },
+        {
+          "title": "Temper the buttermilk",
+          "text": "Whisk a little hot gravy into {buttermilk} in a bowl. Take the skillet off heat and gradually whisk the warmed buttermilk mixture back into the gravy."
+        },
+        {
+          "title": "Add the ranch herbs",
+          "text": "Stir {chives} and {dill} into the finished gravy. Keep warm over residual heat to retain the fresh herb flavor."
+        },
+        {
+          "title": "Sauce and serve",
+          "text": "Slice the cutlets across the grain and turn them in the warm gravy. Divide between bowls and spoon the remaining gravy over both."
+        }
+      ]
+    }
+  ]
 }

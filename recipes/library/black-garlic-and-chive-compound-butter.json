@@ -74,5 +74,43 @@
     }
   ],
   "notes": "Yield: About 1 cup. One serving is 1 tablespoon, or one sixteenth of the batch. Make ahead: Soften the butter only as long as needed. Prepare the portions a day ahead and keep covered and cold. Refrigerate within 2 hours and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze covered portions for up to 2 months. The garlic is finely dispersed and will blend back into gravy. Fridge reheat: Whisk a cold portion into hot, already thickened gravy off heat until melted. For a leftover meal, first reheat the food and gravy to 165°F throughout. Freezer reheat: Thaw a portion covered in the refrigerator overnight and finish the hot gravy as above. Option A uses the full amount of black garlic. For gentler Option B, halve the puree and replace the missing volume with unsalted butter. Use unsalted plant-based butter for a dairy-free version. Estimated nutrition per serving (1/16 of recipe): 91 kcal, 0.2 g protein, 0.3 g total carbohydrate, 10.1 g fat, 0.0 g fiber, 2 mg sodium. The estimate covers the prepared condiment. Add separately served foods when totaling a meal.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "Mixing bowl and flexible spatula",
+  "methods": [
+    {
+      "label": "Mini food processor",
+      "cookMin": 15,
+      "equipment": [
+        "Mini food processor",
+        "Parchment or two small lidded containers",
+        "16-cavity tablespoon portion tray or kitchen scale"
+      ],
+      "steps": [
+        {
+          "title": "Fit the blade",
+          "text": "Use short pulses in a mini food processor for the mixing step. Scrape down twice. For butter, start softened; for mayonnaise, pulse just until combined."
+        },
+        {
+          "title": "Soften the butter",
+          "text": "Let {butter} soften just until pliable, usually 20–30 minutes depending on the kitchen. Cut it into cubes so it softens evenly."
+        },
+        {
+          "title": "Smooth the black garlic",
+          "text": "Mash {garlic} with a small piece of the softened butter until evenly blended."
+        },
+        {
+          "title": "Fold in the chives",
+          "text": "Work {chives} and the rest of the softened butter into the garlic mixture in short pulses. Mix gently to keep the portions dense."
+        },
+        {
+          "title": "Portion and chill",
+          "text": "Divide the batch into sixteen equal portions, about a level tablespoon each, or weigh the finished batch and divide its weight by sixteen. Cover and chill for at least 30 minutes."
+        },
+        {
+          "title": "Serve",
+          "text": "Whisk a portion off heat into hot, thickened mushroom or chicken gravy. Ladle the enriched gravy generously over the protein."
+        }
+      ]
+    }
+  ]
 }

@@ -157,5 +157,58 @@
     }
   ],
   "notes": "Make ahead: Smoke the broth a day ahead and chill it promptly. Bring it back to a simmer before poaching. Option A uses grapefruit and mustard. For gentler Option B, omit both and finish with extra dill. The first-cook target is 139–140°F plus fully opaque, easily flaking flesh; the separate 165°F target below is for reheating leftovers. Refrigerate promptly in shallow portions and use within 3 days. Freezer-Friendly Verdict: No. The soft flakes tend to break and firm up through freezing and reheating; cook two portions fresh. Fridge reheat: Warm one portion covered in its sauce in the HexClad over medium-low heat. Turn gently, adding a splash of water if needed. Check after 6 minutes and continue until the food reaches 165°F throughout. Freezer reheat: If already frozen, thaw overnight in the refrigerator and follow the fridge reheating directions. Estimated nutrition per serving (1/2 of recipe): 293 kcal, 27.1 g protein, 5.7 g total carbohydrate, 17.2 g fat, 0.1 g fiber, 96 mg sodium. The estimate uses farmed Atlantic salmon. Includes the measured broth and sauce. Sodium varies with your broth.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "Traeger Silverton 610 pellet smoker",
+  "methods": [
+    {
+      "label": "Samsung conventional oven",
+      "cookMin": 85,
+      "equipment": [
+        "Samsung conventional oven",
+        "Small enamel Dutch oven with tight lid, sized to hold the food snugly",
+        "10-inch HexClad skillet",
+        "Thin-tip instant-read thermometer",
+        "Shallow metal APO pan",
+        "Heatproof serving plates"
+      ],
+      "steps": [
+        {
+          "title": "Heat the conventional oven",
+          "text": "Preheat Samsung Bake to 250°F with the rack in the middle. Use an oven-safe pan; keep any braising lid ready."
+        },
+        {
+          "title": "Warm the braising liquid",
+          "text": "Bring {broth} just to a simmer in the open Dutch oven on the stove, about 3–6 minutes."
+        },
+        {
+          "title": "Warm the braising liquid",
+          "text": "Move the uncovered pot to the oven rack. Close the oven door and warm the liquid for 20 minutes."
+        },
+        {
+          "title": "Poach in the oven",
+          "text": "Slip {salmon} into the warm broth with {topup} to barely cover. Cover the pot and cook at 250°F, checking from 6 minutes and every 2 minutes thereafter until the thickest center reaches 145°F."
+        },
+        {
+          "title": "Make the sauce base",
+          "text": "While the fish finishes, measure 3/4 cup of the poaching liquid into the HexClad, adding {topup} if needed. Whisk in {juice}, {maple} and {mustard} and bring to a full boil."
+        },
+        {
+          "title": "Mix the slurry",
+          "text": "Stir {starch} into {water} until completely smooth."
+        },
+        {
+          "title": "Thicken the sauce",
+          "text": "Bring the skillet liquid to a boil. Whisk in the stirred slurry and simmer for 1 minute, stirring, until the sauce coats the back of a spoon."
+        },
+        {
+          "title": "Rest",
+          "text": "Keep the cooked salmon covered for 2 minutes while the sauce thickens."
+        },
+        {
+          "title": "Finish with dill",
+          "text": "Fold {dill} into the sauce off heat. Spoon it around the fish and over each flake as you portion it."
+        }
+      ]
+    }
+  ]
 }

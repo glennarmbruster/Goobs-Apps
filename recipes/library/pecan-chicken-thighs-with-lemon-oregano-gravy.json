@@ -160,5 +160,72 @@
     }
   ],
   "notes": "Make ahead: Trim and unfold the thighs the night before. Option A uses lemon zest and juice. For gentler Option B, omit both and finish with finely chopped parsley. For dairy-free gravy, omit the butter. Refrigerate promptly in shallow portions and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze individual portions surrounded by sauce for up to 2 months to protect their moisture. Fridge reheat: Place one portion with its sauce in a covered shallow dish. Install the bottom drip pan in the APO and preheat to 325°F, sous vide mode off, rear heat on, top and bottom off, 60% steam. Set the probe to 165°F in the center. Start checking after 12 minutes and heat until 165°F throughout. Freezer reheat: Thaw overnight in the refrigerator. Follow the fridge reheating directions and stir the sauce smooth. Estimated nutrition per serving (1/2 of recipe): 208 kcal, 29.1 g protein, 3.7 g total carbohydrate, 7.8 g fat, 0.2 g fiber, 156 mg sodium. Includes the measured broth and sauce. Sodium varies with your broth.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "Traeger Silverton 610 pellet smoker",
+  "methods": [
+    {
+      "label": "Samsung conventional oven",
+      "cookMin": 85,
+      "equipment": [
+        "Samsung conventional oven",
+        "Small enamel Dutch oven with tight lid, sized to hold the food snugly",
+        "10-inch HexClad skillet",
+        "Thin-tip instant-read thermometer"
+      ],
+      "steps": [
+        {
+          "title": "Heat the conventional oven",
+          "text": "Preheat Samsung Bake to 300°F with the rack in the middle. Use an oven-safe pan; keep any braising lid ready."
+        },
+        {
+          "title": "Warm the braising liquid",
+          "text": "Bring {broth} with {oregano} and {garlic} just to a simmer in the open Dutch oven on the stove, about 3–6 minutes."
+        },
+        {
+          "title": "Warm the braising liquid",
+          "text": "Move the uncovered pot to the oven rack. Close the oven door and warm the liquid for 15 minutes."
+        },
+        {
+          "title": "Nestle the thighs",
+          "text": "Lay {chicken} flat in the warm broth, topping up with {topup} if needed to reach halfway up the sides. Fit the lid immediately."
+        },
+        {
+          "title": "Braise gently",
+          "text": "Cook covered at 300°F for 25–45 minutes until the thickest centers reach 175°F and a fork slips through easily."
+        },
+        {
+          "title": "Rest in the juices",
+          "text": "Rest the covered thighs off heat for 5 minutes."
+        },
+        {
+          "title": "Portion the meat",
+          "text": "Cut the thighs across the grain into small slices and keep covered with a little broth."
+        },
+        {
+          "title": "Measure the sauce base",
+          "text": "Skim excess fat from the braising liquid. Measure 3/4 cup into the HexClad skillet, topping up with {topup} if needed."
+        },
+        {
+          "title": "Infuse the lemon",
+          "text": "Stir {zest} into the skillet over medium heat for 1 minute."
+        },
+        {
+          "title": "Mix the slurry",
+          "text": "Stir {starch} into {water} until completely smooth."
+        },
+        {
+          "title": "Thicken the sauce",
+          "text": "Bring the skillet liquid to a boil. Whisk in the stirred slurry and simmer for 1 minute, stirring, until the sauce coats the back of a spoon."
+        },
+        {
+          "title": "Finish off heat",
+          "text": "Swirl {butter} and {lemon} into the thick gravy off heat."
+        },
+        {
+          "title": "Coat the thighs",
+          "text": "Turn the slices in the gravy and spoon the rest around them on both plates."
+        }
+      ]
+    }
+  ]
 }

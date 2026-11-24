@@ -5,7 +5,7 @@
     {
       "id": "sheet-pan-lemon-chicken",
       "title": "Sheet-Pan Lemon Chicken & Potatoes",
-      "description": "One pan, about 15 minutes of work.",
+      "description": "Lemon and oregano flavor tender sheet-pan chicken and potatoes, finished with a thick pan gravy.",
       "category": "Main dish",
       "tags": [
         "weeknight",
@@ -13,41 +13,45 @@
       ],
       "servings": 4,
       "prepMin": 15,
-      "cookMin": 40,
+      "cookMin": 48,
       "equipment": [
-        "Large sheet pan"
+        "Samsung conventional oven",
+        "Deep rimmed metal baking pan",
+        "Foil",
+        "HexClad skillet",
+        "Instant-read thermometer"
       ],
       "ingredients": [
         {
           "id": "chicken",
-          "qty": 2,
-          "unit": "lb",
-          "name": "bone-in chicken thighs"
+          "qty": 20,
+          "unit": "oz",
+          "name": "boneless skinless chicken thighs"
         },
         {
           "id": "potatoes",
-          "qty": 1.5,
+          "qty": 1,
           "unit": "lb",
           "name": "baby potatoes",
-          "note": "halved"
+          "note": "cut into ½-inch pieces"
         },
         {
           "id": "oil",
-          "qty": 3,
+          "qty": 1,
           "unit": "tbsp",
           "name": "olive oil"
         },
         {
           "id": "lemons",
-          "qty": 2,
-          "name": "lemons",
-          "note": "one zested and juiced, one sliced"
+          "qty": 0.5,
+          "name": "lemon",
+          "note": "zest and juice"
         },
         {
           "id": "garlic",
-          "qty": 4,
+          "qty": 2,
           "unit": "clove",
-          "name": "garlic",
+          "name": "fresh garlic cloves",
           "note": "minced"
         },
         {
@@ -58,36 +62,105 @@
         },
         {
           "id": "salt",
-          "qty": 1,
+          "qty": 0.125,
           "unit": "tsp",
-          "name": "salt"
+          "name": "fine table salt"
         },
         {
           "id": "pepper",
-          "qty": 0.5,
+          "qty": 0.125,
           "unit": "tsp",
-          "name": "black pepper"
+          "name": "ground black pepper"
+        },
+        {
+          "id": "broth",
+          "qty": 360,
+          "unit": "g",
+          "name": "unsalted chicken broth"
+        },
+        {
+          "id": "starch",
+          "qty": 1.5,
+          "unit": "tbsp",
+          "name": "cornstarch"
+        },
+        {
+          "id": "cold",
+          "qty": 2,
+          "unit": "tbsp",
+          "name": "cold water"
         }
       ],
       "steps": [
         {
-          "text": "Heat the oven to 425°F."
+          "title": "Heat the oven",
+          "text": "Preheat the Samsung oven to 375°F on conventional Bake; place a rack in the center."
         },
         {
-          "text": "Whisk {oil}, the lemon zest and juice, {garlic}, {oregano}, {salt} and {pepper}."
+          "title": "Mix the braising liquid",
+          "text": "In a deep rimmed roasting pan, whisk {oil}, the zest and juice of {lemons}, {garlic}, {oregano}, {salt}, {pepper} and {broth}."
         },
         {
-          "text": "Toss {chicken} and {potatoes} with the mixture on a sheet pan, skin side up. Tuck in the lemon slices."
+          "title": "Arrange the chicken",
+          "text": "Nestle {chicken} and {potatoes} in the liquid in a single layer. Seal the pan with foil."
         },
         {
-          "title": "Roast",
-          "text": "Roast 35-40 minutes until the chicken reaches 175°F and the potatoes are tender."
+          "title": "Braise the thighs",
+          "text": "Braise for 30–42 minutes, checking at 25 minutes. Lift each thigh into a covered bowl when its center reaches 175°F. Keep cooking any firm potatoes until easily pierced."
         },
         {
-          "text": "Rest 5 minutes before serving."
+          "title": "Thicken the gravy",
+          "text": "Transfer the potatoes to the bowl. Pour the braising liquid into the HexClad and bring to a simmer. Stir {starch} into {cold}, then whisk into the hot liquid and simmer for 1 minute until it coats a spoon."
+        },
+        {
+          "title": "Serve generously",
+          "text": "Slice the thighs across the grain and coat the chicken and potatoes with the hot gravy."
         }
       ],
-      "notes": "Sample recipe: delete or replace it any time."
+      "notes": "Make ahead: Refrigerate the cooked chicken submerged in gravy within 2 hours. Freezer-Friendly Verdict: Yes, the gravy protects the chicken; the potatoes may soften. Freeze in portions for up to 2 months. Fridge reheat: warm covered in a skillet with a spoonful of water to 165°F. Freezer reheat: thaw overnight in the refrigerator, then reheat covered to 165°F. Reflux Option A uses lemon zest and juice. For gentler Option B, use the zest alone. Estimated nutrition per serving (1/4 of recipe): 308 kcal, 31.1 g protein, 23.8 g total carbohydrate, 9.3 g fat, 2.6 g fiber, 229 mg sodium. Based on the measured ingredients; brands and optional additions can change these values.",
+      "preferredMethod": "Samsung conventional oven",
+      "methods": [
+        {
+          "label": "Anova Precision Oven Gen 1",
+          "cookMin": 45,
+          "equipment": [
+            "Anova Precision Oven Gen 1",
+            "Deep rimmed metal baking pan",
+            "Foil",
+            "HexClad skillet",
+            "Food probe"
+          ],
+          "steps": [
+            {
+              "title": "Preheat the APO",
+              "text": "Install the bottom drip pan. Preheat to 350°F, Sous Vide OFF, rear element only, 50% steam. Insert the probe into the center of the thickest thigh before covering and set it to 175°F."
+            },
+            {
+              "title": "Mix the braising liquid",
+              "text": "In a deep rimmed roasting pan, whisk {oil}, the zest and juice of {lemons}, {garlic}, {oregano}, {salt}, {pepper} and {broth}."
+            },
+            {
+              "title": "Arrange the chicken",
+              "text": "Nestle {chicken} and {potatoes} in the liquid in a single layer. Seal the pan with foil."
+            },
+            {
+              "title": "Braise the thighs",
+              "text": "Braise for 25–40 minutes, checking at 22 minutes. Lift each thigh into a covered bowl when its center reaches 175°F. Keep cooking any firm potatoes until easily pierced."
+            },
+            {
+              "title": "Thicken the gravy",
+              "text": "Transfer the potatoes to the bowl. Pour the braising liquid into the HexClad and bring to a simmer. Stir {starch} into {cold}, then whisk into the hot liquid and simmer for 1 minute until it coats a spoon."
+            },
+            {
+              "title": "Serve generously",
+              "text": "Slice the thighs across the grain and coat the chicken and potatoes with the hot gravy."
+            }
+          ]
+        }
+      ],
+      "format": "goobs-recipe",
+      "version": 1,
+      "source": "Glenn"
     },
     {
       "id": "chocolate-chip-cookies",
@@ -110,9 +183,9 @@
       "ingredients": [
         {
           "id": "flour",
-          "qty": 2.25,
-          "unit": "cup",
-          "name": "all-purpose flour"
+          "qty": 270,
+          "unit": "g",
+          "name": "King Arthur unbleached all-purpose flour"
         },
         {
           "id": "baking-soda",
@@ -124,13 +197,13 @@
           "id": "salt",
           "qty": 1,
           "unit": "tsp",
-          "name": "salt"
+          "name": "fine table salt"
         },
         {
           "id": "butter",
           "qty": 1,
           "unit": "cup",
-          "name": "butter",
+          "name": "unsalted butter",
           "note": "softened"
         },
         {
@@ -170,26 +243,80 @@
           "text": "Heat the oven to 375°F. Line two baking sheets with parchment."
         },
         {
-          "text": "Whisk {flour}, {baking-soda} and {salt} in a bowl."
+          "text": "Whisk {flour}, {baking-soda} and {salt} in a bowl.",
+          "title": "Whisk the dry ingredients"
         },
         {
-          "text": "Beat {butter}, {brown-sugar} and {sugar} until light and fluffy, about 3 minutes."
+          "text": "Beat {butter}, {brown-sugar} and {sugar} until light and fluffy, about 3 minutes.",
+          "title": "Cream the butter and sugars"
         },
         {
-          "text": "Beat in {eggs} one at a time, then {vanilla}."
+          "text": "Beat in {eggs} one at a time, then {vanilla}.",
+          "title": "Beat in the eggs"
         },
         {
-          "text": "Stir in the flour mixture until just combined, then fold in {chips}."
+          "text": "Stir in the flour mixture until just combined, then fold in {chips}.",
+          "title": "Fold in the chocolate"
         },
         {
           "title": "Bake",
           "text": "Scoop rounded tablespoons onto the sheets, 2 inches apart. Bake 9-11 minutes until the edges are golden."
         },
         {
-          "text": "Cool on the sheet for 5 minutes, then move to a rack."
+          "text": "Cool on the sheet for 5 minutes, then move to a rack.",
+          "title": "Cool on a rack"
         }
       ],
-      "notes": "Chill the dough 30 minutes for thicker cookies. Sample recipe: delete or replace it any time."
+      "notes": "Make ahead: Chill the dough for 30 minutes for thicker cookies. Freezer-Friendly Verdict: Yes, freeze baked cookies in an airtight container for up to 2 months. Refrigerated cookies can come to room temperature before serving. From frozen, thaw covered at room temperature, or warm in the oven at 300°F for 4–6 minutes. Estimated nutrition per serving (1/24 of recipe): 236 kcal, 3.1 g protein, 30.4 g total carbohydrate, 12.1 g fat, 1.4 g fiber, 158 mg sodium. Based on the measured ingredients; brands and optional additions can change these values.",
+      "preferredMethod": "Samsung conventional oven",
+      "methods": [
+        {
+          "label": "Anova Precision Oven Gen 1",
+          "cookMin": 11,
+          "equipment": [
+            "Anova Precision Oven Gen 1",
+            "Parchment paper",
+            "Stand or hand mixer"
+          ],
+          "steps": [
+            {
+              "title": "Set the APO",
+              "text": "Install the bottom drip pan. Preheat to 375°F on convection, Sous Vide OFF, rear element only, 0% steam, probe off. Use the same size pan as the preferred recipe. Start checking 3–5 minutes before the listed oven time."
+            },
+            {
+              "title": "Prep",
+              "text": "Heat the oven to 375°F. Line two baking sheets with parchment."
+            },
+            {
+              "text": "Whisk {flour}, {baking-soda} and {salt} in a bowl.",
+              "title": "Whisk the dry ingredients"
+            },
+            {
+              "text": "Beat {butter}, {brown-sugar} and {sugar} until light and fluffy, about 3 minutes.",
+              "title": "Cream the butter and sugars"
+            },
+            {
+              "text": "Beat in {eggs} one at a time, then {vanilla}.",
+              "title": "Beat in the eggs"
+            },
+            {
+              "text": "Stir in the flour mixture until just combined, then fold in {chips}.",
+              "title": "Fold in the chocolate"
+            },
+            {
+              "title": "Bake",
+              "text": "Scoop rounded tablespoons onto the sheets, 2 inches apart. Bake 9-11 minutes until the edges are golden."
+            },
+            {
+              "text": "Cool on the sheet for 5 minutes, then move to a rack.",
+              "title": "Cool on a rack"
+            }
+          ]
+        }
+      ],
+      "format": "goobs-recipe",
+      "version": 1,
+      "source": "Glenn"
     }
   ]
 }

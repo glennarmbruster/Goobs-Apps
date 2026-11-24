@@ -97,5 +97,44 @@
     }
   ],
   "notes": "Yield: About 1 1/2 cups. One serving is 1/4 cup. Make ahead: Blend and strain up to a day ahead. The beans firm slightly as they cool. Refrigerate within 2 hours and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze in quarter-cup portions for up to 1 month. Stir in a teaspoon of water as needed after thawing. Fridge reheat: Serve chilled. Stir until smooth just before portioning. Freezer reheat: If already frozen, thaw covered in the refrigerator, then whisk or blend briefly and serve cold. Option A uses lemon. For gentler Option B, substitute water for the juice and add a little extra thyme. The dip is dairy-free. Estimated nutrition per serving (1/6 of recipe): 57 kcal, 2.9 g protein, 8.3 g total carbohydrate, 1.7 g fat, 2.6 g fiber, 15 mg sodium. The estimate covers the prepared condiment. Add separately served foods when totaling a meal. Fiber is estimated before straining.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "10-inch HexClad skillet",
+  "methods": [
+    {
+      "label": "Enamel Dutch oven",
+      "cookMin": 8,
+      "equipment": [
+        "Enamel Dutch oven",
+        "Immersion blender and tall heatproof jug",
+        "Fine-mesh sieve",
+        "Heatproof liquid measuring cup"
+      ],
+      "steps": [
+        {
+          "title": "Set up the cooking vessel",
+          "text": "Start the enamel Dutch oven over medium-low heat for 2–3 minutes; use the lid for covered steps. Reduce heat once liquids simmer and stir across the heavy base."
+        },
+        {
+          "title": "Soften the artichokes",
+          "text": "Cover {artichoke}, {beans} and {thyme} with {broth} in the HexClad. Simmer covered for 6–8 minutes until the hearts mash under a spoon."
+        },
+        {
+          "title": "Blend the dip",
+          "text": "Blend the warm mixture with {lemon} and {oil} for 1 minute, until loose and silky."
+        },
+        {
+          "title": "Remove any fibers",
+          "text": "Press the dip through a fine sieve, scraping smooth puree from the underside."
+        },
+        {
+          "title": "Adjust the consistency",
+          "text": "Scrape all of the mixture into the measuring cup. Add cold water a teaspoon at a time if needed to reach about 1 1/2 cups, maintaining a smooth spoonable texture."
+        },
+        {
+          "title": "Serve",
+          "text": "Chill until cool, about 45 minutes in a shallow container. Spoon onto soft potatoes or serve alongside chicken."
+        }
+      ]
+    }
+  ]
 }

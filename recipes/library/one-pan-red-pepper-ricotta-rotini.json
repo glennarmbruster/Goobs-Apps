@@ -87,5 +87,42 @@
     }
   ],
   "notes": "Make ahead: Blend the pepper base up to 2 days ahead and refrigerate. Add the dry pasta only when ready to cook. Refrigerate in shallow portions within 2 hours and use within 3 days. Freezer-Friendly Verdict: No. The fiber-rich spirals soften with freezing and the ricotta can weep. Fridge reheat: Warm covered in the skillet with a splash of water over medium-low heat for 4–7 minutes, stirring gently until the center reaches 165°F. Freezer reheat: Thaw in the refrigerator overnight, then follow the fridge reheat instructions. Option A uses sweet roasted pepper. For a gentler Option B, use an equal weight of cooked butternut squash. For dairy-free sauce, use smooth unsalted white bean puree in place of ricotta. Estimated nutrition per serving (1/2 of recipe): 88 kcal, 7.0 g protein, 26.8 g total carbohydrate, 2.8 g fat, 18.6 g fiber, 160 mg sodium.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "10-inch HexClad skillet with lid",
+  "methods": [
+    {
+      "label": "Enamel Dutch oven",
+      "cookMin": 22,
+      "equipment": [
+        "Enamel Dutch oven",
+        "Vitamix or immersion blender and tall jug"
+      ],
+      "steps": [
+        {
+          "title": "Set up the cooking vessel",
+          "text": "Start the enamel Dutch oven over medium-low heat for 2–3 minutes; use the lid for covered steps. Reduce heat once liquids simmer and stir across the heavy base."
+        },
+        {
+          "title": "Blend the sauce base",
+          "text": "Blend {pepper}, {broth} and {garlic} until completely smooth, about 30 seconds."
+        },
+        {
+          "title": "Start the pasta",
+          "text": "Bring the pepper sauce to a simmer in the Enamel Dutch oven and stir in {rotini}."
+        },
+        {
+          "title": "Cook in the sauce",
+          "text": "Cover and simmer gently for 10–18 minutes, stirring every 2 minutes to keep the spirals submerged. Check a spiral at 10 minutes and continue until tender throughout, adding hot water a splash at a time if needed."
+        },
+        {
+          "title": "Smooth the ricotta",
+          "text": "In a cup, whisk {ricotta} with a spoonful of the hot cooking sauce until smooth."
+        },
+        {
+          "title": "Finish the spirals",
+          "text": "Take the Enamel Dutch oven off the heat and fold the loosened ricotta and {basil} through the pasta until the sauce fills the spirals."
+        }
+      ]
+    }
+  ]
 }

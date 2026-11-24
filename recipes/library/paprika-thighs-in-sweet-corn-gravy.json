@@ -131,5 +131,55 @@
     }
   ],
   "notes": "Make ahead: Trim and portion the thighs and thaw the corn in the refrigerator a day ahead. Option A uses lime zest. For gentler Option B, omit the zest and use less paprika. For dairy-free gravy leave out the cream cheese. Refrigerate promptly in shallow portions and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze the thighs surrounded by corn gravy for up to 2 months; add the cream cheese after reheating for the smoothest texture. Fridge reheat: Transfer a single portion with its sauce to a shallow covered oven-safe dish. Install the APO Gen 1 bottom drip pan. Preheat to 325°F, sous vide mode off, 60% steam, rear element on, top and bottom off. Set the probe to 165°F at the coldest center. Start checking at 12 minutes and heat to 165°F throughout. Freezer reheat: Thaw overnight in the refrigerator. Use the fridge reheating directions and stir the sauce smooth. Estimated nutrition per serving (1/2 of recipe): 253 kcal, 31.1 g protein, 13.7 g total carbohydrate, 8.2 g fat, 1.4 g fiber, 179 mg sodium. Includes the measured broth and sauce. Sodium varies with your broth.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "10-inch cast iron skillet with lid",
+  "methods": [
+    {
+      "label": "Enamel Dutch oven",
+      "cookMin": 32,
+      "equipment": [
+        "Enamel Dutch oven",
+        "Thin-tip instant-read thermometer",
+        "Immersion blender, heatproof jug and fine sieve"
+      ],
+      "steps": [
+        {
+          "title": "Set up the cooking vessel",
+          "text": "Start the enamel Dutch oven over medium-low heat for 2–3 minutes; use the lid for covered steps. Reduce heat once liquids simmer and stir across the heavy base."
+        },
+        {
+          "title": "Start the corn broth",
+          "text": "Bring {broth}, {paprika}, {garlic} and {corn} to a gentle simmer in the cast iron over medium heat."
+        },
+        {
+          "title": "Braise the thighs",
+          "text": "Nestle {thighs} into the liquid, spoon broth over the tops and cover. Lower the heat and simmer 12–20 minutes, turning halfway, until the thick centers reach 175°F and pierce easily."
+        },
+        {
+          "title": "Hold the chicken",
+          "text": "Move the thighs to a covered bowl with a spoonful of cooking liquid."
+        },
+        {
+          "title": "Smooth the corn",
+          "text": "Blend the kernels and hot cooking liquid in a deep heatproof jug. Press through a fine sieve to remove hulls and return the smooth gravy base to the Enamel Dutch oven."
+        },
+        {
+          "title": "Mix the slurry",
+          "text": "Stir {starch} into {water} in a small cup until smooth."
+        },
+        {
+          "title": "Thicken the sauce",
+          "text": "Whisk the freshly stirred slurry into the simmering sauce and stir for 1 minute, until it coats the back of a spoon."
+        },
+        {
+          "title": "Finish the gravy",
+          "text": "Whisk {cheese} and {zest} into the gravy off heat until smooth."
+        },
+        {
+          "title": "Coat and serve",
+          "text": "Cut the thighs across the grain into short slices and fold them through the corn gravy."
+        }
+      ]
+    }
+  ]
 }

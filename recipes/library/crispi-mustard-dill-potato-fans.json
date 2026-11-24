@@ -1,0 +1,111 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "crispi-mustard-dill-potato-fans",
+  "title": "Crispi Mustard-Dill Potato Fans",
+  "description": "Hasselback potatoes sized for two and finished just before serving.",
+  "category": "Sides",
+  "tags": [
+    "side-dish",
+    "ninja-crispi",
+    "air-fryer",
+    "potato"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 12,
+  "cookMin": 25,
+  "equipment": [
+    "Ninja Crispi, 4-qt glass container and adapter",
+    "Small saucepan"
+  ],
+  "ingredients": [
+    {
+      "id": "potato",
+      "qty": 280,
+      "unit": "g",
+      "name": "Yukon Gold potatoes"
+    },
+    {
+      "id": "butter",
+      "qty": 12,
+      "unit": "g",
+      "name": "unsalted butter"
+    },
+    {
+      "id": "dill",
+      "qty": 4,
+      "unit": "g",
+      "name": "fresh dill, finely chopped"
+    },
+    {
+      "id": "mustard",
+      "qty": 8,
+      "unit": "g",
+      "name": "Löwensenf Bavarian mustard"
+    },
+    {
+      "id": "oil",
+      "qty": 5,
+      "unit": "g",
+      "name": "avocado oil"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Prepare the vegetables",
+      "text": "Cut the potatoes crosswise in thin slits, stopping before the base. Use {potato}."
+    },
+    {
+      "title": "Prepare the center",
+      "text": "Simmer the fans 12–15 minutes until barely tender, then drain thoroughly."
+    },
+    {
+      "title": "Mix the finish",
+      "text": "Whisk {butter}, {dill}, {mustard} in a small pan over low heat until smooth. Add a spoonful of warm water if needed."
+    },
+    {
+      "title": "Roast the vegetables",
+      "text": "Brush with {oil}. Place in one layer on the crisper plate in the 4-qt glass container. Fit the adapter and PowerPod and select Air Fry. Cook 17–23 minutes in the Crispi until soft inside and lightly browned on top."
+    },
+    {
+      "title": "Dress while warm",
+      "text": "Brush between the layers with the prepared mixture and serve straight away."
+    }
+  ],
+  "notes": "Make ahead: prepare the topping a day ahead. Freezer-Friendly Verdict: Yes. Freeze cooled portions in a single layer for up to 1 month. Fridge reheat: warm covered to 165°F; add the topping last. Freezer reheat: thaw in the fridge before warming covered. Use unsalted plant butter or dairy-free cheese where needed. Estimated nutrition per serving (1/2 of recipe): 187 kcal, 3.3 g protein, 27.0 g total carbohydrate, 7.8 g fat, 2.0 g fiber, 9 mg sodium.",
+  "source": "Glenn",
+  "preferredMethod": "Ninja Crispi, 4-qt glass container and adapter",
+  "methods": [
+    {
+      "label": "Samsung conventional oven",
+      "cookMin": 30,
+      "equipment": [
+        "Samsung conventional oven",
+        "Small saucepan"
+      ],
+      "steps": [
+        {
+          "title": "Prepare the vegetables",
+          "text": "Cut the potatoes crosswise in thin slits, stopping before the base. Use {potato}."
+        },
+        {
+          "title": "Prepare the center",
+          "text": "Simmer the fans 12–15 minutes until barely tender, then drain thoroughly."
+        },
+        {
+          "title": "Mix the finish",
+          "text": "Whisk {butter}, {dill}, {mustard} in a small pan over low heat until smooth. Add a spoonful of warm water if needed."
+        },
+        {
+          "title": "Roast the vegetables",
+          "text": "Brush with {oil}. Heat the Samsung oven to 410°F convection and arrange on a shallow metal sheet. Cook 17–23 minutes, checking every 2 minutes afterward if needed until soft inside and lightly browned on top."
+        },
+        {
+          "title": "Dress while warm",
+          "text": "Brush between the layers with the prepared mixture and serve straight away."
+        }
+      ]
+    }
+  ]
+}

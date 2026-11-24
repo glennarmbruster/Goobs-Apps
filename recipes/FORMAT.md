@@ -52,3 +52,9 @@ The Recipes app opens a recipe from plain JSON. Anything that follows this forma
 - **`recipes/library/<id>.json`: one file per recipe (the normal way).** Upload a recipe file there and the app shows it the next time it opens (GitHub Pages takes a minute or two to publish). The app finds the files through the public GitHub API, so this works when the app is opened from `<owner>.github.io/<repo>/recipes/`. A file can hold one recipe, a library (`goobs-recipe-library`) or an array. Uploading a file with the same name replaces that recipe; a recipe file wins over the same id in `library.json`.
 - `recipes/library.json` is the older single-file library and still works. Both are public, like the rest of the repo.
 - Recipes added inside the app stay on that phone until you export them (Backup & library, then Export library file) and upload the result.
+
+## Cooking methods and menus
+
+The primary instructions stay in `steps`. The optional `preferredMethod` string labels that original route. Each entry in the optional `methods` array contains a unique `label`, integer `cookMin`, `equipment` array and a complete `steps` array using the same ingredient IDs. Up to 16 alternatives can be edited per recipe. A method uses the same ingredients and yield as the preferred instructions. In the app, changing the selector changes the directions, equipment, guided cooking and cooking time. Editing or adding a method saves a personal copy on that device. A recipe JSON export retains every method.
+
+The first Menu entry browses the selected category on one page. The All menu includes personal and shared recipes. GitHub Pages discovers shared JSON files dynamically. On other static hosts the page reads `library-files.json`, a list of recipe filenames and content hashes; refresh that list when recipe files change.

@@ -1,0 +1,100 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "one-pan-parmesan-spinach-orzo",
+  "title": "One-Pan Parmesan Spinach Orzo",
+  "description": "Orzo cooks directly in its Parmesan sauce with ribbons of spinach.",
+  "category": "Sides",
+  "tags": [
+    "side-dish",
+    "stovetop",
+    "pasta"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 8,
+  "cookMin": 23,
+  "equipment": [
+    "HexClad lidded wok"
+  ],
+  "ingredients": [
+    {
+      "id": "pasta",
+      "qty": 100,
+      "unit": "g",
+      "name": "dry orzo"
+    },
+    {
+      "id": "broth",
+      "qty": 310,
+      "unit": "g",
+      "name": "unsalted chicken broth"
+    },
+    {
+      "id": "spin",
+      "qty": 65,
+      "unit": "g",
+      "name": "baby spinach"
+    },
+    {
+      "id": "parm",
+      "qty": 18,
+      "unit": "g",
+      "name": "finely grated Parmesan cheese"
+    },
+    {
+      "id": "butter",
+      "qty": 8,
+      "unit": "g",
+      "name": "unsalted butter"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Set the heat",
+      "text": "Use the lidded HexClad wok on a medium burner."
+    },
+    {
+      "title": "Build flavor",
+      "text": "Toast {pasta} in {butter} for 2 minutes until golden at the edges."
+    },
+    {
+      "title": "Cook gently",
+      "text": "Pour in {broth}; simmer 10–13 minutes, stirring often, until pasta is tender and broth clings."
+    },
+    {
+      "title": "Finish",
+      "text": "Fold in {spin} until wilted. Remove from heat and stir in {parm}."
+    }
+  ],
+  "notes": "Make ahead: chill in shallow containers and refrigerate up to 3 days. Freezer-Friendly Verdict: Yes. Freeze up to 1 month; grains and vegetables soften slightly. Fridge reheat: stir with a spoonful of water over low heat until 165°F. Freezer reheat: thaw in the fridge and warm by the same method. Dairy swap: use unsalted plant butter or dairy-free cheese as applicable. Estimated nutrition per serving (1/2 of recipe): 267 kcal, 11.3 g protein, 39.7 g total carbohydrate, 6.7 g fat, 2.1 g fiber, 224 mg sodium.",
+  "source": "Glenn",
+  "preferredMethod": "HexClad lidded wok",
+  "methods": [
+    {
+      "label": "Enamel Dutch oven",
+      "cookMin": 25,
+      "equipment": [
+        "Enamel Dutch oven"
+      ],
+      "steps": [
+        {
+          "title": "Set the heat",
+          "text": "Use a heavy enamel Dutch oven. Start on medium-low; its base retains heat, so reduce to low as soon as the liquid simmers."
+        },
+        {
+          "title": "Build flavor",
+          "text": "Toast {pasta} in {butter} for 2 minutes until golden at the edges."
+        },
+        {
+          "title": "Cook gently",
+          "text": "Pour in {broth}; simmer 10–13 minutes, stirring often, until pasta is tender and broth clings."
+        },
+        {
+          "title": "Finish",
+          "text": "Fold in {spin} until wilted. Remove from heat and stir in {parm}."
+        }
+      ]
+    }
+  ]
+}

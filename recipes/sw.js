@@ -2,7 +2,7 @@
    The page itself (index.html) is fetched from the network first, so a new version shows up the
    next time the app opens; if the network is slow or offline it falls back to the saved copy after 4 s.
    Icons and the manifest are served from the cache and refreshed quietly. */
-const CACHE = 'goobs-recipes-v2';
+const CACHE = 'goobs-recipes-v3';
 const PREFIX = 'goobs-recipes-';
 const SHELL = ['./', 'index.html', 'manifest.json', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png'];
 const WAIT_MS = 4000;
@@ -26,7 +26,7 @@ async function page(req) {
     if (res && res.ok && res.type === 'basic') cache.put(req.mode === 'navigate' ? 'index.html' : req, res.clone());
     return res;
   });
-  const saved = () => cache.match(req.mode === 'navigate' ? 'index.html' : req, { ignoreSearch: true });
+  const saved = () => cache.match(req.mode === 'navigate' ? 'index.html' : req);
   const timer = new Promise(r => setTimeout(() => r(null), WAIT_MS));
   try {
     const res = await Promise.race([net, timer.then(async () => (await saved()) || net)]);
@@ -39,7 +39,7 @@ async function page(req) {
 /* everything else: cached copy now, quiet refresh for next time */
 async function asset(req) {
   const cache = await caches.open(CACHE);
-  const cached = await cache.match(req, { ignoreSearch: true });
+  const cached = await cache.match(req);
   if (cached && new URL(req.url).searchParams.has('v')) return cached;
   const refresh = fetch(req, { cache: 'no-cache' }).then(res => {
     if (res && res.ok && res.type === 'basic') cache.put(req, res.clone());
@@ -53,6 +53,6 @@ self.addEventListener('fetch', e => {
   const req = e.request;
   if (req.method !== 'GET') return;
   if (new URL(req.url).origin !== self.location.origin) return; // weather/geocoding/Firebase calls go straight to the network
-  const isPage = req.mode === 'navigate' || /\/(index\.html|library\.json)?$|\/library\/[^/]+\.json$/.test(new URL(req.url).pathname);
+  const isPage = req.mode === 'navigate' || /\/(index\.html|library(?:-files)?\.json)?$|\/library\/[^/]+\.json$/.test(new URL(req.url).pathname);
   e.respondWith(isPage ? page(req) : asset(req));
 });

@@ -115,5 +115,48 @@
     }
   ],
   "notes": "Make ahead: Poach the apple and sieve the sauce base a day ahead. Refrigerate finished sauce for up to 3 days. Freezer-Friendly Verdict: Yes. Freeze the sauce for up to 2 months; the pureed apple gives it body after thawing. Fridge reheat: Warm in the HexClad over medium-low, stirring with a splash of water or broth if needed. Bring the whole sauce briefly to a rolling boil, then serve. Freezer reheat: Thaw overnight in the refrigerator. Whisk smooth and follow the fridge reheating directions. Option A uses cider and mustard. For gentler Option B, replace the cider with extra broth and omit the mustard. For dairy-free sauce omit the finishing butter. Estimated nutrition per serving of the prepared condiment (1/2 of recipe): 66 kcal, 1.1 g protein, 10.9 g total carbohydrate, 2.2 g fat, 0.6 g fiber, 15 mg sodium. Includes the measured broth and sauce. Sodium varies with your broth.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "10-inch HexClad skillet",
+  "methods": [
+    {
+      "label": "Enamel Dutch oven",
+      "cookMin": 18,
+      "equipment": [
+        "Enamel Dutch oven",
+        "Fine-mesh sieve",
+        "Small mixing bowl",
+        "Heatproof bowl"
+      ],
+      "steps": [
+        {
+          "title": "Set up the cooking vessel",
+          "text": "Start the enamel Dutch oven over medium-low heat for 2–3 minutes; use the lid for covered steps. Reduce heat once liquids simmer and stir across the heavy base."
+        },
+        {
+          "title": "Poach the apple",
+          "text": "Place {apple}, {cider}, {broth} and {thyme} in the HexClad. Bring to a gentle simmer, then cover and cook over low heat for 8–10 minutes until the apple crushes easily."
+        },
+        {
+          "title": "Smooth the base",
+          "text": "Lift out the thyme. Press the apple and liquid through a sieve into a heatproof bowl, scraping the pulp from the underside. Return the smooth base to the pan."
+        },
+        {
+          "title": "Season with mustard",
+          "text": "Whisk in {mustard} over medium-low heat."
+        },
+        {
+          "title": "Mix the slurry",
+          "text": "Stir {starch} into {water} until completely smooth."
+        },
+        {
+          "title": "Thicken the sauce",
+          "text": "Bring the base to a simmer. Whisk in the freshly stirred slurry and let it bubble for 1 minute, stirring until it coats the back of a spoon."
+        },
+        {
+          "title": "Round out the sauce",
+          "text": "Swirl {butter} into the finished sauce off heat. Spoon it around lean pork medallions or turkey cutlets."
+        }
+      ]
+    }
+  ]
 }

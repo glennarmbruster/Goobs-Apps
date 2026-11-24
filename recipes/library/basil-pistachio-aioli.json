@@ -89,5 +89,44 @@
     }
   ],
   "notes": "Yield: About 1 cup. One serving is 2 tablespoons. Make ahead: Prepare up to a day ahead and press a cover against the surface to protect the basil color. Refrigerate within 2 hours and use within 3 days. Freezer-Friendly Verdict: No. Mayonnaise can split after freezing, and the fresh basil darkens. Fridge reheat: Serve chilled. Stir until smooth just before portioning. Freezer reheat: If already frozen, thaw covered in the refrigerator, then whisk or blend briefly and serve cold. Option A uses lemon juice. For gentler Option B, use water for the lemon and halve the granulated garlic. The aioli is dairy-free. Estimated nutrition per serving (1/8 of recipe): 158 kcal, 0.8 g protein, 1.0 g total carbohydrate, 16.8 g fat, 0.3 g fiber, 131 mg sodium. The estimate covers the prepared condiment. Add separately served foods when totaling a meal.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "Mixing bowl and flexible spatula",
+  "methods": [
+    {
+      "label": "Mini food processor",
+      "cookMin": 15,
+      "equipment": [
+        "Mini food processor",
+        "Small whisk",
+        "Heatproof liquid measuring cup",
+        "Mortar and pestle or small food processor"
+      ],
+      "steps": [
+        {
+          "title": "Fit the blade",
+          "text": "Use short pulses in a mini food processor for the mixing step. Scrape down twice. For butter, start softened; for mayonnaise, pulse just until combined."
+        },
+        {
+          "title": "Make the basil paste",
+          "text": "Tear {basil} into the mortar and work it with {lemon} and {garlic} for 1–2 minutes, until the leaves form a soft paste."
+        },
+        {
+          "title": "Smooth the pistachio",
+          "text": "Stir {pistachio} into the herb paste. Loosen it with a spoonful of {mayo} until smooth."
+        },
+        {
+          "title": "Fold the aioli",
+          "text": "Fold the pistachio mixture through the remaining mayonnaise just until the color is even."
+        },
+        {
+          "title": "Adjust the consistency",
+          "text": "Scrape all of the mixture into the measuring cup. Add cold water a teaspoon at a time if needed to reach about 1 cup, maintaining a smooth spoonable texture."
+        },
+        {
+          "title": "Serve",
+          "text": "Chill covered for 20 minutes. Spoon onto warm poached fish or swirl into a separate portion of thick gravy just before serving."
+        }
+      ]
+    }
+  ]
 }

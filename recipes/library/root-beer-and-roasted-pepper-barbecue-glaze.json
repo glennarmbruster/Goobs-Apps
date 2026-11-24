@@ -114,5 +114,54 @@
     }
   ],
   "notes": "Yield: 1 cup. One serving is 2 tablespoons. Make ahead: Reduce the root beer the day before and refrigerate until you are ready to cook the peppers. Refrigerate in shallow covered portions within 2 hours and use within 3 days. Freezer-Friendly Verdict: Yes. The smooth pepper puree keeps its body for up to 2 months frozen. Whisk while reheating. Fridge reheat: Bring a portion to a boil in a small pan, stirring until it reaches at least 165°F. Loosen with a little water as needed. Freezer reheat: Thaw in the refrigerator overnight and reheat as for a chilled portion. Option A uses tomato paste and vinegar. For gentler Option B, replace the tomato paste with plain butternut squash puree and use broth in place of the vinegar. The glaze is dairy-free. Estimated nutrition per serving (1/8 of recipe): 18 kcal, 0.3 g protein, 4.2 g total carbohydrate, 0.0 g fat, 0.2 g fiber, 7 mg sodium. The estimate covers the prepared condiment. Add separately served foods when totaling a meal. Fiber is estimated before straining.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "10-inch HexClad skillet",
+  "methods": [
+    {
+      "label": "Enamel Dutch oven",
+      "cookMin": 23,
+      "equipment": [
+        "Enamel Dutch oven",
+        "Immersion blender and tall heatproof jug",
+        "Fine-mesh sieve",
+        "Small whisk",
+        "Heatproof liquid measuring cup",
+        "Instant-read thermometer"
+      ],
+      "steps": [
+        {
+          "title": "Set up the cooking vessel",
+          "text": "Start the enamel Dutch oven over medium-low heat for 2–3 minutes; use the lid for covered steps. Reduce heat once liquids simmer and stir across the heavy base."
+        },
+        {
+          "title": "Reduce the root beer",
+          "text": "Pour {soda} into the HexClad. Simmer uncovered over medium heat for 5–8 minutes, until reduced to about half its original volume."
+        },
+        {
+          "title": "Cook the pepper base",
+          "text": "Whisk {tomato} into the reduction and add {pepper}, {broth} and {vinegar}. Simmer gently for 4 minutes."
+        },
+        {
+          "title": "Puree the glaze",
+          "text": "Blend until smooth in a deep jug, then pass through a sieve back into the Enamel Dutch oven."
+        },
+        {
+          "title": "Stir the slurry",
+          "text": "Stir {starch} into {water} in a small cup until smooth."
+        },
+        {
+          "title": "Thicken the sauce",
+          "text": "Bring the sauce to a simmer. Stir in the freshly mixed slurry and cook for about 1 minute, whisking until it coats the back of a spoon."
+        },
+        {
+          "title": "Check the yield",
+          "text": "Measure the finished sauce in a heatproof cup. Aim for 1 cup total. If it measures short, whisk in a little hot water. If it measures over, return it to the Enamel Dutch oven and simmer briefly to the mark."
+        },
+        {
+          "title": "Serve",
+          "text": "Spoon the glaze over pork or chicken just before serving. For extra sauce, whisk the glaze into an already thickened mild gravy."
+        }
+      ]
+    }
+  ]
 }

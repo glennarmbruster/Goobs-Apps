@@ -139,5 +139,60 @@
     }
   ],
   "notes": "Sauce yield: About 2 to 2 1/2 cups for four, or 1/2 cup per serving. Make ahead: Bruise the stalks and slice the ginger a day ahead and refrigerate them. Strain the infused liquid thoroughly before serving. Option A includes ginger. For gentler Option B, leave it out and use just one bruised lemongrass stalk for four servings. Chill leftovers promptly in shallow portions and refrigerate for up to 3 days. Freezer-Friendly Verdict: Yes. Freeze the chicken in sauce for up to 2 months. Stir thoroughly when reheating to reunite the coconut fat and liquid. Fridge reheat: Warm one portion covered in its sauce in a HexClad skillet over medium-low, loosening with a splash of water if needed. Stir or turn the chicken gently, checking from 6 minutes, until it reaches 165°F throughout. Freezer reheat: Thaw overnight in the refrigerator, then follow the fridge reheating directions and stir the sauce smooth. Estimated nutrition per serving (1/4 of recipe): 237 kcal, 28.6 g protein, 4.8 g total carbohydrate, 10.5 g fat, 0.0 g fiber, 210 mg sodium. Includes the measured broth and sauce. Sodium varies with your broth.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "Ninja Foodi PossibleCooker",
+  "methods": [
+    {
+      "label": "Enamel Dutch oven",
+      "cookMin": 35,
+      "equipment": [
+        "Enamel Dutch oven",
+        "Thin-tip instant-read thermometer",
+        "Silicone spoon",
+        "Fine sieve and heatproof jug"
+      ],
+      "steps": [
+        {
+          "title": "Use the burner",
+          "text": "Set the Dutch oven on a medium burner. Bring liquid up over medium-high, then reduce to low to maintain a bare simmer; stir down the sides more often than in the electric cooker."
+        },
+        {
+          "title": "Release the lemongrass aroma",
+          "text": "Bruise {lemongrass} with the flat of a knife on a cutting board. Cut each stalk into large pieces that can be lifted out."
+        },
+        {
+          "title": "Infuse the coconut broth",
+          "text": "Combine the bruised stalks, {ginger}, {broth} and {coconut} in the Dutch oven. Set use medium-high burner heat with the lid off until just simmering, then LOW for 5 minutes."
+        },
+        {
+          "title": "Poach the chicken",
+          "text": "Cut {chicken} across the grain into 3/4-inch pieces. Add to the broth and restore the simmer, using HIGH briefly if needed. Cook uncovered on LOW for 10–16 minutes. Pull each piece when its center reaches 175°F and hold covered in a little coconut broth."
+        },
+        {
+          "title": "Steep the basil",
+          "text": "Turn off the heat, immerse {basil} in the hot broth and steep for 3 minutes."
+        },
+        {
+          "title": "Strain the sauce",
+          "text": "Pour the broth through a fine sieve into a heatproof jug. Remove the fibers, ginger and basil, then return all the infused liquid to the pot."
+        },
+        {
+          "title": "Season the broth",
+          "text": "Stir in {aminos} and restore a gentle simmer on Sear/Sauté with the lid off."
+        },
+        {
+          "title": "Mix the slurry",
+          "text": "Stir {starch} into {water} until completely smooth."
+        },
+        {
+          "title": "Bind the coconut sauce",
+          "text": "Stir in the slurry and maintain a gentle bubble for 1 minute, until the sauce coats the back of a spoon. Thin with a splash of hot water if needed to keep it pourable."
+        },
+        {
+          "title": "Serve generously",
+          "text": "Return the chicken and its juices to the coconut sauce off heat. Divide the pieces and all of the sauce among four bowls."
+        }
+      ]
+    }
+  ]
 }

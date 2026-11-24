@@ -120,5 +120,52 @@
     }
   ],
   "notes": "Make ahead: The caramelized shallot and broth base can be made a day ahead. Chill prepared gravy in a shallow covered container for up to 3 days. Freezer-Friendly Verdict: Yes. Freeze in individual portions for up to 2 months and whisk as it reheats. Fridge reheat: Warm in the HexClad over medium-low, stirring with a splash of water or broth if needed. Bring the whole sauce briefly to a rolling boil, then serve. Freezer reheat: Thaw overnight in the refrigerator. Whisk smooth and follow the fridge reheating directions. Option A uses bourbon and pepper. For gentler or alcohol-free Option B, replace the bourbon with extra broth and leave the pepper for the table. Use avocado oil in place of butter for dairy-free gravy. Estimated nutrition per serving of the prepared condiment (1/2 of recipe): 72 kcal, 2.4 g protein, 5.8 g total carbohydrate, 3.0 g fat, 0.4 g fiber, 32 mg sodium. Includes the measured broth and sauce. Sodium varies with your broth. Calories include all the measured alcohol before simmering.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "10-inch HexClad skillet",
+  "methods": [
+    {
+      "label": "Enamel Dutch oven",
+      "cookMin": 26,
+      "equipment": [
+        "Enamel Dutch oven",
+        "Fine-mesh sieve",
+        "Small mixing bowl",
+        "Heatproof bowl"
+      ],
+      "steps": [
+        {
+          "title": "Set up the cooking vessel",
+          "text": "Start the enamel Dutch oven over medium-low heat for 2–3 minutes; use the lid for covered steps. Reduce heat once liquids simmer and stir across the heavy base."
+        },
+        {
+          "title": "Caramelize the shallot",
+          "text": "Warm {shallot} in {butter} in the HexClad over medium-low heat for 12–18 minutes, stirring often. Add a little {broth} whenever the pan catches, until the shallot is uniformly soft and deep gold."
+        },
+        {
+          "title": "Deglaze off the burner",
+          "text": "Move the Enamel Dutch oven off the burner, away from the flame. Add the premeasured {bourbon} and the remaining {broth}, scraping the bottom with a silicone spoon."
+        },
+        {
+          "title": "Infuse the pepper",
+          "text": "Return the pan to medium heat. Add {pepper} and simmer 4 minutes. Press the liquid and soft shallot through the sieve into a heatproof bowl, then return the smooth base to the pan."
+        },
+        {
+          "title": "Add the mustard",
+          "text": "Whisk {mustard} into the strained base."
+        },
+        {
+          "title": "Mix the slurry",
+          "text": "Stir {starch} into {water} until completely smooth."
+        },
+        {
+          "title": "Thicken the sauce",
+          "text": "Bring the base to a simmer. Whisk in the freshly stirred slurry and let it bubble for 1 minute, stirring until it coats the back of a spoon."
+        },
+        {
+          "title": "Serve the gravy",
+          "text": "Divide the gravy between two portions of thinly sliced cooked beef, spooning it between the slices as well as over them."
+        }
+      ]
+    }
+  ]
 }

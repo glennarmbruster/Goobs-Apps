@@ -1,0 +1,148 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "golden-wheat-sourdough-sandwich-loaf",
+  "title": "Golden Wheat Sourdough Sandwich Loaf",
+  "description": "Golden Wheat Sourdough Sandwich Loaf made from a small batch of scratch dough.",
+  "category": "Baking",
+  "tags": [
+    "bread",
+    "from-scratch",
+    "sourdough",
+    "king-arthur"
+  ],
+  "servings": 8,
+  "servingsLabel": "slices",
+  "prepMin": 25,
+  "cookMin": 37,
+  "equipment": [
+    "Samsung conventional oven",
+    "Digital kitchen scale"
+  ],
+  "ingredients": [
+    {
+      "id": "bf",
+      "qty": 165,
+      "unit": "g",
+      "name": "King Arthur unbleached bread flour"
+    },
+    {
+      "id": "ww",
+      "qty": 105,
+      "unit": "g",
+      "name": "King Arthur whole wheat flour"
+    },
+    {
+      "id": "starter",
+      "qty": 70,
+      "unit": "g",
+      "name": "ripe 100% hydration sourdough starter"
+    },
+    {
+      "id": "water",
+      "qty": 186,
+      "unit": "g",
+      "name": "sodium-free water"
+    },
+    {
+      "id": "honey",
+      "qty": 14,
+      "unit": "g",
+      "name": "honey"
+    },
+    {
+      "id": "oil",
+      "qty": 10,
+      "unit": "g",
+      "name": "avocado oil"
+    },
+    {
+      "id": "salt",
+      "qty": 4,
+      "unit": "g",
+      "name": "fine table salt"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Mix the dough",
+      "text": "Combine {bf}, {ww}, {starter}, {water}, {honey}, {oil}, {salt}. Fold until the flour is moist. Cover for 30 minutes."
+    },
+    {
+      "title": "Build strength",
+      "text": "Fold each side of the dough toward the center. Repeat every 30 minutes for three rounds."
+    },
+    {
+      "title": "Bulk ferment",
+      "text": "Keep covered at 72–75°F for another 2–5 hours, until puffy and about 50% larger. Temperature and starter activity govern the timing."
+    },
+    {
+      "title": "Shape",
+      "text": "Roll into a tight log; set seam down in a greased 8-by-4-inch loaf pan."
+    },
+    {
+      "title": "Proof",
+      "text": "Cover and proof 60–120 minutes until puffy; a light fingertip dent should return slowly."
+    },
+    {
+      "title": "Heat the oven",
+      "text": "Preheat the Samsung oven to 385°F on conventional Bake."
+    },
+    {
+      "title": "Bake",
+      "text": "Slash once lengthwise and bake until the sides release. Allow 35–40 minutes; verify 200°F at the center."
+    },
+    {
+      "title": "Cool",
+      "text": "Cool on a rack for 60 minutes before slicing."
+    }
+  ],
+  "notes": "Make ahead: weigh the dry ingredients the evening before. Use a bubbly starter that doubles after feeding, maintained with equal weights of flour and water. Freezer-Friendly Verdict: Yes. Cool completely and freeze sliced or individually wrapped for up to 2 months. Fridge reheat: wrap a serving in a damp towel and microwave for 15–25 seconds. Freezer reheat: thaw wrapped, then warm the same way. Serve with soup or gravy for a softer bite. Allow about 5–9 hours for fermentation and proofing in addition to mixing and baking. Estimated nutrition per serving (1/8 of recipe): 156 kcal, 5.1 g protein, 29.5 g total carbohydrate, 1.5 g fat, 2.6 g fiber, 197 mg sodium. To build starter from scratch: mix 20 g King Arthur whole wheat flour with 20 g water in a clean jar and cover loosely. After 24 hours retain 20 g and feed 20 g water and 20 g all-purpose flour. Repeat daily; when active, feed every 12 hours until it doubles reliably within 6–8 hours, often 7–14 days. Once active, mix 25 g starter with 50 g water and 50 g flour; weigh the recipe amount at its peak. Feeding discard is outside the recipe yield.",
+  "source": "Glenn",
+  "preferredMethod": "Samsung conventional oven",
+  "methods": [
+    {
+      "label": "Anova Precision Oven Gen 1",
+      "cookMin": 37,
+      "equipment": [
+        "Anova Precision Oven Gen 1",
+        "Digital kitchen scale"
+      ],
+      "steps": [
+        {
+          "title": "Mix the dough",
+          "text": "Combine {bf}, {ww}, {starter}, {water}, {honey}, {oil}, {salt}. Fold until the flour is moist. Cover for 30 minutes."
+        },
+        {
+          "title": "Build strength",
+          "text": "Fold each side of the dough toward the center. Repeat every 30 minutes for three rounds."
+        },
+        {
+          "title": "Bulk ferment",
+          "text": "Keep covered at 72–75°F for another 2–5 hours, until puffy and about 50% larger. Temperature and starter activity govern the timing."
+        },
+        {
+          "title": "Shape",
+          "text": "Roll into a tight log; set seam down in a greased 8-by-4-inch loaf pan."
+        },
+        {
+          "title": "Proof",
+          "text": "Cover and proof 60–120 minutes until puffy; a light fingertip dent should return slowly."
+        },
+        {
+          "title": "Heat the oven",
+          "text": "Install the bottom drip pan. Set APO to convection, Sous Vide OFF, 365°F, 0% steam, rear element only, probe off."
+        },
+        {
+          "title": "Bake",
+          "text": "Slash once lengthwise and bake until the sides release. Allow 33–38 minutes; verify 200°F at the center."
+        },
+        {
+          "title": "Cool",
+          "text": "Cool on a rack for 60 minutes before slicing."
+        }
+      ]
+    }
+  ],
+  "totalMin": 482
+}

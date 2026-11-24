@@ -144,5 +144,53 @@
     }
   ],
   "notes": "Make ahead: Caramelize and puree the onion a day ahead; refrigerate it with the tomato base. Option A uses smooth tomato puree. For gentler Option B, replace it in equal measure with plain, peeled roasted sweet bell pepper puree and reduce the cumin. Refrigerate promptly in shallow portions and use within 3 days. Freezer-Friendly Verdict: Yes. Freeze the beef and gravy for up to 2 months. The small potato pieces may soften further and can be mashed into the sauce. Fridge reheat: Warm a single portion with its sauce in a covered HexClad skillet over medium-low, adding a splash of water if thick. Stir or turn gently and begin checking after 5 minutes. Heat the food to 165°F throughout. Freezer reheat: Thaw overnight in the refrigerator. Use the fridge reheating directions and stir the sauce smooth. Estimated nutrition per serving (1/4 of recipe): 314 kcal, 31.2 g protein, 22.8 g total carbohydrate, 10.3 g fat, 2.1 g fiber, 129 mg sodium. Includes the measured broth and sauce. Sodium varies with your broth.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "Ninja Foodi PossibleCooker",
+  "methods": [
+    {
+      "label": "Enamel Dutch oven",
+      "cookMin": 40,
+      "equipment": [
+        "Enamel Dutch oven",
+        "10-inch HexClad skillet with lid",
+        "Thin-tip instant-read thermometer",
+        "Silicone spoon",
+        "Immersion blender and heatproof jug"
+      ],
+      "steps": [
+        {
+          "title": "Use the burner",
+          "text": "Set the Dutch oven on a medium burner. Bring liquid up over medium-high, then reduce to low to maintain a bare simmer; stir down the sides more often than in the electric cooker."
+        },
+        {
+          "title": "Caramelize the onion",
+          "text": "Cook {onion} in {oil} in the HexClad over medium-low for 18–25 minutes, stirring often and adding small splashes of {topup} as needed, until entirely soft and deep golden."
+        },
+        {
+          "title": "Start the potatoes",
+          "text": "Meanwhile place {potatoes} and three quarters of {broth} in the Dutch oven. Bring to a simmer on use medium-high burner heat with the lid off, then cook for 5 minutes."
+        },
+        {
+          "title": "Simmer the beef",
+          "text": "Pinch {beef} into small loose pieces and lower them into the potato broth. Restore the simmer, use low burner heat and cook uncovered for 10–16 minutes. Break up large clusters as they cook. Check a thick piece for 160°F and a potato cube for fork tenderness."
+        },
+        {
+          "title": "Puree the tomato base",
+          "text": "Blend the caramelized onion with {tomato}, the reserved {broth}, {cumin} and {oregano} until smooth. Return the puree to the HexClad."
+        },
+        {
+          "title": "Mix the slurry",
+          "text": "Stir {starch} into {water} in a small cup until smooth."
+        },
+        {
+          "title": "Make the tomato gravy",
+          "text": "Ladle the cooking liquid from the beef into the HexClad. Bring the combined sauce to a full boil, stir in the slurry and simmer for 1 minute until it coats the back of a spoon."
+        },
+        {
+          "title": "Combine the picadillo",
+          "text": "Turn the cooker off. Fold the finished gravy through the moist beef and potatoes, crushing a few cubes against the pot, and ladle into bowls."
+        }
+      ]
+    }
+  ]
 }

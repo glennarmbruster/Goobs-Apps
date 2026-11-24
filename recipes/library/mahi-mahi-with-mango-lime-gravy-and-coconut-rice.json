@@ -143,5 +143,65 @@
     }
   ],
   "notes": "Sauce yield: About 1 1/2 cups of sauce for two in addition to the coconut rice. Make ahead: Puree mango and broth up to a day ahead. Refrigerate separately from the fish. Refrigerate in shallow portions within 2 hours. Use refrigerated leftovers within 3 days. Freezer-Friendly Verdict: Yes. Freeze up to 1 month with the rice underneath and the fish covered in mango sauce. A splash of water loosens the rice as it reheats. Fridge reheat: Warm a portion covered in its sauce over medium-low heat in the HexClad. Add a little water if it has thickened in storage. Check from 5 minutes and heat to 165°F at the coldest center. Freezer reheat: If frozen, thaw the covered portion in the refrigerator overnight, then follow the fridge method. Option A uses a little lime. For gentler Option B, omit it and finish with extra minced basil. The dish is dairy-free. Estimated nutrition per serving (1/2 of recipe): 269 kcal, 29.3 g protein, 29.1 g total carbohydrate, 3.3 g fat, 1.2 g fiber, 152 mg sodium. Includes both the fish and its full share of sauce and any rice or potatoes listed. Sodium varies with the broth.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "10-inch HexClad skillet with lid",
+  "methods": [
+    {
+      "label": "Enamel Dutch oven",
+      "cookMin": 24,
+      "equipment": [
+        "Enamel Dutch oven",
+        "Small saucepan with lid",
+        "Thin-tip instant-read thermometer",
+        "Immersion blender and deep heatproof jug",
+        "Flexible fish spatula"
+      ],
+      "steps": [
+        {
+          "title": "Set up the cooking vessel",
+          "text": "Start the enamel Dutch oven over medium-low heat for 2–3 minutes; use the lid for covered steps. Reduce heat once liquids simmer and stir across the heavy base."
+        },
+        {
+          "title": "Soften the coconut rice",
+          "text": "Warm {rice} and {coconut} in the covered the Enamel Dutch oven over low heat for 4–7 minutes until creamy and at least 165°F throughout. Stir once and keep covered."
+        },
+        {
+          "title": "Make the mango base",
+          "text": "Blend {mango} and {broth} smooth in a deep jug. Pour into the HexClad and bring to a gentle simmer. Set aside a spoonful in a clean covered cup for resting the fish."
+        },
+        {
+          "title": "Poach the mahi-mahi",
+          "text": "Nestle {fish} into the mango base, spoon the liquid over the top and cover. Poach at a bare simmer for about 7–13 minutes, checking after 6 minutes. Pull each portion at 145°F."
+        },
+        {
+          "title": "Rest the fish",
+          "text": "Place the portions on a warm plate and moisten with the reserved mango base and cover. Rest for 3 minutes."
+        },
+        {
+          "title": "Boil the poaching liquid",
+          "text": "Bring the mango base in the HexClad to a full boil for 1 minute, stirring along the bottom."
+        },
+        {
+          "title": "Mix the slurry",
+          "text": "Stir {starch} into {water} until completely smooth."
+        },
+        {
+          "title": "Bind the sauce",
+          "text": "Bring the sauce to a simmer. Whisk in the freshly stirred slurry and let it bubble gently for 1 minute, stirring until it coats the back of a spoon."
+        },
+        {
+          "title": "Finish with basil and lime",
+          "text": "Stir {lime} and {basil} into the warm mango sauce off heat."
+        },
+        {
+          "title": "Check carryover and doneness",
+          "text": "After resting, check each thickest center for about 145°F. Open a natural seam with a fork. The center should be opaque and separate easily into flakes. If either cue is unclear or the center is below 145°F, finish covered in hot sauce in the HexClad over low heat to a measured 145°F, checking every minute."
+        },
+        {
+          "title": "Spoon into bowls",
+          "text": "Spoon the coconut rice into shallow bowls and top with the mahi-mahi. Ladle mango sauce over the fish and rice."
+        }
+      ]
+    }
+  ]
 }

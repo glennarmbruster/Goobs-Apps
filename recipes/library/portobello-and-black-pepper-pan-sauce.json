@@ -116,5 +116,58 @@
     }
   ],
   "notes": "Yield: 1 1/2 cups. One serving is 1/4 cup. Make ahead: Brown the mushrooms and deglaze the pan up to a day ahead. Chill the base and finish when needed. Refrigerate in shallow covered portions within 2 hours and use within 3 days. Freezer-Friendly Verdict: Yes. The smooth mushroom base freezes well for up to 2 months. Whisk once it bubbles again. Fridge reheat: Bring a portion to a boil in a small pan, stirring until it reaches at least 165°F. Loosen with a little water as needed. Freezer reheat: Thaw in the refrigerator overnight and reheat as for a chilled portion. Option A uses finely ground black pepper. For a gentler Option B, omit it and add a pinch of dried thyme while reducing the broth. Both versions are dairy-free. Estimated nutrition per serving (1/6 of recipe): 26 kcal, 0.7 g protein, 2.4 g total carbohydrate, 1.6 g fat, 0.3 g fiber, 21 mg sodium. The estimate covers the prepared condiment. Add separately served foods when totaling a meal. Fiber is estimated before straining.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "10-inch HexClad skillet",
+  "methods": [
+    {
+      "label": "Enamel Dutch oven",
+      "cookMin": 23,
+      "equipment": [
+        "Enamel Dutch oven",
+        "Immersion blender and tall heatproof jug",
+        "Fine-mesh sieve",
+        "Small whisk",
+        "Heatproof liquid measuring cup",
+        "Instant-read thermometer"
+      ],
+      "steps": [
+        {
+          "title": "Set up the cooking vessel",
+          "text": "Start the enamel Dutch oven over medium-low heat for 2–3 minutes; use the lid for covered steps. Reduce heat once liquids simmer and stir across the heavy base."
+        },
+        {
+          "title": "Brown the mushrooms",
+          "text": "Heat {oil} in the HexClad over medium heat. Spread {caps} across the pan and cook for 6–8 minutes, stirring occasionally, until their liquid evaporates and the edges turn brown."
+        },
+        {
+          "title": "Lift the browned bits",
+          "text": "Sprinkle {pepper} over the mushrooms, then add a splash of {broth}. Scrape the Enamel Dutch oven with a silicone spatula until the browned bits dissolve."
+        },
+        {
+          "title": "Reduce the broth",
+          "text": "Pour in the remaining broth and {aminos}. Simmer uncovered for 6–8 minutes until the mushrooms are soft."
+        },
+        {
+          "title": "Blend the pan sauce",
+          "text": "Puree the mushrooms with their liquid until smooth. Press the puree through a fine sieve into the Enamel Dutch oven."
+        },
+        {
+          "title": "Stir the slurry",
+          "text": "Stir {starch} into {water} in a small cup until smooth."
+        },
+        {
+          "title": "Thicken the sauce",
+          "text": "Bring the sauce to a simmer. Stir in the freshly mixed slurry and cook for about 1 minute, whisking until it coats the back of a spoon."
+        },
+        {
+          "title": "Check the yield",
+          "text": "Measure the finished sauce in a heatproof cup. Aim for 1 1/2 cups total. If it measures short, whisk in a little hot water. If it measures over, return it to the Enamel Dutch oven and simmer briefly to the mark."
+        },
+        {
+          "title": "Serve",
+          "text": "Spoon over braised chuck, turkey cutlets or soft potato mash. Divide the remaining sauce into measured portions for later meals."
+        }
+      ]
+    }
+  ]
 }

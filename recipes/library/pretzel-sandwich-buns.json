@@ -1,0 +1,178 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "pretzel-sandwich-buns",
+  "title": "Pretzel Sandwich Buns",
+  "description": "Pretzel Sandwich Buns made from a small batch of scratch dough.",
+  "category": "Baking",
+  "tags": [
+    "bread",
+    "from-scratch",
+    "pretzel",
+    "king-arthur"
+  ],
+  "servings": 4,
+  "servingsLabel": "portions",
+  "prepMin": 25,
+  "cookMin": 21,
+  "equipment": [
+    "Samsung conventional oven",
+    "Digital kitchen scale"
+  ],
+  "ingredients": [
+    {
+      "id": "bf",
+      "qty": 250,
+      "unit": "g",
+      "name": "King Arthur unbleached bread flour"
+    },
+    {
+      "id": "milk",
+      "qty": 105,
+      "unit": "g",
+      "name": "skim milk"
+    },
+    {
+      "id": "water",
+      "qty": 52,
+      "unit": "g",
+      "name": "sodium-free water"
+    },
+    {
+      "id": "butter",
+      "qty": 15,
+      "unit": "g",
+      "name": "unsalted butter"
+    },
+    {
+      "id": "yeast",
+      "qty": 3,
+      "unit": "g",
+      "name": "instant yeast"
+    },
+    {
+      "id": "salt",
+      "qty": 3,
+      "unit": "g",
+      "name": "fine table salt"
+    },
+    {
+      "id": "sugar",
+      "qty": 5,
+      "unit": "g",
+      "name": "dark brown sugar"
+    },
+    {
+      "id": "bathwater",
+      "qty": 1500,
+      "unit": "g",
+      "name": "sodium-free water",
+      "note": "For boiling; drain after dipping."
+    },
+    {
+      "id": "bath",
+      "qty": 45,
+      "unit": "g",
+      "name": "baking soda",
+      "note": "For boiling; only the surface residue remains."
+    }
+  ],
+  "steps": [
+    {
+      "title": "Mix the dough",
+      "text": "Combine {bf}, {milk}, {water}, {butter}, {yeast}, {salt}, {sugar}. Use room-temperature liquids and softened fat. Mix until no dry flour remains."
+    },
+    {
+      "title": "Develop the dough",
+      "text": "Knead 6–8 minutes until smooth. For wet dough, fold in the bowl with damp hands."
+    },
+    {
+      "title": "Let rise",
+      "text": "Cover and let rise 45–75 minutes at room temperature until about doubled."
+    },
+    {
+      "title": "Shape",
+      "text": "Tuck four dough pieces into tight rounds; set seam down on a lightly greased tray."
+    },
+    {
+      "title": "Proof",
+      "text": "Cover and proof 15–25 minutes until puffy; a light fingertip dent should return slowly."
+    },
+    {
+      "title": "Prepare the bath",
+      "text": "Bring {bathwater} to a simmer in a deep pan. Lower the heat and gradually stir in {bath}."
+    },
+    {
+      "title": "Dip the dough",
+      "text": "Lower one piece at a time into the simmering bath for 20 seconds, turning once. Drain well before placing on the greased sheet."
+    },
+    {
+      "title": "Heat the oven",
+      "text": "Preheat the Samsung oven to 410°F on conventional Bake."
+    },
+    {
+      "title": "Bake",
+      "text": "Snip a shallow cross into each dipped round and bake until chestnut brown. Allow 19–24 minutes; verify 190°F at the center."
+    },
+    {
+      "title": "Cool",
+      "text": "Cool on a rack for 10 minutes under a clean towel for a softer finish."
+    }
+  ],
+  "notes": "Make ahead: weigh the dry ingredients the evening before. Freezer-Friendly Verdict: Yes. Cool completely and freeze sliced or individually wrapped for up to 2 months. Fridge reheat: wrap a serving in a damp towel and microwave for 15–25 seconds. Freezer reheat: thaw wrapped, then warm the same way. Serve with soup or gravy for a softer bite. Sodium estimate includes the dough salt; surface uptake from the discarded alkaline bath varies. Allow about 1–2 hours for rising and proofing in addition to mixing and baking. Estimated nutrition per serving (1/4 of recipe): 272 kcal, 9.6 g protein, 48.7 g total carbohydrate, 3.1 g fat, 2.3 g fiber, 307 mg sodium.",
+  "source": "Glenn",
+  "preferredMethod": "Samsung conventional oven",
+  "methods": [
+    {
+      "label": "Anova Precision Oven Gen 1",
+      "cookMin": 21,
+      "equipment": [
+        "Anova Precision Oven Gen 1",
+        "Digital kitchen scale"
+      ],
+      "steps": [
+        {
+          "title": "Mix the dough",
+          "text": "Combine {bf}, {milk}, {water}, {butter}, {yeast}, {salt}, {sugar}. Use room-temperature liquids and softened fat. Mix until no dry flour remains."
+        },
+        {
+          "title": "Develop the dough",
+          "text": "Knead 6–8 minutes until smooth. For wet dough, fold in the bowl with damp hands."
+        },
+        {
+          "title": "Let rise",
+          "text": "Cover and let rise 45–75 minutes at room temperature until about doubled."
+        },
+        {
+          "title": "Shape",
+          "text": "Tuck four dough pieces into tight rounds; set seam down on a lightly greased tray."
+        },
+        {
+          "title": "Proof",
+          "text": "Cover and proof 15–25 minutes until puffy; a light fingertip dent should return slowly."
+        },
+        {
+          "title": "Prepare the bath",
+          "text": "Bring {bathwater} to a simmer in a deep pan. Lower the heat and gradually stir in {bath}."
+        },
+        {
+          "title": "Dip the dough",
+          "text": "Lower one piece at a time into the simmering bath for 20 seconds, turning once. Drain well before placing on the greased sheet."
+        },
+        {
+          "title": "Heat the oven",
+          "text": "Install the bottom drip pan. Set APO to convection, Sous Vide OFF, 390°F, 0% steam, rear element only, probe off."
+        },
+        {
+          "title": "Bake",
+          "text": "Snip a shallow cross into each dipped round and bake until chestnut brown. Allow 17–22 minutes; verify 190°F at the center."
+        },
+        {
+          "title": "Cool",
+          "text": "Cool on a rack for 10 minutes under a clean towel for a softer finish."
+        }
+      ]
+    }
+  ],
+  "totalMin": 156
+}

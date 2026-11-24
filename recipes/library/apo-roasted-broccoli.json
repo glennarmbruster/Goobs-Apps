@@ -5,26 +5,104 @@
   "title": "APO Roasted Broccoli",
   "description": "Fresh broccoli florets roasted at 425°F in the Anova Precision Oven until browned with crispy edges, with optional garlic powder and parmesan.",
   "category": "Sides",
-  "tags": ["weeknight", "vegetarian"],
+  "tags": [
+    "weeknight",
+    "vegetarian"
+  ],
   "servings": 4,
   "servingsLabel": "servings",
   "prepMin": 10,
   "cookMin": 18,
-  "equipment": ["Anova Precision Oven", "Sheet pan"],
+  "equipment": [
+    "Anova Precision Oven",
+    "Sheet pan"
+  ],
   "ingredients": [
-    { "id": "broccoli", "qty": 1.5, "qtyMax": 2, "unit": "lb", "name": "fresh broccoli florets" },
-    { "id": "oil", "qty": 1, "unit": "tbsp", "name": "olive oil" },
-    { "id": "salt", "qty": 0.5, "unit": "tsp", "name": "kosher salt" },
-    { "id": "pepper", "qty": 0.25, "unit": "tsp", "name": "black pepper" },
-    { "id": "garlicpowder", "qty": 0.5, "unit": "tsp", "name": "garlic powder", "note": "optional" },
-    { "id": "parmesan", "name": "grated parmesan", "note": "optional, to finish" }
+    {
+      "id": "broccoli",
+      "qty": 1.5,
+      "qtyMax": 2,
+      "unit": "lb",
+      "name": "fresh broccoli florets"
+    },
+    {
+      "id": "oil",
+      "qty": 1,
+      "unit": "tbsp",
+      "name": "olive oil"
+    },
+    {
+      "id": "salt",
+      "qty": 0.5,
+      "unit": "tsp",
+      "name": "kosher salt"
+    },
+    {
+      "id": "pepper",
+      "qty": 0.25,
+      "unit": "tsp",
+      "name": "black pepper"
+    },
+    {
+      "id": "garlicpowder",
+      "qty": 0.5,
+      "unit": "tsp",
+      "name": "garlic powder",
+      "note": "optional"
+    },
+    {
+      "id": "parmesan",
+      "name": "grated parmesan",
+      "note": "optional, to finish"
+    }
   ],
   "steps": [
-    { "title": "Toss", "text": "Toss {broccoli} with {oil}, {salt}, {pepper} and optional {garlicpowder}." },
-    { "title": "Spread", "text": "Spread the broccoli on a sheet pan in a single layer without crowding." },
-    { "title": "Roast", "text": "Roast in the Anova Precision Oven at 425°F, rear fan on high, 0% steam, for 12 to 20 minutes. Start checking at 12 minutes. It is done when lightly browned with crispy edges." },
-    { "title": "Finish", "text": "Finish with optional {parmesan}." }
+    {
+      "title": "Toss",
+      "text": "Toss {broccoli} with {oil}, {salt}, {pepper} and optional {garlicpowder}."
+    },
+    {
+      "title": "Spread",
+      "text": "Spread the broccoli on a sheet pan in a single layer without crowding."
+    },
+    {
+      "title": "Roast",
+      "text": "Roast in the Anova Precision Oven at 425°F, rear fan on high, 0% steam, for 12 to 20 minutes. Start checking at 12 minutes. It is done when lightly browned with crispy edges."
+    },
+    {
+      "title": "Finish",
+      "text": "Finish with optional {parmesan}."
+    }
   ],
-  "notes": "Combined from three of your dinner plans (Chicken Parmesan, Chicken Piccata and Marry Me Chicken). Use the lower end of the time for smaller florets or a lighter batch. The Chicken Piccata plan used 2 heads of broccoli with plain oil, salt and pepper for about 10 minutes.",
-  "source": "Glenn"
+  "notes": "Combined from three of your dinner plans (Chicken Parmesan, Chicken Piccata and Marry Me Chicken). Use the lower end of the time for smaller florets or a lighter batch. The Chicken Piccata plan used 2 heads of broccoli with plain oil, salt and pepper for about 10 minutes. Estimated nutrition per serving (1/4 of recipe): 108 kcal, 5.2 g protein, 12.6 g total carbohydrate, 4.0 g fat, 4.8 g fiber, 311 mg sodium. Based on the measured ingredients; brands and optional additions can change these values.",
+  "source": "Glenn",
+  "preferredMethod": "Anova Precision Oven",
+  "methods": [
+    {
+      "label": "Samsung conventional oven",
+      "cookMin": 18,
+      "equipment": [
+        "Samsung conventional oven",
+        "Sheet pan"
+      ],
+      "steps": [
+        {
+          "title": "Toss",
+          "text": "Toss {broccoli} with {oil}, {salt}, {pepper} and optional {garlicpowder}."
+        },
+        {
+          "title": "Spread",
+          "text": "Spread the broccoli on a sheet pan in a single layer without crowding."
+        },
+        {
+          "title": "Roast",
+          "text": "In the preheated 425°F Samsung oven, roast 12–18 minutes until the edges color but the stems stay crisp-tender."
+        },
+        {
+          "title": "Finish",
+          "text": "Finish with optional {parmesan}."
+        }
+      ]
+    }
+  ]
 }

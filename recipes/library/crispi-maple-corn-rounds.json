@@ -1,0 +1,117 @@
+{
+  "format": "goobs-recipe",
+  "version": 1,
+  "id": "crispi-maple-corn-rounds",
+  "title": "Crispi Maple Corn Rounds",
+  "description": "Sweet potato and corn cakes sized for two and finished just before serving.",
+  "category": "Sides",
+  "tags": [
+    "side-dish",
+    "ninja-crispi",
+    "air-fryer",
+    "sweet"
+  ],
+  "servings": 2,
+  "servingsLabel": "servings",
+  "prepMin": 12,
+  "cookMin": 25,
+  "equipment": [
+    "Ninja Crispi, 4-qt glass container and adapter",
+    "Small saucepan"
+  ],
+  "ingredients": [
+    {
+      "id": "sweet",
+      "qty": 170,
+      "unit": "g",
+      "name": "sweet potatoes"
+    },
+    {
+      "id": "corn",
+      "qty": 85,
+      "unit": "g",
+      "name": "sweet corn kernels"
+    },
+    {
+      "id": "maple",
+      "qty": 12,
+      "unit": "g",
+      "name": "pure maple syrup"
+    },
+    {
+      "id": "butter",
+      "qty": 8,
+      "unit": "g",
+      "name": "unsalted butter"
+    },
+    {
+      "id": "paprika",
+      "qty": 0.6,
+      "unit": "g",
+      "name": "smoked paprika"
+    },
+    {
+      "id": "oil",
+      "qty": 5,
+      "unit": "g",
+      "name": "avocado oil"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Prepare the vegetables",
+      "text": "Peel and dice the sweet potato; chop the corn coarsely. Use {sweet}, {corn}."
+    },
+    {
+      "title": "Prepare the center",
+      "text": "Steam both until the sweet potato mashes easily, 12–15 minutes. Mash together and shape into four flat rounds."
+    },
+    {
+      "title": "Mix the finish",
+      "text": "Whisk {maple}, {butter}, {paprika} in a small pan over low heat until smooth. Add a spoonful of warm water if needed."
+    },
+    {
+      "title": "Roast the vegetables",
+      "text": "Brush with {oil}. Place in one layer on the crisper plate in the 4-qt glass container. Fit the adapter and PowerPod and select Air Fry. Cook 10–14 minutes in the Crispi until soft inside and lightly browned on top."
+    },
+    {
+      "title": "Dress while warm",
+      "text": "Brush the cakes with the prepared mixture and serve straight away."
+    }
+  ],
+  "notes": "Make ahead: prepare the topping a day ahead. Freezer-Friendly Verdict: Yes. Freeze cooled portions in a single layer for up to 1 month. Fridge reheat: warm covered to 165°F; add the topping last. Freezer reheat: thaw in the fridge before warming covered. Use unsalted plant butter or dairy-free cheese where needed. Estimated nutrition per serving (1/2 of recipe): 177 kcal, 2.8 g protein, 29.2 g total carbohydrate, 6.5 g fat, 3.5 g fiber, 54 mg sodium.",
+  "source": "Glenn",
+  "preferredMethod": "Ninja Crispi, 4-qt glass container and adapter",
+  "methods": [
+    {
+      "label": "Samsung conventional oven",
+      "cookMin": 30,
+      "equipment": [
+        "Samsung conventional oven",
+        "Small saucepan"
+      ],
+      "steps": [
+        {
+          "title": "Prepare the vegetables",
+          "text": "Peel and dice the sweet potato; chop the corn coarsely. Use {sweet}, {corn}."
+        },
+        {
+          "title": "Prepare the center",
+          "text": "Steam both until the sweet potato mashes easily, 12–15 minutes. Mash together and shape into four flat rounds."
+        },
+        {
+          "title": "Mix the finish",
+          "text": "Whisk {maple}, {butter}, {paprika} in a small pan over low heat until smooth. Add a spoonful of warm water if needed."
+        },
+        {
+          "title": "Roast the vegetables",
+          "text": "Brush with {oil}. Heat the Samsung oven to 410°F convection and arrange on a shallow metal sheet. Cook 10–14 minutes, checking every 2 minutes afterward if needed until soft inside and lightly browned on top."
+        },
+        {
+          "title": "Dress while warm",
+          "text": "Brush the cakes with the prepared mixture and serve straight away."
+        }
+      ]
+    }
+  ]
+}

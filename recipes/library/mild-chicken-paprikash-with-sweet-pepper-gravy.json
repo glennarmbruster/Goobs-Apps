@@ -138,5 +138,60 @@
     }
   ],
   "notes": "Sauce yield: About 1 1/2 cups for two. Make ahead: Caramelize the onion a day ahead and refrigerate it in a sealed container. Refrigerate shallow portions within 2 hours. Use refrigerated leftovers within 3 days. Freezer-Friendly Verdict: Yes. For the smoothest gravy, freeze the chicken and blended base before adding sour cream, up to 2 months. Add the sour cream after thawing and reheating. Fridge reheat: Warm the paprika chicken and gravy covered in the HexClad over medium-low with a splash of water. Stir or turn occasionally and check from 6 minutes, until the center reaches 165°F. Freezer reheat: Thaw overnight in the refrigerator, then follow the fridge reheating directions. Option A uses the full sweet paprika and sour cream. For gentler Option B, halve the paprika and replace the sour cream with skim milk. Plain unsweetened oat cream also works for a dairy-free finish. Estimated nutrition per serving (1/2 of recipe): 273 kcal, 30.4 g protein, 10.4 g total carbohydrate, 11.8 g fat, 1.7 g fiber, 171 mg sodium. Includes all the chicken and sauce in the listed recipe. Sodium varies with the broth. Fiber is estimated before straining.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "10-inch HexClad skillet with lid",
+  "methods": [
+    {
+      "label": "Enamel Dutch oven",
+      "cookMin": 48,
+      "equipment": [
+        "Enamel Dutch oven",
+        "Thin-tip instant-read thermometer",
+        "Immersion blender and deep heatproof jug",
+        "Fine-mesh sieve"
+      ],
+      "steps": [
+        {
+          "title": "Set up the cooking vessel",
+          "text": "Start the enamel Dutch oven over medium-low heat for 2–3 minutes; use the lid for covered steps. Reduce heat once liquids simmer and stir across the heavy base."
+        },
+        {
+          "title": "Caramelize the onion",
+          "text": "Melt {butter} in the HexClad over medium-low. Add {onion} and cook for 18–25 minutes, stirring often, until fully caramelized, soft and golden brown. Loosen any browned spots with a spoonful of {broth}."
+        },
+        {
+          "title": "Bloom the paprika",
+          "text": "Lift the Enamel Dutch oven off heat and stir {paprika} into the softened onion for 10 seconds, just until fragrant."
+        },
+        {
+          "title": "Build the pepper broth",
+          "text": "Add {pepper} and the remaining broth. Return the Enamel Dutch oven to medium-low and bring to a gentle simmer."
+        },
+        {
+          "title": "Braise the thighs",
+          "text": "Unfold {chicken} into the pepper broth and cover. Keep at a gentle simmer for 12–22 minutes, turning halfway, until every thigh reaches 175°F. Hold the chicken covered with a spoonful of the broth."
+        },
+        {
+          "title": "Blend the braise",
+          "text": "Blend the peppers, onions and cooking liquid in a deep jug until smooth. Pass the mixture through a fine sieve into the Enamel Dutch oven and bring it to a boil."
+        },
+        {
+          "title": "Mix the slurry",
+          "text": "Stir {starch} into {water} until completely smooth."
+        },
+        {
+          "title": "Bind the sauce",
+          "text": "Bring the sauce to a simmer. Whisk in the freshly stirred slurry and let it bubble gently for 1 minute, stirring until it coats the back of a spoon."
+        },
+        {
+          "title": "Temper the sour cream",
+          "text": "Whisk warm gravy into {cream} in a cup. Return this mixture to the Enamel Dutch oven off heat and whisk until the color is even."
+        },
+        {
+          "title": "Sauce and serve",
+          "text": "Slice the thighs across the grain and nestle them into the paprika gravy. Serve the meat and all the gravy in shallow bowls."
+        }
+      ]
+    }
+  ]
 }

@@ -112,5 +112,54 @@
     }
   ],
   "notes": "Yield: 1 cup. One serving is 2 tablespoons. Make ahead: Cook and strain the base up to 2 days ahead. Add the slurry when ready to serve. Refrigerate in shallow covered portions within 2 hours and use within 3 days. Freezer-Friendly Verdict: Yes. The blueberry puree freezes well for up to 2 months. Whisk as it warms to restore the glossy texture. Fridge reheat: Bring a portion to a boil in a small pan, stirring until it reaches at least 165°F. Loosen with a little water as needed. Freezer reheat: Thaw in the refrigerator overnight and reheat as for a chilled portion. Option A includes balsamic and smoked paprika. For gentler Option B, replace the vinegar with unsweetened apple juice and omit the paprika. Both versions are dairy-free. Estimated nutrition per serving (1/8 of recipe): 21 kcal, 0.4 g protein, 4.7 g total carbohydrate, 0.1 g fat, 0.5 g fiber, 4 mg sodium. The estimate covers the prepared condiment. Add separately served foods when totaling a meal. Fiber is estimated before straining.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "10-inch HexClad skillet",
+  "methods": [
+    {
+      "label": "Enamel Dutch oven",
+      "cookMin": 21,
+      "equipment": [
+        "Enamel Dutch oven",
+        "Immersion blender and tall heatproof jug",
+        "Fine-mesh sieve",
+        "Small whisk",
+        "Heatproof liquid measuring cup",
+        "Instant-read thermometer"
+      ],
+      "steps": [
+        {
+          "title": "Set up the cooking vessel",
+          "text": "Start the enamel Dutch oven over medium-low heat for 2–3 minutes; use the lid for covered steps. Reduce heat once liquids simmer and stir across the heavy base."
+        },
+        {
+          "title": "Burst the berries",
+          "text": "Bring {berries} and {broth} to a gentle simmer in the HexClad. Cover for 5–7 minutes until the berries burst."
+        },
+        {
+          "title": "Build the barbecue base",
+          "text": "Stir in {vinegar}, {molasses} and {paprika}. Simmer uncovered for 3 minutes."
+        },
+        {
+          "title": "Strain the blueberry base",
+          "text": "Puree the mixture in the deep jug. Press it through the sieve back into the Enamel Dutch oven to catch the skins."
+        },
+        {
+          "title": "Stir the slurry",
+          "text": "Stir {starch} into {water} in a small cup until smooth."
+        },
+        {
+          "title": "Thicken the sauce",
+          "text": "Bring the sauce to a simmer. Stir in the freshly mixed slurry and cook for about 1 minute, whisking until it coats the back of a spoon."
+        },
+        {
+          "title": "Check the yield",
+          "text": "Measure the finished sauce in a heatproof cup. Aim for 1 cup total. If it measures short, whisk in a little hot water. If it measures over, return it to the Enamel Dutch oven and simmer briefly to the mark."
+        },
+        {
+          "title": "Serve",
+          "text": "Swirl the warm glaze through thick pork gravy or spoon it over chicken already resting in its braising sauce."
+        }
+      ]
+    }
+  ]
 }

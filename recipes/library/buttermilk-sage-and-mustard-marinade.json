@@ -113,5 +113,57 @@
     }
   ],
   "notes": "Yield: 1 1/2 cups before use. One serving is 1/4 cup of prepared sauce. Make ahead: Make a day ahead so the sage and mustard can mellow. Stir well before dividing. Refrigerate within 2 hours and use untouched sauce within 3 days. Freezer-Friendly Verdict: No. Cultured buttermilk can turn grainy after freezing. For freezer prep, freeze the cooked seasoned base for up to 1 month and whisk in fresh buttermilk after thawing. Fridge reheat: Serve the clean reserved sauce cold. Whisk it smooth before spooning over the hot cooked protein. Freezer reheat: Thaw unused sauce in the refrigerator overnight and follow the fridge directions. Nutrition is per measured portion. Count the clean sauce you eat. Marinade left on the protein varies, and the portion thrown away is excluded from the plated meal. Option A uses tangy buttermilk and mustard. For gentler Option B, use skim milk and halve the mustard. For dairy-free sauce, use plain unsweetened oat milk. Estimated nutrition per serving (1/6 of recipe): 21 kcal, 1.4 g protein, 3.0 g total carbohydrate, 0.4 g fat, 0.0 g fiber, 72 mg sodium. The estimate covers the prepared condiment. Add separately served foods when totaling a meal.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "10-inch HexClad skillet",
+  "methods": [
+    {
+      "label": "Enamel Dutch oven",
+      "cookMin": 6,
+      "equipment": [
+        "Enamel Dutch oven",
+        "Small whisk",
+        "Heatproof liquid measuring cup",
+        "Instant-read thermometer",
+        "Two food-safe lidded containers"
+      ],
+      "steps": [
+        {
+          "title": "Set up the cooking vessel",
+          "text": "Start the enamel Dutch oven over medium-low heat for 2–3 minutes; use the lid for covered steps. Reduce heat once liquids simmer and stir across the heavy base."
+        },
+        {
+          "title": "Steep the seasonings",
+          "text": "Bring {broth}, {sage}, {mustard} and {garlic} to a simmer in the HexClad. Cover for 3 minutes."
+        },
+        {
+          "title": "Stir the slurry",
+          "text": "Stir {starch} into {water} in a small cup until smooth."
+        },
+        {
+          "title": "Thicken the sauce",
+          "text": "Bring the sauce to a simmer. Stir in the freshly mixed slurry and cook for about 1 minute, whisking until it coats the back of a spoon."
+        },
+        {
+          "title": "Chill the seasoned base",
+          "text": "Pour the base into a shallow food-safe container and refrigerate until cold, about 30 minutes."
+        },
+        {
+          "title": "Fold in the buttermilk",
+          "text": "Whisk the cold base into {buttermilk}. Measure about 1 1/2 cups and stir until uniform, loosening with a little cold water if needed."
+        },
+        {
+          "title": "Separate the clean sauce",
+          "text": "With clean utensils, put 1 cup in a covered serving container before any contact with raw food. Put the remaining 1/2 cup in a separate marinating container. Chill both to 40°F or below before adding raw protein."
+        },
+        {
+          "title": "Marinate under refrigeration",
+          "text": "Coat up to 12 ounces of trimmed chicken thighs or thin tenderized chicken cutlets in the marinating container, cover and refrigerate for 2–4 hours. Keep the serving container separate."
+        },
+        {
+          "title": "Use the clean portion",
+          "text": "Lift the protein out for moist cooking and discard the used marinade. Poach or braise the chicken. Spoon the reserved buttermilk sauce over it just before serving."
+        }
+      ]
+    }
+  ]
 }

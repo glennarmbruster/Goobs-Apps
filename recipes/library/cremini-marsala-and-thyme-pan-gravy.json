@@ -124,5 +124,48 @@
     }
   ],
   "notes": "Make ahead: Blend the mushroom base up to a day ahead and refrigerate. Keep finished gravy chilled for up to 3 days. Freezer-Friendly Verdict: Yes. Freeze the base for up to 2 months and add cream cheese after reheating for a smooth finish. Fridge reheat: Warm in the HexClad over medium-low, stirring with a splash of water or broth if needed. Bring the whole sauce briefly to a rolling boil, then serve. Freezer reheat: Thaw overnight in the refrigerator. Whisk smooth and follow the fridge reheating directions. Option A includes Marsala. For a gentler, alcohol-free Option B, replace it with additional plain broth. For dairy-free gravy omit the cream cheese and rely on the mushroom puree and slurry. Estimated nutrition per serving of the prepared condiment (1/2 of recipe): 89 kcal, 2.4 g protein, 7.7 g total carbohydrate, 4.0 g fat, 0.5 g fiber, 38 mg sodium. Includes the measured broth and sauce. Sodium varies with your broth. Calories include all the measured alcohol before simmering.",
-  "source": "Glenn"
+  "source": "Glenn",
+  "preferredMethod": "10-inch HexClad skillet",
+  "methods": [
+    {
+      "label": "Enamel Dutch oven",
+      "cookMin": 32,
+      "equipment": [
+        "Enamel Dutch oven",
+        "Immersion blender and heatproof jug",
+        "Fine-mesh sieve",
+        "Small mixing bowl"
+      ],
+      "steps": [
+        {
+          "title": "Set up the cooking vessel",
+          "text": "Start the enamel Dutch oven over medium-low heat for 2–3 minutes; use the lid for covered steps. Reduce heat once liquids simmer and stir across the heavy base."
+        },
+        {
+          "title": "Caramelize the shallot",
+          "text": "Soften {shallot} in {oil} in the HexClad over medium-low for 12–16 minutes. Stir often, using splashes of {broth} to keep the shallot moist until soft and deep gold."
+        },
+        {
+          "title": "Simmer the mushrooms",
+          "text": "Move the Enamel Dutch oven off the burner to add {marsala}, then add {mushrooms}, {thyme} and the remaining {broth}. Return to medium-low heat, cover and simmer 6–8 minutes until the mushrooms are very tender."
+        },
+        {
+          "title": "Puree the gravy base",
+          "text": "Remove the thyme. Blend the hot mixture in a deep heatproof jug until smooth and strain it back into the Enamel Dutch oven."
+        },
+        {
+          "title": "Mix the slurry",
+          "text": "Stir {starch} into {water} until completely smooth."
+        },
+        {
+          "title": "Thicken the sauce",
+          "text": "Bring the base to a simmer. Whisk in the freshly stirred slurry and let it bubble for 1 minute, stirring until it coats the back of a spoon."
+        },
+        {
+          "title": "Finish with cream cheese",
+          "text": "Off heat, whisk {cheese} with a spoonful of warm gravy, then blend it back into the pan. Divide the gravy between the plates or ladle it over mashed potatoes."
+        }
+      ]
+    }
+  ]
 }
